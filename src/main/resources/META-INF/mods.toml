@@ -19,7 +19,7 @@ displayName="Piglin Proliferation" #mandatory
 #updateJSONURL="https://change.me.example.invalid/updates.json" #optional
 # logoFile="piglinproliferation.png" #optional
 credits="TallestEgg" #optional
-authors="TallestEgg #optional
+authors="TallestEgg" #optional
 description='''
 Piglins expanded in new ways!
 '''
