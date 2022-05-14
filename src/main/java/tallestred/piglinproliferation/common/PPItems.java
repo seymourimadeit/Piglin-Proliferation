@@ -17,5 +17,5 @@ import tallestred.piglinproliferation.common.entities.PiglinAlchemist;
 @Mod.EventBusSubscriber(modid = PiglinProliferation.MODID, bus = Mod.EventBusSubscriber.Bus.MOD)
 public class PPItems {
     public static DeferredRegister<Item> ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, PiglinProliferation.MODID);
-    public static final RegistryObject<ForgeSpawnEggItem> PIGLIN_ALCHEMIST_SPAWN_EGG = ITEMS.register("piglin_alchemist_spawn_egg", () -> new ForgeSpawnEggItem(PPEntityTypes.PIGLIN_ALCHEMIST, 15265780, 16380836, (new Item.Properties()).tab(CreativeModeTab.TAB_MISC)));
+    public static final RegistryObject<ForgeSpawnEggItem> PIGLIN_ALCHEMIST_SPAWN_EGG = ITEMS.register("piglin_alchemist_spawn_egg", () -> new ForgeSpawnEggItem(PPEntityTypes.PIGLIN_ALCHEMIST, 10944611, 16380836, (new Item.Properties()).tab(CreativeModeTab.TAB_MISC)));
 }
