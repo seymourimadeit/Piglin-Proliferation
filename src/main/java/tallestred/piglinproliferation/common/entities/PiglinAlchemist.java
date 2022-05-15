@@ -1,12 +1,11 @@
 package tallestred.piglinproliferation.common.entities;
 
+import net.minecraft.core.NonNullList;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
-import net.minecraft.world.Container;
-import net.minecraft.world.ContainerListener;
 import net.minecraft.world.DifficultyInstance;
-import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.MobSpawnType;
 import net.minecraft.world.entity.SpawnGroupData;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
@@ -14,21 +13,22 @@ import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.monster.piglin.Piglin;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.alchemy.PotionUtils;
+import net.minecraft.world.item.alchemy.Potions;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.ServerLevelAccessor;
+import net.minecraftforge.network.PacketDistributor;
 import org.jetbrains.annotations.NotNull;
+import tallestred.piglinproliferation.networking.AlchemistBeltSyncPacket;
+import tallestred.piglinproliferation.networking.PPNetworking;
 
 import javax.annotation.Nullable;
 
-public class PiglinAlchemist extends Piglin implements ContainerListener {
-    private final SimpleContainer potionInventory = new SimpleContainer(6);
-    private net.minecraftforge.common.util.LazyOptional<?> itemHandler;
+public class PiglinAlchemist extends Piglin {
+    public final NonNullList<ItemStack> beltInventory = NonNullList.withSize(6, ItemStack.EMPTY);
 
     public PiglinAlchemist(EntityType<? extends PiglinAlchemist> p_34683_, Level p_34684_) {
         super(p_34683_, p_34684_);
-        this.potionInventory.addListener(this);
-        this.itemHandler = net.minecraftforge.common.util.LazyOptional
-                .of(() -> new net.minecraftforge.items.wrapper.InvWrapper(this.potionInventory));
     }
 
     public static AttributeSupplier.@NotNull Builder createAttributes() {
@@ -39,51 +39,63 @@ public class PiglinAlchemist extends Piglin implements ContainerListener {
     public void addAdditionalSaveData(CompoundTag compound) {
         super.addAdditionalSaveData(compound);
         ListTag listnbt = new ListTag();
-        for (int i = 0; i < this.getPotionInventory().getContainerSize(); ++i) {
-            ItemStack itemstack = this.getPotionInventory().getItem(i);
+        for (ItemStack itemstack : this.beltInventory) {
+            CompoundTag compoundtag = new CompoundTag();
             if (!itemstack.isEmpty()) {
-                CompoundTag compoundnbt = new CompoundTag();
-                compoundnbt.putByte("Slot", (byte) i);
-                itemstack.save(compoundnbt);
-                listnbt.add(compoundnbt);
+                itemstack.save(compoundtag);
             }
+
+            listnbt.add(compoundtag);
         }
-        compound.put("PotionInventory", listnbt);
+        compound.put("BeltInventory", listnbt);
+        //this.syncBeltToClient();
     }
 
     @Override
     public void readAdditionalSaveData(CompoundTag compound) {
         super.readAdditionalSaveData(compound);
-        ListTag listnbt = compound.getList("PotionInventory", 10);
-        for (int i = 0; i < listnbt.size(); ++i) {
-            CompoundTag compoundnbt = listnbt.getCompound(i);
-            int j = compoundnbt.getByte("Slot") & 255;
-            this.getPotionInventory().setItem(j, ItemStack.of(compoundnbt));
+        if (compound.contains("BeltInventory", 9)) {
+            ListTag listtag = compound.getList("BeltInventory", 10);
+            for (int i = 0; i < this.beltInventory.size(); ++i) {
+                this.beltInventory.set(i, ItemStack.of(listtag.getCompound(i)));
+            }
         }
     }
 
     @Override
-    public <T> net.minecraftforge.common.util.LazyOptional<T> getCapability(
-            net.minecraftforge.common.capabilities.Capability<T> capability,
-            @Nullable net.minecraft.core.Direction facing) {
-        if (this.isAlive() && capability == net.minecraftforge.items.CapabilityItemHandler.ITEM_HANDLER_CAPABILITY
-                && itemHandler != null)
-            return itemHandler.cast();
-        return super.getCapability(capability, facing);
-    }
-
-    public SimpleContainer getPotionInventory() {
-        return this.potionInventory;
+    public void tick() {
+        super.tick();
+        this.syncBeltToClient(); // This is poo poo, and I will probably need to find a better method in the future
     }
 
     @Override
     @Nullable
     public SpawnGroupData finalizeSpawn(ServerLevelAccessor pLevel, DifficultyInstance pDifficulty, MobSpawnType pReason, @Nullable SpawnGroupData pSpawnData, @Nullable CompoundTag pDataTag) {
-        this.getPotionInventory().setItem(0, new ItemStack(Items.ACACIA_FENCE));
+        this.setBeltInventorySlot(0, PotionUtils.setPotion(new ItemStack(Items.POTION), Potions.HARMING));
+        this.setBeltInventorySlot(1, PotionUtils.setPotion(new ItemStack(Items.POTION), Potions.FIRE_RESISTANCE));
+        this.setBeltInventorySlot(2, PotionUtils.setPotion(new ItemStack(Items.POTION), Potions.LONG_NIGHT_VISION));
+        this.setBeltInventorySlot(3, PotionUtils.setPotion(new ItemStack(Items.POTION), Potions.POISON));
+        this.setBeltInventorySlot(4, PotionUtils.setPotion(new ItemStack(Items.POTION), Potions.HARMING));
+        this.setBeltInventorySlot(5, PotionUtils.setPotion(new ItemStack(Items.POTION), Potions.SLOWNESS));
         return super.finalizeSpawn(pLevel, pDifficulty, pReason, pSpawnData, pDataTag);
     }
 
     @Override
-    public void containerChanged(Container pInvBasic) {
+    protected void populateDefaultEquipmentSlots(DifficultyInstance pDifficulty) {
+        if (this.isAdult())
+            this.setItemSlot(EquipmentSlot.MAINHAND, new ItemStack(Items.BOW));
+    }
+
+    public void setBeltInventorySlot(int index, ItemStack stack) {
+        this.beltInventory.set(index, stack);
+        this.syncBeltToClient();
+    }
+
+    public void syncBeltToClient() {
+        if (!this.level.isClientSide) {
+            for (int i = 0; i < this.beltInventory.size(); i++) {
+                PPNetworking.INSTANCE.send(PacketDistributor.ALL.noArg(), new AlchemistBeltSyncPacket(this.getId(), i, this.beltInventory.get(i)));
+            }
+        }
     }
 }

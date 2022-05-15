@@ -10,6 +10,7 @@ import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import tallestred.piglinproliferation.common.PPItems;
 import tallestred.piglinproliferation.common.entities.PPEntityTypes;
 import tallestred.piglinproliferation.common.entities.PiglinAlchemist;
+import tallestred.piglinproliferation.networking.PPNetworking;
 
 @Mod(PiglinProliferation.MODID)
 public class PiglinProliferation {
@@ -23,6 +24,7 @@ public class PiglinProliferation {
         MinecraftForge.EVENT_BUS.register(this);
         PPEntityTypes.ENTITIES.register(FMLJavaModLoadingContext.get().getModEventBus());
         PPItems.ITEMS.register(FMLJavaModLoadingContext.get().getModEventBus());
+        PPNetworking.registerPackets();
     }
 
     private void addAttributes(final EntityAttributeCreationEvent event) {
