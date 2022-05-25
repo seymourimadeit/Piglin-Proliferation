@@ -1,10 +1,14 @@
 package tallestred.piglinproliferation.common.entities.ai.goals;
 
+import net.minecraft.util.Mth;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.ai.behavior.BehaviorUtils;
 import net.minecraft.world.entity.ai.behavior.EntityTracker;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.entity.ai.memory.MemoryModuleType;
-import net.minecraft.world.entity.ai.util.DefaultRandomPos;
+import net.minecraft.world.entity.ai.memory.WalkTarget;
+import net.minecraft.world.entity.ai.util.LandRandomPos;
 import net.minecraft.world.entity.projectile.ProjectileUtil;
 import net.minecraft.world.item.BowItem;
 import net.minecraft.world.phys.Vec3;
@@ -65,6 +69,7 @@ public class AlchemistBowAttackGoal<T extends PiglinAlchemist> extends Goal {
         this.mob.stopUsingItem();
     }
 
+    @Override
     public boolean requiresUpdateEveryTick() {
         return true;
     }
@@ -73,40 +78,19 @@ public class AlchemistBowAttackGoal<T extends PiglinAlchemist> extends Goal {
     public void tick() {
         LivingEntity livingentity = this.mob.getTarget();
         if (livingentity != null) {
-            this.mob.getBrain().setMemory(MemoryModuleType.LOOK_TARGET, new EntityTracker(this.mob.getTarget(), true));
             double distanceSquared = this.mob.distanceToSqr(livingentity);
             boolean canSee = this.mob.getSensing().hasLineOfSight(livingentity);
             boolean seeTimeGreaterThanZero = this.seeTime > 0;
-            if (canSee != seeTimeGreaterThanZero)
-                this.seeTime = 0;
-            if (canSee) {
-                ++this.seeTime;
-            } else {
-                --this.seeTime;
-            }
-            if (distanceSquared <= 4.0D && !runSomewhere) {
-                this.runSomewhere = true;
-            }
-            if (this.runSomewhere) {
-                this.mob.getBrain().setMemory(MemoryModuleType.LOOK_TARGET, new EntityTracker(this.mob.getTarget(), true));
-                this.attackTime = -1;
-                this.mob.stopUsingItem();
-                Vec3 vec3 = this.getPosition();
-                if (vec3 != null) {
-                    this.mob.getNavigation().moveTo(vec3.x, vec3.y, vec3.z, 1.5D);
-                }
-                if (distanceSquared >= (double) this.attackRadiusSqr || mob.getNavigation().isDone())
-                    this.runSomewhere = false;
-
-            }
-            if (distanceSquared < (double) this.attackRadiusSqr && this.seeTime >= 20 && !this.runSomewhere)
-                this.mob.getNavigation().stop();
+            this.mob.getBrain().setMemory(MemoryModuleType.LOOK_TARGET, new EntityTracker(this.mob.getTarget(), true));
+            this.mob.getLookControl().setLookAt(livingentity);
+            this.mob.lookAt(livingentity, 30.0f, 30.0F);
             if (this.mob.isUsingItem()) {
-                if (!canSee && this.seeTime < -60) {
+                if (!canSee) {
                     this.mob.stopUsingItem();
                 } else if (canSee) {
                     int i = this.mob.getTicksUsingItem();
-                    if (i >= 20) {
+                    int timeToShoot = Mth.floor(Mth.lerp(distanceSquared / (double) this.attackRadiusSqr, 5.0D, 20.0D));
+                    if (i >= timeToShoot) {
                         this.mob.stopUsingItem();
                         this.mob.performRangedAttack(livingentity, BowItem.getPowerForTime(i));
                         this.attackTime = this.attackIntervalMin;
@@ -115,12 +99,45 @@ public class AlchemistBowAttackGoal<T extends PiglinAlchemist> extends Goal {
             } else if (--this.attackTime <= 0 && this.seeTime >= -60 && !runSomewhere) {
                 this.mob.startUsingItem(ProjectileUtil.getWeaponHoldingHand(this.mob, item -> item instanceof BowItem));
             }
+            if (distanceSquared > (double) this.attackRadiusSqr && this.seeTime >= 20) {
+                WalkTarget walktarget = new WalkTarget(livingentity, (float) this.speedModifier, 0);
+                this.mob.getBrain().setMemory(MemoryModuleType.WALK_TARGET, walktarget);
+            } else if (distanceSquared < (double) this.attackRadiusSqr && this.seeTime >= 20 && !this.runSomewhere || !this.runSomewhere) {
+                this.mob.getBrain().eraseMemory(MemoryModuleType.WALK_TARGET);
+                this.mob.getNavigation().stop();
+            }
 
+
+            if (canSee != seeTimeGreaterThanZero)
+                this.seeTime = 0;
+            if (canSee) {
+                ++this.seeTime;
+            } else {
+                --this.seeTime;
+            }
+            if (distanceSquared <= 6.0D && !runSomewhere) {
+                if (this.mob.isUsingItem())
+                    this.mob.stopUsingItem();
+                this.attackTime = -1;
+                this.runSomewhere = true;
+            }
+            if (this.runSomewhere) {
+                this.mob.getBrain().setMemory(MemoryModuleType.LOOK_TARGET, new EntityTracker(this.mob.getTarget(), true));
+                this.attackTime = -1;
+                Vec3 vec3 = this.getPosition();
+                if (vec3 != null) {
+                    this.mob.stopUsingItem();
+                    this.mob.getNavigation().moveTo(vec3.x, vec3.y, vec3.z, 1.5D);
+                }
+                if (distanceSquared >= (double) this.attackRadiusSqr || (mob.getNavigation().isDone() || mob.getNavigation().isStuck()))
+                    this.runSomewhere = false;
+
+            }
         }
     }
 
     @Nullable
     protected Vec3 getPosition() {
-        return DefaultRandomPos.getPosAway(this.mob, 16, 7, this.mob.getTarget().position());
+        return LandRandomPos.getPosAway(this.mob, 16, 7, this.mob.getTarget().position());
     }
 }
