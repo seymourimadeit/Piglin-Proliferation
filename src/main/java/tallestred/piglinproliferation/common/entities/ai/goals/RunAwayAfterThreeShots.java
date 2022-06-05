@@ -11,6 +11,8 @@ import javax.annotation.Nullable;
 
 public class RunAwayAfterThreeShots extends RandomStrollGoal {
     private final PiglinAlchemist alchemist;
+    private int runTime;
+    private boolean startedRunning;
 
     public RunAwayAfterThreeShots(PiglinAlchemist alchemist, double pSpeedModifier) {
         super(alchemist, pSpeedModifier);
@@ -19,12 +21,19 @@ public class RunAwayAfterThreeShots extends RandomStrollGoal {
 
     @Override
     public boolean canUse() {
-        return this.alchemist.getArrowsShot() >= 3 && this.alchemist.getTarget() != null && this.findPosition();
+        return this.alchemist.getArrowsShot() >= 3 && this.alchemist.getTarget() != null && this.findPosition() && !startedRunning;
+    }
+
+    @Override
+    public boolean canContinueToUse() {
+        return super.canContinueToUse() && this.runTime > 0;
     }
 
     @Override
     public void start() {
         super.start();
+        this.runTime = 40;
+        this.startedRunning = true;
         this.alchemist.setArrowsShot(0);
     }
 
@@ -33,9 +42,21 @@ public class RunAwayAfterThreeShots extends RandomStrollGoal {
         super.tick();
         if (this.mob.getTarget() == null)
             return;
+        this.runTime--;
         this.mob.getBrain().setMemory(MemoryModuleType.LOOK_TARGET, new EntityTracker(this.mob.getTarget(), true));
         this.mob.getLookControl().setLookAt(this.mob.getTarget());
         this.mob.lookAt(this.mob.getTarget(), 30.0f, 30.0F);
+        if (this.runTime <= 0) {
+            this.startedRunning = false;
+            this.mob.getNavigation().stop();
+        }
+    }
+
+    @Override
+    public void stop() {
+        super.stop();
+        this.runTime = 0;
+        this.startedRunning = false;
     }
 
     public boolean findPosition() {

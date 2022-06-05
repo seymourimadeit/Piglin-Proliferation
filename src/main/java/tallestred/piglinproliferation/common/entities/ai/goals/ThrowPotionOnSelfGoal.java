@@ -14,13 +14,13 @@ import tallestred.piglinproliferation.common.entities.PiglinAlchemist;
 import java.util.EnumSet;
 import java.util.function.Predicate;
 
-public class ThrowPotionGoal extends Goal {
+public class ThrowPotionOnSelfGoal extends Goal {
     protected final PiglinAlchemist alchemist;
     protected final ItemStack itemToUse;
     protected final Predicate<? super PiglinAlchemist> canUseSelector;
     protected ItemStack potionToThrow;
 
-    public ThrowPotionGoal(PiglinAlchemist alchemist, ItemStack stack, Predicate<? super PiglinAlchemist> pCanUseSelector) {
+    public ThrowPotionOnSelfGoal(PiglinAlchemist alchemist, ItemStack stack, Predicate<? super PiglinAlchemist> pCanUseSelector) {
         this.alchemist = alchemist;
         this.itemToUse = stack;
         this.canUseSelector = pCanUseSelector;
@@ -31,9 +31,9 @@ public class ThrowPotionGoal extends Goal {
     public boolean canUse() {
         for (int slot = 0; slot < alchemist.beltInventory.size(); slot++) {
             ItemStack stackInSlot = this.alchemist.beltInventory.get(slot);
-            if (stackInSlot.is(itemToUse.getItem()) && PotionUtils.getPotion(itemToUse) == PotionUtils.getPotion(stackInSlot) && this.canUseSelector.test(this.alchemist)) {
+            if (stackInSlot.is(itemToUse.getItem()) && PotionUtils.getPotion(itemToUse) == PotionUtils.getPotion(stackInSlot)) {
                 this.potionToThrow = stackInSlot;
-                return true;
+                return this.canUseSelector.test(this.alchemist);
             }
         }
         return false;
@@ -63,8 +63,7 @@ public class ThrowPotionGoal extends Goal {
         double d3 = Math.sqrt(d0 * d0 + d2 * d2);
         ThrownPotion thrownpotion = new ThrownPotion(this.alchemist.level, this.alchemist);
         thrownpotion.setItem(potionToThrow);
-        thrownpotion.setXRot(thrownpotion.getXRot() - -20.0F);
-        thrownpotion.shoot(d0, d1 + d3 * 0.2D, d2, 0.75F, 1.0F);
+        thrownpotion.shootFromRotation(alchemist, alchemist.getXRot(), alchemist.getYRot(), -20.0F, 0.5F, 1.0F);
         if (!this.alchemist.isSilent())
             this.alchemist.level.playSound((Player) null, this.alchemist.getX(), this.alchemist.getY(), this.alchemist.getZ(), SoundEvents.SPLASH_POTION_THROW, this.alchemist.getSoundSource(), 1.0F, 0.8F + this.alchemist.getRandom().nextFloat() * 0.4F);
         this.alchemist.level.addFreshEntity(thrownpotion);

@@ -17,6 +17,7 @@ import net.minecraft.world.entity.monster.piglin.Piglin;
 import net.minecraft.world.entity.projectile.AbstractArrow;
 import net.minecraft.world.entity.projectile.ProjectileUtil;
 import net.minecraft.world.item.*;
+import net.minecraft.world.item.alchemy.Potion;
 import net.minecraft.world.item.alchemy.PotionUtils;
 import net.minecraft.world.item.alchemy.Potions;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
@@ -38,7 +39,6 @@ public class PiglinAlchemist extends Piglin {
     protected static final EntityDataAccessor<Boolean> IS_ABOUT_TO_THROW_POTION = SynchedEntityData.defineId(PiglinAlchemist.class, EntityDataSerializers.BOOLEAN);
     protected static final EntityDataAccessor<ItemStack> POTION_ABOUT_TO_BE_THROWN = SynchedEntityData.defineId(PiglinAlchemist.class, EntityDataSerializers.ITEM_STACK);
     public final NonNullList<ItemStack> beltInventory = NonNullList.withSize(6, ItemStack.EMPTY);
-
     protected int arrowsShot;
 
     public PiglinAlchemist(EntityType<? extends PiglinAlchemist> p_34683_, Level p_34684_) {
@@ -52,13 +52,13 @@ public class PiglinAlchemist extends Piglin {
     @Override
     public void registerGoals() {
         super.registerGoals();
-        this.goalSelector.addGoal(1, new ThrowPotionOnOthersGoal(this, PotionUtils.setPotion(new ItemStack(Items.SPLASH_POTION), Potions.HARMING), (alchemist) -> {
-            return (double) alchemist.getRandom().nextFloat() < 0.50D;
+        this.goalSelector.addGoal(0, new ThrowPotionOnOthersGoal(this, PotionUtils.setPotion(new ItemStack(Items.SPLASH_POTION), Potions.LONG_REGENERATION), (alchemist) -> {
+            return alchemist.isAlive();
         }, (piglin) -> {
-            return piglin.isBaby();
+            return piglin.getHealth() < piglin.getMaxHealth();
         }));
-        this.goalSelector.addGoal(1, new ThrowPotionOnOthersGoal(this, PotionUtils.setPotion(new ItemStack(Items.SPLASH_POTION), Potions.LONG_FIRE_RESISTANCE), (alchemist) -> {
-            return true;
+        this.goalSelector.addGoal(0, new ThrowPotionOnOthersGoal(this, PotionUtils.setPotion(new ItemStack(Items.SPLASH_POTION), Potions.LONG_FIRE_RESISTANCE), (alchemist) -> {
+            return alchemist.isAlive();
         }, (piglin) -> {
             return piglin.isOnFire();
         }));
@@ -191,10 +191,18 @@ public class PiglinAlchemist extends Piglin {
         super.populateDefaultEquipmentSlots(pDifficulty);
         if (this.isAdult()) {
             this.setItemSlot(EquipmentSlot.MAINHAND, new ItemStack(Items.BOW));
-            ItemStack potion = PotionUtils.setPotion(new ItemStack(Items.SPLASH_POTION), Potions.LONG_FIRE_RESISTANCE);
             for (int slot = 0; slot < this.beltInventory.size(); slot++) {
-                this.setBeltInventorySlot(slot, potion);
+                this.randomlyGenerateEffect(slot, 0.5F, Potions.LONG_FIRE_RESISTANCE);
+                this.randomlyGenerateEffect(slot, 0.3F, Potions.LONG_STRENGTH);
+                this.randomlyGenerateEffect(slot, 0.2F, Potions.LONG_REGENERATION);
             }
+        }
+    }
+
+    protected void randomlyGenerateEffect(int slot, float chance, Potion effect) {
+        if (this.getRandom().nextFloat() < chance) {
+            ItemStack potion = PotionUtils.setPotion(new ItemStack(Items.SPLASH_POTION), effect);
+            this.setBeltInventorySlot(slot, potion);
         }
     }
 

@@ -1,9 +1,7 @@
 package tallestred.piglinproliferation.common.entities.ai.goals;
 
 import net.minecraft.util.Mth;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.ai.behavior.BehaviorUtils;
 import net.minecraft.world.entity.ai.behavior.EntityTracker;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.entity.ai.memory.MemoryModuleType;
@@ -25,7 +23,7 @@ public class AlchemistBowAttackGoal<T extends PiglinAlchemist> extends Goal {
     private int attackIntervalMin;
     private int attackTime = -1;
     private int seeTime;
-    private boolean runSomewhere;
+    private int avoidTime;
 
     public AlchemistBowAttackGoal(T pMob, double pSpeedModifier, int pAttackIntervalMin, float pAttackRadius) {
         this.mob = pMob;
@@ -42,7 +40,7 @@ public class AlchemistBowAttackGoal<T extends PiglinAlchemist> extends Goal {
 
     @Override
     public boolean canUse() {
-        return this.mob.getTarget() == null ? false : this.isHoldingBow();
+        return this.mob.getTarget() != null && this.isHoldingBow();
     }
 
     protected boolean isHoldingBow() {
@@ -96,13 +94,13 @@ public class AlchemistBowAttackGoal<T extends PiglinAlchemist> extends Goal {
                         this.attackTime = this.attackIntervalMin;
                     }
                 }
-            } else if (--this.attackTime <= 0 && this.seeTime >= -60 && !runSomewhere) {
+            } else if (--this.attackTime <= 0 && this.seeTime >= -60) {
                 this.mob.startUsingItem(ProjectileUtil.getWeaponHoldingHand(this.mob, item -> item instanceof BowItem));
             }
             if (distanceSquared > (double) this.attackRadiusSqr && this.seeTime >= 20) {
                 WalkTarget walktarget = new WalkTarget(livingentity, (float) this.speedModifier, 0);
                 this.mob.getBrain().setMemory(MemoryModuleType.WALK_TARGET, walktarget);
-            } else if (distanceSquared < (double) this.attackRadiusSqr && this.seeTime >= 20 && !this.runSomewhere || !this.runSomewhere) {
+            } else if (distanceSquared < (double) this.attackRadiusSqr && this.seeTime >= 20) {
                 this.mob.getBrain().eraseMemory(MemoryModuleType.WALK_TARGET);
                 this.mob.getNavigation().stop();
             }
@@ -115,13 +113,15 @@ public class AlchemistBowAttackGoal<T extends PiglinAlchemist> extends Goal {
             } else {
                 --this.seeTime;
             }
-            if (distanceSquared <= 6.0D && !runSomewhere) {
+            if (distanceSquared <= 6.0D && this.avoidTime <= 0) {
                 if (this.mob.isUsingItem())
                     this.mob.stopUsingItem();
                 this.attackTime = -1;
-                this.runSomewhere = true;
+                this.avoidTime = 100;
             }
-            if (this.runSomewhere) {
+            if (this.avoidTime < 0)
+                this.avoidTime = 0;
+            if (--this.avoidTime > 0) {
                 this.mob.getBrain().setMemory(MemoryModuleType.LOOK_TARGET, new EntityTracker(this.mob.getTarget(), true));
                 this.attackTime = -1;
                 Vec3 vec3 = this.getPosition();
@@ -129,9 +129,8 @@ public class AlchemistBowAttackGoal<T extends PiglinAlchemist> extends Goal {
                     this.mob.stopUsingItem();
                     this.mob.getNavigation().moveTo(vec3.x, vec3.y, vec3.z, 1.5D);
                 }
-                if (distanceSquared >= (double) this.attackRadiusSqr || (mob.getNavigation().isDone() || mob.getNavigation().isStuck()))
-                    this.runSomewhere = false;
-
+                if (distanceSquared >= (double) this.attackRadiusSqr || (mob.getNavigation().isDone() || mob.getNavigation().isStuck()) || this.avoidTime == 0)
+                    this.mob.getNavigation().stop();
             }
         }
     }

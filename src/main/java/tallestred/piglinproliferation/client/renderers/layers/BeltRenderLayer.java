@@ -17,7 +17,6 @@ import net.minecraft.world.item.ItemStack;
 import tallestred.piglinproliferation.common.entities.PiglinAlchemist;
 
 public class BeltRenderLayer<T extends PiglinAlchemist, M extends EntityModel<T> & ArmedModel> extends RenderLayer<T, M> {
-
     public BeltRenderLayer(RenderLayerParent p_117183_) {
         super(p_117183_);
     }
@@ -59,11 +58,6 @@ public class BeltRenderLayer<T extends PiglinAlchemist, M extends EntityModel<T>
                 poseStack.translate(d, 0.8D, (inventorySlot > 2 && inventorySlot != 5) ? 0.175D : -0.175D);
             }
             if (inventorySlot == 2 || inventorySlot == 5) {
-                  /*  if (inventorySlot == 2) {
-                        ((PiglinModel) this.getParentModel()).rightLeg.translateAndRotate(poseStack);
-                    }
-                    else
-                        ((PiglinModel) this.getParentModel()).leftLeg.translateAndRotate(poseStack);*/
                 poseStack.mulPose(Vector3f.YP.rotationDegrees(90.0F));
                 poseStack.translate(-0.2D, 0.4D, inventorySlot == 2 ? -0.3D : -2.1D);
             }
