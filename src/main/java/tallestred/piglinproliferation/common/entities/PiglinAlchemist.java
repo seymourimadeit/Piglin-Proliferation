@@ -62,6 +62,11 @@ public class PiglinAlchemist extends Piglin {
         }, (piglin) -> {
             return piglin.isOnFire();
         }));
+        this.goalSelector.addGoal(0, new ThrowPotionOnOthersGoal(this, PotionUtils.setPotion(new ItemStack(Items.SPLASH_POTION), Potions.LONG_STRENGTH), (alchemist) -> {
+            return alchemist.isAlive();
+        }, (piglin) -> {
+            return piglin.getTarget() != null && piglin.getHealth() < 15;
+        }));
         this.goalSelector.addGoal(3, new RunAwayAfterThreeShots(this, 1.5D));
         this.goalSelector.addGoal(4, new AlchemistBowAttackGoal<>(this, 1.0D, 20, 15.0F));
     }

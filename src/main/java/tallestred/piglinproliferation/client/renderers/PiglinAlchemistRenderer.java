@@ -16,6 +16,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.UseAnim;
 import tallestred.piglinproliferation.client.renderers.layers.BeltRenderLayer;
 import tallestred.piglinproliferation.client.renderers.models.PiglinAlchemistModel;
+import tallestred.piglinproliferation.common.entities.PiglinAlchemist;
 
 public class PiglinAlchemistRenderer extends PiglinRenderer {
     public PiglinAlchemistRenderer(EntityRendererProvider.Context context) {
@@ -24,12 +25,12 @@ public class PiglinAlchemistRenderer extends PiglinRenderer {
         this.addLayer(new BeltRenderLayer(this));
     }
 
-    private static HumanoidModel.ArmPose getArmPose(Mob mob, InteractionHand hand) {
+    private static HumanoidModel.ArmPose getArmPose(PiglinAlchemist mob, InteractionHand hand) {
         ItemStack itemstack = mob.getItemInHand(hand);
         HumanoidModel.ArmPose pose = HumanoidModel.ArmPose.EMPTY;
         if (mob.getUsedItemHand() == hand && mob.getUseItemRemainingTicks() > 0) {
             UseAnim useanim = itemstack.getUseAnimation();
-            if (mob.isAggressive() && mob.isHolding((stack) -> stack.getItem() instanceof BowItem))
+            if (mob.isAggressive()) {
                 pose = switch (useanim) {
                     case BOW -> HumanoidModel.ArmPose.BOW_AND_ARROW;
                     case CROSSBOW -> HumanoidModel.ArmPose.CROSSBOW_CHARGE;
@@ -38,20 +39,23 @@ public class PiglinAlchemistRenderer extends PiglinRenderer {
                     case SPEAR -> HumanoidModel.ArmPose.THROW_SPEAR;
                     default -> HumanoidModel.ArmPose.EMPTY;
                 };
-        } else if (!mob.swinging && mob.isHolding((stack) -> stack.getItem() instanceof CrossbowItem) && CrossbowItem.isCharged(itemstack) && mob.isAggressive()) {
-            pose = HumanoidModel.ArmPose.CROSSBOW_HOLD;
+            }
+        } else if (!mob.swinging && !mob.isGonnaThrowPotion()) {
+            if (mob.isHolding((stack) -> stack.getItem() instanceof CrossbowItem) && CrossbowItem.isCharged(itemstack) && mob.isAggressive())
+                pose = HumanoidModel.ArmPose.CROSSBOW_HOLD;
+            if (mob.isHolding((stack) -> stack.getItem() instanceof BowItem) && mob.isAggressive() && mob.getDeltaMovement().y() <= 0 & mob.getDeltaMovement().x() <= 0 & mob.getDeltaMovement().z() <= 0)
+                pose = HumanoidModel.ArmPose.BOW_AND_ARROW;
         }
-
-        return pose;
+            return pose;
     }
 
     @Override
     public void render(Mob pEntity, float pEntityYaw, float pPartialTicks, PoseStack pMatrixStack, MultiBufferSource pBuffer, int pPackedLight) {
-        this.setBipedArmPoses(pEntity);
+        this.setBipedArmPoses((PiglinAlchemist) pEntity);
         super.render(pEntity, pEntityYaw, pPartialTicks, pMatrixStack, pBuffer, pPackedLight);
     }
 
-    protected void setBipedArmPoses(Mob mob) {
+    protected void setBipedArmPoses(PiglinAlchemist mob) {
         HumanoidModel.ArmPose humanoidmodel$armpose = getArmPose(mob, InteractionHand.MAIN_HAND);
         HumanoidModel.ArmPose humanoidmodel$armpose1 = getArmPose(mob, InteractionHand.OFF_HAND);
         if (humanoidmodel$armpose.isTwoHanded())

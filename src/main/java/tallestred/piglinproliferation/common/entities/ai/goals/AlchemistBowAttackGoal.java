@@ -72,6 +72,12 @@ public class AlchemistBowAttackGoal<T extends PiglinAlchemist> extends Goal {
         return true;
     }
 
+    /**
+     * Basically
+     * > stay as far from player as possible
+     * > if enemy is too close start quick drawing arrows and run away to somewhere further
+     * > will cancel when its shot an arrow three times in order to reposition itself
+     */
     @Override
     public void tick() {
         LivingEntity livingentity = this.mob.getTarget();
@@ -114,6 +120,8 @@ public class AlchemistBowAttackGoal<T extends PiglinAlchemist> extends Goal {
                 --this.seeTime;
             }
             if (distanceSquared <= 6.0D && this.avoidTime <= 0) {
+                if (mob.getNavigation().isDone() || mob.getNavigation().isStuck())
+                    return;
                 if (this.mob.isUsingItem())
                     this.mob.stopUsingItem();
                 this.attackTime = -1;
@@ -125,12 +133,12 @@ public class AlchemistBowAttackGoal<T extends PiglinAlchemist> extends Goal {
                 this.mob.getBrain().setMemory(MemoryModuleType.LOOK_TARGET, new EntityTracker(this.mob.getTarget(), true));
                 this.attackTime = -1;
                 Vec3 vec3 = this.getPosition();
+                if (distanceSquared >= (double) this.attackRadiusSqr || (mob.getNavigation().isDone() || mob.getNavigation().isStuck()) || this.avoidTime == 0)
+                    this.mob.getNavigation().stop();
                 if (vec3 != null) {
                     this.mob.stopUsingItem();
                     this.mob.getNavigation().moveTo(vec3.x, vec3.y, vec3.z, 1.5D);
                 }
-                if (distanceSquared >= (double) this.attackRadiusSqr || (mob.getNavigation().isDone() || mob.getNavigation().isStuck()) || this.avoidTime == 0)
-                    this.mob.getNavigation().stop();
             }
         }
     }
