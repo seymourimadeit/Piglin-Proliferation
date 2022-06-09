@@ -22,7 +22,7 @@ public class PiglinAlchemistRenderer extends PiglinRenderer {
     public PiglinAlchemistRenderer(EntityRendererProvider.Context context) {
         super(context, ModelLayers.PIGLIN, ModelLayers.PIGLIN_INNER_ARMOR, ModelLayers.PIGLIN_OUTER_ARMOR, false);
         this.model = new PiglinAlchemistModel(context.bakeLayer(ModelLayers.PIGLIN));
-        this.addLayer(new BeltRenderLayer(this));
+        this.addLayer(new BeltRenderLayer(this, context.getItemInHandRenderer()));
     }
 
     private static HumanoidModel.ArmPose getArmPose(PiglinAlchemist mob, InteractionHand hand) {

@@ -8,6 +8,7 @@ import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.Mth;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.DifficultyInstance;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.*;
@@ -192,8 +193,8 @@ public class PiglinAlchemist extends Piglin {
     }
 
     @Override
-    protected void populateDefaultEquipmentSlots(DifficultyInstance pDifficulty) {
-        super.populateDefaultEquipmentSlots(pDifficulty);
+    protected void populateDefaultEquipmentSlots(RandomSource source, DifficultyInstance pDifficulty) {
+        super.populateDefaultEquipmentSlots(source, pDifficulty);
         if (this.isAdult()) {
             this.setItemSlot(EquipmentSlot.MAINHAND, new ItemStack(Items.BOW));
             for (int slot = 0; slot < this.beltInventory.size(); slot++) {
