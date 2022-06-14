@@ -1,0 +1,11 @@
+{
+  "entity.piglin_alchemist.throw_alert": {
+    "sounds": [
+      {
+        "name": "piglinproliferation:alchemist/alchemist_throw_potion_alert",
+        "volume": 0.9
+      }
+    ],
+    "subtitle": "subtitles.entity.piglin_alchemist.prepared_to_throw_potion"
+  }
+}

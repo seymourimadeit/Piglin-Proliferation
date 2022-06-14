@@ -1,5 +1,7 @@
 package tallestred.piglinproliferation.common.entities;
 
+import com.mojang.serialization.Dynamic;
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.NonNullList;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -10,13 +12,18 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.DifficultyInstance;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.*;
+import net.minecraft.world.entity.ai.Brain;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.monster.piglin.Piglin;
+import net.minecraft.world.entity.monster.piglin.PiglinAi;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.AbstractArrow;
 import net.minecraft.world.entity.projectile.ProjectileUtil;
+import net.minecraft.world.entity.projectile.ThrownPotion;
 import net.minecraft.world.item.*;
 import net.minecraft.world.item.alchemy.Potion;
 import net.minecraft.world.item.alchemy.PotionUtils;
@@ -25,8 +32,11 @@ import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.ServerLevelAccessor;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.network.PacketDistributor;
 import org.jetbrains.annotations.NotNull;
+import tallestred.piglinproliferation.common.entities.ai.PiglinAlchemistAi;
 import tallestred.piglinproliferation.common.entities.ai.goals.AlchemistBowAttackGoal;
 import tallestred.piglinproliferation.common.entities.ai.goals.RunAwayAfterThreeShots;
 import tallestred.piglinproliferation.common.entities.ai.goals.ThrowPotionOnOthersGoal;
@@ -53,20 +63,23 @@ public class PiglinAlchemist extends Piglin {
     @Override
     public void registerGoals() {
         super.registerGoals();
-        this.goalSelector.addGoal(0, new ThrowPotionOnOthersGoal(this, PotionUtils.setPotion(new ItemStack(Items.SPLASH_POTION), Potions.LONG_REGENERATION), (alchemist) -> {
+        this.goalSelector.addGoal(1, new ThrowPotionOnOthersGoal(this, PotionUtils.setPotion(new ItemStack(Items.SPLASH_POTION), Potions.LONG_REGENERATION), (alchemist) -> {
             return alchemist.isAlive();
         }, (piglin) -> {
-            return piglin.getHealth() < piglin.getMaxHealth();
+            return piglin.isAlive() && piglin.getHealth() < piglin.getMaxHealth();
         }));
         this.goalSelector.addGoal(0, new ThrowPotionOnOthersGoal(this, PotionUtils.setPotion(new ItemStack(Items.SPLASH_POTION), Potions.LONG_FIRE_RESISTANCE), (alchemist) -> {
             return alchemist.isAlive();
         }, (piglin) -> {
-            return piglin.isOnFire();
+            return piglin.isAlive() && piglin.isOnFire();
         }));
-        this.goalSelector.addGoal(0, new ThrowPotionOnOthersGoal(this, PotionUtils.setPotion(new ItemStack(Items.SPLASH_POTION), Potions.LONG_STRENGTH), (alchemist) -> {
+        this.goalSelector.addGoal(2, new ThrowPotionOnOthersGoal(this, PotionUtils.setPotion(new ItemStack(Items.SPLASH_POTION), Potions.LONG_STRENGTH), (alchemist) -> {
             return alchemist.isAlive();
         }, (piglin) -> {
-            return piglin.getTarget() != null && piglin.getHealth() < 15;
+            return piglin.isAlive() && piglin.getTarget() != null && piglin.getHealth() < 15 && !piglin.isHolding((itemStack) -> {
+                Item itemInStack = itemStack.getItem();
+                return itemInStack instanceof ProjectileWeaponItem && piglin.canFireProjectileWeapon((ProjectileWeaponItem)itemInStack);
+            });
         }));
         this.goalSelector.addGoal(3, new RunAwayAfterThreeShots(this, 1.5D));
         this.goalSelector.addGoal(4, new AlchemistBowAttackGoal<>(this, 1.0D, 20, 15.0F));
@@ -104,6 +117,22 @@ public class PiglinAlchemist extends Piglin {
         }
         this.beltInventory.clear();
         super.dropCustomDeathLoot(pSource, pLooting, pRecentlyHit);
+    }
+
+    public void throwPotion(ItemStack thrownPotion, float xRot, float yRot) {
+        ThrownPotion thrownpotion = new ThrownPotion(this.level, this);
+        thrownpotion.setItem(thrownPotion);
+        thrownpotion.shootFromRotation(this, xRot, yRot, -20.0F, 0.5F, 1.0F);
+        if (!this.isSilent())
+            this.level.playSound((Player) null, this.getX(), this.getY(), this.getZ(), SoundEvents.SPLASH_POTION_THROW, this.getSoundSource(), 1.0F, 0.8F + this.getRandom().nextFloat() * 0.4F);
+        this.level.addFreshEntity(thrownpotion);
+        this.willThrowPotion(false);
+        this.setPotionAboutToBeThrown(ItemStack.EMPTY);
+    }
+
+    @Override
+    protected Brain<?> makeBrain(Dynamic<?> p_34723_) {
+        return PiglinAlchemistAi.makeBrain(this, this.brainProvider().makeBrain(p_34723_));
     }
 
     @Override
@@ -198,15 +227,15 @@ public class PiglinAlchemist extends Piglin {
         if (this.isAdult()) {
             this.setItemSlot(EquipmentSlot.MAINHAND, new ItemStack(Items.BOW));
             for (int slot = 0; slot < this.beltInventory.size(); slot++) {
-                this.randomlyGenerateEffect(slot, 0.5F, Potions.LONG_FIRE_RESISTANCE);
+                this.randomlyGenerateEffect(slot, 0.4F, Potions.LONG_FIRE_RESISTANCE);
+                this.randomlyGenerateEffect(slot, 0.3F, Potions.LONG_REGENERATION);
                 this.randomlyGenerateEffect(slot, 0.3F, Potions.LONG_STRENGTH);
-                this.randomlyGenerateEffect(slot, 0.2F, Potions.LONG_REGENERATION);
             }
         }
     }
 
     protected void randomlyGenerateEffect(int slot, float chance, Potion effect) {
-        if (this.getRandom().nextFloat() < chance) {
+        if (this.getRandom().nextFloat() < chance && this.beltInventory.get(slot).isEmpty()) {
             ItemStack potion = PotionUtils.setPotion(new ItemStack(Items.SPLASH_POTION), effect);
             this.setBeltInventorySlot(slot, potion);
         }

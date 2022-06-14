@@ -11,6 +11,6 @@ import tallestred.piglinproliferation.PiglinProliferation;
 
 @Mod.EventBusSubscriber(modid = PiglinProliferation.MODID, bus = Mod.EventBusSubscriber.Bus.MOD)
 public class PPEntityTypes {
-    public static DeferredRegister<EntityType<?>> ENTITIES = DeferredRegister.create(ForgeRegistries.ENTITIES, PiglinProliferation.MODID);
+    public static final DeferredRegister<EntityType<?>> ENTITIES = DeferredRegister.create(ForgeRegistries.ENTITIES, PiglinProliferation.MODID);
     public static final RegistryObject<EntityType<PiglinAlchemist>> PIGLIN_ALCHEMIST = ENTITIES.register("piglin_alchemist", () -> EntityType.Builder.of(PiglinAlchemist::new, MobCategory.MISC).sized(0.6F, 1.95F).setShouldReceiveVelocityUpdates(true).build(PiglinProliferation.MODID + "piglin_alchemist"));
 }
