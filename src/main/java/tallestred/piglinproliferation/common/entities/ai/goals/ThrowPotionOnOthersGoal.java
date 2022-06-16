@@ -9,6 +9,7 @@ import net.minecraft.world.entity.monster.piglin.AbstractPiglin;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.alchemy.PotionUtils;
 import net.minecraft.world.phys.Vec3;
+import tallestred.piglinproliferation.client.PPSounds;
 import tallestred.piglinproliferation.common.entities.PiglinAlchemist;
 
 import javax.annotation.Nullable;
@@ -100,6 +101,8 @@ public class ThrowPotionOnOthersGoal extends ThrowPotionOnSelfGoal {
             this.panicTicks = 15;
         if (!this.alchemist.hasLineOfSight(nearbyPiglins))
             this.ticksUntilThrow += 5;
+        if (this.ticksUntilThrow == 5)
+            this.alchemist.playSound(PPSounds.ALCHEMIST_ABOUT_TO_THROW_POTION.get(), 1.0F, 1.0F);
         if (--this.ticksUntilThrow <= 0) {
             this.throwPotion();
         }
@@ -108,9 +111,9 @@ public class ThrowPotionOnOthersGoal extends ThrowPotionOnSelfGoal {
     @Nullable
     protected Vec3 getPosition() {
         if (this.alchemist.getTarget() != null)
-            return LandRandomPos.getPosAway(this.alchemist, 16, 7, this.alchemist.getTarget().position());
+            return LandRandomPos.getPosAway(this.alchemist, 8, 7, this.alchemist.getTarget().position());
         else
-            return LandRandomPos.getPos(this.alchemist, 16, 7);
+            return LandRandomPos.getPos(this.alchemist, 8, 7);
     }
 
     @Override

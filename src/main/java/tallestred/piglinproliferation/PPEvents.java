@@ -26,7 +26,7 @@ public class PPEvents {
                 return alchemist.getPotionAboutToThrown() != null && PotionUtils.getPotion(alchemist.getPotionAboutToThrown()) == Potions.LONG_REGENERATION;
             })));
             piglin.goalSelector.addGoal(0, new PiglinCallForHelpGoal(piglin, (piglin1) -> {
-                return piglin1.getHealth() < 15 && piglin1.getTarget() != null && !piglin1.hasEffect(MobEffects.DAMAGE_BOOST);
+                return piglin1.getHealth() < (piglin1.getMaxHealth() / 2)  && piglin1.getTarget() != null && !piglin1.hasEffect(MobEffects.DAMAGE_BOOST);
             }, (alchemist -> {
                 return alchemist.getPotionAboutToThrown() != null && PotionUtils.getPotion(alchemist.getPotionAboutToThrown()) == Potions.LONG_STRENGTH;
             })));

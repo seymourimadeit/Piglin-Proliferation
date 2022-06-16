@@ -56,7 +56,6 @@ public class ThrowPotionOnSelfGoal extends Goal {
     }
 
     protected void throwPotion() {
-        this.alchemist.level.playSound((Player) null, alchemist.getX(), alchemist.getY(), alchemist.getZ(), PPSounds.ALCHEMIST_ABOUT_TO_THROW_POTION.get(), this.alchemist.getSoundSource(), 1.0F, 1.0F);
         this.alchemist.swing(InteractionHand.OFF_HAND);
         this.alchemist.throwPotion(itemToUse, this.alchemist.getXRot(), this.alchemist.getYRot());
     }

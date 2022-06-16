@@ -51,6 +51,7 @@ public class PiglinAlchemistAi extends PiglinAi {
     public static Brain<?> makeBrain(PiglinAlchemist piglin, Brain<Piglin> brain) {
         try {
             PiglinAlchemistAi.idle.invoke(PiglinAi.class, brain);
+            PiglinAlchemistAi.core.invoke(PiglinAi.class, brain);
             PiglinAlchemistAi.admireItem.invoke(PiglinAi.class, brain);
             PiglinAlchemistAi.initFightActivity(piglin, brain);
             PiglinAlchemistAi.celebrateActivity.invoke(PiglinAi.class, brain);

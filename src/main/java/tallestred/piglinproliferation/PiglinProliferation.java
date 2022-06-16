@@ -41,8 +41,8 @@ public class PiglinProliferation {
         FMLJavaModLoadingContext.get().getModEventBus().addListener(this::addAttributes);
         MinecraftForge.EVENT_BUS.addListener(this::serverStart);
         MinecraftForge.EVENT_BUS.register(this);
-        PPEntityTypes.ENTITIES.register(FMLJavaModLoadingContext.get().getModEventBus());
         PPSounds.SOUNDS.register(FMLJavaModLoadingContext.get().getModEventBus());
+        PPEntityTypes.ENTITIES.register(FMLJavaModLoadingContext.get().getModEventBus());
         PPItems.ITEMS.register(FMLJavaModLoadingContext.get().getModEventBus());
         PPNetworking.registerPackets();
     }
