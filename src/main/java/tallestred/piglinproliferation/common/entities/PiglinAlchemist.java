@@ -15,6 +15,7 @@ import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.Brain;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.entity.monster.piglin.AbstractPiglin;
 import net.minecraft.world.entity.monster.piglin.Piglin;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.AbstractArrow;
@@ -38,6 +39,7 @@ import tallestred.piglinproliferation.networking.AlchemistBeltSyncPacket;
 import tallestred.piglinproliferation.networking.PPNetworking;
 
 import javax.annotation.Nullable;
+import java.util.List;
 
 public class PiglinAlchemist extends Piglin {
     // Used for displaying holding animation
@@ -57,20 +59,32 @@ public class PiglinAlchemist extends Piglin {
     @Override
     public void registerGoals() {
         super.registerGoals();
-        this.goalSelector.addGoal(0, new ThrowPotionOnOthersGoal(this, PotionUtils.setPotion(new ItemStack(Items.SPLASH_POTION), Potions.LONG_REGENERATION), (alchemist) -> {
-            return alchemist.isAlive();
-        }, (piglin) -> {
-            return piglin.getHealth() < piglin.getMaxHealth();
-        }));
         this.goalSelector.addGoal(0, new ThrowPotionOnOthersGoal(this, PotionUtils.setPotion(new ItemStack(Items.SPLASH_POTION), Potions.LONG_FIRE_RESISTANCE), (alchemist) -> {
             return alchemist.isAlive();
         }, (piglin) -> {
-            return piglin.isOnFire();
+            return piglin.isAlive() && piglin.isOnFire();
         }));
-        this.goalSelector.addGoal(0, new ThrowPotionOnOthersGoal(this, PotionUtils.setPotion(new ItemStack(Items.SPLASH_POTION), Potions.LONG_STRENGTH), (alchemist) -> {
+        this.goalSelector.addGoal(1, new ThrowPotionOnOthersGoal(this, PotionUtils.setPotion(new ItemStack(Items.SPLASH_POTION), Potions.LONG_REGENERATION), (alchemist) -> {
             return alchemist.isAlive();
         }, (piglin) -> {
-            return piglin.getTarget() != null && piglin.getHealth() < (piglin.getMaxHealth() / 2);
+            List<AbstractPiglin> list = this.level.getEntitiesOfClass(AbstractPiglin.class, this.getBoundingBox().inflate(10.0D, 3.0D, 10.0D));
+            if (!list.isEmpty()) {
+                for (AbstractPiglin piglin1 : list) {
+                    if (piglin1 != this) {
+                        if (piglin1.getTarget() != null || this.getTarget() != null)
+                            return list.stream().filter((livingEntity) -> livingEntity instanceof PiglinAlchemist).toList().size() > 2;
+                    }
+                }
+            }
+            return piglin.isAlive() && piglin.getHealth() < piglin.getMaxHealth();
+        }));
+        this.goalSelector.addGoal(2, new ThrowPotionOnOthersGoal(this, PotionUtils.setPotion(new ItemStack(Items.SPLASH_POTION), Potions.LONG_STRENGTH), (alchemist) -> {
+            return alchemist.isAlive();
+        }, (piglin) -> {
+            return piglin.isAlive() && piglin.getTarget() != null && piglin.getHealth() < (piglin.getMaxHealth() / 2) && !piglin.isHolding((itemStack) -> {
+                Item itemInStack = itemStack.getItem();
+                return itemInStack instanceof ProjectileWeaponItem && piglin.canFireProjectileWeapon((ProjectileWeaponItem) itemInStack);
+            });
         }));
         this.goalSelector.addGoal(3, new RunAwayAfterThreeShots(this, 1.5D));
         this.goalSelector.addGoal(4, new AlchemistBowAttackGoal<>(this, 1.0D, 20, 15.0F));
