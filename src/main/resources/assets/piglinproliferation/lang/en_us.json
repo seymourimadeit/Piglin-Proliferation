@@ -1,4 +1,5 @@
 {
    "entity.piglinproliferation.piglin_alchemist": "Piglin Alchemist",
-   "item.piglinproliferation.piglin_alchemist_spawn_egg": "Piglin Alchemist Spawn Egg"
+   "item.piglinproliferation.piglin_alchemist_spawn_egg": "Piglin Alchemist Spawn Egg",
+   "subtitles.entity.piglin_alchemist.prepared_to_throw_potion": "Alchemist is about to throw a potion"
 }

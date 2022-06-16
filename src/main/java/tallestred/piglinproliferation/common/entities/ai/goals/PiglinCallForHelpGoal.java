@@ -31,19 +31,13 @@ public class PiglinCallForHelpGoal extends Goal {
         List<PiglinAlchemist> list = this.piglin.level.getEntitiesOfClass(PiglinAlchemist.class, this.piglin.getBoundingBox().inflate(15.0D, 3.0D, 15.0D));
         if (!list.isEmpty()) {
             for (PiglinAlchemist alchemist : list) {
-                if (alchemist.isAlive()) {
+                if (alchemist.isAlive() && alchemist != piglin) {
                     this.alchemist = alchemist;
                     return this.nearbyPiglinPredicate.test(piglin) && this.alchemistPredicate.test(this.alchemist);
                 }
             }
         }
         return false;
-    }
-
-    @Override
-    public void start() {
-        if (!this.piglin.isSilent())
-            this.piglin.level.playSound((Player) null, this.piglin.getX(), this.piglin.getY(), this.piglin.getZ(), SoundEvents.PIGLIN_RETREAT, this.piglin.getSoundSource(), 1.0F, 0.8F + this.piglin.getRandom().nextFloat() * 0.4F);
     }
 
     @Override
