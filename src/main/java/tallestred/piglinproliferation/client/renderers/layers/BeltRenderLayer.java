@@ -48,7 +48,7 @@ public class BeltRenderLayer<T extends PiglinAlchemist, M extends EntityModel<T>
                     pMatrixStack.translate(0.0D, 0.75D, 0.0D);
                     pMatrixStack.scale(0.5F, 0.5F, 0.5F);
                 }
-                this.renderArmWithItem(pLivingEntity, pLivingEntity.getPotionAboutToThrown(), transformType, arm, pMatrixStack, pBuffer, pPackedLight);
+                this.renderArmWithItem(pLivingEntity, pLivingEntity.getItemShownOnOffhand(), transformType, arm, pMatrixStack, pBuffer, pPackedLight);
                 pMatrixStack.popPose();
             }
         }
