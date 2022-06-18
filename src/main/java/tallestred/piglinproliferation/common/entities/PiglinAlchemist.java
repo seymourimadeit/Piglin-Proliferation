@@ -11,7 +11,10 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.DifficultyInstance;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.Brain;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
@@ -34,6 +37,7 @@ import net.minecraftforge.network.PacketDistributor;
 import org.jetbrains.annotations.NotNull;
 import tallestred.piglinproliferation.common.entities.ai.PiglinAlchemistAi;
 import tallestred.piglinproliferation.common.entities.ai.goals.AlchemistBowAttackGoal;
+import tallestred.piglinproliferation.common.entities.ai.goals.HelpAlliesWithTippedArrowGoal;
 import tallestred.piglinproliferation.common.entities.ai.goals.RunAwayAfterThreeShots;
 import tallestred.piglinproliferation.common.entities.ai.goals.ThrowPotionOnOthersGoal;
 import tallestred.piglinproliferation.networking.AlchemistBeltSyncPacket;
@@ -41,11 +45,12 @@ import tallestred.piglinproliferation.networking.PPNetworking;
 
 import javax.annotation.Nullable;
 import java.util.List;
+import java.util.stream.Stream;
 
 public class PiglinAlchemist extends Piglin {
     // Used for displaying holding animation
     protected static final EntityDataAccessor<Boolean> IS_ABOUT_TO_THROW_POTION = SynchedEntityData.defineId(PiglinAlchemist.class, EntityDataSerializers.BOOLEAN);
-    protected static final EntityDataAccessor<ItemStack> POTION_ABOUT_TO_BE_THROWN = SynchedEntityData.defineId(PiglinAlchemist.class, EntityDataSerializers.ITEM_STACK);
+    protected static final EntityDataAccessor<ItemStack> ITEM_SHOWN_ON_OFFHAND = SynchedEntityData.defineId(PiglinAlchemist.class, EntityDataSerializers.ITEM_STACK);
     public final NonNullList<ItemStack> beltInventory = NonNullList.withSize(6, ItemStack.EMPTY);
     protected int arrowsShot;
 
@@ -57,6 +62,7 @@ public class PiglinAlchemist extends Piglin {
         return Piglin.createAttributes().add(Attributes.MAX_HEALTH, 20.0D);
     }
 
+    // TODO reimplement these as tasks for the brain ai
     @Override
     public void registerGoals() {
         super.registerGoals();
@@ -73,7 +79,9 @@ public class PiglinAlchemist extends Piglin {
                 for (AbstractPiglin piglin1 : list) {
                     if (piglin1 != this) {
                         if (piglin1.getTarget() != null || this.getTarget() != null)
-                            return list.stream().filter((livingEntity) -> livingEntity instanceof PiglinAlchemist).toList().size() > 2;
+                            return list.stream().filter((livingEntity) -> livingEntity instanceof PiglinAlchemist).toList().size() > 2; // This makes it so alchemists don't
+                        // attempt to throw a healing potion if theres only 2 or less of them, as if they did it would make it so only one is attacking while the other is failing to throw the potion because the
+                        // attacker would just keep pushing into them
                     }
                 }
             }
@@ -88,14 +96,42 @@ public class PiglinAlchemist extends Piglin {
             });
         }));
         this.goalSelector.addGoal(3, new RunAwayAfterThreeShots(this, 1.5D));
+        this.goalSelector.addGoal(3, new HelpAlliesWithTippedArrowGoal(this, 1.0D, 20, 15.0F, PotionUtils.setPotion(new ItemStack(Items.TIPPED_ARROW), Potions.STRONG_HEALING), (piglin -> {
+            return piglin.isAlive() && piglin.getHealth() < piglin.getMaxHealth();
+        })));
         this.goalSelector.addGoal(4, new AlchemistBowAttackGoal<>(this, 1.0D, 20, 15.0F));
+    }
+
+    @Override
+    @Nullable
+    public SpawnGroupData finalizeSpawn(ServerLevelAccessor pLevel, DifficultyInstance
+            pDifficulty, MobSpawnType pReason, @Nullable SpawnGroupData pSpawnData, @Nullable CompoundTag pDataTag) {
+        this.setImmuneToZombification(true);
+        return super.finalizeSpawn(pLevel, pDifficulty, pReason, pSpawnData, pDataTag);
+    }
+
+    @Override
+    protected void populateDefaultEquipmentSlots(RandomSource source, DifficultyInstance pDifficulty) {
+        super.populateDefaultEquipmentSlots(source, pDifficulty);
+        if (this.isAdult()) {
+            this.setItemSlot(EquipmentSlot.MAINHAND, new ItemStack(Items.BOW));
+            ItemStack tippedArrow = PotionUtils.setPotion(new ItemStack(Items.TIPPED_ARROW, source.nextInt(5)), Potions.STRONG_HEALING);
+            this.setBeltInventorySlot(this.random.nextInt(6), tippedArrow);
+            for (int slot = 0; slot < this.beltInventory.size(); slot++) {
+                if (this.beltInventory.get(slot).isEmpty()) {
+                    Potion effect = source.nextFloat() < 0.5F ? Potions.LONG_FIRE_RESISTANCE : source.nextFloat() < 0.3F ? Potions.LONG_REGENERATION : Potions.LONG_STRENGTH;
+                    ItemStack potion = PotionUtils.setPotion(new ItemStack(Items.SPLASH_POTION), effect);
+                    this.setBeltInventorySlot(slot, potion);
+                }
+            }
+        }
     }
 
     @Override
     protected void defineSynchedData() {
         super.defineSynchedData();
         this.entityData.define(IS_ABOUT_TO_THROW_POTION, false);
-        this.entityData.define(POTION_ABOUT_TO_BE_THROWN, ItemStack.EMPTY);
+        this.entityData.define(ITEM_SHOWN_ON_OFFHAND, ItemStack.EMPTY);
     }
 
     public boolean isGonnaThrowPotion() {
@@ -106,12 +142,12 @@ public class PiglinAlchemist extends Piglin {
         this.entityData.set(IS_ABOUT_TO_THROW_POTION, throwPotion);
     }
 
-    public ItemStack getPotionAboutToThrown() {
-        return this.entityData.get(POTION_ABOUT_TO_BE_THROWN);
+    public ItemStack getItemShownOnOffhand() {
+        return this.entityData.get(ITEM_SHOWN_ON_OFFHAND);
     }
 
-    public void setPotionAboutToBeThrown(ItemStack itemAboutTobeThrown) {
-        this.entityData.set(POTION_ABOUT_TO_BE_THROWN, itemAboutTobeThrown);
+    public void setItemShownOnOffhand(ItemStack itemShownOnOffhand) {
+        this.entityData.set(ITEM_SHOWN_ON_OFFHAND, itemShownOnOffhand);
     }
 
     @Override
@@ -133,7 +169,7 @@ public class PiglinAlchemist extends Piglin {
             this.level.playSound((Player) null, this.getX(), this.getY(), this.getZ(), SoundEvents.SPLASH_POTION_THROW, this.getSoundSource(), 1.0F, 0.8F + this.getRandom().nextFloat() * 0.4F);
         this.level.addFreshEntity(thrownpotion);
         this.willThrowPotion(false);
-        this.setPotionAboutToBeThrown(ItemStack.EMPTY);
+        this.setItemShownOnOffhand(ItemStack.EMPTY);
     }
 
     @Override
@@ -152,8 +188,18 @@ public class PiglinAlchemist extends Piglin {
         if (this.getMainHandItem().getItem() instanceof CrossbowItem)
             super.performRangedAttack(target, distanceFactor);
         if (this.getMainHandItem().getItem() instanceof BowItem) {
-            ItemStack itemstack = this.getItemInHand(ProjectileUtil.getWeaponHoldingHand(this, item -> item instanceof BowItem));
-            ItemStack hand = this.getMainHandItem();
+            ItemStack itemstack = this.getProjectile(this.getItemInHand(ProjectileUtil.getWeaponHoldingHand(this, item -> item instanceof BowItem)));
+            for (int slot = 0; slot < this.beltInventory.size() && !(this.getItemShownOnOffhand().getItem() instanceof TippedArrowItem); slot++) {
+                if (beltInventory.get(slot).getItem() instanceof TippedArrowItem) {
+                    List<MobEffectInstance> effectInstanceList = PotionUtils.getPotion(beltInventory.get(slot)).getEffects();
+                    if (this.getTarget() != null && target == this.getTarget() && effectInstanceList.stream().filter(mobEffectInstance -> !mobEffectInstance.getEffect().isBeneficial()).findAny().isPresent() || target != this.getTarget() || this.getTarget() != null && this.getTarget().isInvertedHealAndHarm() && effectInstanceList.stream().filter(mobEffectInstance -> mobEffectInstance.getEffect() == MobEffects.HEAL).findAny().isPresent()) {
+                        this.setItemShownOnOffhand(beltInventory.get(slot).copy());
+                        this.beltInventory.set(slot, ItemStack.EMPTY);
+                    }
+                }
+            }
+            if (this.getItemShownOnOffhand().getItem() instanceof TippedArrowItem)
+                itemstack = this.getItemShownOnOffhand();
             AbstractArrow abstractarrowentity = ProjectileUtil.getMobArrow(this, itemstack, distanceFactor);
             abstractarrowentity = ((net.minecraft.world.item.BowItem) this.getMainHandItem().getItem())
                     .customArrow(abstractarrowentity);
@@ -175,6 +221,10 @@ public class PiglinAlchemist extends Piglin {
             this.playSound(SoundEvents.ARROW_SHOOT, 1.0F, 1.0F / (this.getRandom().nextFloat() * 0.4F + 0.8F));
             this.level.addFreshEntity(abstractarrowentity);
             this.setArrowsShot(this.getArrowsShot() + 1);
+            itemstack.shrink(1);
+            if (itemstack.isEmpty() && this.getItemShownOnOffhand().is(itemstack.getItem())) {
+                this.setItemShownOnOffhand(ItemStack.EMPTY);
+            }
         }
     }
 
@@ -187,7 +237,6 @@ public class PiglinAlchemist extends Piglin {
             if (!itemstack.isEmpty()) {
                 itemstack.save(compoundtag);
             }
-
             listnbt.add(compoundtag);
         }
         compound.put("BeltInventory", listnbt);
@@ -218,34 +267,6 @@ public class PiglinAlchemist extends Piglin {
     public void tick() {
         super.tick();
         this.syncBeltToClient(); // This is poo poo, and I will probably need to find a better method in the future
-    }
-
-    @Override
-    @Nullable
-    public SpawnGroupData finalizeSpawn(ServerLevelAccessor pLevel, DifficultyInstance
-            pDifficulty, MobSpawnType pReason, @Nullable SpawnGroupData pSpawnData, @Nullable CompoundTag pDataTag) {
-        this.setImmuneToZombification(true);
-        return super.finalizeSpawn(pLevel, pDifficulty, pReason, pSpawnData, pDataTag);
-    }
-
-    @Override
-    protected void populateDefaultEquipmentSlots(RandomSource source, DifficultyInstance pDifficulty) {
-        super.populateDefaultEquipmentSlots(source, pDifficulty);
-        if (this.isAdult()) {
-            this.setItemSlot(EquipmentSlot.MAINHAND, new ItemStack(Items.BOW));
-            for (int slot = 0; slot < this.beltInventory.size(); slot++) {
-                Potion effect = source.nextFloat() < 0.5F ? Potions.LONG_FIRE_RESISTANCE : source.nextFloat() < 0.3F ? Potions.LONG_REGENERATION : Potions.LONG_STRENGTH;
-                ItemStack potion = PotionUtils.setPotion(new ItemStack(Items.SPLASH_POTION), effect);
-                this.setBeltInventorySlot(slot, potion);
-            }
-        }
-    }
-
-    protected void randomlyGenerateEffect(int slot, float chance, Potion effect) {
-        if (this.getRandom().nextFloat() < chance) {
-            ItemStack potion = PotionUtils.setPotion(new ItemStack(Items.SPLASH_POTION), effect);
-            this.setBeltInventorySlot(slot, potion);
-        }
     }
 
     public void setBeltInventorySlot(int index, ItemStack stack) {

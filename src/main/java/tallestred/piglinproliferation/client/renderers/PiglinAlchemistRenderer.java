@@ -28,25 +28,24 @@ public class PiglinAlchemistRenderer extends PiglinRenderer {
     private static HumanoidModel.ArmPose getArmPose(PiglinAlchemist mob, InteractionHand hand) {
         ItemStack itemstack = mob.getItemInHand(hand);
         HumanoidModel.ArmPose pose = HumanoidModel.ArmPose.EMPTY;
-        if (mob.getUsedItemHand() == hand && mob.getUseItemRemainingTicks() > 0) {
-            UseAnim useanim = itemstack.getUseAnimation();
-            if (mob.isAggressive()) {
-                pose = switch (useanim) {
-                    case BOW -> HumanoidModel.ArmPose.BOW_AND_ARROW;
-                    case CROSSBOW -> HumanoidModel.ArmPose.CROSSBOW_CHARGE;
-                    case BLOCK -> HumanoidModel.ArmPose.BLOCK;
-                    case SPYGLASS -> HumanoidModel.ArmPose.SPYGLASS;
-                    case SPEAR -> HumanoidModel.ArmPose.THROW_SPEAR;
-                    default -> HumanoidModel.ArmPose.EMPTY;
-                };
-            }
-        } else if (!mob.swinging && !mob.isGonnaThrowPotion()) {
+        if (!mob.swinging && !mob.isGonnaThrowPotion()) {
             if (mob.isHolding((stack) -> stack.getItem() instanceof CrossbowItem) && CrossbowItem.isCharged(itemstack) && mob.isAggressive())
                 pose = HumanoidModel.ArmPose.CROSSBOW_HOLD;
             if (mob.isHolding((stack) -> stack.getItem() instanceof BowItem) && mob.isAggressive() && mob.getDeltaMovement().y() <= 0 & mob.getDeltaMovement().x() <= 0 & mob.getDeltaMovement().z() <= 0)
                 pose = HumanoidModel.ArmPose.BOW_AND_ARROW;
         }
-            return pose;
+        if (mob.getUsedItemHand() == hand && mob.getUseItemRemainingTicks() > 0) {
+            UseAnim useanim = itemstack.getUseAnimation();
+            pose = switch (useanim) {
+                case BOW -> HumanoidModel.ArmPose.BOW_AND_ARROW;
+                case CROSSBOW -> HumanoidModel.ArmPose.CROSSBOW_CHARGE;
+                case BLOCK -> HumanoidModel.ArmPose.BLOCK;
+                case SPYGLASS -> HumanoidModel.ArmPose.SPYGLASS;
+                case SPEAR -> HumanoidModel.ArmPose.THROW_SPEAR;
+                default -> HumanoidModel.ArmPose.EMPTY;
+            };
+        }
+        return pose;
     }
 
     @Override
