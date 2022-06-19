@@ -17,7 +17,7 @@ import java.util.EnumSet;
 
 //less strafing
 public class AlchemistBowAttackGoal<T extends PiglinAlchemist> extends Goal {
-    private final T mob;
+    protected final T mob;
     private final double speedModifier;
     private final float attackRadiusSqr;
     private int attackIntervalMin;
@@ -33,14 +33,10 @@ public class AlchemistBowAttackGoal<T extends PiglinAlchemist> extends Goal {
         this.setFlags(EnumSet.of(Goal.Flag.MOVE, Goal.Flag.LOOK));
     }
 
-    public void setMinAttackInterval(int pAttackCooldown) {
-        this.attackIntervalMin = pAttackCooldown;
-    }
-
 
     @Override
     public boolean canUse() {
-        return this.mob.getTarget() != null && this.isHoldingBow();
+        return this.getTargetToShootAt() != null && this.isHoldingBow();
     }
 
     protected boolean isHoldingBow() {
@@ -50,6 +46,10 @@ public class AlchemistBowAttackGoal<T extends PiglinAlchemist> extends Goal {
     @Override
     public boolean canContinueToUse() {
         return (this.canUse() || !this.mob.getNavigation().isDone()) && this.isHoldingBow() && this.mob.getArrowsShot() < 3;
+    }
+
+    protected LivingEntity getTargetToShootAt() {
+        return this.mob.getTarget();
     }
 
     @Override
@@ -80,16 +80,16 @@ public class AlchemistBowAttackGoal<T extends PiglinAlchemist> extends Goal {
      */
     @Override
     public void tick() {
-        LivingEntity livingentity = this.mob.getTarget();
+        LivingEntity livingentity = this.getTargetToShootAt();
         if (livingentity != null) {
             double distanceSquared = this.mob.distanceToSqr(livingentity);
             boolean canSee = this.mob.getSensing().hasLineOfSight(livingentity);
             boolean seeTimeGreaterThanZero = this.seeTime > 0;
-            this.mob.getBrain().setMemory(MemoryModuleType.LOOK_TARGET, new EntityTracker(this.mob.getTarget(), true));
+            this.mob.getBrain().setMemory(MemoryModuleType.LOOK_TARGET, new EntityTracker(this.getTargetToShootAt(), true));
             this.mob.getLookControl().setLookAt(livingentity);
             this.mob.lookAt(livingentity, 30.0f, 30.0F);
             if (this.mob.isUsingItem()) {
-                if (!canSee) {
+                if (!canSee && this.seeTime < -60) {
                     this.mob.stopUsingItem();
                 } else if (canSee) {
                     int i = this.mob.getTicksUsingItem();
@@ -125,19 +125,19 @@ public class AlchemistBowAttackGoal<T extends PiglinAlchemist> extends Goal {
                 if (this.mob.isUsingItem())
                     this.mob.stopUsingItem();
                 this.attackTime = -1;
-                this.avoidTime = 100;
+                this.avoidTime = 40;
             }
             if (this.avoidTime < 0)
                 this.avoidTime = 0;
             if (--this.avoidTime > 0) {
-                this.mob.getBrain().setMemory(MemoryModuleType.LOOK_TARGET, new EntityTracker(this.mob.getTarget(), true));
+                this.mob.getBrain().setMemory(MemoryModuleType.LOOK_TARGET, new EntityTracker(this.getTargetToShootAt(), true));
                 this.attackTime = -1;
                 Vec3 vec3 = this.getPosition();
                 if (distanceSquared >= (double) this.attackRadiusSqr || (mob.getNavigation().isDone() || mob.getNavigation().isStuck()) || this.avoidTime == 0)
                     this.mob.getNavigation().stop();
                 if (vec3 != null) {
                     this.mob.stopUsingItem();
-                    this.mob.getNavigation().moveTo(vec3.x, vec3.y, vec3.z, 1.5D);
+                    this.mob.getNavigation().moveTo(vec3.x, vec3.y, vec3.z, this.speedModifier);
                 }
             }
         }
@@ -145,6 +145,6 @@ public class AlchemistBowAttackGoal<T extends PiglinAlchemist> extends Goal {
 
     @Nullable
     protected Vec3 getPosition() {
-        return LandRandomPos.getPosAway(this.mob, 8, 7, this.mob.getTarget().position());
+        return LandRandomPos.getPosAway(this.mob, 10, 7, this.getTargetToShootAt().position());
     }
 }
