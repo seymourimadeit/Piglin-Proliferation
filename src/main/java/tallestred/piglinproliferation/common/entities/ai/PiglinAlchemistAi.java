@@ -3,7 +3,11 @@ package tallestred.piglinproliferation.common.entities.ai;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.util.RandomSource;
+import net.minecraft.util.TimeUtil;
+import net.minecraft.util.valueproviders.UniformInt;
 import net.minecraft.world.InteractionHand;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.Brain;
@@ -23,7 +27,9 @@ import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.fml.util.ObfuscationReflectionHelper;
+import tallestred.piglinproliferation.common.PPLootTables;
 import tallestred.piglinproliferation.common.entities.PiglinAlchemist;
+import tallestred.piglinproliferation.common.entities.ai.behaviors.StopHoldingItemIfNoLongerAdmiringAlchemist;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -32,6 +38,9 @@ import java.util.List;
 import java.util.Optional;
 
 public class PiglinAlchemistAi extends PiglinAi {
+    private static final UniformInt AVOID_ZOMBIFIED_DURATION = TimeUtil.rangeOfSeconds(5, 7);
+    private static final UniformInt BABY_AVOID_NEMESIS_DURATION = TimeUtil.rangeOfSeconds(5, 7);
+
     public PiglinAlchemistAi() {
 
     }
@@ -51,7 +60,7 @@ public class PiglinAlchemistAi extends PiglinAi {
     public static Brain<?> makeBrain(PiglinAlchemist piglin, Brain<Piglin> brain) {
         try {
             PiglinAlchemistAi.idle.invoke(PiglinAi.class, brain);
-            PiglinAlchemistAi.core.invoke(PiglinAi.class, brain);
+            PiglinAlchemistAi.initCoreActivity(brain);
             PiglinAlchemistAi.admireItem.invoke(PiglinAi.class, brain);
             PiglinAlchemistAi.initFightActivity(piglin, brain);
             PiglinAlchemistAi.celebrateActivity.invoke(PiglinAi.class, brain);
@@ -72,8 +81,28 @@ public class PiglinAlchemistAi extends PiglinAi {
         }), new RunIf<>(PiglinAlchemistAi::hasCrossbow, new BackUpIfTooClose(5, 0.75F)), new SetWalkTargetFromAttackTargetIfTargetOutOfReach(1.0F), new MeleeAttack(20), new CrossbowAttack(), new RememberIfHoglinWasKilled(), new EraseMemoryIf<>(PiglinAlchemistAi::isNearZombified, MemoryModuleType.ATTACK_TARGET)), MemoryModuleType.ATTACK_TARGET);
     }
 
+    private static void initCoreActivity(Brain<Piglin> p_34821_) {
+        p_34821_.addActivity(Activity.CORE, 0, ImmutableList.of(new LookAtTargetSink(45, 90), new MoveToTargetSink(), new InteractWithDoor(), babyAvoidNemesis(), avoidZombified(), new StopHoldingItemIfNoLongerAdmiringAlchemist<>(), new StartAdmiringItemIfSeen<>(120), new StartCelebratingIfTargetDead(300, PiglinAlchemistAi::wantsToDance), new StopBeingAngryIfTargetDead<>()));
+    }
+
+    private static CopyMemoryWithExpiry<Piglin, LivingEntity> babyAvoidNemesis() {
+        return new CopyMemoryWithExpiry<>(Piglin::isBaby, MemoryModuleType.NEAREST_VISIBLE_NEMESIS, MemoryModuleType.AVOID_TARGET, BABY_AVOID_NEMESIS_DURATION);
+    }
+
+    private static CopyMemoryWithExpiry<Piglin, LivingEntity> avoidZombified() {
+        return new CopyMemoryWithExpiry<>(PiglinAlchemistAi::isNearZombified, MemoryModuleType.NEAREST_VISIBLE_ZOMBIFIED, MemoryModuleType.AVOID_TARGET, AVOID_ZOMBIFIED_DURATION);
+    }
+
+    private static boolean wantsToDance(LivingEntity p_34811_, LivingEntity p_34812_) {
+        if (p_34812_.getType() != EntityType.HOGLIN) {
+            return false;
+        } else {
+            return RandomSource.create(p_34811_.level.getGameTime()).nextFloat() < 0.1F;
+        }
+    }
+
     // Now I feel like it
-    protected static void stopHoldingOffHandItem(Piglin piglin, boolean barter) {
+    public static void stopHoldingOffHandItem(Piglin piglin, boolean barter) {
         ItemStack itemstack = piglin.getItemInHand(InteractionHand.OFF_HAND);
         piglin.setItemInHand(InteractionHand.OFF_HAND, ItemStack.EMPTY);
         if (piglin.isAdult()) {
@@ -139,7 +168,7 @@ public class PiglinAlchemistAi extends PiglinAi {
     }
 
     private static List<ItemStack> getBarterResponseItems(Piglin p_34997_) {
-        LootTable loottable = p_34997_.level.getServer().getLootTables().get(BuiltInLootTables.PIGLIN_BARTERING);
+        LootTable loottable = p_34997_.level.getServer().getLootTables().get(PPLootTables.ALCHEMIST_BARTER);
         List<ItemStack> list = loottable.getRandomItems((new LootContext.Builder((ServerLevel)p_34997_.level)).withParameter(LootContextParams.THIS_ENTITY, p_34997_).withRandom(p_34997_.level.random).create(LootContextParamSets.PIGLIN_BARTER));
         return list;
     }
