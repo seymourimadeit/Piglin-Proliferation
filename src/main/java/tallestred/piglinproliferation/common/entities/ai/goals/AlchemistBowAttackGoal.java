@@ -47,7 +47,7 @@ public class AlchemistBowAttackGoal<T extends PiglinAlchemist> extends Goal {
     public boolean canContinueToUse() {
         return (this.canUse() || !this.mob.getNavigation().isDone()) && this.isHoldingBow() && this.mob.getArrowsShot() < 3;
     }
-    
+
     protected LivingEntity getTargetToShootAt() {
         return this.mob.getTarget();
     }
@@ -145,6 +145,9 @@ public class AlchemistBowAttackGoal<T extends PiglinAlchemist> extends Goal {
 
     @Nullable
     protected Vec3 getPosition() {
-        return LandRandomPos.getPosAway(this.mob, 10, 7, this.getTargetToShootAt().position());
+        if (this.getTargetToShootAt() != null)
+            return LandRandomPos.getPosAway(this.mob, 10, 7, this.getTargetToShootAt().position());
+        else
+            return null;
     }
 }
