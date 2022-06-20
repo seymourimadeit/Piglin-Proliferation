@@ -21,7 +21,6 @@ public class PPEvents {
     @SubscribeEvent
     public static void entityJoin(EntityJoinWorldEvent event) {
         if (event.getEntity() instanceof AbstractPiglin piglin) {
-            piglin.setImmuneToZombification(true);
             piglin.goalSelector.addGoal(0, new PiglinCallForHelpGoal(piglin, (piglin1) -> {
                 return piglin1.isOnFire() && !piglin1.hasEffect(MobEffects.FIRE_RESISTANCE);
             }, (alchemist -> {

@@ -15,7 +15,6 @@ import net.minecraft.client.renderer.entity.layers.RenderLayer;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.HumanoidArm;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import tallestred.piglinproliferation.common.entities.PiglinAlchemist;
 
@@ -61,14 +60,14 @@ public class BeltRenderLayer<T extends PiglinAlchemist, M extends EntityModel<T>
             poseStack.scale(0.8F, 0.8F, 0.8F);
             if (inventorySlot > 2 || inventorySlot < 4 && inventorySlot != 5) {
                 double d = inventorySlot > 2 && inventorySlot != 5 ? 1.4 + inventorySlot * -0.4 : -0.2 + inventorySlot * 0.4;
-                double inflation = (entity.hasItemInSlot(EquipmentSlot.LEGS) || entity.hasItemInSlot(EquipmentSlot.CHEST)) ? 0.255D : 0.175D;
+                double inflation = entity.hasItemInSlot(EquipmentSlot.LEGS) && !entity.hasItemInSlot(EquipmentSlot.CHEST) ? 0.215D : entity.hasItemInSlot(EquipmentSlot.CHEST) ? 0.225D : 0.175D;
                 poseStack.translate(d, 0.8D, (inventorySlot > 2 && inventorySlot != 5) ? inflation : -inflation);
             }
             if (inventorySlot == 2 || inventorySlot == 5) {
                 poseStack.mulPose(Vector3f.YP.rotationDegrees(90.0F));
                 double secondSlotInflation = entity.hasItemInSlot(EquipmentSlot.LEGS) ? -0.24D : -0.3D;
                 double fifthSlotInflation = entity.hasItemInSlot(EquipmentSlot.LEGS) ? -2.16D : -2.1D;
-                poseStack.translate(-0.2D, 0.4D, inventorySlot == 2 ?  secondSlotInflation: fifthSlotInflation);
+                poseStack.translate(-0.2D, 0.4D, inventorySlot == 2 ? secondSlotInflation : fifthSlotInflation);
             }
             poseStack.mulPose(Vector3f.XP.rotationDegrees(180.0F));
             Minecraft.getInstance().getItemRenderer().renderStatic(entity, stack, transformType, false, poseStack, source, entity.level, light, LivingEntityRenderer.getOverlayCoords(entity, 0.0F), entity.getId());
