@@ -12,4 +12,5 @@ import tallestred.piglinproliferation.PiglinProliferation;
 public class PPSounds {
     public static final DeferredRegister<SoundEvent> SOUNDS = DeferredRegister.create(ForgeRegistries.SOUND_EVENTS, PiglinProliferation.MODID);
     public static final RegistryObject<SoundEvent> ALCHEMIST_ABOUT_TO_THROW_POTION = SOUNDS.register("entity.piglin_alchemist.throw_alert", () -> new SoundEvent(new ResourceLocation(PiglinProliferation.MODID, "entity.piglin_alchemist.throw_alert")));
+    public static final RegistryObject<SoundEvent> ALCHEMIST_WALK = SOUNDS.register("entity.piglin_alchemist.walk", () -> new SoundEvent(new ResourceLocation(PiglinProliferation.MODID, "entity.piglin_alchemist.walk")));
 }

@@ -16,7 +16,7 @@ import javax.annotation.Nullable;
 import java.util.List;
 import java.util.function.Predicate;
 
-public class ThrowPotionOnOthersGoal extends ThrowPotionOnSelfGoal {
+public class ThrowPotionOnOthersGoal extends BaseAlchemistThrowPotionGoal {
     protected final Predicate<? super AbstractPiglin> nearbyPiglinPredicate;
     protected AbstractPiglin nearbyPiglins;
     private int ticksUntilThrow;

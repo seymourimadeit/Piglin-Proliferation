@@ -145,6 +145,9 @@ public class AlchemistBowAttackGoal<T extends PiglinAlchemist> extends Goal {
 
     @Nullable
     protected Vec3 getPosition() {
-        return LandRandomPos.getPosAway(this.mob, 10, 7, this.getTargetToShootAt().position());
+        if (this.getTargetToShootAt() != null)
+            return LandRandomPos.getPosAway(this.mob, 10, 7, this.getTargetToShootAt().position());
+        else
+            return null;
     }
 }

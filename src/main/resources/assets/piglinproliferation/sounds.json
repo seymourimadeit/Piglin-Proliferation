@@ -7,5 +7,14 @@
       }
     ],
     "subtitle": "subtitles.entity.piglin_alchemist.prepared_to_throw_potion"
+  },
+  "entity.piglin_alchemist.walk": {
+    "sounds": [
+      {
+        "name": "piglinproliferation:alchemist/alchemist_walk",
+        "volume": 0.9
+      }
+    ],
+    "subtitle": "subtitles.entity.piglin_alchemist.walk"
   }
 }
