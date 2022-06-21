@@ -119,26 +119,24 @@ public class AlchemistBowAttackGoal<T extends PiglinAlchemist> extends Goal {
             } else {
                 --this.seeTime;
             }
-            if (distanceSquared <= 6.0D && this.avoidTime <= 0) {
-                if (mob.getNavigation().isDone() || mob.getNavigation().isStuck())
-                    return;
-                if (this.mob.isUsingItem())
-                    this.mob.stopUsingItem();
-                this.attackTime = -1;
-                this.avoidTime = 40;
+            if (distanceSquared <= 6.0D) {
+                if (this.avoidTime <= 0)
+                    this.avoidTime = 60;
+                else
+                    this.avoidTime += 2;
             }
+
             if (this.avoidTime < 0)
                 this.avoidTime = 0;
+            if (this.avoidTime > 60)
+                this.avoidTime = 60;
             if (--this.avoidTime > 0) {
-                this.mob.getBrain().setMemory(MemoryModuleType.LOOK_TARGET, new EntityTracker(this.getTargetToShootAt(), true));
                 this.attackTime = -1;
                 Vec3 vec3 = this.getPosition();
-                if (distanceSquared >= (double) this.attackRadiusSqr || (mob.getNavigation().isDone() || mob.getNavigation().isStuck()) || this.avoidTime == 0)
+                if ((mob.getNavigation().isDone() || mob.getNavigation().isStuck()) || this.avoidTime == 0)
                     this.mob.getNavigation().stop();
-                if (vec3 != null) {
-                    this.mob.stopUsingItem();
-                    this.mob.getNavigation().moveTo(vec3.x, vec3.y, vec3.z, this.speedModifier);
-                }
+                if (vec3 != null)
+                    this.mob.getBrain().setMemory(MemoryModuleType.WALK_TARGET, new WalkTarget(vec3, 1.5F, 4));
             }
         }
     }
@@ -148,6 +146,6 @@ public class AlchemistBowAttackGoal<T extends PiglinAlchemist> extends Goal {
         if (this.getTargetToShootAt() != null)
             return LandRandomPos.getPosAway(this.mob, 10, 7, this.getTargetToShootAt().position());
         else
-            return null;
+            return LandRandomPos.getPos(this.mob, 10, 7);
     }
 }
