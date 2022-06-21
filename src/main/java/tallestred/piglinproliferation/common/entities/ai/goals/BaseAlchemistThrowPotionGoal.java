@@ -43,7 +43,8 @@ public class BaseAlchemistThrowPotionGoal extends Goal {
                     this.potionToThrow = stackInSlot;
                     this.alchemist.setBeltInventorySlot(slot, ItemStack.EMPTY);
                     this.alchemist.swing(InteractionHand.OFF_HAND);
-                    this.alchemist.setItemShownOnOffhand(potionToThrow);
+                    this.alchemist.setItemShownOnOffhand(stackInSlot.copy());
+                    PotionUtils.setPotion(this.alchemist.getItemShownOnOffhand(), PotionUtils.getPotion(stackInSlot));
                     this.alchemist.willThrowPotion(true);
                 }
             }
@@ -51,8 +52,10 @@ public class BaseAlchemistThrowPotionGoal extends Goal {
     }
 
     protected void throwPotion() {
-        this.alchemist.swing(InteractionHand.OFF_HAND);
-        this.alchemist.throwPotion(itemToUse, this.alchemist.getXRot(), this.alchemist.getYRot());
+        if (!this.alchemist.getItemShownOnOffhand().isEmpty()) {
+            this.alchemist.swing(InteractionHand.OFF_HAND);
+            this.alchemist.throwPotion(this.alchemist.getItemShownOnOffhand(), this.alchemist.getXRot(), this.alchemist.getYRot());
+        }
     }
 
     @Override

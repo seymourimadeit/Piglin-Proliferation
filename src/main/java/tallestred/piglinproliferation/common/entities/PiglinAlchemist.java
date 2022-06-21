@@ -67,26 +67,9 @@ public class PiglinAlchemist extends Piglin {
     @Override
     public void registerGoals() {
         super.registerGoals();
-        this.goalSelector.addGoal(0, new ThrowPotionOnSelfGoal(this, PotionUtils.setPotion(new ItemStack(Items.SPLASH_POTION), Potions.FIRE_RESISTANCE), (alchemist) -> {
-            return alchemist.isAlive() && alchemist.isOnFire();
-        }));
-        this.goalSelector.addGoal(0, new ThrowPotionOnSelfGoal(this, PotionUtils.setPotion(new ItemStack(Items.SPLASH_POTION), Potions.STRONG_REGENERATION), (alchemist) -> {
-            return alchemist.isAlive() && alchemist.getHealth() < alchemist.getMaxHealth();
-        }));
-        this.goalSelector.addGoal(0, new ThrowPotionOnSelfGoal(this, PotionUtils.setPotion(new ItemStack(Items.SPLASH_POTION), Potions.STRONG_HEALING), (alchemist) -> {
-            return alchemist.isAlive() && alchemist.getHealth() < alchemist.getMaxHealth() && !this.beltInventory.stream().anyMatch(itemStack -> PotionUtils.getPotion(itemStack) == Potions.STRONG_REGENERATION);
-        }));
-        this.goalSelector.addGoal(0, new ThrowPotionOnOthersGoal(this, PotionUtils.setPotion(new ItemStack(Items.SPLASH_POTION), Potions.FIRE_RESISTANCE), (alchemist) -> {
-            return alchemist.isAlive();
-        }, (piglin) -> {
-            return piglin.isAlive() && piglin.isOnFire();
-        }));
-        this.goalSelector.addGoal(0, new HelpAlliesWithTippedArrowGoal(this, 1.0D, 20, 15.0F, PotionUtils.setPotion(new ItemStack(Items.TIPPED_ARROW), Potions.STRONG_HEALING), (piglin -> {
-            return piglin.isAlive() && piglin.getHealth() < piglin.getMaxHealth();
-        })));
-        this.goalSelector.addGoal(1, new ThrowPotionOnOthersGoal(this, PotionUtils.setPotion(new ItemStack(Items.SPLASH_POTION), Potions.STRONG_REGENERATION), (alchemist) -> {
-            return alchemist.isAlive();
-        }, (piglin) -> {
+        this.goalSelector.addGoal(0, new HelpAlliesWithTippedArrowGoal(this, 1.0D, 20, 15.0F, PotionUtils.setPotion(new ItemStack(Items.TIPPED_ARROW), Potions.STRONG_HEALING), (piglin -> piglin.isAlive() && piglin.getHealth() < piglin.getMaxHealth())));
+        this.goalSelector.addGoal(1, new ThrowPotionOnOthersGoal(this, PotionUtils.setPotion(new ItemStack(Items.SPLASH_POTION), Potions.FIRE_RESISTANCE), (alchemist) -> alchemist.isAlive(), (piglin) -> piglin.isAlive() && piglin.isOnFire()));
+        this.goalSelector.addGoal(2, new ThrowPotionOnOthersGoal(this, PotionUtils.setPotion(new ItemStack(Items.SPLASH_POTION), Potions.STRONG_REGENERATION), (alchemist) -> alchemist.isAlive(), (piglin) -> {
             List<AbstractPiglin> list = this.level.getEntitiesOfClass(AbstractPiglin.class, this.getBoundingBox().inflate(10.0D, 3.0D, 10.0D));
             if (!list.isEmpty()) {
                 for (AbstractPiglin piglin1 : list) {
@@ -100,7 +83,7 @@ public class PiglinAlchemist extends Piglin {
             }
             return piglin.isAlive() && piglin.getHealth() < piglin.getMaxHealth();
         }));
-        this.goalSelector.addGoal(2, new ThrowPotionOnOthersGoal(this, PotionUtils.setPotion(new ItemStack(Items.SPLASH_POTION), Potions.STRONG_HEALING), (alchemist) -> {
+        this.goalSelector.addGoal(3, new ThrowPotionOnOthersGoal(this, PotionUtils.setPotion(new ItemStack(Items.SPLASH_POTION), Potions.STRONG_HEALING), (alchemist) -> {
             return alchemist.isAlive();
         }, (piglin) -> {
             List<AbstractPiglin> list = this.level.getEntitiesOfClass(AbstractPiglin.class, this.getBoundingBox().inflate(10.0D, 3.0D, 10.0D));
@@ -116,7 +99,7 @@ public class PiglinAlchemist extends Piglin {
             }
             return piglin.isAlive() && piglin.getHealth() < piglin.getMaxHealth();
         }));
-        this.goalSelector.addGoal(2, new ThrowPotionOnOthersGoal(this, PotionUtils.setPotion(new ItemStack(Items.SPLASH_POTION), Potions.STRONG_STRENGTH), (alchemist) -> {
+        this.goalSelector.addGoal(4, new ThrowPotionOnOthersGoal(this, PotionUtils.setPotion(new ItemStack(Items.SPLASH_POTION), Potions.STRONG_STRENGTH), (alchemist) -> {
             return alchemist.isAlive();
         }, (piglin) -> {
             return piglin.isAlive() && piglin.getTarget() != null && piglin.getHealth() < (piglin.getMaxHealth() / 2) && !piglin.isHolding((itemStack) -> {
@@ -124,8 +107,18 @@ public class PiglinAlchemist extends Piglin {
                 return itemInStack instanceof ProjectileWeaponItem;
             });
         }));
-        this.goalSelector.addGoal(3, new RunAwayAfterThreeShots(this, 1.5D));
-        this.goalSelector.addGoal(4, new AlchemistBowAttackGoal<>(this, 1.0D, 20, 15.0F));
+        this.goalSelector.addGoal(5, new ThrowPotionOnSelfGoal(this, PotionUtils.setPotion(new ItemStack(Items.SPLASH_POTION), Potions.FIRE_RESISTANCE), (alchemist) -> {
+            return alchemist.isAlive() && alchemist.isOnFire();
+        }));
+        this.goalSelector.addGoal(6, new ThrowPotionOnSelfGoal(this, PotionUtils.setPotion(new ItemStack(Items.SPLASH_POTION), Potions.STRONG_REGENERATION), (alchemist) -> {
+            return alchemist.isAlive() && alchemist.getHealth() < alchemist.getMaxHealth();
+        }));
+        this.goalSelector.addGoal(7, new ThrowPotionOnSelfGoal(this, PotionUtils.setPotion(new ItemStack(Items.SPLASH_POTION), Potions.STRONG_HEALING), (alchemist) -> {
+            return alchemist.isAlive() && alchemist.getHealth() < alchemist.getMaxHealth() && !this.beltInventory.stream().anyMatch(itemStack -> PotionUtils.getPotion(itemStack) == Potions.STRONG_REGENERATION);
+        }));
+        this.goalSelector.addGoal(8, new RunAwayAfterThreeShots(this, 1.5D));
+        this.goalSelector.addGoal(9, new AlchemistBowAttackGoal<>(this, 1.0D, 20, 15.0F));
+        this.goalSelector.addGoal(10, new MoveAroundLargeGroupsOfPiglinsGoal(this, 1.0D));
     }
 
     @Override
@@ -181,7 +174,7 @@ public class PiglinAlchemist extends Piglin {
     protected void dropCustomDeathLoot(DamageSource pSource, int pLooting, boolean pRecentlyHit) {
         for (ItemStack itemStack : this.beltInventory) {
             if (!itemStack.isEmpty()) {
-                if (!EnchantmentHelper.hasVanishingCurse(itemStack) && this.getRandom().nextFloat() < 0.40F) {
+                if (!EnchantmentHelper.hasVanishingCurse(itemStack) && this.getRandom().nextFloat() < 0.20F) {
                     this.spawnAtLocation(itemStack);
                 } else {
                     if (itemStack.getItem() instanceof PotionItem) {
@@ -206,7 +199,7 @@ public class PiglinAlchemist extends Piglin {
             this.level.playSound((Player) null, this.getX(), this.getY(), this.getZ(), SoundEvents.SPLASH_POTION_THROW, this.getSoundSource(), 1.0F, 0.8F + this.getRandom().nextFloat() * 0.4F);
         this.level.addFreshEntity(thrownpotion);
         this.willThrowPotion(false);
-        this.setItemShownOnOffhand(ItemStack.EMPTY);
+        thrownPotion.shrink(1);
     }
 
     @Override
