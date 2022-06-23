@@ -20,6 +20,7 @@ import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.MobSpawnType;
 import net.minecraft.world.entity.ai.Brain;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
@@ -36,6 +37,8 @@ import net.minecraft.world.item.alchemy.Potions;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.LevelAccessor;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.network.PacketDistributor;
 import org.jetbrains.annotations.NotNull;
@@ -46,6 +49,7 @@ import tallestred.piglinproliferation.networking.AlchemistBeltSyncPacket;
 import tallestred.piglinproliferation.networking.PPNetworking;
 
 import java.util.List;
+import java.util.Random;
 
 public class PiglinAlchemist extends Piglin {
     // Used for displaying holding animation
@@ -269,6 +273,10 @@ public class PiglinAlchemist extends Piglin {
                 }
             }
         }
+    }
+
+    public static boolean checkChemistSpawnRules(EntityType<PiglinAlchemist> p_219198_, LevelAccessor p_219199_, MobSpawnType p_219200_, BlockPos p_219201_, Random random) {
+        return !p_219199_.getBlockState(p_219201_.below()).is(Blocks.NETHER_WART_BLOCK);
     }
 
 

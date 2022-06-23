@@ -50,6 +50,9 @@ public class PiglinProliferation {
     }
 
     private void setup(final FMLCommonSetupEvent event) {
+        event.enqueueWork(() -> {
+            PPEntityTypes.registerSpawnRequirements();
+        });
     }
 
     private void enqueueIMC(final InterModEnqueueEvent event) {
