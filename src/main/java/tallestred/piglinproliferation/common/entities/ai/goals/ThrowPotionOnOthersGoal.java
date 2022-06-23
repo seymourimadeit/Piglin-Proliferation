@@ -36,7 +36,7 @@ public class ThrowPotionOnOthersGoal extends BaseAlchemistThrowPotionGoal {
                 if (piglin != alchemist) {
                     nearbyPiglins = piglin;
                     for (MobEffectInstance mobeffectinstance : PotionUtils.getMobEffects(itemToUse)) {
-                        return super.canUse() && this.nearbyPiglinPredicate.test(nearbyPiglins) && !nearbyPiglins.hasEffect(mobeffectinstance.getEffect());
+                        return super.canUse() && list.stream().filter(abstractPiglin -> abstractPiglin != alchemist && abstractPiglin instanceof PiglinAlchemist && ((PiglinAlchemist)abstractPiglin).isGonnaThrowPotion()).toList().isEmpty() && this.nearbyPiglinPredicate.test(nearbyPiglins) && !nearbyPiglins.hasEffect(mobeffectinstance.getEffect());
                     }
                 }
 

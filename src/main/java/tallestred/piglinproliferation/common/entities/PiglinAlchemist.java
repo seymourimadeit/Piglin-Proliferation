@@ -21,6 +21,7 @@ import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.MobSpawnType;
 import net.minecraft.world.entity.ai.Brain;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
@@ -37,6 +38,8 @@ import net.minecraft.world.item.alchemy.Potions;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.LevelAccessor;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.network.PacketDistributor;
 import org.jetbrains.annotations.NotNull;
@@ -116,6 +119,7 @@ public class PiglinAlchemist extends Piglin {
         this.goalSelector.addGoal(7, new ThrowPotionOnSelfGoal(this, PotionUtils.setPotion(new ItemStack(Items.SPLASH_POTION), Potions.STRONG_HEALING), (alchemist) -> {
             return alchemist.isAlive() && alchemist.getHealth() < alchemist.getMaxHealth() && !this.beltInventory.stream().anyMatch(itemStack -> PotionUtils.getPotion(itemStack) == Potions.STRONG_REGENERATION);
         }));
+        this.goalSelector.addGoal(8, new SwimAwayFromLavaGoal(this, 1.0D));
         this.goalSelector.addGoal(8, new RunAwayAfterThreeShots(this, 1.5D));
         this.goalSelector.addGoal(9, new AlchemistBowAttackGoal<>(this, 1.0D, 20, 15.0F));
         this.goalSelector.addGoal(10, new MoveAroundLargeGroupsOfPiglinsGoal(this, 1.0D));
@@ -153,6 +157,9 @@ public class PiglinAlchemist extends Piglin {
         this.entityData.define(ITEM_SHOWN_ON_OFFHAND, ItemStack.EMPTY);
     }
 
+    public static boolean checkChemistSpawnRules(EntityType<PiglinAlchemist> p_219198_, LevelAccessor p_219199_, MobSpawnType p_219200_, BlockPos p_219201_, RandomSource p_219202_) {
+        return !p_219199_.getBlockState(p_219201_.below()).is(Blocks.NETHER_WART_BLOCK);
+    }
 
     public boolean isGonnaThrowPotion() {
         return this.entityData.get(IS_ABOUT_TO_THROW_POTION);

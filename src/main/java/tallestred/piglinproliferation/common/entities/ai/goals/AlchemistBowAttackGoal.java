@@ -134,9 +134,9 @@ public class AlchemistBowAttackGoal<T extends PiglinAlchemist> extends Goal {
                 this.attackTime = -1;
                 Vec3 vec3 = this.getPosition();
                 if ((mob.getNavigation().isDone() || mob.getNavigation().isStuck()) || this.avoidTime == 0)
-                    this.mob.getNavigation().stop();
+                    this.mob.getBrain().eraseMemory(MemoryModuleType.WALK_TARGET);
                 if (vec3 != null)
-                    this.mob.getBrain().setMemory(MemoryModuleType.WALK_TARGET, new WalkTarget(vec3, 1.5F, 4));
+                    this.mob.getBrain().setMemory(MemoryModuleType.WALK_TARGET, new WalkTarget(vec3, 1.5F, 0));
             }
         }
     }

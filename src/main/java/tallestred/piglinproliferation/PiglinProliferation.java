@@ -1,10 +1,8 @@
 package tallestred.piglinproliferation;
 
-import com.google.common.collect.ImmutableList;
 import com.mojang.datafixers.util.Pair;
 import net.minecraft.core.Holder;
 import net.minecraft.core.Registry;
-import net.minecraft.data.worldgen.Pools;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.levelgen.structure.pools.SinglePoolElement;
@@ -40,45 +38,24 @@ public class PiglinProliferation {
         FMLJavaModLoadingContext.get().getModEventBus().addListener(this::processIMC);
         FMLJavaModLoadingContext.get().getModEventBus().addListener(this::addAttributes);
         MinecraftForge.EVENT_BUS.addListener(this::serverStart);
-        MinecraftForge.EVENT_BUS.register(this);
         PPSounds.SOUNDS.register(FMLJavaModLoadingContext.get().getModEventBus());
-        PPEntityTypes.ENTITIES.register(FMLJavaModLoadingContext.get().getModEventBus());
         PPItems.ITEMS.register(FMLJavaModLoadingContext.get().getModEventBus());
+        PPEntityTypes.ENTITIES.register(FMLJavaModLoadingContext.get().getModEventBus());
         PPNetworking.registerPackets();
+        MinecraftForge.EVENT_BUS.register(this);
     }
 
-    private void addAttributes(final EntityAttributeCreationEvent event) {
-        event.put(PPEntityTypes.PIGLIN_ALCHEMIST.get(), PiglinAlchemist.createAttributes().build());
-    }
-
-    private void setup(final FMLCommonSetupEvent event) {
-    }
-
-    private void enqueueIMC(final InterModEnqueueEvent event) {
-    }
-
-    private void processIMC(final InterModProcessEvent event) {
-    }
-
-    private void serverStart(final ServerAboutToStartEvent event) {
-        Registry<StructureTemplatePool> templatePoolRegistry = event.getServer().registryAccess().registry(Registry.TEMPLATE_POOL_REGISTRY).orElseThrow();
-        Registry<StructureProcessorList> processorListRegistry = event.getServer().registryAccess().registry(Registry.PROCESSOR_LIST_REGISTRY).orElseThrow();
-        addBuildingToPool(templatePoolRegistry, processorListRegistry,
-                new ResourceLocation("minecraft:bastion/mobs/piglin"),
-                "piglinproliferation:bastion/alchemist_piglin", 4);
-    }
-
-    // used from https://gist.github.com/TelepathicGrunt/4fdbc445ebcbcbeb43ac748f4b18f342
     /**
      * Adds the building to the targeted pool.
      * <p>
+     * used from https://gist.github.com/TelepathicGrunt/4fdbc445ebcbcbeb43ac748f4b18f342
      * Note: This is an additive operation which means multiple mods can do this and they stack with each other safely.
      */
     public static void addBuildingToPool(Registry<StructureTemplatePool> templatePoolRegistry,
-                                          Registry<StructureProcessorList> processorListRegistry,
-                                          ResourceLocation poolRL,
-                                          String nbtPieceRL,
-                                          int weight) {
+                                         Registry<StructureProcessorList> processorListRegistry,
+                                         ResourceLocation poolRL,
+                                         String nbtPieceRL,
+                                         int weight) {
 
         // Grabs the processor list we want to use along with our piece.
         // This is a requirement as using the ProcessorLists.EMPTY field will cause the game to throw errors.
@@ -105,6 +82,30 @@ public class PiglinProliferation {
         List<Pair<StructurePoolElement, Integer>> listOfPieceEntries = new ArrayList<>(pool.rawTemplates);
         listOfPieceEntries.add(new Pair<>(piece, weight));
         pool.rawTemplates = listOfPieceEntries;
+    }
+
+    private void addAttributes(final EntityAttributeCreationEvent event) {
+        event.put(PPEntityTypes.PIGLIN_ALCHEMIST.get(), PiglinAlchemist.createAttributes().build());
+    }
+
+    private void setup(final FMLCommonSetupEvent event) {
+        event.enqueueWork(() -> {
+            PPEntityTypes.registerSpawnRequirements();
+        });
+    }
+
+    private void enqueueIMC(final InterModEnqueueEvent event) {
+    }
+
+    private void processIMC(final InterModProcessEvent event) {
+    }
+
+    private void serverStart(final ServerAboutToStartEvent event) {
+        Registry<StructureTemplatePool> templatePoolRegistry = event.getServer().registryAccess().registry(Registry.TEMPLATE_POOL_REGISTRY).orElseThrow();
+        Registry<StructureProcessorList> processorListRegistry = event.getServer().registryAccess().registry(Registry.PROCESSOR_LIST_REGISTRY).orElseThrow();
+        addBuildingToPool(templatePoolRegistry, processorListRegistry,
+                new ResourceLocation("minecraft:bastion/mobs/piglin"),
+                "piglinproliferation:bastion/alchemist_piglin", 4);
     }
 
 }

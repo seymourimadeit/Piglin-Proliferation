@@ -52,7 +52,7 @@ public class PPEvents {
                     if ((event.getEntity() instanceof Mob && ((Mob) event.getEntity()).isInvertedHealAndHarm()))
                         return;
                     event.setAmount(0.0F);
-                    ((Arrow)event.getSource().getDirectEntity()).setKnockback(0);
+                    event.getEntity().setDeltaMovement(event.getEntity().getDeltaMovement().multiply(-1.0D, -1.0D, -1.0D));
                     event.getEntity().invulnerableTime = 0;
                     if (event.getEntity() instanceof LivingEntity)
                         ((LivingEntity) event.getEntity()).hurtTime = 0;
