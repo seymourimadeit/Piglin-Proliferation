@@ -15,12 +15,17 @@ import net.minecraft.world.entity.ai.behavior.*;
 import net.minecraft.world.entity.ai.memory.MemoryModuleType;
 import net.minecraft.world.entity.ai.sensing.Sensor;
 import net.minecraft.world.entity.ai.util.LandRandomPos;
-import net.minecraft.world.entity.monster.piglin.*;
+import net.minecraft.world.entity.monster.piglin.Piglin;
+import net.minecraft.world.entity.monster.piglin.PiglinAi;
+import net.minecraft.world.entity.monster.piglin.RememberIfHoglinWasKilled;
+import net.minecraft.world.entity.monster.piglin.StartAdmiringItemIfSeen;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.schedule.Activity;
 import net.minecraft.world.item.CrossbowItem;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.storage.loot.BuiltInLootTables;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.item.alchemy.PotionUtils;
+import net.minecraft.world.item.alchemy.Potions;
 import net.minecraft.world.level.storage.loot.LootContext;
 import net.minecraft.world.level.storage.loot.LootTable;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
@@ -29,7 +34,9 @@ import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.fml.util.ObfuscationReflectionHelper;
 import tallestred.piglinproliferation.common.PPLootTables;
 import tallestred.piglinproliferation.common.entities.PiglinAlchemist;
+import tallestred.piglinproliferation.common.entities.ai.behaviors.BowAttack;
 import tallestred.piglinproliferation.common.entities.ai.behaviors.StopHoldingItemIfNoLongerAdmiringAlchemist;
+import tallestred.piglinproliferation.common.entities.ai.behaviors.ThrowPotionAtSelfTask;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -40,10 +47,6 @@ import java.util.Optional;
 public class PiglinAlchemistAi extends PiglinAi {
     private static final UniformInt AVOID_ZOMBIFIED_DURATION = TimeUtil.rangeOfSeconds(5, 7);
     private static final UniformInt BABY_AVOID_NEMESIS_DURATION = TimeUtil.rangeOfSeconds(5, 7);
-
-    public PiglinAlchemistAi() {
-
-    }
     private static final Method hoglinRiding = ObfuscationReflectionHelper.findMethod(PiglinAi.class, "m_34973_",
             Brain.class);
     private static final Method retreatActivity = ObfuscationReflectionHelper.findMethod(PiglinAi.class, "m_34958_",
@@ -57,7 +60,11 @@ public class PiglinAlchemistAi extends PiglinAi {
     private static final Method core = ObfuscationReflectionHelper.findMethod(PiglinAi.class, "m_34820_",
             Brain.class); // This has to be done because I don't feel like copying and pasting every method from PiglinAi
 
-    public static Brain<?> makeBrain(PiglinAlchemist piglin, Brain<Piglin> brain) {
+    public PiglinAlchemistAi() {
+
+    }
+
+    public static Brain<?> makeBrain(PiglinAlchemist piglin, Brain<PiglinAlchemist> brain) {
         try {
             PiglinAlchemistAi.idle.invoke(PiglinAi.class, brain);
             PiglinAlchemistAi.initCoreActivity(brain);
@@ -75,14 +82,14 @@ public class PiglinAlchemistAi extends PiglinAi {
         return brain;
     }
 
-    private static void initFightActivity(PiglinAlchemist piglin, Brain<Piglin> p_34905_) {
-        p_34905_.addActivityAndRemoveMemoryWhenStopped(Activity.FIGHT, 10, ImmutableList.<net.minecraft.world.entity.ai.behavior.Behavior<? super Piglin>>of(new StopAttackingIfTargetInvalid<Piglin>((target) -> {
+    private static void initFightActivity(PiglinAlchemist piglin, Brain<PiglinAlchemist> p_34905_) {
+        p_34905_.addActivityAndRemoveMemoryWhenStopped(Activity.FIGHT, 10, ImmutableList.<net.minecraft.world.entity.ai.behavior.Behavior<? super Piglin>>of(new StopAttackingIfTargetInvalid<>((target) -> {
             return !isNearestValidAttackTarget(piglin, target);
-        }), new RunIf<>(PiglinAlchemistAi::hasCrossbow, new BackUpIfTooClose(5, 0.75F)), new SetWalkTargetFromAttackTargetIfTargetOutOfReach(1.0F), new MeleeAttack(20), new CrossbowAttack(), new RememberIfHoglinWasKilled(), new EraseMemoryIf<>(PiglinAlchemistAi::isNearZombified, MemoryModuleType.ATTACK_TARGET)), MemoryModuleType.ATTACK_TARGET);
+        }), new RunIf<>(PiglinAlchemistAi::hasCrossbow, new BackUpIfTooClose(5, 0.75F)), new SetWalkTargetFromAttackTargetIfTargetOutOfReach(1.0F), new MeleeAttack(20), new CrossbowAttack(), new RememberIfHoglinWasKilled(), new BowAttack(1.5F, 15.0F, 20), new EraseMemoryIf<>(PiglinAlchemistAi::isNearZombified, MemoryModuleType.ATTACK_TARGET)), MemoryModuleType.ATTACK_TARGET);
     }
 
-    private static void initCoreActivity(Brain<Piglin> p_34821_) {
-        p_34821_.addActivity(Activity.CORE, 0, ImmutableList.of(new LookAtTargetSink(45, 90), new MoveToTargetSink(), new InteractWithDoor(), babyAvoidNemesis(), avoidZombified(), new StopHoldingItemIfNoLongerAdmiringAlchemist<>(), new StartAdmiringItemIfSeen<>(120), new StartCelebratingIfTargetDead(300, PiglinAlchemistAi::wantsToDance), new StopBeingAngryIfTargetDead<>()));
+    private static void initCoreActivity(Brain<PiglinAlchemist> p_34821_) {
+        p_34821_.addActivity(Activity.CORE, 0, ImmutableList.<Behavior<? super PiglinAlchemist>>of(new LookAtTargetSink(45, 90), new MoveToTargetSink(), new InteractWithDoor(), new ThrowPotionAtSelfTask<>(PotionUtils.setPotion(new ItemStack(Items.SPLASH_POTION), Potions.FIRE_RESISTANCE), (alchemist) -> alchemist.isAlive() && alchemist.isOnFire()), babyAvoidNemesis(), avoidZombified(), new StopHoldingItemIfNoLongerAdmiringAlchemist<>(), new StartAdmiringItemIfSeen<>(120), new StartCelebratingIfTargetDead(300, PiglinAlchemistAi::wantsToDance), new StopBeingAngryIfTargetDead<>()));
     }
 
     private static CopyMemoryWithExpiry<Piglin, LivingEntity> babyAvoidNemesis() {
@@ -160,7 +167,7 @@ public class PiglinAlchemistAi extends PiglinAi {
         if (!p_34865_.isEmpty()) {
             p_34864_.swing(InteractionHand.OFF_HAND);
 
-            for(ItemStack itemstack : p_34865_) {
+            for (ItemStack itemstack : p_34865_) {
                 BehaviorUtils.throwItem(p_34864_, itemstack, p_34866_.add(0.0D, 1.0D, 0.0D));
             }
         }
@@ -169,7 +176,7 @@ public class PiglinAlchemistAi extends PiglinAi {
 
     private static List<ItemStack> getBarterResponseItems(Piglin p_34997_) {
         LootTable loottable = p_34997_.level.getServer().getLootTables().get(PPLootTables.ALCHEMIST_BARTER);
-        List<ItemStack> list = loottable.getRandomItems((new LootContext.Builder((ServerLevel)p_34997_.level)).withParameter(LootContextParams.THIS_ENTITY, p_34997_).withRandom(p_34997_.level.random).create(LootContextParamSets.PIGLIN_BARTER));
+        List<ItemStack> list = loottable.getRandomItems((new LootContext.Builder((ServerLevel) p_34997_.level)).withParameter(LootContextParams.THIS_ENTITY, p_34997_).withRandom(p_34997_.level.random).create(LootContextParamSets.PIGLIN_BARTER));
         return list;
     }
 
@@ -188,7 +195,7 @@ public class PiglinAlchemistAi extends PiglinAi {
     private static boolean isNearZombified(Piglin p_34999_) {
         Brain<Piglin> brain = p_34999_.getBrain();
         if (brain.hasMemoryValue(MemoryModuleType.NEAREST_VISIBLE_ZOMBIFIED)) {
-            LivingEntity livingentity = (LivingEntity)brain.getMemory(MemoryModuleType.NEAREST_VISIBLE_ZOMBIFIED).get();
+            LivingEntity livingentity = (LivingEntity) brain.getMemory(MemoryModuleType.NEAREST_VISIBLE_ZOMBIFIED).get();
             return p_34999_.closerThan(livingentity, 6.0);
         } else {
             return false;
@@ -201,7 +208,7 @@ public class PiglinAlchemistAi extends PiglinAi {
             return Optional.empty();
         } else {
             Optional<LivingEntity> optional = BehaviorUtils.getLivingEntityFromUUIDMemory(p_35001_, MemoryModuleType.ANGRY_AT);
-            if (optional.isPresent() && Sensor.isEntityAttackableIgnoringLineOfSight(p_35001_, (LivingEntity)optional.get())) {
+            if (optional.isPresent() && Sensor.isEntityAttackableIgnoringLineOfSight(p_35001_, (LivingEntity) optional.get())) {
                 return optional;
             } else {
                 Optional optional3;
@@ -217,7 +224,7 @@ public class PiglinAlchemistAi extends PiglinAi {
                     return optional3;
                 } else {
                     Optional<Player> optional2 = brain.getMemory(MemoryModuleType.NEAREST_TARGETABLE_PLAYER_NOT_WEARING_GOLD);
-                    return optional2.isPresent() && Sensor.isEntityAttackable(p_35001_, (LivingEntity)optional2.get()) ? optional2 : Optional.empty();
+                    return optional2.isPresent() && Sensor.isEntityAttackable(p_35001_, (LivingEntity) optional2.get()) ? optional2 : Optional.empty();
                 }
             }
         }

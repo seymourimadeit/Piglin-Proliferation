@@ -70,7 +70,7 @@ public class PiglinAlchemist extends Piglin {
     @Override
     public void registerGoals() {
         super.registerGoals();
-        this.goalSelector.addGoal(0, new HelpAlliesWithTippedArrowGoal(this, 1.0D, 20, 15.0F, PotionUtils.setPotion(new ItemStack(Items.TIPPED_ARROW), Potions.STRONG_HEALING), (piglin -> piglin.isAlive() && piglin.getHealth() < piglin.getMaxHealth())));
+     /*   this.goalSelector.addGoal(0, new HelpAlliesWithTippedArrowGoal(this, 1.0D, 20, 15.0F, PotionUtils.setPotion(new ItemStack(Items.TIPPED_ARROW), Potions.STRONG_HEALING), (piglin -> piglin.isAlive() && piglin.getHealth() < piglin.getMaxHealth())));
         this.goalSelector.addGoal(1, new ThrowPotionOnOthersGoal(this, PotionUtils.setPotion(new ItemStack(Items.SPLASH_POTION), Potions.FIRE_RESISTANCE), (alchemist) -> alchemist.isAlive(), (piglin) -> piglin.isAlive() && piglin.isOnFire()));
         this.goalSelector.addGoal(2, new ThrowPotionOnOthersGoal(this, PotionUtils.setPotion(new ItemStack(Items.SPLASH_POTION), Potions.STRONG_REGENERATION), (alchemist) -> alchemist.isAlive(), (piglin) -> {
             List<AbstractPiglin> list = this.level.getEntitiesOfClass(AbstractPiglin.class, this.getBoundingBox().inflate(10.0D, 3.0D, 10.0D));
@@ -118,10 +118,10 @@ public class PiglinAlchemist extends Piglin {
         }));
         this.goalSelector.addGoal(7, new ThrowPotionOnSelfGoal(this, PotionUtils.setPotion(new ItemStack(Items.SPLASH_POTION), Potions.STRONG_HEALING), (alchemist) -> {
             return alchemist.isAlive() && alchemist.getHealth() < alchemist.getMaxHealth() && !this.beltInventory.stream().anyMatch(itemStack -> PotionUtils.getPotion(itemStack) == Potions.STRONG_REGENERATION);
-        }));
+        }));*/
         this.goalSelector.addGoal(8, new SwimAwayFromLavaGoal(this, 1.0D));
-        this.goalSelector.addGoal(8, new RunAwayAfterThreeShots(this, 1.5D));
-        this.goalSelector.addGoal(9, new AlchemistBowAttackGoal<>(this, 1.0D, 20, 15.0F));
+    //    this.goalSelector.addGoal(8, new RunAwayAfterThreeShots(this, 1.5D));
+    //    this.goalSelector.addGoal(9, new AlchemistBowAttackGoal<>(this, 1.0D, 20, 15.0F));
         this.goalSelector.addGoal(10, new MoveAroundLargeGroupsOfPiglinsGoal(this, 1.0D));
     }
 
@@ -209,9 +209,13 @@ public class PiglinAlchemist extends Piglin {
         thrownPotion.shrink(1);
     }
 
+    protected Brain.Provider<PiglinAlchemist> alchemistBrainProvider() {
+        return Brain.provider(MEMORY_TYPES, SENSOR_TYPES);
+    }
+
     @Override
     protected Brain<?> makeBrain(Dynamic<?> p_34723_) {
-        return PiglinAlchemistAi.makeBrain(this, this.brainProvider().makeBrain(p_34723_));
+        return PiglinAlchemistAi.makeBrain(this, this.alchemistBrainProvider().makeBrain(p_34723_));
     }
 
     @Override

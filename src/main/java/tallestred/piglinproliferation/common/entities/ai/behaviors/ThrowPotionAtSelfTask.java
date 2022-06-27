@@ -1,6 +1,7 @@
-package tallestred.piglinproliferation.common.entities.ai.goals;
+package tallestred.piglinproliferation.common.entities.ai.behaviors;
 
 import com.google.common.collect.ImmutableList;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.Mth;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.LivingEntity;
@@ -9,6 +10,7 @@ import net.minecraft.world.entity.ai.behavior.BlockPosTracker;
 import net.minecraft.world.entity.ai.memory.MemoryModuleType;
 import net.minecraft.world.entity.ai.util.LandRandomPos;
 import net.minecraft.world.entity.monster.piglin.AbstractPiglin;
+import net.minecraft.world.entity.monster.piglin.Piglin;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.alchemy.PotionUtils;
 import net.minecraft.world.phys.Vec3;
@@ -19,18 +21,18 @@ import javax.annotation.Nullable;
 import java.util.List;
 import java.util.function.Predicate;
 
-public class ThrowPotionOnSelfGoal extends BaseAlchemistThrowPotionGoal {
+public class ThrowPotionAtSelfTask<E extends PiglinAlchemist> extends BaseThrowPotionTask<E> {
     protected int ticksUntilThrow;
     protected int panicTicks;
-
-    public ThrowPotionOnSelfGoal(PiglinAlchemist alchemist, ItemStack stack, Predicate<? super PiglinAlchemist> pCanUseSelector) {
-        super(alchemist, stack, pCanUseSelector);
+    
+    public ThrowPotionAtSelfTask(ItemStack stack, Predicate<PiglinAlchemist> pCanUseSelector) {
+        super(stack, pCanUseSelector);
     }
 
     @Override
-    public boolean canUse() {
+    protected boolean checkExtraStartConditions(ServerLevel level, E alchemist) {
         for (MobEffectInstance mobeffectinstance : PotionUtils.getMobEffects(itemToUse)) {
-            if (super.canUse()) {
+            if (super.checkExtraStartConditions(level, alchemist)) {
                 if (!alchemist.hasEffect(mobeffectinstance.getEffect())) {
                     if (alchemist.getTarget() != null) {
                         List<AbstractPiglin> list = alchemist.getBrain().getMemory(MemoryModuleType.NEAREST_VISIBLE_ADULT_PIGLINS).orElse(ImmutableList.of());
@@ -44,30 +46,10 @@ public class ThrowPotionOnSelfGoal extends BaseAlchemistThrowPotionGoal {
         return false;
     }
 
-
     @Override
-    public boolean canContinueToUse() {
-        if (alchemist.getTarget() != null) {
-            List<AbstractPiglin> list = alchemist.getBrain().getMemory(MemoryModuleType.NEAREST_VISIBLE_ADULT_PIGLINS).orElse(ImmutableList.of());
-            return list.stream().filter(abstractPiglin -> abstractPiglin != alchemist).toList().size() > 2; // Make sure I have people backing me up if I have to throw a potion and theres someone attacking me
-        } else {
-            for (MobEffectInstance mobeffectinstance : PotionUtils.getMobEffects(itemToUse)) {
-                return this.canUseSelector.test(alchemist) && !alchemist.hasEffect(mobeffectinstance.getEffect()) && this.ticksUntilThrow > 0;
-            }
-        }
-        return false;
-    }
-
-    @Override
-    public void start() {
-        super.start();
-        if (this.ticksUntilThrow <= 0)
-            this.ticksUntilThrow = 15;
-    }
-
-    @Override
-    public void tick() {
-        List<LivingEntity> list = this.alchemist.level.getEntitiesOfClass(LivingEntity.class, this.alchemist.getBoundingBox().inflate(5.0D, 3.0D, 5.0D));
+    protected void tick(ServerLevel level, E alchemist, long gameTIme) {
+        alchemist.getBrain().setMemory(MemoryModuleType.LOOK_TARGET, new BlockPosTracker(alchemist.blockPosition().below()));
+        List<LivingEntity> list = alchemist.level.getEntitiesOfClass(LivingEntity.class, alchemist.getBoundingBox().inflate(5.0D, 3.0D, 5.0D));
         if (!list.isEmpty()) {
             for (LivingEntity entity : list) {
                 if (entity != alchemist) {
@@ -86,29 +68,50 @@ public class ThrowPotionOnSelfGoal extends BaseAlchemistThrowPotionGoal {
         if (this.panicTicks >= 15)
             this.panicTicks = 15;
         if (--this.panicTicks > 0) {
-            Vec3 vec3 = this.getPosition();
-            if (vec3 != null) {
-                this.alchemist.getNavigation().moveTo(vec3.x, vec3.y, vec3.z, 1.5D);
+            Vec3 vec3 = this.getPosition(alchemist);
+            if (vec3 != null && alchemist.getNavigation().isDone()) {
+                alchemist.getNavigation().moveTo(vec3.x, vec3.y, vec3.z, 1.5D);
             }
         }
         if (this.ticksUntilThrow == 5)
-            this.alchemist.playSound(PPSounds.ALCHEMIST_ABOUT_TO_THROW_POTION.get(), 1.0F, 1.0F);
+            alchemist.playSound(PPSounds.ALCHEMIST_ABOUT_TO_THROW_POTION.get(), 1.0F, 1.0F);
         if (--this.ticksUntilThrow <= 0 && this.panicTicks <= 0) {
-            this.throwPotion();
+            this.throwPotion(alchemist);
         }
-        this.alchemist.getBrain().setMemory(MemoryModuleType.LOOK_TARGET, new BlockPosTracker(this.alchemist.blockPosition().below()));
-        this.alchemist.setYRot(Mth.rotateIfNecessary(alchemist.getYRot(), alchemist.yHeadRot, 0.0F));
-        this.alchemist.setXRot(Mth.rotateIfNecessary(alchemist.getXRot(), alchemist.getMaxHeadXRot(), 0.0F));
+        alchemist.setYRot(Mth.rotateIfNecessary(alchemist.getYRot(), alchemist.yHeadRot, 0.0F));
+        alchemist.setXRot(Mth.rotateIfNecessary(alchemist.getXRot(), alchemist.getMaxHeadXRot(), 0.0F));
     }
 
     @Override
-    public void stop() {
-        super.stop();
+    protected boolean canStillUse(ServerLevel level, E alchemist, long gameTime) {
+        if (alchemist.getTarget() != null) {
+            List<AbstractPiglin> list = alchemist.getBrain().getMemory(MemoryModuleType.NEAREST_VISIBLE_ADULT_PIGLINS).orElse(ImmutableList.of());
+            return list.stream().filter(abstractPiglin -> abstractPiglin != alchemist).toList().size() > 2; // Make sure I have people backing me up if I have to throw a potion and theres someone attacking me
+        } else {
+            for (MobEffectInstance mobeffectinstance : PotionUtils.getMobEffects(itemToUse)) {
+                return this.canUseSelector.test(alchemist) && !alchemist.hasEffect(mobeffectinstance.getEffect()) && this.ticksUntilThrow > 0;
+            }
+        }
+        return false;
+    }
+
+    @Override
+    protected void start(ServerLevel level, E alchemist, long gameTime) {
+        super.start(level, alchemist, gameTime);
+        alchemist.getBrain().eraseMemory(MemoryModuleType.LOOK_TARGET);
+        if (this.ticksUntilThrow <= 0)
+            this.ticksUntilThrow = 15;
+    }
+
+    @Override
+    protected void stop(ServerLevel level, E alchemist, long gameTime) {
+        super.stop(level, alchemist, gameTime);
         this.ticksUntilThrow = 0;
+        this.panicTicks = 0;
     }
 
     @Nullable
-    protected Vec3 getPosition() {
-        return LandRandomPos.getPos(this.alchemist, 8, 7);
+    protected Vec3 getPosition(PiglinAlchemist alchemist) {
+        return LandRandomPos.getPos(alchemist, 8, 7);
     }
 }
