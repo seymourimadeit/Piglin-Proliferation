@@ -25,7 +25,6 @@ public class MoveAroundPiglins extends RandomStroll {
     protected Vec3 getTargetPos(PathfinderMob alchemist) {
         for (AbstractPiglin piglin : alchemist.getBrain().getMemory(MemoryModuleType.NEAREST_VISIBLE_ADULT_PIGLINS).orElse(ImmutableList.of())) {
             if (alchemist.getBrain().getMemory(MemoryModuleType.NEAREST_VISIBLE_ADULT_PIGLINS).orElse(ImmutableList.of()).size() >= 2) {
-                System.out.println(LandRandomPos.getPosTowards(alchemist, 4, 3, piglin.position()));
                 return LandRandomPos.getPosTowards(alchemist, 4, 3, piglin.position());
             } else {
                 return null;

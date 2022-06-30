@@ -146,7 +146,7 @@ public class PiglinAlchemist extends Piglin {
             }
             for (int slot = 0; slot < this.beltInventory.size(); slot++) {
                 if (this.beltInventory.get(slot).isEmpty()) {
-                    Potion effect = source.nextFloat() < 0.5F ? Potions.FIRE_RESISTANCE : source.nextFloat() < 0.3F ? Potions.STRONG_REGENERATION : source.nextFloat() < 0.25F ? Potions.STRONG_HEALING : Potions.STRONG_STRENGTH;
+                    Potion effect = source.nextFloat() < 0.35F ? Potions.FIRE_RESISTANCE : source.nextFloat() < 0.3F ? Potions.STRONG_REGENERATION : source.nextFloat() < 0.25F ? Potions.STRONG_HEALING : Potions.STRONG_STRENGTH;
                     ItemStack potion = PotionUtils.setPotion(new ItemStack(Items.SPLASH_POTION), effect);
                     this.setBeltInventorySlot(slot, potion);
                 }
