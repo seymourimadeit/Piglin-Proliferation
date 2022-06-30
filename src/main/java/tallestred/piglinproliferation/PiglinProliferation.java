@@ -42,6 +42,8 @@ public class PiglinProliferation {
         PPEntityTypes.ENTITIES.register(FMLJavaModLoadingContext.get().getModEventBus());
         PPItems.ITEMS.register(FMLJavaModLoadingContext.get().getModEventBus());
         PPSounds.SOUNDS.register(FMLJavaModLoadingContext.get().getModEventBus());
+        PPMemoryModules.MEMORY_MODULE_TYPE.register(FMLJavaModLoadingContext.get().getModEventBus());
+        PPActivities.ACTIVITIES.register(FMLJavaModLoadingContext.get().getModEventBus());
         PPNetworking.registerPackets();
     }
 
