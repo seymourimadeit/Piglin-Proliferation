@@ -10,10 +10,7 @@ import net.minecraft.util.RandomSource;
 import net.minecraft.util.TimeUtil;
 import net.minecraft.util.valueproviders.UniformInt;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.EquipmentSlot;
-import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.Brain;
 import net.minecraft.world.entity.ai.behavior.*;
 import net.minecraft.world.entity.ai.memory.MemoryModuleType;
@@ -145,16 +142,24 @@ public class PiglinAlchemistAi extends PiglinAi {
                     }
                     return piglin.isAlive() && piglin.getHealth() < piglin.getMaxHealth();
                 }), 1),
-                Pair.of(new ThrowPotionAtTargetTask<>(PotionUtils.setPotion(new ItemStack(Items.SPLASH_POTION), Potions.STRONG_STRENGTH), (alchemist) -> {
-                    return alchemist.isAlive();
-                }, (piglin) -> {
-                    return piglin.isAlive() && piglin.getTarget() != null && piglin.getHealth() < (piglin.getMaxHealth() / 2) && !piglin.isHolding((itemStack) -> {
-                        Item itemInStack = itemStack.getItem();
-                        return itemInStack instanceof ProjectileWeaponItem;
-                    });
-                }), 1),
-                Pair.of(new ThrowPotionAtTargetTask<>(PotionUtils.setPotion(new ItemStack(Items.SPLASH_POTION), Potions.FIRE_RESISTANCE),
-                        (alchemist) -> alchemist.isAlive(), (piglin) -> piglin.isAlive() && piglin.isOnFire()), 1),
+                Pair.of(new ThrowPotionAtTargetTask<>(PotionUtils.setPotion(new ItemStack(Items.SPLASH_POTION), Potions.STRONG_STRENGTH), (alchemist) -> alchemist.isAlive(), (piglin) -> piglin.isAlive() && piglin.getTarget() != null && piglin.getHealth() < (piglin.getMaxHealth() / 2) && !piglin.isHolding((itemStack) -> {
+                    Item itemInStack = itemStack.getItem();
+                    return itemInStack instanceof ProjectileWeaponItem;
+                })) {
+                    @Override
+                    protected void start(ServerLevel level, PiglinAlchemist alchemist, long gameTime) {
+                        super.start(level, alchemist, gameTime);
+                        Mob piglinsCalled = alchemist.getBrain().getMemory(PPMemoryModules.POTION_THROW_TARGET.get()).orElseGet(null);
+                        piglinsCalled.getNavigation().moveTo(alchemist, 1.0D);
+                    }
+
+                    @Override
+                    protected void tick(ServerLevel level, PiglinAlchemist alchemist, long gameTime) {
+                        super.tick(level, alchemist, gameTime);
+                        Mob piglinsCalled = alchemist.getBrain().getMemory(PPMemoryModules.POTION_THROW_TARGET.get()).orElseGet(null);
+                        piglinsCalled.getNavigation().moveTo(alchemist, 1.0D);
+                    }
+                }, 1),
                 Pair.of(new ThrowPotionAtTargetTask<>(PotionUtils.setPotion(new ItemStack(Items.SPLASH_POTION), Potions.FIRE_RESISTANCE),
                         (alchemist) -> alchemist.isAlive(), (piglin) -> piglin.isAlive() && piglin.isOnFire()), 1),
                 Pair.of(new ThrowPotionAtSelfTask<>(PotionUtils.setPotion(new ItemStack(Items.SPLASH_POTION), Potions.STRONG_REGENERATION),
