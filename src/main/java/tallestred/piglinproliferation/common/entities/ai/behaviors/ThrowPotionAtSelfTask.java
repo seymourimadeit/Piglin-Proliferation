@@ -10,10 +10,11 @@ import net.minecraft.world.entity.ai.behavior.BlockPosTracker;
 import net.minecraft.world.entity.ai.memory.MemoryModuleType;
 import net.minecraft.world.entity.ai.util.LandRandomPos;
 import net.minecraft.world.entity.monster.piglin.AbstractPiglin;
-import net.minecraft.world.entity.monster.piglin.Piglin;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.alchemy.PotionUtils;
 import net.minecraft.world.phys.Vec3;
+import tallestred.piglinproliferation.PPActivities;
+import tallestred.piglinproliferation.PPMemoryModules;
 import tallestred.piglinproliferation.client.PPSounds;
 import tallestred.piglinproliferation.common.entities.PiglinAlchemist;
 
@@ -21,10 +22,7 @@ import javax.annotation.Nullable;
 import java.util.List;
 import java.util.function.Predicate;
 
-public class ThrowPotionAtSelfTask<E extends PiglinAlchemist> extends BaseThrowPotionTask<E> {
-    protected int ticksUntilThrow;
-    protected int panicTicks;
-    
+public class ThrowPotionAtSelfTask<E extends PiglinAlchemist> extends BaseThrowPotion<E> {
     public ThrowPotionAtSelfTask(ItemStack stack, Predicate<PiglinAlchemist> pCanUseSelector) {
         super(stack, pCanUseSelector);
     }
@@ -56,7 +54,7 @@ public class ThrowPotionAtSelfTask<E extends PiglinAlchemist> extends BaseThrowP
                     if (alchemist.getTarget() != null && alchemist.getTarget() == entity || entity instanceof Mob && (((Mob) entity).getTarget() != null && (((Mob) entity).getTarget() == alchemist) || entity.getLastHurtMob() != null && entity.getLastHurtMob() instanceof AbstractPiglin)) {
                         if (entity.distanceTo(alchemist) <= 4.0D || alchemist.distanceTo(entity) <= 4.0D) {
                             if (this.panicTicks <= 0)
-                                this.panicTicks = 5;
+                                this.panicTicks = 20;
                             this.ticksUntilThrow += 5;
                         }
                     }
@@ -98,7 +96,8 @@ public class ThrowPotionAtSelfTask<E extends PiglinAlchemist> extends BaseThrowP
     @Override
     protected void start(ServerLevel level, E alchemist, long gameTime) {
         super.start(level, alchemist, gameTime);
-        alchemist.getBrain().eraseMemory(MemoryModuleType.LOOK_TARGET);
+        alchemist.getBrain().setMemory(PPMemoryModules.POTION_THROW_TARGET.get(), alchemist);
+        alchemist.getBrain().setActiveActivityIfPossible(PPActivities.THROW_POTION_ACTIVITY.get());
         if (this.ticksUntilThrow <= 0)
             this.ticksUntilThrow = 15;
     }
@@ -108,6 +107,7 @@ public class ThrowPotionAtSelfTask<E extends PiglinAlchemist> extends BaseThrowP
         super.stop(level, alchemist, gameTime);
         this.ticksUntilThrow = 0;
         this.panicTicks = 0;
+        alchemist.getBrain().eraseMemory(PPMemoryModules.POTION_THROW_TARGET.get());
     }
 
     @Nullable

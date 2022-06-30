@@ -13,6 +13,7 @@ import net.minecraft.world.entity.ai.memory.MemoryModuleType;
 import net.minecraft.world.entity.ai.memory.MemoryStatus;
 import net.minecraft.world.entity.ai.memory.WalkTarget;
 import net.minecraft.world.entity.ai.util.LandRandomPos;
+import net.minecraft.world.entity.monster.piglin.AbstractPiglin;
 import net.minecraft.world.entity.projectile.ProjectileUtil;
 import net.minecraft.world.item.BowItem;
 import net.minecraft.world.level.pathfinder.Path;
@@ -20,6 +21,7 @@ import net.minecraft.world.phys.Vec3;
 import tallestred.piglinproliferation.common.entities.PiglinAlchemist;
 
 import javax.annotation.Nullable;
+import java.util.Map;
 
 public class BowAttack<E extends PiglinAlchemist, T extends LivingEntity> extends Behavior<E> {
     private final double speedModifier;
@@ -30,8 +32,8 @@ public class BowAttack<E extends PiglinAlchemist, T extends LivingEntity> extend
     private int seeTime;
     private int avoidTime;
 
-    public BowAttack(double speedModifier, float attackRadius, int attackIntervalMin) {
-        super(ImmutableMap.of(MemoryModuleType.WALK_TARGET, MemoryStatus.VALUE_ABSENT, MemoryModuleType.LOOK_TARGET, MemoryStatus.REGISTERED, MemoryModuleType.ATTACK_TARGET, MemoryStatus.VALUE_PRESENT));
+    public BowAttack(Map<MemoryModuleType<?>, MemoryStatus> map, double speedModifier, float attackRadius, int attackIntervalMin) {
+        super(map, 12000);
         this.speedModifier = speedModifier;
         this.attackRadiusSqr = attackRadius * attackRadius;
         this.attackIntervalMin = attackIntervalMin;
@@ -39,18 +41,19 @@ public class BowAttack<E extends PiglinAlchemist, T extends LivingEntity> extend
 
     @Override
     protected boolean checkExtraStartConditions(ServerLevel level, E alchemist) {
-        LivingEntity target = alchemist.getTarget();
+        LivingEntity target = this.getTargetToShootAt(alchemist);
         return alchemist.isHolding(is -> is.getItem() instanceof BowItem) && BehaviorUtils.canSee(alchemist, target);
     }
 
     @Override
     protected boolean canStillUse(ServerLevel level, E alchemist, long gameTime) {
-        return alchemist.getBrain().hasMemoryValue(MemoryModuleType.ATTACK_TARGET) && this.checkExtraStartConditions(level, alchemist);
+        LivingEntity target = this.getTargetToShootAt(alchemist);
+        return target != null && this.checkExtraStartConditions(level, alchemist);
     }
 
     @Override
     protected void tick(ServerLevel level, E alchemist, long gameTime) {
-        LivingEntity target = alchemist.getBrain().getMemory(MemoryModuleType.ATTACK_TARGET).get();
+        LivingEntity target = this.getTargetToShootAt(alchemist);
         if (target != null) {
             double distanceSquared = alchemist.distanceToSqr(target);
             boolean canSee = alchemist.getSensing().hasLineOfSight(target);
@@ -87,6 +90,8 @@ public class BowAttack<E extends PiglinAlchemist, T extends LivingEntity> extend
                 --this.seeTime;
             }
             if (distanceSquared <= 6.0D || alchemist.getArrowsShot() >= 3) {
+                if (this.getTargetToShootAt(alchemist) instanceof AbstractPiglin)
+                    return;
                 if (this.avoidTime <= 0)
                     this.avoidTime = 60;
                 else
@@ -120,10 +125,6 @@ public class BowAttack<E extends PiglinAlchemist, T extends LivingEntity> extend
         }
     }
 
-    public void runAwayWhenClose(PiglinAlchemist alchemist, LivingEntity target) {
-    }
-
-
     @Override
     protected void stop(ServerLevel level, E alchemist, long gameTime) {
         alchemist.setAggressive(false);
@@ -141,6 +142,6 @@ public class BowAttack<E extends PiglinAlchemist, T extends LivingEntity> extend
     }
 
     protected LivingEntity getTargetToShootAt(PiglinAlchemist alchemist) {
-        return alchemist.getBrain().getMemory(MemoryModuleType.ATTACK_TARGET).get();
+        return alchemist.getTarget();
     }
 }

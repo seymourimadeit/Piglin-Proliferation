@@ -37,12 +37,14 @@ public class PiglinProliferation {
         FMLJavaModLoadingContext.get().getModEventBus().addListener(this::enqueueIMC);
         FMLJavaModLoadingContext.get().getModEventBus().addListener(this::processIMC);
         FMLJavaModLoadingContext.get().getModEventBus().addListener(this::addAttributes);
+        MinecraftForge.EVENT_BUS.register(this);
         MinecraftForge.EVENT_BUS.addListener(this::serverStart);
         PPSounds.SOUNDS.register(FMLJavaModLoadingContext.get().getModEventBus());
         PPItems.ITEMS.register(FMLJavaModLoadingContext.get().getModEventBus());
         PPEntityTypes.ENTITIES.register(FMLJavaModLoadingContext.get().getModEventBus());
+        PPMemoryModules.MEMORY_MODULE_TYPE.register(FMLJavaModLoadingContext.get().getModEventBus());
+        PPActivities.ACTIVITIES.register(FMLJavaModLoadingContext.get().getModEventBus());
         PPNetworking.registerPackets();
-        MinecraftForge.EVENT_BUS.register(this);
     }
 
     /**

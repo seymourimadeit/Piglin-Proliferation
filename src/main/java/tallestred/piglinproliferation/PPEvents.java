@@ -6,6 +6,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.monster.piglin.AbstractPiglin;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.Arrow;
 import net.minecraft.world.item.alchemy.PotionUtils;
 import net.minecraft.world.item.alchemy.Potions;
@@ -63,18 +64,5 @@ public class PPEvents {
 
     @SubscribeEvent
     public static void knockBackEntity(LivingKnockBackEvent event) {
-        if (event.getEntityLiving().getLastDamageSource() != null && event.getEntityLiving().getLastDamageSource().getDirectEntity() != null) {
-            Entity directEntity = event.getEntityLiving().getLastDamageSource().getDirectEntity();
-            if (directEntity instanceof Arrow) {
-                for (MobEffectInstance mobeffectinstance : ((Arrow) directEntity).potion.getEffects()) {
-                    if ((mobeffectinstance.getEffect() == MobEffects.REGENERATION || mobeffectinstance.getEffect() == MobEffects.HEAL)) {
-                        if ((event.getEntity() instanceof Mob && ((Mob) event.getEntity()).isInvertedHealAndHarm()))
-                            return;
-                        event.setCanceled(true);
-                        ((Arrow)directEntity).setKnockback(0);
-                    }
-                }
-            }
-        }
     }
 }

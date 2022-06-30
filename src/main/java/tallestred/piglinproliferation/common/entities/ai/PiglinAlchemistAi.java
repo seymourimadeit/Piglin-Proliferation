@@ -1,29 +1,30 @@
 package tallestred.piglinproliferation.common.entities.ai;
 
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
+import com.mojang.datafixers.util.Pair;
+import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.RandomSource;
 import net.minecraft.util.TimeUtil;
 import net.minecraft.util.valueproviders.UniformInt;
 import net.minecraft.world.InteractionHand;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.Brain;
 import net.minecraft.world.entity.ai.behavior.*;
 import net.minecraft.world.entity.ai.memory.MemoryModuleType;
+import net.minecraft.world.entity.ai.memory.MemoryStatus;
 import net.minecraft.world.entity.ai.sensing.Sensor;
 import net.minecraft.world.entity.ai.util.LandRandomPos;
-import net.minecraft.world.entity.monster.piglin.Piglin;
-import net.minecraft.world.entity.monster.piglin.PiglinAi;
-import net.minecraft.world.entity.monster.piglin.RememberIfHoglinWasKilled;
-import net.minecraft.world.entity.monster.piglin.StartAdmiringItemIfSeen;
+import net.minecraft.world.entity.monster.hoglin.Hoglin;
+import net.minecraft.world.entity.monster.piglin.*;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.schedule.Activity;
-import net.minecraft.world.item.CrossbowItem;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
+import net.minecraft.world.item.*;
 import net.minecraft.world.item.alchemy.PotionUtils;
 import net.minecraft.world.item.alchemy.Potions;
 import net.minecraft.world.level.storage.loot.LootContext;
@@ -32,11 +33,11 @@ import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.fml.util.ObfuscationReflectionHelper;
+import tallestred.piglinproliferation.PPActivities;
+import tallestred.piglinproliferation.PPMemoryModules;
 import tallestred.piglinproliferation.common.PPLootTables;
 import tallestred.piglinproliferation.common.entities.PiglinAlchemist;
-import tallestred.piglinproliferation.common.entities.ai.behaviors.BowAttack;
-import tallestred.piglinproliferation.common.entities.ai.behaviors.StopHoldingItemIfNoLongerAdmiringAlchemist;
-import tallestred.piglinproliferation.common.entities.ai.behaviors.ThrowPotionAtSelfTask;
+import tallestred.piglinproliferation.common.entities.ai.behaviors.*;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -45,6 +46,8 @@ import java.util.List;
 import java.util.Optional;
 
 public class PiglinAlchemistAi extends PiglinAi {
+    private static final UniformInt RIDE_START_INTERVAL = TimeUtil.rangeOfSeconds(10, 40);
+    private static final UniformInt RIDE_DURATION = TimeUtil.rangeOfSeconds(10, 30);
     private static final UniformInt AVOID_ZOMBIFIED_DURATION = TimeUtil.rangeOfSeconds(5, 7);
     private static final UniformInt BABY_AVOID_NEMESIS_DURATION = TimeUtil.rangeOfSeconds(5, 7);
     private static final Method hoglinRiding = ObfuscationReflectionHelper.findMethod(PiglinAi.class, "m_34973_",
@@ -55,10 +58,7 @@ public class PiglinAlchemistAi extends PiglinAi {
             Brain.class);
     private static final Method admireItem = ObfuscationReflectionHelper.findMethod(PiglinAi.class, "m_34940_",
             Brain.class);
-    private static final Method idle = ObfuscationReflectionHelper.findMethod(PiglinAi.class, "m_34891_",
-            Brain.class);
-    private static final Method core = ObfuscationReflectionHelper.findMethod(PiglinAi.class, "m_34820_",
-            Brain.class); // This has to be done because I don't feel like copying and pasting every method from PiglinAi
+    // This has to be done because I don't feel like copying and pasting every method from PiglinAi
 
     public PiglinAlchemistAi() {
 
@@ -66,13 +66,14 @@ public class PiglinAlchemistAi extends PiglinAi {
 
     public static Brain<?> makeBrain(PiglinAlchemist piglin, Brain<PiglinAlchemist> brain) {
         try {
-            PiglinAlchemistAi.idle.invoke(PiglinAi.class, brain);
-            PiglinAlchemistAi.initCoreActivity(brain);
+            PiglinAlchemistAi.initIdleActivity(brain);
+            PiglinAlchemistAi.initCoreActivity(brain, piglin);
             PiglinAlchemistAi.admireItem.invoke(PiglinAi.class, brain);
             PiglinAlchemistAi.initFightActivity(piglin, brain);
             PiglinAlchemistAi.celebrateActivity.invoke(PiglinAi.class, brain);
             PiglinAlchemistAi.retreatActivity.invoke(PiglinAi.class, brain);
             PiglinAlchemistAi.hoglinRiding.invoke(PiglinAi.class, brain);
+            PiglinAlchemistAi.initThrowPotionActivity(brain, piglin);
         } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
             new RuntimeException("Reflection failed, please report to the Piglin-Proliferation github");
         }
@@ -82,14 +83,95 @@ public class PiglinAlchemistAi extends PiglinAi {
         return brain;
     }
 
-    private static void initFightActivity(PiglinAlchemist piglin, Brain<PiglinAlchemist> p_34905_) {
-        p_34905_.addActivityAndRemoveMemoryWhenStopped(Activity.FIGHT, 10, ImmutableList.<net.minecraft.world.entity.ai.behavior.Behavior<? super Piglin>>of(new StopAttackingIfTargetInvalid<>((target) -> {
+    private static void initFightActivity(PiglinAlchemist piglin, Brain<PiglinAlchemist> brain) {
+        brain.addActivityAndRemoveMemoryWhenStopped(Activity.FIGHT, 10, ImmutableList.<net.minecraft.world.entity.ai.behavior.Behavior<? super PiglinAlchemist>>of(new StopAttackingIfTargetInvalid<>((target) -> {
             return !isNearestValidAttackTarget(piglin, target);
-        }), new RunIf<>(PiglinAlchemistAi::hasCrossbow, new BackUpIfTooClose(5, 0.75F)), new SetWalkTargetFromAttackTargetIfTargetOutOfReach(1.0F), new MeleeAttack(20), new CrossbowAttack(), new RememberIfHoglinWasKilled(), new BowAttack(1.5F, 15.0F, 20), new EraseMemoryIf<>(PiglinAlchemistAi::isNearZombified, MemoryModuleType.ATTACK_TARGET)), MemoryModuleType.ATTACK_TARGET);
+        }), new RunIf<>(PiglinAlchemistAi::hasCrossbow, new BackUpIfTooClose(5, 0.75F)), new SetWalkTargetFromAttackTargetIfTargetOutOfReach(1.0F), new MeleeAttack(20), new CrossbowAttack(), new RememberIfHoglinWasKilled(), new BowAttack(ImmutableMap.of(MemoryModuleType.WALK_TARGET, MemoryStatus.VALUE_ABSENT, MemoryModuleType.LOOK_TARGET, MemoryStatus.REGISTERED, MemoryModuleType.ATTACK_TARGET, MemoryStatus.VALUE_PRESENT), 1.5F, 15.0F, 20), new EraseMemoryIf<>(PiglinAlchemistAi::isNearZombified, MemoryModuleType.ATTACK_TARGET)), MemoryModuleType.ATTACK_TARGET);
     }
 
-    private static void initCoreActivity(Brain<PiglinAlchemist> p_34821_) {
-        p_34821_.addActivity(Activity.CORE, 0, ImmutableList.<Behavior<? super PiglinAlchemist>>of(new LookAtTargetSink(45, 90), new MoveToTargetSink(), new InteractWithDoor(), new ThrowPotionAtSelfTask<>(PotionUtils.setPotion(new ItemStack(Items.SPLASH_POTION), Potions.FIRE_RESISTANCE), (alchemist) -> alchemist.isAlive() && alchemist.isOnFire()), babyAvoidNemesis(), avoidZombified(), new StopHoldingItemIfNoLongerAdmiringAlchemist<>(), new StartAdmiringItemIfSeen<>(120), new StartCelebratingIfTargetDead(300, PiglinAlchemistAi::wantsToDance), new StopBeingAngryIfTargetDead<>()));
+    private static void initCoreActivity(Brain<PiglinAlchemist> brain, PiglinAlchemist alchmeist) {
+        brain.addActivity(Activity.CORE, 0, ImmutableList.<Behavior<? super PiglinAlchemist>>of(new LookAtTargetSink(45, 90), new MoveToTargetSink(), new InteractWithDoor(), new SwimOnlyOutOfLava(0.8F), avoidZombified(), generatePotionAi(alchmeist), new StopHoldingItemIfNoLongerAdmiringAlchemist<>(), new ShootTippedArrow(1.5F, 15.0F, 20, PotionUtils.setPotion(new ItemStack(Items.TIPPED_ARROW), Potions.STRONG_HEALING), (piglin -> piglin.isAlive() && piglin.getHealth() < piglin.getMaxHealth())), new StartAdmiringItemIfSeen<>(120), new StartCelebratingIfTargetDead(300, PiglinAlchemistAi::wantsToDance), new StopBeingAngryIfTargetDead<>()));
+    }
+
+    private static void initIdleActivity(Brain<PiglinAlchemist> brain) {
+        brain.addActivity(Activity.IDLE, 10, ImmutableList.<net.minecraft.world.entity.ai.behavior.Behavior<? super PiglinAlchemist>>of(new SetEntityLookTarget(PiglinAi::isPlayerHoldingLovedItem, 14.0F), new StartAttacking<>(AbstractPiglin::isAdult, PiglinAlchemistAi::findNearestValidAttackTarget), new RunIf<>(PiglinAlchemist::canHunt, new StartHuntingHoglin<>()), avoidRepellent(), babySometimesRideBabyHoglin(), createIdleLookBehaviors(), createIdleMovementBehaviors(), new SetLookAndInteract(EntityType.PLAYER, 4)));
+    }
+
+    private static void initThrowPotionActivity(Brain<PiglinAlchemist> brain, PiglinAlchemist piglin) {
+        brain.addActivityAndRemoveMemoryWhenStopped(PPActivities.THROW_POTION_ACTIVITY.get(), 10, ImmutableList.<Behavior<? super PiglinAlchemist>>of(new ShootTippedArrow(1.5F, 15.0F, 20, PotionUtils.setPotion(new ItemStack(Items.TIPPED_ARROW), Potions.STRONG_HEALING), (piglin2 -> piglin2.isAlive() && piglin2.getHealth() < piglin2.getMaxHealth())), generatePotionAi(piglin)), PPMemoryModules.POTION_THROW_TARGET.get());
+    }
+
+    private static RunSometimes<Piglin> babySometimesRideBabyHoglin() {
+        return new RunSometimes<>(new CopyMemoryWithExpiry<>(Piglin::isBaby, MemoryModuleType.NEAREST_VISIBLE_BABY_HOGLIN, MemoryModuleType.RIDE_TARGET, RIDE_DURATION), RIDE_START_INTERVAL);
+    }
+
+    private static RunOne<Piglin> createIdleLookBehaviors() {
+        return new RunOne<>(ImmutableList.of(Pair.of(new SetEntityLookTarget(EntityType.PLAYER, 8.0F), 1), Pair.of(new SetEntityLookTarget(EntityType.PIGLIN, 8.0F), 1), Pair.of(new SetEntityLookTarget(8.0F), 1), Pair.of(new DoNothing(30, 60), 1)));
+    }
+
+    private static RunOne<Piglin> createIdleMovementBehaviors() {
+        return new RunOne<>(ImmutableList.of(Pair.of(new MoveAroundPiglins(0.8F), 2), Pair.of(new RandomStroll(0.6F), 2), Pair.of(InteractWith.of(EntityType.PIGLIN, 8, MemoryModuleType.INTERACTION_TARGET, 0.6F, 2), 2), Pair.of(new RunIf<>(PiglinAlchemistAi::doesntSeeAnyPlayerHoldingLovedItem, new SetWalkTargetFromLookTarget(0.6F, 3)), 2), Pair.of(new DoNothing(30, 60), 1)));
+    }
+
+    private static RunOne<PiglinAlchemist> generatePotionAi(PiglinAlchemist piglinAlchemist) {
+        return new RunOne<>(ImmutableList.of(
+                Pair.of(new ThrowPotionAtTargetTask<>(PotionUtils.setPotion(new ItemStack(Items.SPLASH_POTION), Potions.FIRE_RESISTANCE),
+                        (alchemist) -> alchemist.isAlive(), (piglin) -> piglin.isAlive() && piglin.isOnFire()), 1),
+                Pair.of(new ThrowPotionAtTargetTask<>(PotionUtils.setPotion(new ItemStack(Items.SPLASH_POTION), Potions.STRONG_REGENERATION),
+                        (alchemist) -> alchemist.isAlive(), (piglin) -> {
+                    List<AbstractPiglin> list = piglinAlchemist.level.getEntitiesOfClass(AbstractPiglin.class, piglinAlchemist.getBoundingBox().inflate(10.0D, 3.0D, 10.0D));
+                    if (!list.isEmpty()) {
+                        for (AbstractPiglin piglin1 : list) {
+                            if (piglin1.getTarget() != null || piglinAlchemist.getTarget() != null)
+                                return list.size() > 2 && piglin.isAlive() && piglin.getHealth() < piglin.getMaxHealth();
+                            // This makes it so alchemists don't
+                            // attempt to throw a healing potion if theres 2 or less of them, as if they did it would make it so only one is attacking while the other is failing to throw the potion because the
+                            // attacker would just keep pushing into them
+                        }
+                    }
+                    return piglin.isAlive() && piglin.getHealth() < piglin.getMaxHealth();
+                }), 1),
+                Pair.of(new ThrowPotionAtTargetTask<>(PotionUtils.setPotion(new ItemStack(Items.SPLASH_POTION), Potions.STRONG_HEALING), (alchemist) -> {
+                    return alchemist.isAlive();
+                }, (piglin) -> {
+                    List<AbstractPiglin> list = piglinAlchemist.level.getEntitiesOfClass(AbstractPiglin.class, piglinAlchemist.getBoundingBox().inflate(10.0D, 3.0D, 10.0D));
+                    if (!list.isEmpty()) {
+                        for (AbstractPiglin piglin1 : list) {
+                            if (piglin1.getTarget() != null || piglinAlchemist.getTarget() != null)
+                                return piglin.isAlive() && piglin.getHealth() < piglin.getMaxHealth() && !piglinAlchemist.beltInventory.stream().anyMatch(itemStack -> PotionUtils.getPotion(itemStack) == Potions.STRONG_REGENERATION) && list.size() > 2; // This makes it so alchemists don't
+                            // attempt to throw a healing potion if theres only 2 or less of them, as if they did it would make it so only one is attacking while the other is failing to throw the potion because the
+                            // attacker would just keep pushing into them
+                        }
+                    }
+                    return piglin.isAlive() && piglin.getHealth() < piglin.getMaxHealth();
+                }), 1),
+                Pair.of(new ThrowPotionAtTargetTask<>(PotionUtils.setPotion(new ItemStack(Items.SPLASH_POTION), Potions.STRONG_STRENGTH), (alchemist) -> {
+                    return alchemist.isAlive();
+                }, (piglin) -> {
+                    return piglin.isAlive() && piglin.getTarget() != null && piglin.getHealth() < (piglin.getMaxHealth() / 2) && !piglin.isHolding((itemStack) -> {
+                        Item itemInStack = itemStack.getItem();
+                        return itemInStack instanceof ProjectileWeaponItem;
+                    });
+                }), 1),
+                Pair.of(new ThrowPotionAtTargetTask<>(PotionUtils.setPotion(new ItemStack(Items.SPLASH_POTION), Potions.FIRE_RESISTANCE),
+                        (alchemist) -> alchemist.isAlive(), (piglin) -> piglin.isAlive() && piglin.isOnFire()), 1),
+                Pair.of(new ThrowPotionAtTargetTask<>(PotionUtils.setPotion(new ItemStack(Items.SPLASH_POTION), Potions.FIRE_RESISTANCE),
+                        (alchemist) -> alchemist.isAlive(), (piglin) -> piglin.isAlive() && piglin.isOnFire()), 1),
+                Pair.of(new ThrowPotionAtSelfTask<>(PotionUtils.setPotion(new ItemStack(Items.SPLASH_POTION), Potions.STRONG_REGENERATION),
+                        (alchemist) -> alchemist.isAlive() && alchemist.getHealth() < alchemist.getMaxHealth()), 1),
+                Pair.of(new ThrowPotionAtSelfTask<>(PotionUtils.setPotion(new ItemStack(Items.SPLASH_POTION), Potions.FIRE_RESISTANCE),
+                        (alchemist) -> alchemist.isAlive() && alchemist.isOnFire()), 1),
+                Pair.of(new ThrowPotionAtSelfTask<>(PotionUtils.setPotion(new ItemStack(Items.SPLASH_POTION), Potions.STRONG_HEALING),
+                        (alchemist) -> alchemist.isAlive() && alchemist.getHealth() < alchemist.getMaxHealth() && !alchemist.beltInventory.stream().anyMatch(itemStack -> PotionUtils.getPotion(itemStack) == Potions.STRONG_REGENERATION)), 2)));
+    }
+
+
+    private static boolean doesntSeeAnyPlayerHoldingLovedItem(LivingEntity p_34983_) {
+        return !seesPlayerHoldingLovedItem(p_34983_);
+    }
+
+    private static boolean seesPlayerHoldingLovedItem(LivingEntity p_34972_) {
+        return p_34972_.getBrain().hasMemoryValue(MemoryModuleType.NEAREST_PLAYER_HOLDING_WANTED_ITEM);
     }
 
     private static CopyMemoryWithExpiry<Piglin, LivingEntity> babyAvoidNemesis() {
@@ -98,6 +180,10 @@ public class PiglinAlchemistAi extends PiglinAi {
 
     private static CopyMemoryWithExpiry<Piglin, LivingEntity> avoidZombified() {
         return new CopyMemoryWithExpiry<>(PiglinAlchemistAi::isNearZombified, MemoryModuleType.NEAREST_VISIBLE_ZOMBIFIED, MemoryModuleType.AVOID_TARGET, AVOID_ZOMBIFIED_DURATION);
+    }
+
+    private static SetWalkTargetAwayFrom<BlockPos> avoidRepellent() {
+        return SetWalkTargetAwayFrom.pos(MemoryModuleType.NEAREST_REPELLENT, 1.0F, 8, false);
     }
 
     private static boolean wantsToDance(LivingEntity p_34811_, LivingEntity p_34812_) {
@@ -186,29 +272,29 @@ public class PiglinAlchemistAi extends PiglinAi {
         });
     }
 
-    private static boolean isNearestValidAttackTarget(Piglin p_34901_, LivingEntity p_34902_) {
-        return findNearestValidAttackTarget(p_34901_).filter((p_34887_) -> {
+    private static boolean isNearestValidAttackTarget(Piglin piglin, LivingEntity p_34902_) {
+        return findNearestValidAttackTarget(piglin).filter((p_34887_) -> {
             return p_34887_ == p_34902_;
         }).isPresent();
     }
 
-    private static boolean isNearZombified(Piglin p_34999_) {
-        Brain<Piglin> brain = p_34999_.getBrain();
+    private static boolean isNearZombified(Piglin piglin) {
+        Brain<Piglin> brain = piglin.getBrain();
         if (brain.hasMemoryValue(MemoryModuleType.NEAREST_VISIBLE_ZOMBIFIED)) {
             LivingEntity livingentity = (LivingEntity) brain.getMemory(MemoryModuleType.NEAREST_VISIBLE_ZOMBIFIED).get();
-            return p_34999_.closerThan(livingentity, 6.0);
+            return piglin.closerThan(livingentity, 6.0);
         } else {
             return false;
         }
     }
 
-    private static Optional<? extends LivingEntity> findNearestValidAttackTarget(Piglin p_35001_) {
-        Brain<Piglin> brain = p_35001_.getBrain();
-        if (isNearZombified(p_35001_)) {
+    private static Optional<? extends LivingEntity> findNearestValidAttackTarget(Piglin piglin) {
+        Brain<Piglin> brain = piglin.getBrain();
+        if (isNearZombified(piglin)) {
             return Optional.empty();
         } else {
-            Optional<LivingEntity> optional = BehaviorUtils.getLivingEntityFromUUIDMemory(p_35001_, MemoryModuleType.ANGRY_AT);
-            if (optional.isPresent() && Sensor.isEntityAttackableIgnoringLineOfSight(p_35001_, (LivingEntity) optional.get())) {
+            Optional<LivingEntity> optional = BehaviorUtils.getLivingEntityFromUUIDMemory(piglin, MemoryModuleType.ANGRY_AT);
+            if (optional.isPresent() && Sensor.isEntityAttackableIgnoringLineOfSight(piglin, (LivingEntity) optional.get())) {
                 return optional;
             } else {
                 Optional optional3;
@@ -224,14 +310,38 @@ public class PiglinAlchemistAi extends PiglinAi {
                     return optional3;
                 } else {
                     Optional<Player> optional2 = brain.getMemory(MemoryModuleType.NEAREST_TARGETABLE_PLAYER_NOT_WEARING_GOLD);
-                    return optional2.isPresent() && Sensor.isEntityAttackable(p_35001_, (LivingEntity) optional2.get()) ? optional2 : Optional.empty();
+                    return optional2.isPresent() && Sensor.isEntityAttackable(piglin, (LivingEntity) optional2.get()) ? optional2 : Optional.empty();
                 }
             }
         }
     }
 
-    private static Vec3 getRandomNearbyPos(Piglin p_35017_) {
-        Vec3 vec3 = LandRandomPos.getPos(p_35017_, 4, 2);
-        return vec3 == null ? p_35017_.position() : vec3;
+    private static Vec3 getRandomNearbyPos(Piglin piglin) {
+        Vec3 vec3 = LandRandomPos.getPos(piglin, 4, 2);
+        return vec3 == null ? piglin.position() : vec3;
+    }
+
+    private static boolean isBabyRidingBaby(Piglin piglin) {
+        if (!piglin.isBaby()) {
+            return false;
+        } else {
+            Entity entity = piglin.getVehicle();
+            return entity instanceof Piglin && ((Piglin) entity).isBaby() || entity instanceof Hoglin && ((Hoglin) entity).isBaby();
+        }
+    }
+
+    public static void updateActivity(PiglinAlchemist piglin) {
+        Brain<Piglin> brain = piglin.getBrain();
+        Activity activity = brain.getActiveNonCoreActivity().orElse(null);
+        brain.setActiveActivityToFirstValid(ImmutableList.of(PPActivities.THROW_POTION_ACTIVITY.get(), Activity.ADMIRE_ITEM, Activity.FIGHT, Activity.AVOID, Activity.CELEBRATE, Activity.RIDE, Activity.IDLE));
+        Activity activity1 = brain.getActiveNonCoreActivity().orElse(null);
+        if (activity != activity1)
+            getSoundForCurrentActivity(piglin).ifPresent(piglin::playSoundEvent);
+        piglin.setAggressive(brain.hasMemoryValue(MemoryModuleType.ATTACK_TARGET));
+        if (!brain.hasMemoryValue(MemoryModuleType.RIDE_TARGET) && isBabyRidingBaby(piglin))
+            piglin.stopRiding();
+        if (!brain.hasMemoryValue(MemoryModuleType.CELEBRATE_LOCATION))
+            brain.eraseMemory(MemoryModuleType.DANCING);
+        piglin.setDancing(brain.hasMemoryValue(MemoryModuleType.DANCING));
     }
 }

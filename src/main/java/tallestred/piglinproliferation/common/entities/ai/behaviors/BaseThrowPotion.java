@@ -3,23 +3,24 @@ package tallestred.piglinproliferation.common.entities.ai.behaviors;
 import com.google.common.collect.ImmutableMap;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.behavior.Behavior;
-import net.minecraft.world.entity.ai.memory.MemoryModuleType;
 import net.minecraft.world.entity.ai.memory.MemoryStatus;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.alchemy.PotionUtils;
+import tallestred.piglinproliferation.PPMemoryModules;
 import tallestred.piglinproliferation.common.entities.PiglinAlchemist;
 
 import java.util.function.Predicate;
 
-public class BaseThrowPotionTask<E extends PiglinAlchemist> extends Behavior<E> {
-    protected final ItemStack itemToUse;
+public class BaseThrowPotion<E extends PiglinAlchemist> extends Behavior<E> {
+    protected final ItemStack itemToUse; // This should probably be a memory value in the near future
     protected final Predicate<PiglinAlchemist> canUseSelector;
     protected ItemStack potionToThrow;
+    protected int ticksUntilThrow;
+    protected int panicTicks;
 
-    public BaseThrowPotionTask(ItemStack stack, Predicate<PiglinAlchemist> pCanUseSelector) {
-        super(ImmutableMap.of());
+    public BaseThrowPotion(ItemStack stack, Predicate<PiglinAlchemist> pCanUseSelector) {
+        super(ImmutableMap.of(PPMemoryModules.POTION_THROW_TARGET.get(), MemoryStatus.VALUE_ABSENT));
         this.itemToUse = stack;
         this.canUseSelector = pCanUseSelector;
     }
