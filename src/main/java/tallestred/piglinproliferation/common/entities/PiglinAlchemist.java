@@ -71,68 +71,11 @@ public class PiglinAlchemist extends Piglin {
     }
 
     public static AttributeSupplier.@NotNull Builder createAttributes() {
-        return Piglin.createAttributes().add(Attributes.MAX_HEALTH, 20.0D);
+        return Piglin.createAttributes().add(Attributes.MAX_HEALTH, 20.0D).add(Attributes.FOLLOW_RANGE, 20.0D);
     }
 
     public static boolean checkChemistSpawnRules(EntityType<PiglinAlchemist> p_219198_, LevelAccessor p_219199_, MobSpawnType p_219200_, BlockPos p_219201_, RandomSource p_219202_) {
         return !p_219199_.getBlockState(p_219201_.below()).is(Blocks.NETHER_WART_BLOCK);
-    }
-
-    // TODO reimplement these as tasks for the brain ai
-    @Override
-    public void registerGoals() {
-        super.registerGoals();
-     /*   this.goalSelector.addGoal(0, new HelpAlliesWithTippedArrowGoal(this, 1.0D, 20, 15.0F, PotionUtils.setPotion(new ItemStack(Items.TIPPED_ARROW), Potions.STRONG_HEALING), (piglin -> piglin.isAlive() && piglin.getHealth() < piglin.getMaxHealth())));
-        this.goalSelector.addGoal(1, new ThrowPotionOnOthersGoal(this, PotionUtils.setPotion(new ItemStack(Items.SPLASH_POTION), Potions.FIRE_RESISTANCE), (alchemist) -> alchemist.isAlive(), (piglin) -> piglin.isAlive() && piglin.isOnFire()));
-        this.goalSelector.addGoal(2, new ThrowPotionOnOthersGoal(this, PotionUtils.setPotion(new ItemStack(Items.SPLASH_POTION), Potions.STRONG_REGENERATION), (alchemist) -> alchemist.isAlive(), (piglin) -> {
-            List<AbstractPiglin> list = this.level.getEntitiesOfClass(AbstractPiglin.class, this.getBoundingBox().inflate(10.0D, 3.0D, 10.0D));
-            if (!list.isEmpty()) {
-                for (AbstractPiglin piglin1 : list) {
-                    if (piglin1 != this) {
-                        if (piglin1.getTarget() != null || this.getTarget() != null)
-                            return list.size() > 2 && piglin.isAlive() && piglin.getHealth() < piglin.getMaxHealth(); // This makes it so alchemists don't
-                        // attempt to throw a healing potion if theres 2 or less of them, as if they did it would make it so only one is attacking while the other is failing to throw the potion because the
-                        // attacker would just keep pushing into them
-                    }
-                }
-            }
-            return piglin.isAlive() && piglin.getHealth() < piglin.getMaxHealth();
-        }));
-        this.goalSelector.addGoal(3, new ThrowPotionOnOthersGoal(this, PotionUtils.setPotion(new ItemStack(Items.SPLASH_POTION), Potions.STRONG_HEALING), (alchemist) -> {
-            return alchemist.isAlive();
-        }, (piglin) -> {
-            List<AbstractPiglin> list = this.level.getEntitiesOfClass(AbstractPiglin.class, this.getBoundingBox().inflate(10.0D, 3.0D, 10.0D));
-            if (!list.isEmpty()) {
-                for (AbstractPiglin piglin1 : list) {
-                    if (piglin1 != this) {
-                        if (piglin1.getTarget() != null || this.getTarget() != null)
-                            return piglin.isAlive() && piglin.getHealth() < piglin.getMaxHealth() && !this.beltInventory.stream().anyMatch(itemStack -> PotionUtils.getPotion(itemStack) == Potions.STRONG_REGENERATION) && list.size() > 2; // This makes it so alchemists don't
-                        // attempt to throw a healing potion if theres only 2 or less of them, as if they did it would make it so only one is attacking while the other is failing to throw the potion because the
-                        // attacker would just keep pushing into them
-                    }
-                }
-            }
-            return piglin.isAlive() && piglin.getHealth() < piglin.getMaxHealth();
-        }));
-        this.goalSelector.addGoal(4, new ThrowPotionOnOthersGoal(this, PotionUtils.setPotion(new ItemStack(Items.SPLASH_POTION), Potions.STRONG_STRENGTH), (alchemist) -> {
-            return alchemist.isAlive();
-        }, (piglin) -> {
-            return piglin.isAlive() && piglin.getTarget() != null && piglin.getHealth() < (piglin.getMaxHealth() / 2) && !piglin.isHolding((itemStack) -> {
-                Item itemInStack = itemStack.getItem();
-                return itemInStack instanceof ProjectileWeaponItem;
-            });
-        }));
-        this.goalSelector.addGoal(5, new ThrowPotionOnSelfGoal(this, PotionUtils.setPotion(new ItemStack(Items.SPLASH_POTION), Potions.FIRE_RESISTANCE), (alchemist) -> {
-            return alchemist.isAlive() && alchemist.isOnFire();
-        }));
-        this.goalSelector.addGoal(6, new ThrowPotionOnSelfGoal(this, PotionUtils.setPotion(new ItemStack(Items.SPLASH_POTION), Potions.STRONG_REGENERATION), (alchemist) -> {
-            return alchemist.isAlive() && alchemist.getHealth() < alchemist.getMaxHealth();
-        }));
-        this.goalSelector.addGoal(7, new ThrowPotionOnSelfGoal(this, PotionUtils.setPotion(new ItemStack(Items.SPLASH_POTION), Potions.STRONG_HEALING), (alchemist) -> {
-            return alchemist.isAlive() && alchemist.getHealth() < alchemist.getMaxHealth() && !this.beltInventory.stream().anyMatch(itemStack -> PotionUtils.getPotion(itemStack) == Potions.STRONG_REGENERATION);
-        }));*/
-        this.goalSelector.addGoal(8, new SwimAwayFromLavaGoal(this, 1.0D));
-        this.goalSelector.addGoal(10, new MoveAroundLargeGroupsOfPiglinsGoal(this, 1.0D));
     }
 
     @Override
