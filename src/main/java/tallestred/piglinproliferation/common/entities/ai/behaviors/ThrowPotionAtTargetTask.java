@@ -34,7 +34,7 @@ public class ThrowPotionAtTargetTask<E extends PiglinAlchemist> extends BaseThro
             for (AbstractPiglin piglin : list) {
                 if (piglin != alchemist) {
                     for (MobEffectInstance mobeffectinstance : PotionUtils.getMobEffects(itemToUse)) {
-                        if (piglin != null && super.checkExtraStartConditions(level, alchemist) && list.stream().filter(abstractPiglin -> abstractPiglin != alchemist && abstractPiglin instanceof PiglinAlchemist && ((PiglinAlchemist) abstractPiglin).isGonnaThrowPotion()).toList().isEmpty() && this.nearbyPiglinPredicate.test(piglin) && !piglin.hasEffect(mobeffectinstance.getEffect())) {
+                        if (piglin != null && alchemist.hasLineOfSight(piglin) && super.checkExtraStartConditions(level, alchemist) && list.stream().filter(abstractPiglin -> abstractPiglin != alchemist && abstractPiglin instanceof PiglinAlchemist && ((PiglinAlchemist) abstractPiglin).isGonnaThrowPotion()).toList().isEmpty() && this.nearbyPiglinPredicate.test(piglin) && !piglin.hasEffect(mobeffectinstance.getEffect())) {
                             alchemist.getBrain().setMemory(PPMemoryModules.POTION_THROW_TARGET.get(), piglin);
                             return true;
                         }
