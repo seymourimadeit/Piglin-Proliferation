@@ -20,21 +20,16 @@ import net.minecraft.world.DifficultyInstance;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
-import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.EquipmentSlot;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.MobSpawnType;
+import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.Brain;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.memory.MemoryModuleType;
-import net.minecraft.world.entity.monster.piglin.AbstractPiglin;
 import net.minecraft.world.entity.monster.piglin.Piglin;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.AbstractArrow;
 import net.minecraft.world.entity.projectile.ProjectileUtil;
 import net.minecraft.world.entity.projectile.ThrownPotion;
-import net.minecraft.world.entity.schedule.Activity;
 import net.minecraft.world.item.*;
 import net.minecraft.world.item.alchemy.Potion;
 import net.minecraft.world.item.alchemy.PotionUtils;
@@ -45,17 +40,16 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.pathfinder.BlockPathTypes;
 import net.minecraftforge.network.PacketDistributor;
 import org.jetbrains.annotations.NotNull;
-import tallestred.piglinproliferation.PPActivities;
 import tallestred.piglinproliferation.PPMemoryModules;
 import tallestred.piglinproliferation.client.PPSounds;
 import tallestred.piglinproliferation.common.entities.ai.PiglinAlchemistAi;
-import tallestred.piglinproliferation.common.entities.ai.goals.MoveAroundLargeGroupsOfPiglinsGoal;
-import tallestred.piglinproliferation.common.entities.ai.goals.SwimAwayFromLavaGoal;
 import tallestred.piglinproliferation.networking.AlchemistBeltSyncPacket;
 import tallestred.piglinproliferation.networking.PPNetworking;
 
+import javax.annotation.Nullable;
 import java.util.List;
 
 public class PiglinAlchemist extends Piglin {
@@ -110,6 +104,26 @@ public class PiglinAlchemist extends Piglin {
         this.entityData.define(ITEM_SHOWN_ON_OFFHAND, ItemStack.EMPTY);
     }
 
+    @Override
+    protected void onEffectAdded(MobEffectInstance mobEffect, @Nullable Entity entity) {
+        if (mobEffect.getEffect() == MobEffects.FIRE_RESISTANCE) {
+            this.setPathfindingMalus(BlockPathTypes.DANGER_FIRE, 0.0F);
+            this.setPathfindingMalus(BlockPathTypes.DAMAGE_FIRE, 0.0F);
+            this.setPathfindingMalus(BlockPathTypes.LAVA, 0.0F);
+        }
+        super.onEffectAdded(mobEffect, entity);
+    }
+
+    @Override
+    protected void onEffectRemoved(MobEffectInstance mobEffectInstance) {
+        if (mobEffectInstance.getEffect() == MobEffects.FIRE_RESISTANCE) {
+            this.setPathfindingMalus(BlockPathTypes.DANGER_FIRE, 16.0F);
+            this.setPathfindingMalus(BlockPathTypes.DAMAGE_FIRE, -1.0F);
+            this.setPathfindingMalus(BlockPathTypes.LAVA, -1.0F);
+        }
+        super.onEffectRemoved(mobEffectInstance);
+    }
+
     public boolean isGonnaThrowPotion() {
         return this.entityData.get(IS_ABOUT_TO_THROW_POTION);
     }
@@ -123,10 +137,10 @@ public class PiglinAlchemist extends Piglin {
         }
         if (this.timeInOverworld > 300 && net.minecraftforge.event.ForgeEventFactory.canLivingConvert(this, EntityType.ZOMBIFIED_PIGLIN, (timer) -> this.timeInOverworld = timer)) {
             this.playConvertedSound();
-            this.finishConversion((ServerLevel)this.level);
+            this.finishConversion((ServerLevel) this.level);
         }
         this.level.getProfiler().push("piglinBrain");
-        this.getBrain().tick((ServerLevel)this.level, this);
+        this.getBrain().tick((ServerLevel) this.level, this);
         this.level.getProfiler().pop();
         PiglinAlchemistAi.updateActivity(this);
     }
