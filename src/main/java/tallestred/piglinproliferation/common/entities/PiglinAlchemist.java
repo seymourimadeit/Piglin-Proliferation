@@ -19,10 +19,7 @@ import net.minecraft.world.DifficultyInstance;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
-import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.EquipmentSlot;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.MobSpawnType;
+import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.Brain;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
@@ -42,6 +39,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.pathfinder.BlockPathTypes;
 import net.minecraftforge.network.PacketDistributor;
 import org.jetbrains.annotations.NotNull;
 import tallestred.piglinproliferation.PPMemoryModules;
@@ -50,6 +48,7 @@ import tallestred.piglinproliferation.common.entities.ai.PiglinAlchemistAi;
 import tallestred.piglinproliferation.networking.AlchemistBeltSyncPacket;
 import tallestred.piglinproliferation.networking.PPNetworking;
 
+import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Random;
 
@@ -78,6 +77,26 @@ public class PiglinAlchemist extends Piglin {
         super.defineSynchedData();
         this.entityData.define(IS_ABOUT_TO_THROW_POTION, false);
         this.entityData.define(ITEM_SHOWN_ON_OFFHAND, ItemStack.EMPTY);
+    }
+
+    @Override
+    protected void onEffectAdded(MobEffectInstance mobEffect, @Nullable Entity entity) {
+        if (mobEffect.getEffect() == MobEffects.FIRE_RESISTANCE) {
+            this.setPathfindingMalus(BlockPathTypes.DANGER_FIRE, 0.0F);
+            this.setPathfindingMalus(BlockPathTypes.DAMAGE_FIRE, 0.0F);
+            this.setPathfindingMalus(BlockPathTypes.LAVA, 0.0F);
+        }
+        super.onEffectAdded(mobEffect, entity);
+    }
+
+    @Override
+    protected void onEffectRemoved(MobEffectInstance mobEffectInstance) {
+        if (mobEffectInstance.getEffect() == MobEffects.FIRE_RESISTANCE) {
+            this.setPathfindingMalus(BlockPathTypes.DANGER_FIRE, 16.0F);
+            this.setPathfindingMalus(BlockPathTypes.DAMAGE_FIRE, -1.0F);
+            this.setPathfindingMalus(BlockPathTypes.LAVA, -1.0F);
+        }
+        super.onEffectRemoved(mobEffectInstance);
     }
 
     public boolean isGonnaThrowPotion() {

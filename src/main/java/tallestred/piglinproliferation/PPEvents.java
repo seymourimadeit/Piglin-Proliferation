@@ -1,5 +1,6 @@
 package tallestred.piglinproliferation;
 
+import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.LivingEntity;
@@ -11,8 +12,10 @@ import net.minecraft.world.item.alchemy.PotionUtils;
 import net.minecraft.world.item.alchemy.Potions;
 import net.minecraft.world.level.biome.Biomes;
 import net.minecraft.world.level.biome.MobSpawnSettings;
+import net.minecraft.world.level.pathfinder.BlockPathTypes;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
+import net.minecraftforge.event.entity.living.PotionEvent;
 import net.minecraftforge.event.world.BiomeLoadingEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -29,6 +32,30 @@ public class PPEvents {
             piglin.goalSelector.addGoal(0, new PiglinCallForHelpGoal(piglin, (piglin1) -> piglin1.getHealth() < piglin1.getMaxHealth() && !piglin1.hasEffect(MobEffects.REGENERATION), (alchemist -> alchemist.getItemShownOnOffhand() != null && PotionUtils.getPotion(alchemist.getItemShownOnOffhand()) == Potions.STRONG_REGENERATION)));
             piglin.goalSelector.addGoal(0, new PiglinCallForHelpGoal(piglin, (piglin1) -> piglin1.getHealth() < piglin1.getMaxHealth() && !piglin1.hasEffect(MobEffects.HEAL), (alchemist -> alchemist.getItemShownOnOffhand() != null && PotionUtils.getPotion(alchemist.getItemShownOnOffhand()) == Potions.STRONG_HEALING)));
             piglin.goalSelector.addGoal(0, new PiglinCallForHelpGoal(piglin, (piglin1) -> piglin1.getHealth() < (piglin1.getMaxHealth() / 2) && piglin1.getTarget() != null && !piglin1.hasEffect(MobEffects.DAMAGE_BOOST), (alchemist -> alchemist.getItemShownOnOffhand() != null && PotionUtils.getPotion(alchemist.getItemShownOnOffhand()) == Potions.STRONG_STRENGTH)));
+        }
+    }
+
+    @SubscribeEvent
+    public static void onEffectApplied(PotionEvent.PotionAddedEvent event) {
+        MobEffect mobEffect = event.getPotionEffect().getEffect();
+        if (event.getEntityLiving() instanceof AbstractPiglin piglin) {
+            if (mobEffect == MobEffects.FIRE_RESISTANCE) {
+                piglin.setPathfindingMalus(BlockPathTypes.DANGER_FIRE, 0.0F);
+                piglin.setPathfindingMalus(BlockPathTypes.DAMAGE_FIRE, 0.0F);
+                piglin.setPathfindingMalus(BlockPathTypes.LAVA, 0.0F);
+            }
+        }
+    }
+
+    @SubscribeEvent
+    public static void onEffectRemoved(PotionEvent.PotionRemoveEvent event) {
+        MobEffect mobEffect = event.getPotionEffect().getEffect();
+        if (event.getEntityLiving() instanceof AbstractPiglin piglin) {
+            if (mobEffect == MobEffects.FIRE_RESISTANCE) {
+                piglin.setPathfindingMalus(BlockPathTypes.DANGER_FIRE, 16.0F);
+                piglin.setPathfindingMalus(BlockPathTypes.DAMAGE_FIRE, -1.0F);
+                piglin.setPathfindingMalus(BlockPathTypes.LAVA, -1.0F);
+            }
         }
     }
 
