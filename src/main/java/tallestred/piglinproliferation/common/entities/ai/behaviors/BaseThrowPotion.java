@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableMap;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.ai.behavior.Behavior;
+import net.minecraft.world.entity.ai.memory.MemoryModuleType;
 import net.minecraft.world.entity.ai.memory.MemoryStatus;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.alchemy.PotionUtils;
@@ -20,7 +21,7 @@ public class BaseThrowPotion<E extends PiglinAlchemist> extends Behavior<E> {
     protected int panicTicks;
 
     public BaseThrowPotion(ItemStack stack, Predicate<PiglinAlchemist> pCanUseSelector) {
-        super(ImmutableMap.of(PPMemoryModules.POTION_THROW_TARGET.get(), MemoryStatus.VALUE_ABSENT));
+        super(ImmutableMap.of(PPMemoryModules.POTION_THROW_TARGET.get(), MemoryStatus.VALUE_ABSENT, MemoryModuleType.NEAREST_VISIBLE_LIVING_ENTITIES,  MemoryStatus.REGISTERED));
         this.itemToUse = stack;
         this.canUseSelector = pCanUseSelector;
     }

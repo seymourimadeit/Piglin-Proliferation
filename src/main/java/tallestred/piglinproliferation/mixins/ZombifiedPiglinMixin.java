@@ -53,7 +53,7 @@ public abstract class ZombifiedPiglinMixin extends Zombie {
             if (randomSource.nextFloat() < 0.50F)
                 tSource.setTransformationSource("piglin");
             float bruteChance = 0.10F;
-            Registry<Structure> registry = this.getLevel().registryAccess().registryOrThrow(Registry.STRUCTURE_REGISTRY);
+            /*   Registry<Structure> registry = this.getLevel().registryAccess().registryOrThrow(Registry.STRUCTURE_REGISTRY);
             HolderSet.Direct<Structure> holderset = HolderSet.direct(registry.getHolderOrThrow(BuiltinStructures.BASTION_REMNANT));
             Pair<BlockPos, Holder<Structure>> pos = ((ServerLevel) this.getLevel()).getChunkSource().getGenerator().findNearestMapStructure((ServerLevel) this.getLevel(), holderset, this.blockPosition(), 50, false);
             if (pos != null) {
@@ -61,7 +61,7 @@ public abstract class ZombifiedPiglinMixin extends Zombie {
                 if (structurePos.closerToCenterThan(this.position(), 150.0D)) {
                     bruteChance += 0.15F;
                 }
-            }
+            }*/ // MAY OR MAY NOT CAUSE A WORLD DEADLOCK IN THIS VERSION ASWELL
             if (randomSource.nextFloat() < bruteChance) {
                 this.setItemSlot(EquipmentSlot.MAINHAND, new ItemStack(Items.GOLDEN_AXE));
                 tSource.setTransformationSource("piglin_brute");

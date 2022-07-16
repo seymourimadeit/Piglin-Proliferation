@@ -120,7 +120,7 @@ public class BowAttack<E extends PiglinAlchemist, T extends LivingEntity> extend
                     }
                 }
                 if (alchemist.getNavigation().isStuck())
-                    this.avoidTime -= 4;
+                    alchemist.getNavigation().stop();
             }
         }
     }
