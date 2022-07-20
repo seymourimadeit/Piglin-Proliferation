@@ -18,7 +18,7 @@ version="${file.jarVersion}" #mandatory
 displayName="Piglin Proliferation" #mandatory
 #updateJSONURL="https://change.me.example.invalid/updates.json" #optional
 # logoFile="piglinproliferation.png" #optional
-credits="TallestEgg, Edmord for the alchemist texture" #optional
+credits="TallestEgg, Edmord for the alchemist texture, www.fesliyanstudios.com for the sounds" #optional
 description='''
 Piglins expanded in new ways!
 '''
