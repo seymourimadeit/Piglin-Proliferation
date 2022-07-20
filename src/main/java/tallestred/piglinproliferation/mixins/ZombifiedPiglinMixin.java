@@ -1,13 +1,7 @@
 package tallestred.piglinproliferation.mixins;
 
-import com.mojang.datafixers.util.Pair;
-import net.minecraft.core.BlockPos;
-import net.minecraft.core.Holder;
-import net.minecraft.core.HolderSet;
-import net.minecraft.core.Registry;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.DifficultyInstance;
 import net.minecraft.world.entity.EquipmentSlot;
@@ -20,8 +14,6 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.ServerLevelAccessor;
-import net.minecraft.world.level.levelgen.structure.BuiltinStructures;
-import net.minecraft.world.level.levelgen.structure.Structure;
 import net.minecraftforge.fml.ModList;
 import net.minecraftforge.registries.ForgeRegistries;
 import org.jetbrains.annotations.Nullable;
@@ -50,18 +42,8 @@ public abstract class ZombifiedPiglinMixin extends Zombie {
         RandomSource randomSource = level.getRandom();
         TransformationSourceListener tSource = PPEvents.getTransformationSourceListener(this);
         if (p_34299_ != MobSpawnType.CONVERSION) {
-            if (randomSource.nextFloat() < 0.50F)
-                tSource.setTransformationSource("piglin");
-            float bruteChance = 0.10F;
-            /*   Registry<Structure> registry = this.getLevel().registryAccess().registryOrThrow(Registry.STRUCTURE_REGISTRY);
-            HolderSet.Direct<Structure> holderset = HolderSet.direct(registry.getHolderOrThrow(BuiltinStructures.BASTION_REMNANT));
-            Pair<BlockPos, Holder<Structure>> pos = ((ServerLevel) this.getLevel()).getChunkSource().getGenerator().findNearestMapStructure((ServerLevel) this.getLevel(), holderset, this.blockPosition(), 50, false);
-            if (pos != null) {
-                BlockPos structurePos = new BlockPos(pos.getFirst().getX(), this.getY(), pos.getFirst().getZ());
-                if (structurePos.closerToCenterThan(this.position(), 150.0D)) {
-                    bruteChance += 0.15F;
-                }
-            }*/ // MAY OR MAY NOT CAUSE A WORLD DEADLOCK IN THIS VERSION ASWELL
+            tSource.setTransformationSource("piglin"); // Make this a config
+            float bruteChance = 0.015F;
             if (randomSource.nextFloat() < bruteChance) {
                 this.setItemSlot(EquipmentSlot.MAINHAND, new ItemStack(Items.GOLDEN_AXE));
                 tSource.setTransformationSource("piglin_brute");
@@ -69,6 +51,10 @@ public abstract class ZombifiedPiglinMixin extends Zombie {
                     Item buckler = ForgeRegistries.ITEMS.getValue(new ResourceLocation("bigbrain:buckler"));
                     this.setItemSlot(EquipmentSlot.OFFHAND, new ItemStack(buckler));
                 }
+            }
+            if (randomSource.nextFloat() < 0.10F) {
+                this.setItemSlot(EquipmentSlot.MAINHAND, new ItemStack(Items.BOW));
+                tSource.setTransformationSource("piglin_alchemist");
             }
         }
         return dataGroup;

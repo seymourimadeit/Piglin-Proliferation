@@ -6,6 +6,8 @@ import com.google.common.collect.ImmutableSet;
 import com.mojang.datafixers.util.Pair;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.sounds.SoundEvent;
+import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.RandomSource;
 import net.minecraft.util.TimeUtil;
 import net.minecraft.util.valueproviders.UniformInt;
@@ -32,6 +34,7 @@ import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.fml.util.ObfuscationReflectionHelper;
 import tallestred.piglinproliferation.PPActivities;
 import tallestred.piglinproliferation.PPMemoryModules;
+import tallestred.piglinproliferation.client.PPSounds;
 import tallestred.piglinproliferation.common.PPLootTables;
 import tallestred.piglinproliferation.common.entities.PiglinAlchemist;
 import tallestred.piglinproliferation.common.entities.ai.behaviors.*;
@@ -335,13 +338,45 @@ public class PiglinAlchemistAi extends PiglinAi {
         }
     }
 
+    public static Optional<SoundEvent> getAlchemistSoundForCurrentActivity(PiglinAlchemist piglin) {
+        return piglin.getBrain().getActiveNonCoreActivity().map((activity) -> getAlchemistSoundForActivity(piglin, activity));
+    }
+
+    private static SoundEvent getAlchemistSoundForActivity(Piglin piglin, Activity activity) {
+        if (activity == Activity.FIGHT) {
+            return PPSounds.ALCHEMIST_ANGRY.get();
+        } else if (piglin.isConverting()) {
+            return PPSounds.ALCHEMIST_RETREAT.get();
+        } else if (activity == Activity.AVOID && isNearAvoidTarget(piglin)) {
+            return PPSounds.ALCHEMIST_RETREAT.get();
+        } else if (activity == Activity.ADMIRE_ITEM) {
+            return PPSounds.ALCHEMIST_ADMIRE.get();
+        } else if (activity == Activity.CELEBRATE) {
+            return PPSounds.ALCHEMIST_CELEBRATE.get();
+        } else if (seesPlayerHoldingLovedItem(piglin)) {
+            return PPSounds.ALCHEMIST_JEALOUS.get();
+        } else {
+            return isNearRepellent(piglin) ? PPSounds.ALCHEMIST_RETREAT.get() : PPSounds.ALCHEMIST_IDLE.get();
+        }
+    }
+
+    private static boolean isNearAvoidTarget(Piglin p_35003_) {
+        Brain<Piglin> brain = p_35003_.getBrain();
+        return !brain.hasMemoryValue(MemoryModuleType.AVOID_TARGET) ? false : brain.getMemory(MemoryModuleType.AVOID_TARGET).get().closerThan(p_35003_, 12.0D);
+    }
+
+    private static boolean isNearRepellent(Piglin p_35023_) {
+        return p_35023_.getBrain().hasMemoryValue(MemoryModuleType.NEAREST_REPELLENT);
+    }
+
+
     public static void updateActivity(PiglinAlchemist piglin) {
         Brain<Piglin> brain = piglin.getBrain();
         Activity activity = brain.getActiveNonCoreActivity().orElse(null);
         brain.setActiveActivityToFirstValid(ImmutableList.of(PPActivities.THROW_POTION_ACTIVITY.get(), Activity.ADMIRE_ITEM, Activity.FIGHT, Activity.AVOID, Activity.CELEBRATE, Activity.RIDE, Activity.IDLE));
         Activity activity1 = brain.getActiveNonCoreActivity().orElse(null);
         if (activity != activity1)
-            getSoundForCurrentActivity(piglin).ifPresent(piglin::playSoundEvent);
+            getAlchemistSoundForCurrentActivity(piglin).ifPresent(piglin::playSoundEvent);
         piglin.setAggressive(brain.hasMemoryValue(MemoryModuleType.ATTACK_TARGET));
         if (!brain.hasMemoryValue(MemoryModuleType.RIDE_TARGET) && isBabyRidingBaby(piglin))
             piglin.stopRiding();

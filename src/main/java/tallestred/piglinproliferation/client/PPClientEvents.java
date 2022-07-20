@@ -22,6 +22,7 @@ import net.minecraftforge.fml.common.Mod;
 import tallestred.piglinproliferation.PiglinProliferation;
 import tallestred.piglinproliferation.client.renderers.PiglinAlchemistRenderer;
 import tallestred.piglinproliferation.client.renderers.layers.PiglinClothingRenderLayer;
+import tallestred.piglinproliferation.client.renderers.models.PiglinAlchemistModel;
 import tallestred.piglinproliferation.common.entities.PPEntityTypes;
 
 import java.util.function.Function;
@@ -30,11 +31,14 @@ import java.util.function.Supplier;
 @Mod.EventBusSubscriber(modid = PiglinProliferation.MODID, bus = Mod.EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
 public class PPClientEvents {
 
-    public static ModelLayerLocation ZIGLIN_CLOTHING = new ModelLayerLocation(
+    public static final ModelLayerLocation ZIGLIN_CLOTHING = new ModelLayerLocation(
             new ResourceLocation(PiglinProliferation.MODID + "ziglin_clothing"), "ziglin_clothing");
+    public static final ModelLayerLocation PIGLIN_ALCHEMIST = new ModelLayerLocation(new ResourceLocation(PiglinProliferation.MODID + "piglin_alchemist"),  "piglin_alchemist");
+
     @SubscribeEvent
     public static void layerDefinitions(EntityRenderersEvent.RegisterLayerDefinitions event) {
         event.registerLayerDefinition(ZIGLIN_CLOTHING, () -> LayerDefinition.create(PiglinModel.createMesh(new CubeDeformation(0.25F)), 64, 64));
+        event.registerLayerDefinition(PIGLIN_ALCHEMIST, PiglinAlchemistModel::createBodyLayer);
     }
 
     @SubscribeEvent

@@ -53,10 +53,6 @@ public class PPEvents {
     }
 
     @SubscribeEvent
-    public static void livingNaturalSpawn(LivingSpawnEvent.SpecialSpawn event) {
-    }
-
-    @SubscribeEvent
     public static void entityJoin(EntityJoinLevelEvent event) {
         if (event.getEntity() instanceof ZombifiedPiglin ziglin) {
             if (!event.getEntity().level.isClientSide) {

@@ -14,14 +14,16 @@ import net.minecraft.world.item.BowItem;
 import net.minecraft.world.item.CrossbowItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.UseAnim;
+import tallestred.piglinproliferation.PiglinProliferation;
+import tallestred.piglinproliferation.client.PPClientEvents;
 import tallestred.piglinproliferation.client.renderers.layers.BeltRenderLayer;
 import tallestred.piglinproliferation.client.renderers.models.PiglinAlchemistModel;
 import tallestred.piglinproliferation.common.entities.PiglinAlchemist;
 
 public class PiglinAlchemistRenderer extends PiglinRenderer {
     public PiglinAlchemistRenderer(EntityRendererProvider.Context context) {
-        super(context, ModelLayers.PIGLIN, ModelLayers.PIGLIN_INNER_ARMOR, ModelLayers.PIGLIN_OUTER_ARMOR, false);
-        this.model = new PiglinAlchemistModel(context.bakeLayer(ModelLayers.PIGLIN));
+        super(context, PPClientEvents.PIGLIN_ALCHEMIST, ModelLayers.PIGLIN_INNER_ARMOR, ModelLayers.PIGLIN_OUTER_ARMOR, false);
+        this.model = new PiglinAlchemistModel(context.bakeLayer(PPClientEvents.PIGLIN_ALCHEMIST));
         this.addLayer(new BeltRenderLayer(this, context.getItemInHandRenderer()));
     }
 
@@ -70,6 +72,6 @@ public class PiglinAlchemistRenderer extends PiglinRenderer {
 
     @Override
     public ResourceLocation getTextureLocation(Mob pEntity) {
-        return new ResourceLocation("textures/entity/piglin/piglin.png");
+        return new ResourceLocation(PiglinProliferation.MODID, "textures/entity/piglin/alchemist/alchemist.png");
     }
 }

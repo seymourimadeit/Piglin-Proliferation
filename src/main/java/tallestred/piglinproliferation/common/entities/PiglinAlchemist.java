@@ -60,16 +60,31 @@ public class PiglinAlchemist extends Piglin {
     public final NonNullList<ItemStack> beltInventory = NonNullList.withSize(6, ItemStack.EMPTY);
     protected int arrowsShot;
 
-    public PiglinAlchemist(EntityType<? extends PiglinAlchemist> p_34683_, Level p_34684_) {
-        super(p_34683_, p_34684_);
+    public PiglinAlchemist(EntityType<? extends PiglinAlchemist> type, Level level) {
+        super(type, level);
     }
 
     public static AttributeSupplier.@NotNull Builder createAttributes() {
-        return Piglin.createAttributes().add(Attributes.MAX_HEALTH, 20.0D).add(Attributes.FOLLOW_RANGE, 20.0D);
+        return Piglin.createAttributes().add(Attributes.MAX_HEALTH, 20.0D).add(Attributes.FOLLOW_RANGE, 24.0D);
     }
 
     public static boolean checkChemistSpawnRules(EntityType<PiglinAlchemist> p_219198_, LevelAccessor p_219199_, MobSpawnType p_219200_, BlockPos p_219201_, RandomSource p_219202_) {
         return !p_219199_.getBlockState(p_219201_.below()).is(Blocks.NETHER_WART_BLOCK);
+    }
+
+    @Override
+    protected SoundEvent getAmbientSound() {
+        return PPSounds.ALCHEMIST_IDLE.get();
+    }
+
+    @Override
+    protected SoundEvent getHurtSound(DamageSource source) {
+        return PPSounds.ALCHEMIST_HURT.get();
+    }
+
+    @Override
+    protected SoundEvent getDeathSound() {
+        return PPSounds.ALCHEMIST_DEATH.get();
     }
 
     @Override
@@ -94,7 +109,7 @@ public class PiglinAlchemist extends Piglin {
     protected void playStepSound(BlockPos p_32159_, BlockState p_32160_) {
         if (this.getRandom().nextInt(5) == 0 && this.beltInventory.stream().filter(itemStack -> itemStack.getItem() instanceof PotionItem).findAny().isPresent())
             this.playSound(PPSounds.ALCHEMIST_WALK.get(), 0.8F * (this.beltInventory.stream().filter(itemStack -> itemStack.getItem() instanceof PotionItem).count() * 0.5F), 1.0F);
-        super.playStepSound(p_32159_, p_32160_);
+        this.playSound(PPSounds.ALCHEMIST_STEP.get(), 0.15F, 1.0F);
     }
 
     @Override
@@ -143,6 +158,11 @@ public class PiglinAlchemist extends Piglin {
         this.getBrain().tick((ServerLevel) this.level, this);
         this.level.getProfiler().pop();
         PiglinAlchemistAi.updateActivity(this);
+    }
+
+    @Override
+    protected void playConvertedSound() {
+        this.playSoundEvent(PPSounds.ALCHEMIST_CONVERTED.get());
     }
 
     @Override

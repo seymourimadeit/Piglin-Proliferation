@@ -2,7 +2,7 @@
   "entity.piglin_alchemist.throw_alert": {
     "sounds": [
       {
-        "name": "piglinproliferation:alchemist/alchemist_throw_potion_alert",
+        "name": "piglinproliferation:mob/piglin/alchemist/throw_potion_alert",
         "volume": 0.9
       }
     ],
@@ -11,10 +11,160 @@
   "entity.piglin_alchemist.walk": {
     "sounds": [
       {
-        "name": "piglinproliferation:alchemist/alchemist_walk",
+        "name": "piglinproliferation:mob/piglin/alchemist/alchemist_walk",
         "volume": 0.9
       }
     ],
     "subtitle": "subtitles.entity.piglin_alchemist.walk"
+  },
+  "entity.piglin_alchemist.idle": {
+    "sounds": [
+      {
+        "name": "piglinproliferation:mob/piglin/alchemist/idle1",
+        "volume": 0.9
+      },
+      {
+        "name": "piglinproliferation:mob/piglin/alchemist/idle2",
+        "volume": 0.9
+      },
+      {
+        "name": "piglinproliferation:mob/piglin/alchemist/idle3",
+        "volume": 0.9
+      },
+      {
+        "name": "piglinproliferation:mob/piglin/alchemist/idle4",
+        "volume": 0.9
+      }
+    ],
+    "subtitle": "subtitles.entity.piglin_alchemist.idle"
+  },
+  "entity.piglin_alchemist.hurt": {
+    "sounds": [
+      {
+        "name": "piglinproliferation:mob/piglin/alchemist/hurt1",
+        "volume": 0.9
+      },
+      {
+        "name": "piglinproliferation:mob/piglin/alchemist/hurt2",
+        "volume": 0.9
+      },
+      {
+        "name": "piglinproliferation:mob/piglin/alchemist/hurt3",
+        "volume": 0.9
+      }
+    ],
+    "subtitle": "subtitles.entity.piglin_alchemist.hurt"
+  },
+  "entity.piglin_alchemist.admire": {
+    "sounds": [
+      {
+        "name": "piglinproliferation:mob/piglin/alchemist/admire1",
+        "volume": 0.9
+      },
+      {
+        "name": "piglinproliferation:mob/piglin/alchemist/admire2",
+        "volume": 0.9
+      }
+    ],
+    "subtitle": "subtitles.entity.piglin_alchemist.admire"
+  },
+  "entity.piglin_alchemist.retreat": {
+    "sounds": [
+      {
+        "name": "piglinproliferation:mob/piglin/alchemist/retreat1",
+        "volume": 0.9
+      },
+      {
+        "name": "piglinproliferation:mob/piglin/alchemist/retreat",
+        "volume": 0.9
+      }
+    ],
+    "subtitle": "subtitles.entity.piglin_alchemist.retreat"
+  },
+  "entity.piglin_alchemist.death": {
+    "sounds": [
+      {
+        "name": "piglinproliferation:mob/piglin/alchemist/death1",
+        "volume": 0.9
+      },
+      {
+        "name": "piglinproliferation:mob/piglin/alchemist/death2",
+        "volume": 0.9
+      }
+    ],
+    "subtitle": "subtitles.entity.piglin_alchemist.death"
+  },
+  "entity.piglin_alchemist.jealous": {
+    "sounds": [
+      {
+        "name": "piglinproliferation:mob/piglin/alchemist/jealous1",
+        "volume": 0.9
+      },
+      {
+        "name": "piglinproliferation:mob/piglin/alchemist/jealous2",
+        "volume": 0.9
+      }
+    ],
+    "subtitle": "subtitles.entity.piglin_alchemist.jealous"
+  },
+  "entity.piglin_alchemist.celebrate": {
+    "sounds": [
+      {
+        "name": "piglinproliferation:mob/piglin/alchemist/celebrate1",
+        "volume": 0.9
+      }
+    ],
+    "subtitle": "subtitles.entity.piglin_alchemist.celebrate"
+  },
+  "entity.piglin_alchemist.angry": {
+    "sounds": [
+      {
+        "name": "piglinproliferation:mob/piglin/alchemist/angry1",
+        "volume": 0.9
+      },
+      {
+        "name": "piglinproliferation:mob/piglin/alchemist/angry2",
+        "volume": 0.9
+      }
+    ],
+    "subtitle": "subtitles.entity.piglin_alchemist.angry"
+  },
+  "entity.piglin_alchemist.conversion": {
+    "sounds": [
+      {
+        "name": "mob/piglin/converted1",
+        "volume": 0.9
+      },
+      {
+        "name": "mob/piglin/converted2",
+        "volume": 0.9
+      }
+    ],
+    "subtitle": "subtitles.entity.piglin_alchemist.conversion"
+  },
+  "entity.piglin_alchemist.step": {
+    "sounds": [
+      {
+        "name": "mob/piglin/step1",
+        "volume": 0.75
+      },
+      {
+        "name": "mob/piglin/step2",
+        "volume": 0.75
+      },
+      {
+        "name": "mob/piglin/step3",
+        "volume": 0.75
+      },
+      {
+        "name": "mob/piglin/step4",
+        "volume": 0.75
+      },
+      {
+        "name": "mob/piglin/step5",
+        "volume": 0.75
+      }
+    ],
+    "subtitle": "subtitles.entity.piglin_alchemist.step"
   }
 }
