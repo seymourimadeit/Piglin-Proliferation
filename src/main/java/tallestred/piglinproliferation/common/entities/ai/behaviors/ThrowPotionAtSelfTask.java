@@ -1,6 +1,7 @@
 package tallestred.piglinproliferation.common.entities.ai.behaviors;
 
 import com.google.common.collect.ImmutableList;
+import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.Mth;
 import net.minecraft.world.effect.MobEffectInstance;
@@ -31,12 +32,12 @@ public class ThrowPotionAtSelfTask<E extends PiglinAlchemist> extends BaseThrowP
     protected boolean checkExtraStartConditions(ServerLevel level, E alchemist) {
         for (MobEffectInstance mobeffectinstance : PotionUtils.getMobEffects(itemToUse)) {
             if (super.checkExtraStartConditions(level, alchemist)) {
+                List<AbstractPiglin> list = alchemist.getBrain().getMemory(MemoryModuleType.NEARBY_ADULT_PIGLINS).orElse(ImmutableList.of());
                 if (!alchemist.hasEffect(mobeffectinstance.getEffect())) {
                     if (alchemist.getTarget() != null) {
-                        List<AbstractPiglin> list = alchemist.getBrain().getMemory(MemoryModuleType.NEAREST_VISIBLE_ADULT_PIGLINS).orElse(ImmutableList.of());
-                        return list.stream().filter(abstractPiglin -> abstractPiglin != alchemist).toList().size() > 2; // Make sure I have people backing me up if I have to throw a potion and theres someone attacking me
+                        return list.size() > 2; // Make sure I have people backing me up if I have to throw a potion and theres someone attacking me
                     } else {
-                        return true;
+                        return !list.stream().filter(abstractPiglin -> abstractPiglin instanceof PiglinAlchemist && ((PiglinAlchemist)abstractPiglin).isGonnaThrowPotion()).findAny().isPresent();
                     }
                 }
             }
@@ -46,7 +47,8 @@ public class ThrowPotionAtSelfTask<E extends PiglinAlchemist> extends BaseThrowP
 
     @Override
     protected void tick(ServerLevel level, E alchemist, long gameTIme) {
-        alchemist.getBrain().setMemory(MemoryModuleType.LOOK_TARGET, new BlockPosTracker(alchemist.blockPosition().below()));
+        BlockPos lookPos = new BlockPos(alchemist.position().x, alchemist.getBoundingBox().minY - 0.5000001D, alchemist.position().z);
+        alchemist.getBrain().setMemory(MemoryModuleType.LOOK_TARGET, new BlockPosTracker(lookPos));
         List<LivingEntity> list = alchemist.level.getEntitiesOfClass(LivingEntity.class, alchemist.getBoundingBox().inflate(5.0D, 3.0D, 5.0D));
         if (!list.isEmpty()) {
             for (LivingEntity entity : list) {
@@ -71,26 +73,28 @@ public class ThrowPotionAtSelfTask<E extends PiglinAlchemist> extends BaseThrowP
                 alchemist.getNavigation().moveTo(vec3.x, vec3.y, vec3.z, 1.5D);
             }
         }
+        alchemist.setYRot(Mth.rotateIfNecessary(alchemist.getYRot(), alchemist.yHeadRot, 0.0F));
+        alchemist.setXRot(Mth.rotateIfNecessary(alchemist.getXRot(), alchemist.getMaxHeadXRot(), 0.0F));
         if (this.ticksUntilThrow == 5)
             alchemist.playSound(PPSounds.ALCHEMIST_ABOUT_TO_THROW_POTION.get(), 1.0F, 1.0F);
         if (--this.ticksUntilThrow <= 0 && this.panicTicks <= 0) {
+            alchemist.setYHeadRot(-200.0F);
+            alchemist.setXRot(90.0F);
             this.throwPotion(alchemist);
         }
-        alchemist.setYRot(Mth.rotateIfNecessary(alchemist.getYRot(), alchemist.yHeadRot, 0.0F));
-        alchemist.setXRot(Mth.rotateIfNecessary(alchemist.getXRot(), alchemist.getMaxHeadXRot(), 0.0F));
     }
 
     @Override
     protected boolean canStillUse(ServerLevel level, E alchemist, long gameTime) {
+        List<AbstractPiglin> list = alchemist.getBrain().getMemory(MemoryModuleType.NEAREST_VISIBLE_ADULT_PIGLINS).orElse(ImmutableList.of());
         if (alchemist.getTarget() != null) {
-            List<AbstractPiglin> list = alchemist.getBrain().getMemory(MemoryModuleType.NEAREST_VISIBLE_ADULT_PIGLINS).orElse(ImmutableList.of());
-            return list.stream().filter(abstractPiglin -> abstractPiglin != alchemist).toList().size() > 2; // Make sure I have people backing me up if I have to throw a potion and theres someone attacking me
+            return list.size() > 2; // Make sure I have people backing me up if I have to throw a potion and theres someone attacking me
         } else {
             for (MobEffectInstance mobeffectinstance : PotionUtils.getMobEffects(itemToUse)) {
                 return this.canUseSelector.test(alchemist) && !alchemist.hasEffect(mobeffectinstance.getEffect()) && this.ticksUntilThrow > 0;
             }
         }
-        return false;
+        return !list.stream().filter(abstractPiglin -> abstractPiglin instanceof PiglinAlchemist && ((PiglinAlchemist)abstractPiglin).isGonnaThrowPotion()).findAny().isPresent();
     }
 
     @Override
