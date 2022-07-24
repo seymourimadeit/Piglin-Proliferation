@@ -162,7 +162,7 @@ public class PiglinAlchemist extends Piglin {
 
     @Override
     protected void playConvertedSound() {
-        this.playSoundEvent(PPSounds.ALCHEMIST_CONVERTED.get());
+        this.playSound(PPSounds.ALCHEMIST_CONVERTED.get(), this.getSoundVolume(), this.getVoicePitch() * 0.10F);
     }
 
     @Override

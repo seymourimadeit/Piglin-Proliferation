@@ -4,6 +4,14 @@
       {
         "name": "piglinproliferation:mob/piglin/alchemist/throw_potion_alert",
         "volume": 0.9
+      },
+      {
+        "name": "piglinproliferation:mob/piglin/alchemist/throw_potion_alert2",
+        "volume": 0.9
+      },
+      {
+        "name": "piglinproliferation:mob/piglin/alchemist/throw_potion_alert3",
+        "volume": 0.9
       }
     ],
     "subtitle": "subtitles.entity.piglin_alchemist.prepared_to_throw_potion"
