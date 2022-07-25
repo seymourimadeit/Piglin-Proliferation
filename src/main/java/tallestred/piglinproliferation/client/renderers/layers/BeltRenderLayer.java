@@ -12,17 +12,23 @@ import net.minecraft.client.renderer.block.model.ItemTransforms;
 import net.minecraft.client.renderer.entity.LivingEntityRenderer;
 import net.minecraft.client.renderer.entity.RenderLayerParent;
 import net.minecraft.client.renderer.entity.layers.RenderLayer;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.HumanoidArm;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
+import tallestred.piglinproliferation.PiglinProliferation;
+import tallestred.piglinproliferation.client.PPClientEvents;
+import tallestred.piglinproliferation.client.renderers.models.PiglinAlchemistModel;
 import tallestred.piglinproliferation.common.entities.PiglinAlchemist;
 
 public class BeltRenderLayer<T extends PiglinAlchemist, M extends EntityModel<T> & ArmedModel> extends RenderLayer<T, M> {
     private final ItemInHandRenderer itemInHandRenderer;
+    private final PiglinAlchemistModel<T> layerModel;
 
     public BeltRenderLayer(RenderLayerParent p_117183_, ItemInHandRenderer itemInHandRenderer) {
         super(p_117183_);
+        this.layerModel = new PiglinAlchemistModel<>(Minecraft.getInstance().getEntityModels().bakeLayer(PPClientEvents.PIGLIN_ALCHEMIST_BELT));
         this.itemInHandRenderer = itemInHandRenderer;
     }
 
@@ -51,6 +57,7 @@ public class BeltRenderLayer<T extends PiglinAlchemist, M extends EntityModel<T>
                 pMatrixStack.popPose();
             }
         }
+        coloredCutoutModelCopyLayerRender(this.getParentModel(), this.layerModel, new ResourceLocation(PiglinProliferation.MODID, "textures/entity/piglin/alchemist/belt.png"), pMatrixStack, pBuffer, pPackedLight, pLivingEntity, pLimbSwing, pLimbSwingAmount, pAgeInTicks, pNetHeadYaw, pHeadPitch, pPartialTicks, 1.0F, 1.0F, 1.0F);
     }
 
     protected void renderBeltItems(LivingEntity entity, ItemStack stack, ItemTransforms.TransformType transformType, PoseStack poseStack, MultiBufferSource source, int light, int inventorySlot) {
@@ -58,15 +65,15 @@ public class BeltRenderLayer<T extends PiglinAlchemist, M extends EntityModel<T>
             poseStack.pushPose();
             ((PiglinModel) this.getParentModel()).body.translateAndRotate(poseStack);
             poseStack.scale(0.8F, 0.8F, 0.8F);
-            if (inventorySlot > 2 || inventorySlot < 4 && inventorySlot != 5) {
-                double d = inventorySlot > 2 && inventorySlot != 5 ? 1.4 + inventorySlot * -0.4 : -0.2 + inventorySlot * 0.4;
-                double inflation = entity.hasItemInSlot(EquipmentSlot.LEGS) && !entity.hasItemInSlot(EquipmentSlot.CHEST) ? 0.215D : entity.hasItemInSlot(EquipmentSlot.CHEST) ? 0.225D : 0.175D;
-                poseStack.translate(d, 0.8D, (inventorySlot > 2 && inventorySlot != 5) ? inflation : -inflation);
+            if (inventorySlot > 2 || inventorySlot != 5) {
+                double d = -0.24 + inventorySlot * 0.44;
+                double inflation = entity.hasItemInSlot(EquipmentSlot.LEGS) && !entity.hasItemInSlot(EquipmentSlot.CHEST) ? 0.215D : entity.hasItemInSlot(EquipmentSlot.CHEST) ? 0.225D : 0.165D;
+                poseStack.translate((inventorySlot > 2 && inventorySlot != 5) ? -d + 1.25 : d, 0.8D, (inventorySlot > 2 && inventorySlot != 5) ? inflation : -inflation);
             }
             if (inventorySlot == 2 || inventorySlot == 5) {
                 poseStack.mulPose(Vector3f.YP.rotationDegrees(90.0F));
-                double secondSlotInflation = entity.hasItemInSlot(EquipmentSlot.LEGS) ? -0.24D : -0.3D;
-                double fifthSlotInflation = entity.hasItemInSlot(EquipmentSlot.LEGS) ? -2.16D : -2.1D;
+                double secondSlotInflation = entity.hasItemInSlot(EquipmentSlot.LEGS) ? -0.285D : -0.34D;
+                double fifthSlotInflation = entity.hasItemInSlot(EquipmentSlot.LEGS) ? -2.305D : -2.26D;
                 poseStack.translate(-0.2D, 0.4D, inventorySlot == 2 ? secondSlotInflation : fifthSlotInflation);
             }
             poseStack.mulPose(Vector3f.XP.rotationDegrees(180.0F));

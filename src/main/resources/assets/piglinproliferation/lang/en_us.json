@@ -12,5 +12,6 @@
    "subtitles.entity.piglin_alchemist.celebrate": "Piglin Alchemist celebrates",
    "subtitles.entity.piglin_alchemist.angry": "Piglin Alchemist snorts angrily",
    "subtitles.entity.piglin_alchemist.conversion": "Piglin Alchemist converts to Zombified Piglin",
-   "subtitles.entity.piglin_alchemist.step": "Piglin Alchemist steps"
+   "subtitles.entity.piglin_alchemist.step": "Piglin Alchemist steps",
+   "subtitles.arrow.regenhealingarrowhit": "Arrow heals"
 }

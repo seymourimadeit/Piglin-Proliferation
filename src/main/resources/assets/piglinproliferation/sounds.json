@@ -16,6 +16,15 @@
     ],
     "subtitle": "subtitles.entity.piglin_alchemist.prepared_to_throw_potion"
   },
+ "arrow.regenhealingarrowhit": {
+    "sounds": [
+      {
+        "name": "piglinproliferation:regenhealingarrowhit",
+        "volume": 0.9
+      }
+    ],
+    "subtitle": "subtitles.arrow.regenhealingarrowhit"
+  },
   "entity.piglin_alchemist.walk": {
     "sounds": [
       {
