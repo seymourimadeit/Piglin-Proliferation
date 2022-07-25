@@ -1,7 +1,7 @@
 package tallestred.piglinproliferation.client;
+
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
-import net.minecraft.world.item.Item;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
@@ -23,4 +23,5 @@ public class PPSounds {
     public static final RegistryObject<SoundEvent> ALCHEMIST_CELEBRATE = SOUNDS.register("entity.piglin_alchemist.celebrate", () -> new SoundEvent(new ResourceLocation(PiglinProliferation.MODID, "entity.piglin_alchemist.celebrate")));
     public static final RegistryObject<SoundEvent> ALCHEMIST_CONVERTED = SOUNDS.register("entity.piglin_alchemist.conversion", () -> new SoundEvent(new ResourceLocation(PiglinProliferation.MODID, "entity.piglin_alchemist.conversion")));
     public static final RegistryObject<SoundEvent> ALCHEMIST_STEP = SOUNDS.register("entity.piglin_alchemist.step", () -> new SoundEvent(new ResourceLocation(PiglinProliferation.MODID, "entity.piglin_alchemist.step")));
+    public static final RegistryObject<SoundEvent> REGEN_HEALING_ARROW_HIT = SOUNDS.register("arrow.regenhealingarrowhit", () -> new SoundEvent(new ResourceLocation(PiglinProliferation.MODID, "arrow.regenhealingarrowhit")));
 }

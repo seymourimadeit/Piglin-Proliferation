@@ -23,15 +23,19 @@ import java.util.function.Function;
 
 @Mod.EventBusSubscriber(modid = PiglinProliferation.MODID, bus = Mod.EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
 public class PPClientEvents {
-    public static final ModelLayerLocation PIGLIN_ALCHEMIST = new ModelLayerLocation(
-            new ResourceLocation(PiglinProliferation.MODID + "piglin_alchemist"), "piglin_alchemist");
+
     public static final ModelLayerLocation ZIGLIN_CLOTHING = new ModelLayerLocation(
             new ResourceLocation(PiglinProliferation.MODID + "ziglin_clothing"), "ziglin_clothing");
+    public static final ModelLayerLocation PIGLIN_ALCHEMIST = new ModelLayerLocation(
+            new ResourceLocation(PiglinProliferation.MODID + "piglin_alchemist"), "piglin_alchemist");
+    public static final ModelLayerLocation PIGLIN_ALCHEMIST_BELT = new ModelLayerLocation(
+            new ResourceLocation(PiglinProliferation.MODID + "piglin_alchemist_belt"), "piglin_alchemist_belt");
 
     @SubscribeEvent
     public static void layerDefinitions(EntityRenderersEvent.RegisterLayerDefinitions event) {
         event.registerLayerDefinition(ZIGLIN_CLOTHING, () -> LayerDefinition.create(PiglinModel.createMesh(new CubeDeformation(0.25F)), 64, 64));
-        event.registerLayerDefinition(PIGLIN_ALCHEMIST, PiglinAlchemistModel::createBodyLayer);
+        event.registerLayerDefinition(PIGLIN_ALCHEMIST, () -> LayerDefinition.create(PiglinAlchemistModel.createBodyLayer(new CubeDeformation(0.25F)), 120, 64));
+        event.registerLayerDefinition(PIGLIN_ALCHEMIST_BELT, () -> LayerDefinition.create(PiglinAlchemistModel.createBodyLayer(new CubeDeformation(0.40F)), 120, 64));
     }
 
     @SubscribeEvent

@@ -1,5 +1,6 @@
 package tallestred.piglinproliferation;
 
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
@@ -31,6 +32,7 @@ import net.minecraftforge.registries.ForgeRegistries;
 import tallestred.piglinproliferation.capablities.PPCapablities;
 import tallestred.piglinproliferation.capablities.TransformationSourceListener;
 import tallestred.piglinproliferation.capablities.TransformationSourceProvider;
+import tallestred.piglinproliferation.client.PPSounds;
 import tallestred.piglinproliferation.common.entities.PPEntityTypes;
 import tallestred.piglinproliferation.common.entities.ai.goals.PiglinCallForHelpGoal;
 import tallestred.piglinproliferation.networking.PPNetworking;
@@ -84,12 +86,13 @@ public class PPEvents {
 
     @SubscribeEvent
     public static void hurtEntity(LivingHurtEvent event) {
-        if (event.getSource().getDirectEntity() instanceof Arrow) {
-            for (MobEffectInstance mobeffectinstance : ((Arrow) event.getSource().getDirectEntity()).potion.getEffects()) {
+        if (event.getSource().getDirectEntity() instanceof Arrow arrow) {
+            for (MobEffectInstance mobeffectinstance : arrow.potion.getEffects()) {
                 if ((mobeffectinstance.getEffect() == MobEffects.REGENERATION || mobeffectinstance.getEffect() == MobEffects.HEAL)) {
                     if ((event.getEntity() instanceof Mob && ((Mob) event.getEntity()).isInvertedHealAndHarm()))
                         return;
                     event.setAmount(0.0F);
+                    arrow.level.playSound(null, arrow.blockPosition(), PPSounds.REGEN_HEALING_ARROW_HIT.get(), SoundSource.NEUTRAL, 1.0F, 1.0F);
                     event.getEntity().setDeltaMovement(event.getEntity().getDeltaMovement().multiply(-1.0D, -1.0D, -1.0D));
                     event.getEntity().invulnerableTime = 0;
                     if (event.getEntity() instanceof LivingEntity)
