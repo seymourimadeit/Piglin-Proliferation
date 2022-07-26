@@ -8,6 +8,7 @@ import net.minecraft.client.renderer.entity.RenderLayerParent;
 import net.minecraft.client.renderer.entity.layers.RenderLayer;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.monster.ZombifiedPiglin;
+import tallestred.piglinproliferation.configuration.PPConfig;
 import tallestred.piglinproliferation.PPEvents;
 import tallestred.piglinproliferation.PiglinProliferation;
 import tallestred.piglinproliferation.capablities.TransformationSourceListener;
@@ -24,7 +25,7 @@ public class PiglinClothingRenderLayer<T extends ZombifiedPiglin, M extends Pigl
 
     @Override
     public void render(PoseStack pMatrixStack, MultiBufferSource pBuffer, int pPackedLight, T pLivingEntity, float pLimbSwing, float pLimbSwingAmount, float pPartialTicks, float pAgeInTicks, float pNetHeadYaw, float pHeadPitch) {
-        if (getClothingTexture(pLivingEntity) != null)
+        if (getClothingTexture(pLivingEntity) != null && PPConfig.CLIENT.ziglinTextures.get())
             coloredCutoutModelCopyLayerRender(this.getParentModel(), this.layerModel, getClothingTexture(pLivingEntity), pMatrixStack, pBuffer, pPackedLight, pLivingEntity, pLimbSwing, pLimbSwingAmount, pAgeInTicks, pNetHeadYaw, pHeadPitch, pPartialTicks, 1.0F, 1.0F, 1.0F);
     }
 

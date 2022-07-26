@@ -46,6 +46,7 @@ import org.jetbrains.annotations.NotNull;
 import tallestred.piglinproliferation.PPMemoryModules;
 import tallestred.piglinproliferation.client.PPSounds;
 import tallestred.piglinproliferation.common.entities.ai.PiglinAlchemistAi;
+import tallestred.piglinproliferation.configuration.PPConfig;
 import tallestred.piglinproliferation.networking.AlchemistBeltSyncPacket;
 import tallestred.piglinproliferation.networking.PPNetworking;
 
@@ -92,16 +93,14 @@ public class PiglinAlchemist extends Piglin {
         super.populateDefaultEquipmentSlots(source, pDifficulty);
         if (this.isAdult()) {
             this.setItemSlot(EquipmentSlot.MAINHAND, new ItemStack(Items.BOW));
-            if (source.nextFloat() < 0.3F) {
-                ItemStack tippedArrow = PotionUtils.setPotion(new ItemStack(Items.TIPPED_ARROW, source.nextInt(1, 5)), Potions.STRONG_HEALING);
+            if (source.nextFloat() < PPConfig.COMMON.healingArrowChances.get().floatValue()) {
+                ItemStack tippedArrow = PotionUtils.setPotion(new ItemStack(Items.TIPPED_ARROW, source.nextInt(PPConfig.COMMON.healingArrowMaxStackSize.get(), PPConfig.COMMON.healingArrowMaxStackSize.get())), Potions.STRONG_HEALING);
                 this.setBeltInventorySlot(source.nextInt(6), tippedArrow);
             }
             for (int slot = 0; slot < this.beltInventory.size(); slot++) {
-                if (this.beltInventory.get(slot).isEmpty()) {
-                    Potion effect = source.nextFloat() < 0.35F ? Potions.FIRE_RESISTANCE : source.nextFloat() < 0.3F ? Potions.STRONG_REGENERATION : source.nextFloat() < 0.25F ? Potions.STRONG_HEALING : Potions.STRONG_STRENGTH;
-                    ItemStack potion = PotionUtils.setPotion(new ItemStack(Items.SPLASH_POTION), effect);
-                    this.setBeltInventorySlot(slot, potion);
-                }
+                Potion effect = source.nextFloat() < 0.35F ? Potions.FIRE_RESISTANCE : source.nextFloat() < 0.30F ? Potions.STRONG_REGENERATION : source.nextFloat() < 0.25F ? Potions.STRONG_HEALING : Potions.STRONG_STRENGTH;
+                ItemStack potion = PotionUtils.setPotion(new ItemStack(Items.SPLASH_POTION), effect);
+                this.setBeltInventorySlot(slot, potion);
             }
         }
     }
@@ -254,14 +253,14 @@ public class PiglinAlchemist extends Piglin {
             AbstractArrow abstractarrowentity = ProjectileUtil.getMobArrow(this, itemstack, distanceFactor);
             abstractarrowentity = ((net.minecraft.world.item.BowItem) this.getMainHandItem().getItem())
                     .customArrow(abstractarrowentity);
-            int powerLevel = EnchantmentHelper.getItemEnchantmentLevel(Enchantments.POWER_ARROWS, itemstack);
+            int powerLevel = itemstack.getEnchantmentLevel(Enchantments.POWER_ARROWS);
             if (powerLevel > 0)
                 abstractarrowentity
                         .setBaseDamage(abstractarrowentity.getBaseDamage() + (double) powerLevel * 0.5D + 0.5D);
-            int punchLevel = EnchantmentHelper.getItemEnchantmentLevel(Enchantments.PUNCH_ARROWS, itemstack);
+            int punchLevel = itemstack.getEnchantmentLevel(Enchantments.PUNCH_ARROWS);
             if (punchLevel > 0)
                 abstractarrowentity.setKnockback(punchLevel);
-            if (EnchantmentHelper.getItemEnchantmentLevel(Enchantments.FLAMING_ARROWS, itemstack) > 0)
+            if (itemstack.getEnchantmentLevel(Enchantments.FLAMING_ARROWS) > 0)
                 abstractarrowentity.setSecondsOnFire(100);
             double d0 = target.getX() - this.getX();
             double d1 = target.getY(0.3333333333333333D) - abstractarrowentity.getY();

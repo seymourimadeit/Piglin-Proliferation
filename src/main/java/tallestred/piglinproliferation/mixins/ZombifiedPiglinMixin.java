@@ -42,7 +42,7 @@ public abstract class ZombifiedPiglinMixin extends Zombie {
         RandomSource randomSource = level.getRandom();
         TransformationSourceListener tSource = PPEvents.getTransformationSourceListener(this);
         if (p_34299_ != MobSpawnType.CONVERSION) {
-            tSource.setTransformationSource("piglin"); // Make this a config
+            tSource.setTransformationSource("piglin");
             float bruteChance = 0.015F;
             if (randomSource.nextFloat() < bruteChance) {
                 this.setItemSlot(EquipmentSlot.MAINHAND, new ItemStack(Items.GOLDEN_AXE));
