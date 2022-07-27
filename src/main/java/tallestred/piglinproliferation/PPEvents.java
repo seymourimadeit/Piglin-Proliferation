@@ -35,6 +35,7 @@ import tallestred.piglinproliferation.capablities.TransformationSourceProvider;
 import tallestred.piglinproliferation.client.PPSounds;
 import tallestred.piglinproliferation.common.entities.PPEntityTypes;
 import tallestred.piglinproliferation.common.entities.ai.goals.PiglinCallForHelpGoal;
+import tallestred.piglinproliferation.configuration.PPConfig;
 import tallestred.piglinproliferation.networking.PPNetworking;
 import tallestred.piglinproliferation.networking.ZiglinCapablitySyncPacket;
 
@@ -86,7 +87,7 @@ public class PPEvents {
 
     @SubscribeEvent
     public static void hurtEntity(LivingHurtEvent event) {
-        if (event.getSource().getDirectEntity() instanceof Arrow arrow) {
+        if (event.getSource().getDirectEntity() instanceof Arrow arrow && PPConfig.COMMON.healingArrowDamage.get()) {
             for (MobEffectInstance mobeffectinstance : arrow.potion.getEffects()) {
                 if ((mobeffectinstance.getEffect() == MobEffects.REGENERATION || mobeffectinstance.getEffect() == MobEffects.HEAL)) {
                     if ((event.getEntity() instanceof Mob && ((Mob) event.getEntity()).isInvertedHealAndHarm()))

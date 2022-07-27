@@ -12,7 +12,9 @@ import net.minecraft.world.level.levelgen.structure.templatesystem.StructureProc
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.EntityAttributeCreationEvent;
 import net.minecraftforge.event.server.ServerAboutToStartEvent;
+import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.config.ModConfig;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.InterModEnqueueEvent;
 import net.minecraftforge.fml.event.lifecycle.InterModProcessEvent;
@@ -21,6 +23,7 @@ import tallestred.piglinproliferation.client.PPSounds;
 import tallestred.piglinproliferation.common.PPItems;
 import tallestred.piglinproliferation.common.entities.PPEntityTypes;
 import tallestred.piglinproliferation.common.entities.PiglinAlchemist;
+import tallestred.piglinproliferation.configuration.PPConfig;
 import tallestred.piglinproliferation.networking.PPNetworking;
 
 import java.util.ArrayList;
@@ -44,6 +47,8 @@ public class PiglinProliferation {
         PPSounds.SOUNDS.register(FMLJavaModLoadingContext.get().getModEventBus());
         PPMemoryModules.MEMORY_MODULE_TYPE.register(FMLJavaModLoadingContext.get().getModEventBus());
         PPActivities.ACTIVITIES.register(FMLJavaModLoadingContext.get().getModEventBus());
+        ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, PPConfig.COMMON_SPEC);
+        ModLoadingContext.get().registerConfig(ModConfig.Type.CLIENT, PPConfig.CLIENT_SPEC);
         PPNetworking.registerPackets();
     }
 

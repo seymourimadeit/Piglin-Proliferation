@@ -20,7 +20,9 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import tallestred.piglinproliferation.PPEvents;
 import tallestred.piglinproliferation.capablities.TransformationSourceListener;
+import tallestred.piglinproliferation.configuration.PPConfig;
 
+import java.util.List;
 import java.util.Random;
 import java.util.UUID;
 
@@ -56,6 +58,9 @@ public abstract class ZombifiedPiglinMixin extends Zombie {
                 this.setItemSlot(EquipmentSlot.MAINHAND, new ItemStack(Items.BOW));
                 tSource.setTransformationSource("piglin_alchemist");
             }
+            List<? extends String> piglinTypes = PPConfig.COMMON.zombifiedPiglinTypeList.get();
+            if (!piglinTypes.isEmpty())
+                tSource.setTransformationSource(piglinTypes.get(randomSource.nextInt(piglinTypes.size())));
         }
         return dataGroup;
     }

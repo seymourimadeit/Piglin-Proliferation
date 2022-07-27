@@ -45,6 +45,7 @@ import org.jetbrains.annotations.NotNull;
 import tallestred.piglinproliferation.PPMemoryModules;
 import tallestred.piglinproliferation.client.PPSounds;
 import tallestred.piglinproliferation.common.entities.ai.PiglinAlchemistAi;
+import tallestred.piglinproliferation.configuration.PPConfig;
 import tallestred.piglinproliferation.networking.AlchemistBeltSyncPacket;
 import tallestred.piglinproliferation.networking.PPNetworking;
 
@@ -244,9 +245,9 @@ public class PiglinAlchemist extends Piglin {
         super.populateDefaultEquipmentSlots(pDifficulty);
         if (this.isAdult()) {
             this.setItemSlot(EquipmentSlot.MAINHAND, new ItemStack(Items.BOW));
-            if (this.getRandom().nextFloat() < 0.30F) {
-                ItemStack tippedArrow = PotionUtils.setPotion(new ItemStack(Items.TIPPED_ARROW, this.getRandom().nextInt(5)), Potions.STRONG_HEALING);
-                this.setBeltInventorySlot(this.random.nextInt(6), tippedArrow);
+            if (this.getRandom().nextFloat() < PPConfig.COMMON.healingArrowChances.get().floatValue()) {
+                ItemStack tippedArrow = PotionUtils.setPotion(new ItemStack(Items.TIPPED_ARROW, this.getRandom().nextInt(PPConfig.COMMON.healingArrowMaxStackSize.get(), PPConfig.COMMON.healingArrowMaxStackSize.get())), Potions.STRONG_HEALING);
+                this.setBeltInventorySlot(this.getRandom().nextInt(6), tippedArrow);
             }
             for (int slot = 0; slot < this.beltInventory.size(); slot++) {
                 if (this.beltInventory.get(slot).isEmpty()) {
@@ -284,7 +285,6 @@ public class PiglinAlchemist extends Piglin {
     public void playSound(SoundEvent sound) {
         super.playSound(sound);
     }
-
 
 
     protected void playStepSound(BlockPos p_32159_, BlockState p_32160_) {
