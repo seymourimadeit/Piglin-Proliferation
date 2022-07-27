@@ -36,6 +36,7 @@ public class PPConfig {
         public final ForgeConfigSpec.DoubleValue healingArrowChances;
         public final ForgeConfigSpec.IntValue healingArrowMinStackSize;
         public final ForgeConfigSpec.IntValue healingArrowMaxStackSize;
+        public final ForgeConfigSpec.ConfigValue<List<? extends String>> zombifiedPiglinTypeList;
 
         public CommonConfig(ForgeConfigSpec.Builder builder) {
             builder.push("Vanilla Changes");
@@ -44,6 +45,7 @@ public class PPConfig {
                     "Use https://minecraft.fandom.com/wiki/Bastion_Remnant?so=search#cite_ref-piglin_group_1-39 as a guide.",
                     "The default weight for alchemists spawning is 4, giving them a 28% chance of spawning in bastions",
                     "(Due to this, regular piglins have a spawn rate of 28% aswell, and brutes have a spawn rate of 7% spawn rate, changed values will have to account for this).", "To change the natural spawn rates, use a datapack that overrides add_alchemist.json file, located in data/piglinproliferation/data/forge/biome_modifier").defineInRange("Alchemist spawnrate weight in bastions", 4, Integer.MIN_VALUE, Integer.MAX_VALUE);
+            zombifiedPiglinTypeList = builder.comment("List of variants a zombified piglin has a 50% of turning into when spawning.", "Keep in mind they will still spawn with golden swords, this will be changed in the future.").defineList("List of piglin variants to use", ImmutableList.of(), obj -> true);
             builder.pop();
             builder.push("Piglin Alchemist");
             builder.push("Healing Arrow Chances");

@@ -21,7 +21,9 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import tallestred.piglinproliferation.PPEvents;
 import tallestred.piglinproliferation.capablities.TransformationSourceListener;
+import tallestred.piglinproliferation.configuration.PPConfig;
 
+import java.util.List;
 import java.util.UUID;
 
 @Mixin(ZombifiedPiglin.class)
@@ -39,7 +41,7 @@ public abstract class ZombifiedPiglinMixin extends Zombie {
     @Override
     public SpawnGroupData finalizeSpawn(ServerLevelAccessor p_34297_, DifficultyInstance p_34298_, MobSpawnType p_34299_, @Nullable SpawnGroupData p_34300_, @Nullable CompoundTag p_34301_) {
         SpawnGroupData dataGroup = super.finalizeSpawn(p_34297_, p_34298_, p_34299_, p_34300_, p_34301_);
-        RandomSource randomSource = level.getRandom();
+        RandomSource randomSource = p_34297_.getRandom();
         TransformationSourceListener tSource = PPEvents.getTransformationSourceListener(this);
         if (p_34299_ != MobSpawnType.CONVERSION) {
             tSource.setTransformationSource("piglin");
@@ -55,6 +57,11 @@ public abstract class ZombifiedPiglinMixin extends Zombie {
             if (randomSource.nextFloat() < 0.10F) {
                 this.setItemSlot(EquipmentSlot.MAINHAND, new ItemStack(Items.BOW));
                 tSource.setTransformationSource("piglin_alchemist");
+            }
+            if (randomSource.nextFloat() < 0.50F) {
+                List<? extends String> piglinTypes = PPConfig.COMMON.zombifiedPiglinTypeList.get();
+                if (!piglinTypes.isEmpty())
+                    tSource.setTransformationSource(piglinTypes.get(randomSource.nextInt(piglinTypes.size())));
             }
         }
         return dataGroup;
