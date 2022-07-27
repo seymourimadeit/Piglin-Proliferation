@@ -84,9 +84,8 @@ public class PiglinAlchemistAi extends PiglinAi {
     }
 
     private static void initFightActivity(PiglinAlchemist piglin, Brain<PiglinAlchemist> brain) {
-        brain.addActivityAndRemoveMemoryWhenStopped(Activity.FIGHT, 10, ImmutableList.<net.minecraft.world.entity.ai.behavior.Behavior<? super PiglinAlchemist>>of(new StopAttackingIfTargetInvalid<>((target) -> {
-            return !isNearestValidAttackTarget(piglin, target);
-        }), new RunIf<>(PiglinAlchemistAi::hasCrossbow, new BackUpIfTooClose(5, 0.75F)), new SetWalkTargetFromAttackTargetIfTargetOutOfReach(1.0F), new MeleeAttack(20), new CrossbowAttack(), new RememberIfHoglinWasKilled(), new BowAttack(ImmutableMap.of(MemoryModuleType.WALK_TARGET, MemoryStatus.VALUE_ABSENT, MemoryModuleType.LOOK_TARGET, MemoryStatus.REGISTERED, MemoryModuleType.ATTACK_TARGET, MemoryStatus.VALUE_PRESENT), 1.5F, 15.0F, 20), new EraseMemoryIf<>(PiglinAlchemistAi::isNearZombified, MemoryModuleType.ATTACK_TARGET)), MemoryModuleType.ATTACK_TARGET);
+        brain.addActivityAndRemoveMemoryWhenStopped(Activity.FIGHT, 10, ImmutableList.<net.minecraft.world.entity.ai.behavior.Behavior<? super PiglinAlchemist>>of
+                (new StopAttackingIfTargetInvalid<>((target) -> !isNearestValidAttackTarget(piglin, target)), new RunIf<>(PiglinAlchemistAi::hasCrossbow, new BackUpIfTooClose(5, 0.75F)), new SetWalkTargetFromAttackTargetIfTargetOutOfReach(1.0F), new MeleeAttack(20), new CrossbowAttack(), new RememberIfHoglinWasKilled(), new BowAttack(ImmutableMap.of(MemoryModuleType.WALK_TARGET, MemoryStatus.VALUE_ABSENT, MemoryModuleType.LOOK_TARGET, MemoryStatus.REGISTERED, MemoryModuleType.ATTACK_TARGET, MemoryStatus.VALUE_PRESENT), 1.5F, 15.0F, 20), new EraseMemoryIf<>(PiglinAlchemistAi::isNearZombified, MemoryModuleType.ATTACK_TARGET)), MemoryModuleType.ATTACK_TARGET);
     }
 
     private static void initCoreActivity(Brain<PiglinAlchemist> brain, PiglinAlchemist alchmeist) {

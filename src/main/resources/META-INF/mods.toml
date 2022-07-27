@@ -4,7 +4,6 @@ loaderVersion="[40,)" #mandatory This is typically bumped every Minecraft versio
 # The license for you mod. This is mandatory metadata and allows for easier comprehension of your redistributive properties.
 # Review your options at https://choosealicense.com/. All rights reserved is the default copyright stance, and is thus the default here.
 license="LGPLv3"
-# A URL to refer people to when problems occur with this mod
 issueTrackerURL="https://github.com/seymourimadeit/Piglin-Proliferation" #optional
 # A list of mods - how many allowed here is determined by the individual mod loader
 [[mods]] #mandatory
@@ -16,7 +15,7 @@ modId="piglinproliferation" #mandatory
 version="${file.jarVersion}" #mandatory
  # A display name for the mod
 displayName="Piglin Proliferation" #mandatory
-updateJSONURL="https://github.com/seymourimadeit/Piglin-Proliferation/blob/main/updates.json" #optional
+updateJSONURL="https://raw.githubusercontent.com/seymourimadeit/Piglin-Proliferation/main/update.json" #optional
 # logoFile="piglinproliferation.png" #optional
 credits="TallestEgg, Edmord for the alchemist texture" #optional
 description='''

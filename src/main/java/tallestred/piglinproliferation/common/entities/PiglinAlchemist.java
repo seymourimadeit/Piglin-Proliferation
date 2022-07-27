@@ -94,13 +94,15 @@ public class PiglinAlchemist extends Piglin {
         if (this.isAdult()) {
             this.setItemSlot(EquipmentSlot.MAINHAND, new ItemStack(Items.BOW));
             if (source.nextFloat() < PPConfig.COMMON.healingArrowChances.get().floatValue()) {
-                ItemStack tippedArrow = PotionUtils.setPotion(new ItemStack(Items.TIPPED_ARROW, source.nextInt(PPConfig.COMMON.healingArrowMaxStackSize.get(), PPConfig.COMMON.healingArrowMaxStackSize.get())), Potions.STRONG_HEALING);
+                ItemStack tippedArrow = PotionUtils.setPotion(new ItemStack(Items.TIPPED_ARROW, source.nextInt(PPConfig.COMMON.healingArrowMinStackSize.get(), PPConfig.COMMON.healingArrowMaxStackSize.get())), Potions.STRONG_HEALING);
                 this.setBeltInventorySlot(source.nextInt(6), tippedArrow);
             }
             for (int slot = 0; slot < this.beltInventory.size(); slot++) {
-                Potion effect = source.nextFloat() < 0.35F ? Potions.FIRE_RESISTANCE : source.nextFloat() < 0.30F ? Potions.STRONG_REGENERATION : source.nextFloat() < 0.25F ? Potions.STRONG_HEALING : Potions.STRONG_STRENGTH;
-                ItemStack potion = PotionUtils.setPotion(new ItemStack(Items.SPLASH_POTION), effect);
-                this.setBeltInventorySlot(slot, potion);
+                if (this.beltInventory.get(slot).isEmpty()) {
+                    Potion effect = source.nextFloat() < 0.35F ? Potions.FIRE_RESISTANCE : source.nextFloat() < 0.30F ? Potions.STRONG_REGENERATION : source.nextFloat() < 0.25F ? Potions.STRONG_HEALING : Potions.STRONG_STRENGTH;
+                    ItemStack potion = PotionUtils.setPotion(new ItemStack(Items.SPLASH_POTION), effect);
+                    this.setBeltInventorySlot(slot, potion);
+                }
             }
         }
     }
@@ -327,7 +329,7 @@ public class PiglinAlchemist extends Piglin {
     public void syncBeltToClient() {
         if (!this.level.isClientSide) {
             for (int i = 0; i < this.beltInventory.size(); i++) {
-                PPNetworking.INSTANCE.send(PacketDistributor.ALL.noArg(), new AlchemistBeltSyncPacket(this.getId(), i, this.beltInventory.get(i)));
+                PPNetworking.INSTANCE.send(PacketDistributor.TRACKING_ENTITY.with(() -> this), new AlchemistBeltSyncPacket(this.getId(), i, this.beltInventory.get(i)));
             }
         }
     }
