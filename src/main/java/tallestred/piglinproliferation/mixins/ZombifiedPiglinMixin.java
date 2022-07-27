@@ -44,23 +44,28 @@ public abstract class ZombifiedPiglinMixin extends Zombie {
         Random randomSource = level.getRandom();
         TransformationSourceListener tSource = PPEvents.getTransformationSourceListener(this);
         if (p_34299_ != MobSpawnType.CONVERSION) {
-            tSource.setTransformationSource("piglin"); // Make this a config
-            float bruteChance = 0.015F;
-            if (randomSource.nextFloat() < bruteChance) {
-                this.setItemSlot(EquipmentSlot.MAINHAND, new ItemStack(Items.GOLDEN_AXE));
-                tSource.setTransformationSource("piglin_brute");
-                if (ModList.get().isLoaded("bigbrain")) {
-                    Item buckler = ForgeRegistries.ITEMS.getValue(new ResourceLocation("bigbrain:buckler"));
-                    this.setItemSlot(EquipmentSlot.OFFHAND, new ItemStack(buckler));
+            if (randomSource.nextFloat() < PPConfig.COMMON.zombifiedPiglinDefaultChance.get().floatValue())
+                tSource.setTransformationSource("piglin");
+            if (randomSource.nextFloat() < PPConfig.COMMON.piglinVariantChances.get().floatValue()) {
+                List<? extends String> piglinTypes = PPConfig.COMMON.zombifiedPiglinTypeList.get();
+                if (!piglinTypes.isEmpty())
+                    tSource.setTransformationSource(piglinTypes.get(randomSource.nextInt(piglinTypes.size())));
+            }
+            float bruteChance = PPConfig.COMMON.zombifiedBruteChance.get().floatValue();
+            if (tSource.getTransformationSource().equals("piglin")) {
+                if (randomSource.nextFloat() < bruteChance) {
+                    this.setItemSlot(EquipmentSlot.MAINHAND, new ItemStack(Items.GOLDEN_AXE));
+                    tSource.setTransformationSource("piglin_brute");
+                    if (ModList.get().isLoaded("bigbrain")) {
+                        Item buckler = ForgeRegistries.ITEMS.getValue(new ResourceLocation("bigbrain:buckler"));
+                        this.setItemSlot(EquipmentSlot.OFFHAND, new ItemStack(buckler));
+                    }
+                }
+                if (randomSource.nextFloat() < PPConfig.COMMON.zombifiedAlchemistChance.get().floatValue()) {
+                    this.setItemSlot(EquipmentSlot.MAINHAND, new ItemStack(Items.BOW));
+                    tSource.setTransformationSource("piglin_alchemist");
                 }
             }
-            if (randomSource.nextFloat() < 0.10F) {
-                this.setItemSlot(EquipmentSlot.MAINHAND, new ItemStack(Items.BOW));
-                tSource.setTransformationSource("piglin_alchemist");
-            }
-            List<? extends String> piglinTypes = PPConfig.COMMON.zombifiedPiglinTypeList.get();
-            if (!piglinTypes.isEmpty())
-                tSource.setTransformationSource(piglinTypes.get(randomSource.nextInt(piglinTypes.size())));
         }
         return dataGroup;
     }

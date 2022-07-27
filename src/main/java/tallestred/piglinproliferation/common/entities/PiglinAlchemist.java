@@ -246,7 +246,7 @@ public class PiglinAlchemist extends Piglin {
         if (this.isAdult()) {
             this.setItemSlot(EquipmentSlot.MAINHAND, new ItemStack(Items.BOW));
             if (this.getRandom().nextFloat() < PPConfig.COMMON.healingArrowChances.get().floatValue()) {
-                ItemStack tippedArrow = PotionUtils.setPotion(new ItemStack(Items.TIPPED_ARROW, this.getRandom().nextInt(PPConfig.COMMON.healingArrowMaxStackSize.get(), PPConfig.COMMON.healingArrowMaxStackSize.get())), Potions.STRONG_HEALING);
+                ItemStack tippedArrow = PotionUtils.setPotion(new ItemStack(Items.TIPPED_ARROW, this.getRandom().nextInt(PPConfig.COMMON.healingArrowMinStackSize.get(), PPConfig.COMMON.healingArrowMaxStackSize.get())), Potions.STRONG_HEALING);
                 this.setBeltInventorySlot(this.getRandom().nextInt(6), tippedArrow);
             }
             for (int slot = 0; slot < this.beltInventory.size(); slot++) {
@@ -327,7 +327,7 @@ public class PiglinAlchemist extends Piglin {
     public void syncBeltToClient() {
         if (!this.level.isClientSide) {
             for (int i = 0; i < this.beltInventory.size(); i++) {
-                PPNetworking.INSTANCE.send(PacketDistributor.ALL.noArg(), new AlchemistBeltSyncPacket(this.getId(), i, this.beltInventory.get(i)));
+                PPNetworking.INSTANCE.send(PacketDistributor.TRACKING_ENTITY.with(() -> this), new AlchemistBeltSyncPacket(this.getId(), i, this.beltInventory.get(i)));
             }
         }
     }

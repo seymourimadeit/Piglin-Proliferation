@@ -16,7 +16,7 @@ modId="piglinproliferation" #mandatory
 version="${file.jarVersion}" #mandatory
  # A display name for the mod
 displayName="Piglin Proliferation" #mandatory
-#updateJSONURL="https://change.me.example.invalid/updates.json" #optional
+updateJSONURL="https://raw.githubusercontent.com/seymourimadeit/Piglin-Proliferation/main/update.json" #optional
 # logoFile="piglinproliferation.png" #optional
 credits="TallestEgg, Edmord for the alchemist texture"
 description='''
