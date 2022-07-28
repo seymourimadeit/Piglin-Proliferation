@@ -130,9 +130,10 @@ public class PPEvents {
 
     @SubscribeEvent
     public static void onConvert(LivingConversionEvent.Post event) {
-        if (event.getEntity() instanceof AbstractPiglin piglin && event.getOutcome() instanceof ZombifiedPiglin ziglin) {
+        if (event.getEntity() instanceof AbstractPiglin piglin && event.getOutcome().getType() == EntityType.ZOMBIFIED_PIGLIN) { // Some mods have entities that extend zombified piglins in order to make their own ziglins have custom textures
             if (piglin.level.isClientSide)
                 return;
+            ZombifiedPiglin ziglin = (ZombifiedPiglin) event.getOutcome();
             TransformationSourceListener transformationSource = getTransformationSourceListener(ziglin);
             String piglinName = ForgeRegistries.ENTITY_TYPES.getKey(piglin.getType()).getPath();
             transformationSource.setTransformationSource(piglinName);
