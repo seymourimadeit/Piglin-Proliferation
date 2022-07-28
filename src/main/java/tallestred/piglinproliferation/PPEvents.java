@@ -4,10 +4,7 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.Mob;
-import net.minecraft.world.entity.MobCategory;
+import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.monster.ZombifiedPiglin;
 import net.minecraft.world.entity.monster.piglin.AbstractPiglin;
 import net.minecraft.world.entity.projectile.Arrow;
@@ -117,9 +114,10 @@ public class PPEvents {
 
     @SubscribeEvent
     public static void onConvert(LivingConversionEvent.Post event) {
-        if (event.getEntity() instanceof AbstractPiglin piglin && event.getOutcome() instanceof ZombifiedPiglin ziglin) {
+        if (event.getEntity() instanceof AbstractPiglin piglin && event.getOutcome().getType() == EntityType.ZOMBIFIED_PIGLIN) { // Some mods have entities that extend zombified piglins in order to make their own ziglins have custom textures, this specific type == check checks if its a vanilla zombified piglin in order to prevent any texture mismatches
             if (piglin.level.isClientSide)
                 return;
+            ZombifiedPiglin ziglin = (ZombifiedPiglin) event.getOutcome();
             TransformationSourceListener transformationSource = getTransformationSourceListener(ziglin);
             String piglinName = ForgeRegistries.ENTITIES.getKey(piglin.getType()).getPath();
             transformationSource.setTransformationSource(piglinName);

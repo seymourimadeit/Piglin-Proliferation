@@ -3,6 +3,7 @@ package tallestred.piglinproliferation.mixins;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.DifficultyInstance;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.MobSpawnType;
 import net.minecraft.world.entity.SpawnGroupData;
@@ -43,7 +44,7 @@ public abstract class ZombifiedPiglinMixin extends Zombie {
         SpawnGroupData dataGroup = super.finalizeSpawn(p_34297_, p_34298_, p_34299_, p_34300_, p_34301_);
         Random randomSource = level.getRandom();
         TransformationSourceListener tSource = PPEvents.getTransformationSourceListener(this);
-        if (p_34299_ != MobSpawnType.CONVERSION) {
+        if (p_34299_ != MobSpawnType.CONVERSION && this.getType() == EntityType.ZOMBIFIED_PIGLIN) {
             if (randomSource.nextFloat() < PPConfig.COMMON.zombifiedPiglinDefaultChance.get().floatValue())
                 tSource.setTransformationSource("piglin");
             if (randomSource.nextFloat() < PPConfig.COMMON.piglinVariantChances.get().floatValue()) {
