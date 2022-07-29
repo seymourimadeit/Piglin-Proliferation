@@ -99,10 +99,8 @@ public class BowAttack<E extends PiglinAlchemist, T extends LivingEntity> extend
                 if (alchemist.getArrowsShot() >= 3)
                     alchemist.setArrowsShot(0);
             }
-            if (this.avoidTime == 0) {
+            if (this.avoidTime == 0)
                 alchemist.getNavigation().stop();
-                this.avoidTime = -1;
-            }
             if (this.avoidTime < 0)
                 this.avoidTime = 0;
             if (this.avoidTime > 60)
