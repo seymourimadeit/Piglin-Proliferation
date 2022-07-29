@@ -27,7 +27,8 @@ public class PiglinClothingRenderLayer<T extends ZombifiedPiglin, M extends Pigl
     public void render(PoseStack pMatrixStack, MultiBufferSource pBuffer, int pPackedLight, T pLivingEntity, float pLimbSwing, float pLimbSwingAmount, float pPartialTicks, float pAgeInTicks, float pNetHeadYaw, float pHeadPitch) {
         if (!PPConfig.CLIENT.ziglinTextures.get())
             return;
-        if (getClothingTexture(pLivingEntity) != null)
+        TransformationSourceListener transformationSourceListener = PPEvents.getTransformationSourceListener(pLivingEntity);
+        if (getClothingTexture(pLivingEntity) != null && !transformationSourceListener.getTransformationSource().isEmpty())
             coloredCutoutModelCopyLayerRender(this.getParentModel(), this.layerModel, getClothingTexture(pLivingEntity), pMatrixStack, pBuffer, pPackedLight, pLivingEntity, pLimbSwing, pLimbSwingAmount, pAgeInTicks, pNetHeadYaw, pHeadPitch, pPartialTicks, 1.0F, 1.0F, 1.0F);
     }
 
