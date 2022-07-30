@@ -116,7 +116,7 @@ public class PPEvents {
         if (event.getSource().getDirectEntity() instanceof Arrow arrow && PPConfig.COMMON.healingArrowDamage.get()) {
             for (MobEffectInstance mobeffectinstance : arrow.potion.getEffects()) {
                 if ((mobeffectinstance.getEffect() == MobEffects.REGENERATION || mobeffectinstance.getEffect() == MobEffects.HEAL)) {
-                    if (event.getEntity() instanceof Mob && event.getEntity().isInvertedHealAndHarm())
+                    if ((event.getEntity() instanceof Mob && event.getEntity().isInvertedHealAndHarm()))
                         return;
                     event.setAmount(0.0F);
                     arrow.level.playSound(null, arrow.blockPosition(), PPSounds.REGEN_HEALING_ARROW_HIT.get(), SoundSource.NEUTRAL, 1.0F, 1.0F);
