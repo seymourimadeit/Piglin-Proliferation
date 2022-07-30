@@ -10,7 +10,6 @@ import net.minecraft.world.entity.monster.piglin.AbstractPiglin;
 import net.minecraft.world.entity.projectile.Arrow;
 import net.minecraft.world.item.alchemy.PotionUtils;
 import net.minecraft.world.item.alchemy.Potions;
-import net.minecraft.world.level.biome.Biomes;
 import net.minecraft.world.level.biome.MobSpawnSettings;
 import net.minecraft.world.level.pathfinder.BlockPathTypes;
 import net.minecraftforge.common.util.LazyOptional;
@@ -127,8 +126,9 @@ public class PPEvents {
 
     @SubscribeEvent(priority = EventPriority.HIGH)
     public static void onBiomeLoad(BiomeLoadingEvent event) {
-        if (event.getName().equals(Biomes.NETHER_WASTES.location()) || event.getName().equals(Biomes.CRIMSON_FOREST.location())) // TODO make this a config option
-            event.getSpawns().addSpawn(MobCategory.MONSTER, new MobSpawnSettings.SpawnerData(PPEntityTypes.PIGLIN_ALCHEMIST.get(), 5, 3, 6));
+        if (PPConfig.COMMON.listOfAlchemistBiomes.get().contains(event.getName().toString())) {
+            event.getSpawns().addSpawn(MobCategory.MONSTER, new MobSpawnSettings.SpawnerData(PPEntityTypes.PIGLIN_ALCHEMIST.get(), PPConfig.COMMON.alchemistWeight.get(), PPConfig.COMMON.alchemistMinSpawnCount.get(), PPConfig.COMMON.alchemistMaxSpawnCount.get()));
+        }
     }
 
     public static TransformationSourceListener getTransformationSourceListener(LivingEntity entity) {
