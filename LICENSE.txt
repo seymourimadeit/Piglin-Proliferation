@@ -1,6 +1,6 @@
 /src/main/resources/
 
-These directories in this repository, including sub-directories, and all files inside them, are subject to the below license.
+The above written directories in this repository, including sub-directories, and all files inside them, are subject to the below license.
 
 This work is licensed under a Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License.
 
