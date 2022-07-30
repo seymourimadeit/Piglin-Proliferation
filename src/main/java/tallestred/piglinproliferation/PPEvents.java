@@ -4,7 +4,11 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
-import net.minecraft.world.entity.*;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.ai.memory.MemoryModuleType;
 import net.minecraft.world.entity.monster.ZombifiedPiglin;
 import net.minecraft.world.entity.monster.piglin.AbstractPiglin;
 import net.minecraft.world.entity.projectile.Arrow;
@@ -14,6 +18,7 @@ import net.minecraft.world.level.pathfinder.BlockPathTypes;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.entity.EntityJoinLevelEvent;
+import net.minecraftforge.event.entity.living.LivingAttackEvent;
 import net.minecraftforge.event.entity.living.LivingConversionEvent;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.event.entity.living.MobEffectEvent;
@@ -127,6 +132,23 @@ public class PPEvents {
             }
         }
     }
+
+    @SubscribeEvent
+    public static void attackEntity(LivingAttackEvent event) {
+        // Testing bygone nether compatiblity lead me to discover that alchemists healing piglin hunters leads to them attacking each other since the
+        // horses they're riding on are considered undead, this should work as a quick fix for that, but further discussions with the mod creator is needed.
+        if (event.getEntity() instanceof Mob mob) {
+            for (Entity rider : mob.getPassengers()) {
+                if (mob.isInvertedHealAndHarm() && event.getSource().getEntity() instanceof AbstractPiglin && rider instanceof AbstractPiglin piglin && event.getSource().isMagic()) {
+                    if (event.getEntity().level.isClientSide)
+                        return;
+                    piglin.getBrain().eraseMemory(MemoryModuleType.ANGRY_AT);
+                    event.setCanceled(true);
+                }
+            }
+        }
+    }
+
 
     @SubscribeEvent
     public static void onConvert(LivingConversionEvent.Post event) {
