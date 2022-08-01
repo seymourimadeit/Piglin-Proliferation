@@ -1,20 +1,14 @@
 package tallestred.piglinproliferation.client;
 
-import net.minecraft.client.model.EntityModel;
-import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.model.PiglinModel;
 import net.minecraft.client.model.geom.ModelLayerLocation;
 import net.minecraft.client.model.geom.builders.CubeDeformation;
 import net.minecraft.client.model.geom.builders.LayerDefinition;
 import net.minecraft.client.renderer.entity.LivingEntityRenderer;
-import net.minecraft.client.renderer.entity.PiglinRenderer;
-import net.minecraft.client.renderer.entity.RenderLayerParent;
 import net.minecraft.client.renderer.entity.layers.RenderLayer;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
-import net.minecraft.world.entity.monster.ZombifiedPiglin;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.EntityRenderersEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -26,7 +20,6 @@ import tallestred.piglinproliferation.client.renderers.models.PiglinAlchemistMod
 import tallestred.piglinproliferation.common.entities.PPEntityTypes;
 
 import java.util.function.Function;
-import java.util.function.Supplier;
 
 @Mod.EventBusSubscriber(modid = PiglinProliferation.MODID, bus = Mod.EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
 public class PPClientEvents {
@@ -35,14 +28,13 @@ public class PPClientEvents {
             new ResourceLocation(PiglinProliferation.MODID + "ziglin_clothing"), "ziglin_clothing");
     public static final ModelLayerLocation PIGLIN_ALCHEMIST = new ModelLayerLocation(
             new ResourceLocation(PiglinProliferation.MODID + "piglin_alchemist"),  "piglin_alchemist");
-    public static final ModelLayerLocation PIGLIN_ALCHEMIST_BELT = new ModelLayerLocation(
+    public static final ModelLayerLocation PIGLIN_ALCHEMIST_BELT_SLOTS = new ModelLayerLocation(
             new ResourceLocation(PiglinProliferation.MODID + "piglin_alchemist_belt"),  "piglin_alchemist_belt");
-
     @SubscribeEvent
     public static void layerDefinitions(EntityRenderersEvent.RegisterLayerDefinitions event) {
         event.registerLayerDefinition(ZIGLIN_CLOTHING, () -> LayerDefinition.create(PiglinModel.createMesh(new CubeDeformation(0.25F)), 64, 64));
-        event.registerLayerDefinition(PIGLIN_ALCHEMIST, () -> LayerDefinition.create(PiglinAlchemistModel.createBodyLayer(new CubeDeformation(0.25F)), 120, 64));
-        event.registerLayerDefinition(PIGLIN_ALCHEMIST_BELT, () -> LayerDefinition.create(PiglinAlchemistModel.createBodyLayer(new CubeDeformation(0.40F)), 120, 64));
+        event.registerLayerDefinition(PIGLIN_ALCHEMIST, () -> LayerDefinition.create(PiglinAlchemistModel.createBodyLayer(new CubeDeformation(0.25F), new CubeDeformation(0.70F), new CubeDeformation(1.05F)), 120, 64));
+        event.registerLayerDefinition(PIGLIN_ALCHEMIST_BELT_SLOTS, () -> LayerDefinition.create(PiglinAlchemistModel.createBodyLayer(new CubeDeformation(0.40F), new CubeDeformation(1.0F), new CubeDeformation(1.20F)), 120, 64));
     }
 
     @SubscribeEvent

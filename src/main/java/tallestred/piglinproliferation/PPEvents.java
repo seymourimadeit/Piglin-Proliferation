@@ -32,6 +32,7 @@ import tallestred.piglinproliferation.capablities.TransformationSourceListener;
 import tallestred.piglinproliferation.capablities.TransformationSourceProvider;
 import tallestred.piglinproliferation.client.PPSounds;
 import tallestred.piglinproliferation.common.entities.ai.goals.PiglinCallForHelpGoal;
+import tallestred.piglinproliferation.common.entities.ai.goals.PiglinSwimInLavaGoal;
 import tallestred.piglinproliferation.configuration.PPConfig;
 import tallestred.piglinproliferation.networking.PPNetworking;
 import tallestred.piglinproliferation.networking.ZiglinCapablitySyncPacket;
@@ -78,6 +79,7 @@ public class PPEvents {
             }, (alchemist -> {
                 return alchemist.getItemShownOnOffhand() != null && PotionUtils.getPotion(alchemist.getItemShownOnOffhand()) == Potions.STRONG_STRENGTH;
             })));
+            piglin.goalSelector.addGoal(1, new PiglinSwimInLavaGoal(piglin));
         }
     }
 

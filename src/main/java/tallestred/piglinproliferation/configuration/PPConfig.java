@@ -38,6 +38,7 @@ public class PPConfig {
         public final ForgeConfigSpec.DoubleValue zombifiedPiglinDefaultChance;
         public final ForgeConfigSpec.DoubleValue zombifiedBruteChance;
         public final ForgeConfigSpec.DoubleValue zombifiedAlchemistChance;
+        public final ForgeConfigSpec.DoubleValue alchemistPotionChance;
         public final ForgeConfigSpec.IntValue healingArrowMinStackSize;
         public final ForgeConfigSpec.IntValue healingArrowMaxStackSize;
         public final ForgeConfigSpec.ConfigValue<List<? extends String>> zombifiedPiglinTypeList;
@@ -56,6 +57,7 @@ public class PPConfig {
             zombifiedPiglinTypeList = builder.comment("List of variants a zombified piglin has a 50% of turning into when spawning.", "Keep in mind they will still spawn with golden swords, this will be changed in the future.").defineList("List of piglin variants to use", ImmutableList.of(), obj -> true);
             builder.pop();
             builder.push("Piglin Alchemist");
+            alchemistPotionChance = builder.defineInRange("Chance of alchemist potions not getting broken when killed", 0.20F, 0.0F, 9000.0F);
             builder.push("Healing Arrow Chances");
             healingArrowChances = builder.defineInRange("Chances of an alchemist getting healing arrows", 0.30F, 0.0F, 100.0F);
             healingArrowMinStackSize = builder.defineInRange("Minmium healing arrow stack size", 1, Integer.MIN_VALUE, Integer.MAX_VALUE);

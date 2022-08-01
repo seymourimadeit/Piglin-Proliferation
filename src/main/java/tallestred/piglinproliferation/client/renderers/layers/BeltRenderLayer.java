@@ -16,6 +16,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.HumanoidArm;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.item.ArrowItem;
 import net.minecraft.world.item.ItemStack;
 import tallestred.piglinproliferation.PiglinProliferation;
 import tallestred.piglinproliferation.client.PPClientEvents;
@@ -28,7 +29,7 @@ public class BeltRenderLayer<T extends PiglinAlchemist, M extends EntityModel<T>
 
     public BeltRenderLayer(RenderLayerParent p_117183_, ItemInHandRenderer itemInHandRenderer) {
         super(p_117183_);
-        this.layerModel = new PiglinAlchemistModel<>(Minecraft.getInstance().getEntityModels().bakeLayer(PPClientEvents.PIGLIN_ALCHEMIST_BELT));
+        layerModel = new PiglinAlchemistModel<>(Minecraft.getInstance().getEntityModels().bakeLayer(PPClientEvents.PIGLIN_ALCHEMIST_BELT_SLOTS));
         this.itemInHandRenderer = itemInHandRenderer;
     }
 
@@ -42,7 +43,7 @@ public class BeltRenderLayer<T extends PiglinAlchemist, M extends EntityModel<T>
                     pMatrixStack.translate(0.0D, 0.75D, 0.0D);
                     pMatrixStack.scale(0.5F, 0.5F, 0.5F);
                 }
-                this.renderBeltItems(pLivingEntity, itemstack, ItemTransforms.TransformType.GROUND, pMatrixStack, pBuffer, pPackedLight, inventorySlots);
+                this.renderBeltItems(pLivingEntity, itemstack, ItemTransforms.TransformType.GROUND, pMatrixStack, pBuffer, pAgeInTicks, pPackedLight, inventorySlots);
                 pMatrixStack.popPose();
             }
             HumanoidArm arm = pLivingEntity.isLeftHanded() ? HumanoidArm.RIGHT : HumanoidArm.LEFT;
@@ -57,10 +58,10 @@ public class BeltRenderLayer<T extends PiglinAlchemist, M extends EntityModel<T>
                 pMatrixStack.popPose();
             }
         }
-        coloredCutoutModelCopyLayerRender(this.getParentModel(), this.layerModel, new ResourceLocation(PiglinProliferation.MODID, "textures/entity/piglin/alchemist/belt.png"), pMatrixStack, pBuffer, pPackedLight, pLivingEntity, pLimbSwing, pLimbSwingAmount, pAgeInTicks, pNetHeadYaw, pHeadPitch, pPartialTicks, 1.0F, 1.0F, 1.0F);
+        coloredCutoutModelCopyLayerRender(this.getParentModel(), layerModel, new ResourceLocation(PiglinProliferation.MODID, "textures/entity/piglin/alchemist/belt.png"), pMatrixStack, pBuffer, pPackedLight, pLivingEntity, pLimbSwing, pLimbSwingAmount, pAgeInTicks, pNetHeadYaw, pHeadPitch, pPartialTicks, 1.0F, 1.0F, 1.0F);
     }
 
-    protected void renderBeltItems(LivingEntity entity, ItemStack stack, ItemTransforms.TransformType transformType, PoseStack poseStack, MultiBufferSource source, int light, int inventorySlot) {
+    protected void renderBeltItems(LivingEntity entity, ItemStack stack, ItemTransforms.TransformType transformType, PoseStack poseStack, MultiBufferSource source, float ageInTicks, int light, int inventorySlot) {
         if (!stack.isEmpty()) {
             poseStack.pushPose();
             ((PiglinModel) this.getParentModel()).body.translateAndRotate(poseStack);
@@ -72,8 +73,8 @@ public class BeltRenderLayer<T extends PiglinAlchemist, M extends EntityModel<T>
             }
             if (inventorySlot == 2 || inventorySlot == 5) {
                 poseStack.mulPose(Vector3f.YP.rotationDegrees(90.0F));
-                double secondSlotInflation = entity.hasItemInSlot(EquipmentSlot.LEGS) ? -0.285D : -0.34D;
-                double fifthSlotInflation = entity.hasItemInSlot(EquipmentSlot.LEGS) ? -2.305D : -2.26D;
+                double secondSlotInflation = entity.hasItemInSlot(EquipmentSlot.LEGS) && !entity.hasItemInSlot(EquipmentSlot.CHEST) ? -0.290D : entity.hasItemInSlot(EquipmentSlot.CHEST) ? -0.265D : -0.34D;
+                double fifthSlotInflation = entity.hasItemInSlot(EquipmentSlot.LEGS) && !entity.hasItemInSlot(EquipmentSlot.CHEST) ? -2.310D : entity.hasItemInSlot(EquipmentSlot.CHEST) ? -2.335D : -2.26D;
                 poseStack.translate(-0.2D, 0.4D, inventorySlot == 2 ? secondSlotInflation : fifthSlotInflation);
             }
             poseStack.mulPose(Vector3f.XP.rotationDegrees(180.0F));
