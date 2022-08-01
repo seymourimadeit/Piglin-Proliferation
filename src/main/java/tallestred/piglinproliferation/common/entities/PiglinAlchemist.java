@@ -135,7 +135,7 @@ public class PiglinAlchemist extends Piglin {
     protected void dropCustomDeathLoot(DamageSource pSource, int pLooting, boolean pRecentlyHit) {
         for (ItemStack itemStack : this.beltInventory) {
             if (!itemStack.isEmpty()) {
-                if (!EnchantmentHelper.hasVanishingCurse(itemStack) && this.getRandom().nextFloat() < 0.20F) {
+                if (!EnchantmentHelper.hasVanishingCurse(itemStack) && this.getRandom().nextFloat() < PPConfig.COMMON.alchemistPotionChance.get().floatValue()) {
                     this.spawnAtLocation(itemStack);
                 } else {
                     if (itemStack.getItem() instanceof PotionItem) {

@@ -71,8 +71,8 @@ public class BeltRenderLayer<T extends PiglinAlchemist, M extends EntityModel<T>
             }
             if (inventorySlot == 2 || inventorySlot == 5) {
                 poseStack.mulPose(Vector3f.YP.rotationDegrees(90.0F));
-                double secondSlotInflation = entity.hasItemInSlot(EquipmentSlot.LEGS) ? -0.285D : -0.34D;
-                double fifthSlotInflation = entity.hasItemInSlot(EquipmentSlot.LEGS) ? -2.305D : -2.26D;
+                double secondSlotInflation = entity.hasItemInSlot(EquipmentSlot.LEGS) && !entity.hasItemInSlot(EquipmentSlot.CHEST) ? -0.290D : entity.hasItemInSlot(EquipmentSlot.CHEST) ? -0.265D : -0.34D;
+                double fifthSlotInflation = entity.hasItemInSlot(EquipmentSlot.LEGS) && !entity.hasItemInSlot(EquipmentSlot.CHEST) ? -2.310D : entity.hasItemInSlot(EquipmentSlot.CHEST) ? -2.335D : -2.26D;
                 poseStack.translate(-0.2D, 0.4D, inventorySlot == 2 ? secondSlotInflation : fifthSlotInflation);
             }
             poseStack.mulPose(Vector3f.XP.rotationDegrees(180.0F));

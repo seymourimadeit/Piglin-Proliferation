@@ -42,6 +42,7 @@ public class PPConfig {
         public final ForgeConfigSpec.IntValue alchemistMinSpawnCount;
         public final ForgeConfigSpec.IntValue alchemistMaxSpawnCount;
         public final ForgeConfigSpec.IntValue healingArrowMaxStackSize;
+        public final ForgeConfigSpec.DoubleValue alchemistPotionChance;
         public final ForgeConfigSpec.ConfigValue<List<? extends String>> zombifiedPiglinTypeList;
         public final ForgeConfigSpec.ConfigValue<List<? extends String>> listOfAlchemistBiomes;
 
@@ -59,6 +60,7 @@ public class PPConfig {
             zombifiedPiglinTypeList = builder.comment("List of variants a zombified piglin has a 50% of turning into when spawning.", "Keep in mind they will still spawn with golden swords, this will be changed in the future.").defineList("List of piglin variants to use", ImmutableList.of(), obj -> true);
             builder.pop();
             builder.push("Piglin Alchemist");
+            alchemistPotionChance = builder.defineInRange("Chance of alchemist potions not getting broken when killed", 0.20F, 0.0F, 9000.0F);
             listOfAlchemistBiomes = builder.defineList("List of biomes alchemists will spawn in", ImmutableList.of("minecraft:nether_wastes", "minecraft:crimson_forest"), obj -> true);
             alchemistWeight = builder.defineInRange("Spawn weight for alchemists", 5, Integer.MIN_VALUE, Integer.MAX_VALUE);
             alchemistMinSpawnCount = builder.defineInRange("Minmium spawn count for alchemists", 3, Integer.MIN_VALUE, Integer.MAX_VALUE);

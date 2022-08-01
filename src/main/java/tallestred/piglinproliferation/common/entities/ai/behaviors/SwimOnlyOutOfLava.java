@@ -13,11 +13,6 @@ public class SwimOnlyOutOfLava extends Swim {
     }
 
     @Override
-    protected boolean checkExtraStartConditions(ServerLevel level, Mob mob) {
-        return mob.isInLava();
-    }
-
-    @Override
     protected void tick(ServerLevel level, Mob mob, long gameTime) {
         super.tick(level, mob, gameTime);
         Vec3 vec3 = LandRandomPos.getPos((PathfinderMob) mob, 15, 7);
