@@ -109,7 +109,7 @@ public class PiglinAlchemist extends Piglin {
 
     protected void playStepSound(BlockPos p_32159_, BlockState p_32160_) {
         if (this.getRandom().nextInt(5) == 0 && this.beltInventory.stream().filter(itemStack -> itemStack.getItem() instanceof PotionItem).findAny().isPresent())
-            this.playSound(PPSounds.ALCHEMIST_WALK.get(), 0.8F * (this.beltInventory.stream().filter(itemStack -> itemStack.getItem() instanceof PotionItem).count() * 0.5F), 1.0F);
+            this.playSound(PPSounds.ALCHEMIST_WALK.get(), 0.5F * (this.beltInventory.stream().filter(itemStack -> itemStack.getItem() instanceof PotionItem).count() * 0.5F), 1.0F);
         this.playSound(PPSounds.ALCHEMIST_STEP.get(), 0.15F, 1.0F);
     }
 

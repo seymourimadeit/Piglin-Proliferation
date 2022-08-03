@@ -30,6 +30,7 @@ public class PPClientEvents {
             new ResourceLocation(PiglinProliferation.MODID + "piglin_alchemist"),  "piglin_alchemist");
     public static final ModelLayerLocation PIGLIN_ALCHEMIST_BELT_SLOTS = new ModelLayerLocation(
             new ResourceLocation(PiglinProliferation.MODID + "piglin_alchemist_belt"),  "piglin_alchemist_belt");
+
     @SubscribeEvent
     public static void layerDefinitions(EntityRenderersEvent.RegisterLayerDefinitions event) {
         event.registerLayerDefinition(ZIGLIN_CLOTHING, () -> LayerDefinition.create(PiglinModel.createMesh(new CubeDeformation(0.25F)), 64, 64));

@@ -1,6 +1,5 @@
 package tallestred.piglinproliferation.common.entities.ai.behaviors;
 
-import com.google.common.collect.ImmutableMap;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.Mth;
@@ -11,7 +10,6 @@ import net.minecraft.world.entity.ai.behavior.BlockPosTracker;
 import net.minecraft.world.entity.ai.behavior.EntityTracker;
 import net.minecraft.world.entity.ai.memory.MemoryModuleType;
 import net.minecraft.world.entity.ai.memory.MemoryStatus;
-import net.minecraft.world.entity.ai.memory.WalkTarget;
 import net.minecraft.world.entity.ai.util.LandRandomPos;
 import net.minecraft.world.entity.monster.piglin.AbstractPiglin;
 import net.minecraft.world.entity.projectile.ProjectileUtil;
@@ -66,7 +64,7 @@ public class BowAttack<E extends PiglinAlchemist, T extends LivingEntity> extend
                     alchemist.stopUsingItem();
                 } else if (canSee) {
                     int i = alchemist.getTicksUsingItem();
-                    int timeToShoot = Mth.floor(Mth.lerp(distanceSquared / (double) this.attackRadiusSqr, 5.0D, 20.0D));
+                    int timeToShoot = distanceSquared <= 40.0D ? Mth.floor(Mth.lerp(distanceSquared / (double) this.attackRadiusSqr, 5.0D, 20.0D)) : 20;
                     if (i >= timeToShoot) {
                         alchemist.stopUsingItem();
                         alchemist.performRangedAttack(target, BowItem.getPowerForTime(i));
@@ -77,7 +75,7 @@ public class BowAttack<E extends PiglinAlchemist, T extends LivingEntity> extend
                 alchemist.startUsingItem(ProjectileUtil.getWeaponHoldingHand(alchemist, item -> item instanceof BowItem));
             }
             if (distanceSquared > (double) this.attackRadiusSqr && this.seeTime >= 20) {
-                this.path = alchemist.getNavigation().createPath(target,0);
+                this.path = alchemist.getNavigation().createPath(target, 0);
                 alchemist.getNavigation().moveTo(this.path, this.speedModifier);
             } else if (distanceSquared < (double) this.attackRadiusSqr && this.seeTime >= 20) {
                 alchemist.getNavigation().stop();
