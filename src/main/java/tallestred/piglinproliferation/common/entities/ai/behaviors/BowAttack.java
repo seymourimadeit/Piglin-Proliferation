@@ -64,7 +64,7 @@ public class BowAttack<E extends PiglinAlchemist, T extends LivingEntity> extend
                     alchemist.stopUsingItem();
                 } else if (canSee) {
                     int i = alchemist.getTicksUsingItem();
-                    int timeToShoot = Mth.floor(Mth.lerp(distanceSquared / (double) this.attackRadiusSqr, 5.0D, 20.0D));
+                    int timeToShoot = distanceSquared <= 40.0D ? Mth.floor(Mth.lerp(distanceSquared / (double) this.attackRadiusSqr, 5.0D, 20.0D)) : 20;
                     if (i >= timeToShoot) {
                         alchemist.stopUsingItem();
                         alchemist.performRangedAttack(target, BowItem.getPowerForTime(i));

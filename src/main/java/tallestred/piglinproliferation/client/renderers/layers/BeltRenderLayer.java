@@ -1,27 +1,41 @@
 package tallestred.piglinproliferation.client.renderers.layers;
 
 import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Vector3f;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.ArmedModel;
 import net.minecraft.client.model.EntityModel;
 import net.minecraft.client.model.PiglinModel;
+import net.minecraft.client.renderer.ItemBlockRenderTypes;
 import net.minecraft.client.renderer.ItemInHandRenderer;
 import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.block.model.ItemTransforms;
+import net.minecraft.client.renderer.entity.ItemRenderer;
 import net.minecraft.client.renderer.entity.LivingEntityRenderer;
 import net.minecraft.client.renderer.entity.RenderLayerParent;
 import net.minecraft.client.renderer.entity.layers.RenderLayer;
+import net.minecraft.client.resources.model.BakedModel;
+import net.minecraft.client.resources.model.ModelResourceLocation;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.HumanoidArm;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.HalfTransparentBlock;
+import net.minecraft.world.level.block.StainedGlassPaneBlock;
 import org.jetbrains.annotations.NotNull;
 import tallestred.piglinproliferation.PiglinProliferation;
 import tallestred.piglinproliferation.client.PPClientEvents;
 import tallestred.piglinproliferation.client.renderers.models.PiglinAlchemistModel;
 import tallestred.piglinproliferation.common.entities.PiglinAlchemist;
+import tallestred.piglinproliferation.configuration.PPConfig;
+
+import static net.minecraft.client.renderer.entity.ItemRenderer.*;
 
 public class BeltRenderLayer<T extends PiglinAlchemist, M extends EntityModel<T> & ArmedModel> extends RenderLayer<T, M> {
     private final PiglinAlchemistModel<T> layerModel;
@@ -76,8 +90,67 @@ public class BeltRenderLayer<T extends PiglinAlchemist, M extends EntityModel<T>
                 poseStack.translate(-0.2D, 0.4D, inventorySlot == 2 ? secondSlotInflation : fifthSlotInflation);
             }
             poseStack.mulPose(Vector3f.XP.rotationDegrees(180.0F));
-            Minecraft.getInstance().getItemRenderer().renderStatic(entity, stack, transformType, false, poseStack, source, entity.level, light, LivingEntityRenderer.getOverlayCoords(entity, 0.0F), entity.getId());
+            BakedModel model = Minecraft.getInstance().getItemRenderer().getModel(stack, entity.level, entity, light);
+            this.renderItemsBeltNoGlow(stack, transformType, false, poseStack, source, light, LivingEntityRenderer.getOverlayCoords(entity, 0.0F), model, Minecraft.getInstance().getItemRenderer());
             poseStack.popPose();
+        }
+    }
+
+    public void renderItemsBeltNoGlow(ItemStack pItemStack, ItemTransforms.TransformType pTransformType, boolean pLeftHand, PoseStack pMatrixStack, MultiBufferSource pBuffer, int pCombinedLight, int pCombinedOverlay, BakedModel pModel, ItemRenderer renderer) {
+        if (!pItemStack.isEmpty()) {
+            pMatrixStack.pushPose();
+            boolean flag = pTransformType == ItemTransforms.TransformType.GUI || pTransformType == ItemTransforms.TransformType.GROUND || pTransformType == ItemTransforms.TransformType.FIXED;
+            if (flag) {
+                if (pItemStack.is(Items.TRIDENT)) {
+                    pModel = renderer.getItemModelShaper().getModelManager().getModel(new ModelResourceLocation("minecraft:trident#inventory"));
+                } else if (pItemStack.is(Items.SPYGLASS)) {
+                    pModel = renderer.getItemModelShaper().getModelManager().getModel(new ModelResourceLocation("minecraft:spyglass#inventory"));
+                }
+            }
+
+            pModel = net.minecraftforge.client.ForgeHooksClient.handleCameraTransforms(pMatrixStack, pModel, pTransformType, pLeftHand);
+            pMatrixStack.translate(-0.5D, -0.5D, -0.5D);
+            if (!pModel.isCustomRenderer() && (!pItemStack.is(Items.TRIDENT) || flag)) {
+                boolean flag1;
+                if (pTransformType != ItemTransforms.TransformType.GUI && !pTransformType.firstPerson() && pItemStack.getItem() instanceof BlockItem) {
+                    Block block = ((BlockItem)pItemStack.getItem()).getBlock();
+                    flag1 = !(block instanceof HalfTransparentBlock) && !(block instanceof StainedGlassPaneBlock);
+                } else {
+                    flag1 = true;
+                }
+                if (pModel.isLayered()) { net.minecraftforge.client.ForgeHooksClient.drawItemLayered(renderer, pModel, pItemStack, pMatrixStack, pBuffer, pCombinedLight, pCombinedOverlay, flag1); }
+                else {
+                    RenderType rendertype = ItemBlockRenderTypes.getRenderType(pItemStack, flag1);
+                    VertexConsumer vertexconsumer;
+                    if (pItemStack.is(Items.COMPASS) && pItemStack.hasFoil()) {
+                        pMatrixStack.pushPose();
+                        PoseStack.Pose posestack$pose = pMatrixStack.last();
+                        if (pTransformType == ItemTransforms.TransformType.GUI) {
+                            posestack$pose.pose().multiply(0.5F);
+                        } else if (pTransformType.firstPerson()) {
+                            posestack$pose.pose().multiply(0.75F);
+                        }
+
+                        if (flag1) {
+                            vertexconsumer = getCompassFoilBufferDirect(pBuffer, rendertype, posestack$pose);
+                        } else {
+                            vertexconsumer = getCompassFoilBuffer(pBuffer, rendertype, posestack$pose);
+                        }
+
+                        pMatrixStack.popPose();
+                    } else if (flag1) {
+                        vertexconsumer = getFoilBufferDirect(pBuffer, rendertype, true, PPConfig.CLIENT.beltTextureGlow.get() && pItemStack.hasFoil());
+                    } else {
+                        vertexconsumer = getFoilBuffer(pBuffer, rendertype, true, PPConfig.CLIENT.beltTextureGlow.get() && pItemStack.hasFoil());
+                    }
+
+                    renderer.renderModelLists(pModel, pItemStack, pCombinedLight, pCombinedOverlay, pMatrixStack, vertexconsumer);
+                }
+            } else {
+                net.minecraftforge.client.RenderProperties.get(pItemStack).getItemStackRenderer().renderByItem(pItemStack, pTransformType, pMatrixStack, pBuffer, pCombinedLight, pCombinedOverlay);
+            }
+
+            pMatrixStack.popPose();
         }
     }
 

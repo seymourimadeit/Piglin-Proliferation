@@ -76,10 +76,12 @@ public class PPConfig {
 
     public static class ClientConfig {
         public final ForgeConfigSpec.BooleanValue ziglinTextures;
+        public final ForgeConfigSpec.BooleanValue beltTextureGlow;
 
         public ClientConfig(ForgeConfigSpec.Builder builder) {
             builder.push("vanilla changes");
             ziglinTextures = builder.define("Allow Zombified Piglins to render consistent clothing?", true);
+            beltTextureGlow = builder.define("Allow alchemist potions on their belt to glow?", false);
             builder.pop();
         }
     }
