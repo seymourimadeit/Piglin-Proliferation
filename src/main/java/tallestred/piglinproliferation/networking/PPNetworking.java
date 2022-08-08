@@ -22,19 +22,4 @@ public class PPNetworking {
         INSTANCE.registerMessage(id++, AlchemistBeltSyncPacket.class, AlchemistBeltSyncPacket::encode, AlchemistBeltSyncPacket::decode, AlchemistBeltSyncPacket::handle);
         INSTANCE.registerMessage(id++, ZiglinCapablitySyncPacket.class, ZiglinCapablitySyncPacket::encode, ZiglinCapablitySyncPacket::decode, ZiglinCapablitySyncPacket::handle);
     }
-    
-    public static void syncBelt(AlchemistBeltSyncPacket msg) {
-        Entity entity = Minecraft.getInstance().level.getEntity(msg.getEntityId());
-        if (entity != null && entity instanceof PiglinAlchemist alchemist) {
-            alchemist.setBeltInventorySlot(msg.slotId, msg.stack);
-        }
-    }
-
-    public static void syncZiglinClothes(ZiglinCapablitySyncPacket msg) {
-        Entity entity = Minecraft.getInstance().level.getEntity(msg.getEntityId());
-        if (entity != null && entity instanceof ZombifiedPiglin ziglin) {
-            TransformationSourceListener tSource = PPEvents.getTransformationSourceListener(ziglin);
-            tSource.setTransformationSource(msg.getTransformedFromId());
-        }
-    }
 }

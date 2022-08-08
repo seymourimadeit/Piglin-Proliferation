@@ -30,7 +30,9 @@ public class AlchemistBeltSyncPacket {
     }
 
     public static void handle(AlchemistBeltSyncPacket msg, Supplier<NetworkEvent.Context> context) {
-        context.get().enqueueWork(() -> DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> PPNetworking.syncBelt(msg)));
+        context.get().enqueueWork(() -> {
+            ServerToClientPacketStuff.syncBelt(msg);
+        });
         context.get().setPacketHandled(true);
     }
 

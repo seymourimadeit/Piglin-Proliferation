@@ -1,8 +1,6 @@
 package tallestred.piglinproliferation.networking;
 
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.network.NetworkEvent;
 
 import java.util.function.Supplier;
@@ -26,7 +24,9 @@ public class ZiglinCapablitySyncPacket {
     }
 
     public static void handle(ZiglinCapablitySyncPacket msg, Supplier<NetworkEvent.Context> context) {
-        context.get().enqueueWork(() -> DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> PPNetworking.syncZiglinClothes(msg)));
+        context.get().enqueueWork(() -> {
+            ServerToClientPacketStuff.syncZiglinClothes(msg);
+        });
         context.get().setPacketHandled(true);
     }
 
