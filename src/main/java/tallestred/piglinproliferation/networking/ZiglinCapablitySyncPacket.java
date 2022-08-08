@@ -15,11 +15,11 @@ public class ZiglinCapablitySyncPacket {
     }
 
     public static ZiglinCapablitySyncPacket decode(FriendlyByteBuf buf) {
-        return new ZiglinCapablitySyncPacket(buf.readVarInt(), buf.readUtf());
+        return new ZiglinCapablitySyncPacket(buf.readInt(), buf.readUtf());
     }
 
     public static void encode(ZiglinCapablitySyncPacket msg, FriendlyByteBuf buf) {
-        buf.writeVarInt(msg.entityId);
+        buf.writeInt(msg.entityId);
         buf.writeUtf(msg.transformedFromId);
     }
 

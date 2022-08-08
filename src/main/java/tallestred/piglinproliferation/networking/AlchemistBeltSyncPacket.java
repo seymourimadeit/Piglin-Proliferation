@@ -20,11 +20,11 @@ public class AlchemistBeltSyncPacket {
     }
 
     public static AlchemistBeltSyncPacket decode(FriendlyByteBuf buf) {
-        return new AlchemistBeltSyncPacket(buf.readVarInt(), buf.readInt(), buf.readItem());
+        return new AlchemistBeltSyncPacket(buf.readInt(), buf.readInt(), buf.readItem());
     }
 
     public static void encode(AlchemistBeltSyncPacket msg, FriendlyByteBuf buf) {
-        buf.writeVarInt(msg.entityId);
+        buf.writeInt(msg.entityId);
         buf.writeInt(msg.slotId);
         buf.writeItem(msg.stack);
     }
