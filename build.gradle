@@ -70,6 +70,7 @@ minecraft {
             // Comma-separated list of namespaces to load gametests from. Empty = all namespaces.
             property 'forge.enabledGameTestNamespaces', 'piglinproliferation'
             arg "-mixin.config=piglinproliferation.mixins.json"
+            args '--username', 'Dev####'
             mods {
                 piglinproliferation{
                     source sourceSets.main
@@ -156,7 +157,7 @@ repositories {
 }
 
 dependencies {
-    minecraft 'net.minecraftforge:forge:1.19.1-42.0.0'
+    minecraft 'net.minecraftforge:forge:1.19.2-43.0.0'
     annotationProcessor "org.spongepowered:mixin:0.8.5:processor"
 }
 
