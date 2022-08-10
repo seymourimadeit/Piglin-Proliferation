@@ -29,10 +29,6 @@ import java.util.UUID;
 
 @Mixin(ZombifiedPiglin.class)
 public abstract class ZombifiedPiglinMixin extends Zombie {
-    @Shadow
-    @javax.annotation.Nullable
-    private UUID persistentAngerTarget;
-
     public ZombifiedPiglinMixin(Level p_34274_) {
         super(p_34274_);
     }

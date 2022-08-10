@@ -2,7 +2,7 @@
   "required": true,
   "package": "tallestred.piglinproliferation.mixins",
   "compatibilityLevel": "JAVA_8",
-  "refmap": "illagersweararmor.refmap.json",
+  "refmap": "piglinproliferation.refmap.json",
   "mixins": [
      "ZombifiedPiglinMixin"
   ],

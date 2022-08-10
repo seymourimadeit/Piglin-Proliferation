@@ -63,6 +63,8 @@ public class PPEvents {
 
     @SubscribeEvent
     public static void onEffectApplied(PotionEvent.PotionAddedEvent event) {
+        if (event.getPotionEffect() == null)
+            return;
         MobEffect mobEffect = event.getPotionEffect().getEffect();
         if (event.getEntityLiving() instanceof AbstractPiglin piglin) {
             if (mobEffect == MobEffects.FIRE_RESISTANCE) {
@@ -75,6 +77,8 @@ public class PPEvents {
 
     @SubscribeEvent
     public static void onEffectRemoved(PotionEvent.PotionRemoveEvent event) {
+        if (event.getPotionEffect()  == null)
+            return;
         MobEffect mobEffect = event.getPotionEffect().getEffect();
         if (event.getEntityLiving() instanceof AbstractPiglin piglin) {
             if (mobEffect == MobEffects.FIRE_RESISTANCE) {
