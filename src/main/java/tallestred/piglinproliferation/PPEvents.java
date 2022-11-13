@@ -96,6 +96,8 @@ public class PPEvents {
 
     @SubscribeEvent
     public static void onEffectApplied(MobEffectEvent.Added event) {
+        if (event.getEffectInstance() == null)
+            return;
         MobEffect mobEffect = event.getEffectInstance().getEffect();
         if (event.getEntity() instanceof AbstractPiglin piglin) {
             if (mobEffect == MobEffects.FIRE_RESISTANCE) {
@@ -108,6 +110,8 @@ public class PPEvents {
 
     @SubscribeEvent
     public static void onEffectRemoved(MobEffectEvent.Remove event) {
+        if (event.getEffectInstance() == null)
+            return;
         MobEffect mobEffect = event.getEffectInstance().getEffect();
         if (event.getEntity() instanceof AbstractPiglin piglin) {
             if (mobEffect == MobEffects.FIRE_RESISTANCE) {

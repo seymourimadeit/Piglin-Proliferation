@@ -1,12 +1,14 @@
 package tallestred.piglinproliferation.common.entities.ai.behaviors;
 
 import com.google.common.collect.ImmutableMap;
+import com.infamous.sapience.util.PiglinTasksHelper;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.ai.behavior.Behavior;
 import net.minecraft.world.entity.ai.memory.MemoryModuleType;
 import net.minecraft.world.entity.ai.memory.MemoryStatus;
 import net.minecraft.world.entity.monster.piglin.Piglin;
-import net.minecraft.world.entity.monster.piglin.PiglinAi;
+import net.minecraftforge.fml.ModList;
+import tallestred.piglinproliferation.ModCompat;
 import tallestred.piglinproliferation.common.entities.ai.PiglinAlchemistAi;
 
 public class StopHoldingItemIfNoLongerAdmiringAlchemist<E extends Piglin> extends Behavior<E> {
@@ -16,12 +18,16 @@ public class StopHoldingItemIfNoLongerAdmiringAlchemist<E extends Piglin> extend
     }
 
     @Override
-    protected boolean checkExtraStartConditions(ServerLevel p_35255_, E p_35256_) {
-        return !p_35256_.getOffhandItem().isEmpty() && !p_35256_.getOffhandItem().canPerformAction(net.minecraftforge.common.ToolActions.SHIELD_BLOCK);
+    protected boolean checkExtraStartConditions(ServerLevel level, E piglin) {
+        boolean sapienceCompat = ModList.get().isLoaded("sapience") && !PiglinTasksHelper.hasConsumableOffhandItem(piglin);
+        return !piglin.getOffhandItem().isEmpty() && !piglin.getOffhandItem().canPerformAction(net.minecraftforge.common.ToolActions.SHIELD_BLOCK) && (sapienceCompat);
     }
 
     @Override
-    protected void start(ServerLevel p_35258_, E p_35259_, long p_35260_) {
-        PiglinAlchemistAi.stopHoldingOffHandItem(p_35259_, true);
+    protected void start(ServerLevel level, E piglin, long time) {
+        if (!ModList.get().isLoaded("sapience"))
+            PiglinAlchemistAi.stopHoldingOffHandItem(piglin, true);
+        else
+            ModCompat.stopHoldingOffHandItem(piglin, true);
     }
 }
