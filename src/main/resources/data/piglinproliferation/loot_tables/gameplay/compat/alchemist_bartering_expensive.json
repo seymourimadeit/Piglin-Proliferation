@@ -311,7 +311,7 @@
         },
         {
           "type": "minecraft:item",
-          "weight": 28,
+          "weight": 14,
           "name": "minecraft:gravel",
           "functions": [
             {
@@ -327,7 +327,7 @@
         },
         {
           "type": "minecraft:item",
-          "weight": 28,
+          "weight": 14,
           "name": "minecraft:blackstone",
           "functions": [
             {

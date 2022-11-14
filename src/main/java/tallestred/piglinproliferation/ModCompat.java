@@ -99,7 +99,7 @@ public class ModCompat {
      */
     private static List<ItemStack> getNuggetBarteringLoot(AbstractPiglin piglinEntity) {
         if (piglinEntity.level.getServer() != null) {
-            LootTable loottable = piglinEntity.level.getServer().getLootTables().get(PiglinTasksHelper.PIGLIN_BARTERING_CHEAP);
+            LootTable loottable = piglinEntity.level.getServer().getLootTables().get(PPLootTables.PIGLIN_BARTERING_CHEAP);
             return loottable.getRandomItems((new LootContext.Builder((ServerLevel) piglinEntity.level)).withParameter(LootContextParams.THIS_ENTITY, piglinEntity).withRandom(piglinEntity.level.random).create(LootContextParamSets.PIGLIN_BARTER));
         } else {
             return Collections.emptyList();
@@ -110,7 +110,7 @@ public class ModCompat {
      */
     private static List<ItemStack> getBlockBarteringLoot(AbstractPiglin piglinEntity) {
         if (piglinEntity.level.getServer() != null) {
-            LootTable loottable = piglinEntity.level.getServer().getLootTables().get(PiglinTasksHelper.PIGLIN_BARTERING_EXPENSIVE);
+            LootTable loottable = piglinEntity.level.getServer().getLootTables().get(PPLootTables.PIGLIN_BARTERING_EXPENSIVE);
             return loottable.getRandomItems((new LootContext.Builder((ServerLevel)piglinEntity.level)).withParameter(LootContextParams.THIS_ENTITY, piglinEntity).withRandom(piglinEntity.level.random).create(LootContextParamSets.PIGLIN_BARTER));
         } else {
             return Collections.emptyList();
