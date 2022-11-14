@@ -7,7 +7,7 @@
       "entries": [
         {
           "type": "minecraft:item",
-          "weight": 20,
+          "weight": 40,
           "name": "minecraft:potion",
           "functions": [
             {
@@ -18,7 +18,7 @@
         },
         {
           "type": "minecraft:item",
-          "weight": 20,
+          "weight": 40,
           "name": "minecraft:potion",
           "functions": [
             {
@@ -29,7 +29,7 @@
         },
         {
           "type": "minecraft:item",
-          "weight": 26,
+          "weight": 36,
           "name": "minecraft:tipped_arrow",
           "functions": [
             {
