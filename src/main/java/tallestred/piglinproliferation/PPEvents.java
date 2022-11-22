@@ -157,9 +157,7 @@ public class PPEvents {
         if (event.getLookingEntity() != null) {
             ItemStack itemstack = event.getEntity().getItemBySlot(EquipmentSlot.HEAD);
             EntityType<?> entitytype = event.getLookingEntity().getType();
-            if (event.getLookingEntity() instanceof AbstractPiglin && (itemstack.is(PPItems.PIGLIN_HEAD_ITEM.get()) ||
-            itemstack.is(PPItems.PIGLIN_ALCHEMIST_HEAD_ITEM.get()) || itemstack.is(PPItems.PIGLIN_BRUTE_HEAD_ITEM.get())) || entitytype == EntityType.ZOMBIFIED_PIGLIN && itemstack.is(PPItems.ZOMBIFIED_PIGLIN_HEAD_ITEM.get()));
-            {
+            if (event.getLookingEntity() instanceof AbstractPiglin && (itemstack.is(PPItems.PIGLIN_HEAD_ITEM.get()) || itemstack.is(PPItems.PIGLIN_ALCHEMIST_HEAD_ITEM.get()) || itemstack.is(PPItems.PIGLIN_BRUTE_HEAD_ITEM.get())) || entitytype == EntityType.ZOMBIFIED_PIGLIN && itemstack.is(PPItems.ZOMBIFIED_PIGLIN_HEAD_ITEM.get())) {
                 event.modifyVisibility(0.5D);
             }
         }
