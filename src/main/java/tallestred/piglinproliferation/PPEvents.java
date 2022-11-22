@@ -4,24 +4,20 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.memory.MemoryModuleType;
+import net.minecraft.world.entity.monster.Creeper;
 import net.minecraft.world.entity.monster.ZombifiedPiglin;
 import net.minecraft.world.entity.monster.piglin.AbstractPiglin;
 import net.minecraft.world.entity.projectile.Arrow;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.alchemy.PotionUtils;
 import net.minecraft.world.item.alchemy.Potions;
 import net.minecraft.world.level.pathfinder.BlockPathTypes;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.entity.EntityJoinLevelEvent;
-import net.minecraftforge.event.entity.living.LivingAttackEvent;
-import net.minecraftforge.event.entity.living.LivingConversionEvent;
-import net.minecraftforge.event.entity.living.LivingHurtEvent;
-import net.minecraftforge.event.entity.living.MobEffectEvent;
+import net.minecraftforge.event.entity.living.*;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -31,6 +27,8 @@ import tallestred.piglinproliferation.capablities.PPCapablities;
 import tallestred.piglinproliferation.capablities.TransformationSourceListener;
 import tallestred.piglinproliferation.capablities.TransformationSourceProvider;
 import tallestred.piglinproliferation.client.PPSounds;
+import tallestred.piglinproliferation.common.PPItems;
+import tallestred.piglinproliferation.common.entities.PPEntityTypes;
 import tallestred.piglinproliferation.common.entities.ai.goals.PiglinCallForHelpGoal;
 import tallestred.piglinproliferation.common.entities.ai.goals.PiglinSwimInLavaGoal;
 import tallestred.piglinproliferation.configuration.PPConfig;
@@ -155,6 +153,17 @@ public class PPEvents {
         }
     }
 
+    @SubscribeEvent
+    public static void visionPercent(LivingEvent.LivingVisibilityEvent event) {
+        if (event.getLookingEntity() != null) {
+            ItemStack itemstack = event.getEntity().getItemBySlot(EquipmentSlot.HEAD);
+            EntityType<?> entitytype = event.getLookingEntity().getType();
+            if (entitytype == EntityType.PIGLIN && itemstack.is(PPItems.PIGLIN_HEAD_ITEM.get()) || entitytype == EntityType.ZOMBIFIED_PIGLIN && itemstack.is(PPItems.ZOMBIFIED_PIGLIN_HEAD_ITEM.get()) || entitytype == EntityType.PIGLIN_BRUTE && itemstack.is(PPItems.PIGLIN_BRUTE_HEAD_ITEM.get()) || entitytype == PPEntityTypes.PIGLIN_ALCHEMIST.get() && itemstack.is(PPItems.PIGLIN_ALCHEMIST_HEAD_ITEM.get())) {
+                event.modifyVisibility(0.5D);
+            }
+        }
+    }
+
 
     @SubscribeEvent
     public static void onConvert(LivingConversionEvent.Post event) {
@@ -166,6 +175,22 @@ public class PPEvents {
             String piglinName = ForgeRegistries.ENTITY_TYPES.getKey(piglin.getType()).getPath();
             transformationSource.setTransformationSource(piglinName);
             PPNetworking.INSTANCE.send(PacketDistributor.TRACKING_ENTITY.with(() -> ziglin), new ZiglinCapablitySyncPacket(ziglin.getId(), piglinName));
+        }
+    }
+
+    @SubscribeEvent
+    public static void onLootDropEntity(LivingDropsEvent event) {
+        if (event.getSource().getEntity() instanceof Creeper creeper) {
+            if (creeper.canDropMobsSkull()) {
+                if (event.getEntity().getType() == EntityType.PIGLIN) {
+                    event.getEntity().spawnAtLocation(PPItems.PIGLIN_HEAD_ITEM.get());
+                } else if (event.getEntity().getType() == EntityType.ZOMBIFIED_PIGLIN) {
+                    event.getEntity().spawnAtLocation(PPItems.ZOMBIFIED_PIGLIN_HEAD_ITEM.get());
+                } else if (event.getEntity().getType() == EntityType.PIGLIN_BRUTE) {
+                    event.getEntity().spawnAtLocation(PPItems.PIGLIN_BRUTE_HEAD_ITEM.get());
+                }
+                creeper.increaseDroppedSkulls();
+            }
         }
     }
 

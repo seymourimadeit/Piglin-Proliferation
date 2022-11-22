@@ -25,6 +25,7 @@ import net.minecraft.world.entity.ai.Brain;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.memory.MemoryModuleType;
+import net.minecraft.world.entity.monster.Creeper;
 import net.minecraft.world.entity.monster.piglin.Piglin;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.AbstractArrow;
@@ -45,6 +46,7 @@ import net.minecraftforge.network.PacketDistributor;
 import org.jetbrains.annotations.NotNull;
 import tallestred.piglinproliferation.PPMemoryModules;
 import tallestred.piglinproliferation.client.PPSounds;
+import tallestred.piglinproliferation.common.PPItems;
 import tallestred.piglinproliferation.common.entities.ai.PiglinAlchemistAi;
 import tallestred.piglinproliferation.configuration.PPConfig;
 import tallestred.piglinproliferation.networking.AlchemistBeltSyncPacket;
@@ -204,6 +206,13 @@ public class PiglinAlchemist extends Piglin {
                         this.playSound(SoundEvents.SPLASH_POTION_BREAK, 0.5F, 1.0F);
                     }
                 }
+            }
+        }
+        Entity entity = pSource.getEntity();
+        if (entity instanceof Creeper creeper) {
+            if (creeper.canDropMobsSkull()) {
+                creeper.increaseDroppedSkulls();
+                this.spawnAtLocation(PPItems.PIGLIN_ALCHEMIST_HEAD_ITEM.get());
             }
         }
         this.beltInventory.clear();

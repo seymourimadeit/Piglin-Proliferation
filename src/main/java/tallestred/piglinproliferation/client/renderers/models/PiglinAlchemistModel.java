@@ -44,7 +44,6 @@ public class PiglinAlchemistModel<T extends PiglinAlchemist> extends PiglinModel
         PartDefinition hat = head.addOrReplaceChild("hat", CubeListBuilder.create(), PartPose.offset(0.0F, 0.0F, 0.0F));
         hat.addOrReplaceChild("googles", CubeListBuilder.create().texOffs(42, 0).addBox(-5.0F, -31.0F, -5.0F, 4.0F, 4.0F, 1.0F, new CubeDeformation(0.1F))
                 .texOffs(52, 0).addBox(1.0F, -31.0F, -5.0F, 4.0F, 4.0F, 1.0F, new CubeDeformation(0.1F)), PartPose.offset(0.0F, 24.0F, 0.0F));
-
         return meshdefinition;
     }
 
