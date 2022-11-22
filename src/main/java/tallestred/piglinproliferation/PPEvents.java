@@ -28,7 +28,6 @@ import tallestred.piglinproliferation.capablities.TransformationSourceListener;
 import tallestred.piglinproliferation.capablities.TransformationSourceProvider;
 import tallestred.piglinproliferation.client.PPSounds;
 import tallestred.piglinproliferation.common.PPItems;
-import tallestred.piglinproliferation.common.entities.PPEntityTypes;
 import tallestred.piglinproliferation.common.entities.ai.goals.PiglinCallForHelpGoal;
 import tallestred.piglinproliferation.common.entities.ai.goals.PiglinSwimInLavaGoal;
 import tallestred.piglinproliferation.configuration.PPConfig;
@@ -158,7 +157,9 @@ public class PPEvents {
         if (event.getLookingEntity() != null) {
             ItemStack itemstack = event.getEntity().getItemBySlot(EquipmentSlot.HEAD);
             EntityType<?> entitytype = event.getLookingEntity().getType();
-            if (entitytype == EntityType.PIGLIN && itemstack.is(PPItems.PIGLIN_HEAD_ITEM.get()) || entitytype == EntityType.ZOMBIFIED_PIGLIN && itemstack.is(PPItems.ZOMBIFIED_PIGLIN_HEAD_ITEM.get()) || entitytype == EntityType.PIGLIN_BRUTE && itemstack.is(PPItems.PIGLIN_BRUTE_HEAD_ITEM.get()) || entitytype == PPEntityTypes.PIGLIN_ALCHEMIST.get() && itemstack.is(PPItems.PIGLIN_ALCHEMIST_HEAD_ITEM.get())) {
+            if (event.getLookingEntity() instanceof AbstractPiglin && (itemstack.is(PPItems.PIGLIN_HEAD_ITEM.get()) ||
+            itemstack.is(PPItems.PIGLIN_ALCHEMIST_HEAD_ITEM.get()) || itemstack.is(PPItems.PIGLIN_BRUTE_HEAD_ITEM.get())) || entitytype == EntityType.ZOMBIFIED_PIGLIN && itemstack.is(PPItems.ZOMBIFIED_PIGLIN_HEAD_ITEM.get()));
+            {
                 event.modifyVisibility(0.5D);
             }
         }
