@@ -2,7 +2,8 @@ package tallestred.piglinproliferation.client.renderers.layers;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import com.mojang.math.Vector3f;
+import com.mojang.math.Axis;
+import com.mojang.math.MatrixUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.ArmedModel;
 import net.minecraft.client.model.EntityModel;
@@ -84,12 +85,12 @@ public class BeltRenderLayer<T extends PiglinAlchemist, M extends EntityModel<T>
                 poseStack.translate((inventorySlot > 2 && inventorySlot != 5) ? -d + 1.25 : d, 0.8D, (inventorySlot > 2 && inventorySlot != 5) ? inflation : -inflation);
             }
             if (inventorySlot == 2 || inventorySlot == 5) {
-                poseStack.mulPose(Vector3f.YP.rotationDegrees(90.0F));
+                poseStack.mulPose(Axis.YP.rotationDegrees(90.0F));
                 double secondSlotInflation = entity.hasItemInSlot(EquipmentSlot.LEGS) && !entity.hasItemInSlot(EquipmentSlot.CHEST) ? -0.290D : entity.hasItemInSlot(EquipmentSlot.CHEST) ? -0.265D : -0.325D;
                 double fifthSlotInflation = entity.hasItemInSlot(EquipmentSlot.LEGS) && !entity.hasItemInSlot(EquipmentSlot.CHEST) ? -2.310D : entity.hasItemInSlot(EquipmentSlot.CHEST) ? -2.335D : -2.275D;
                 poseStack.translate(-0.2D, 0.4D, inventorySlot == 2 ? secondSlotInflation : fifthSlotInflation);
             }
-            poseStack.mulPose(Vector3f.XP.rotationDegrees(180.0F));
+            poseStack.mulPose(Axis.XP.rotationDegrees(180.0F));
             BakedModel model = Minecraft.getInstance().getItemRenderer().getModel(stack, entity.level, entity, light);
             this.renderItemsBelt(stack, transformType, false, poseStack, source, light, LivingEntityRenderer.getOverlayCoords(entity, 0.0F), model, Minecraft.getInstance().getItemRenderer());
             poseStack.popPose();
@@ -97,61 +98,61 @@ public class BeltRenderLayer<T extends PiglinAlchemist, M extends EntityModel<T>
     }
 
     // Yes I did infact shamelessly copy ItemRenderer#render for this and made it not render glowing in the worst way possible.
-    public void renderItemsBelt(ItemStack itemStack, ItemTransforms.TransformType transformType, boolean leftHandTransforms, PoseStack poseStack, MultiBufferSource source, int light, int overLay, BakedModel bakedModel, ItemRenderer renderer) {
-        if (!itemStack.isEmpty()) {
-            poseStack.pushPose();
-            boolean flag = transformType == ItemTransforms.TransformType.GUI || transformType == ItemTransforms.TransformType.GROUND || transformType == ItemTransforms.TransformType.FIXED;
+    public void renderItemsBelt(ItemStack pItemStack, ItemTransforms.TransformType pTransformType, boolean pLeftHand, PoseStack pPoseStack, MultiBufferSource pBuffer, int pCombinedLight, int pCombinedOverlay, BakedModel pModel, ItemRenderer renderer) {
+        if (!pItemStack.isEmpty()) {
+            pPoseStack.pushPose();
+            boolean flag = pTransformType == ItemTransforms.TransformType.GUI || pTransformType == ItemTransforms.TransformType.GROUND || pTransformType == ItemTransforms.TransformType.FIXED;
             if (flag) {
-                if (itemStack.is(Items.TRIDENT)) {
-                    bakedModel = renderer.getItemModelShaper().getModelManager().getModel(new ModelResourceLocation("minecraft:trident#inventory"));
-                } else if (itemStack.is(Items.SPYGLASS)) {
-                    bakedModel = renderer.getItemModelShaper().getModelManager().getModel(new ModelResourceLocation("minecraft:spyglass#inventory"));
+                if (pItemStack.is(Items.TRIDENT)) {
+                    pModel = renderer.getItemModelShaper().getModelManager().getModel(TRIDENT_IN_HAND_MODEL);
+                } else if (pItemStack.is(Items.SPYGLASS)) {
+                    pModel = renderer.getItemModelShaper().getModelManager().getModel(SPYGLASS_IN_HAND_MODEL);
                 }
             }
 
-            bakedModel = net.minecraftforge.client.ForgeHooksClient.handleCameraTransforms(poseStack, bakedModel, transformType, leftHandTransforms);
-            poseStack.translate(-0.5D, -0.5D, -0.5D);
-            if (!bakedModel.isCustomRenderer() && (!itemStack.is(Items.TRIDENT) || flag)) {
+            pModel = net.minecraftforge.client.ForgeHooksClient.handleCameraTransforms(pPoseStack, pModel, pTransformType, pLeftHand);
+            pPoseStack.translate(-0.5F, -0.5F, -0.5F);
+            if (!pModel.isCustomRenderer() && (!pItemStack.is(Items.TRIDENT) || flag)) {
                 boolean flag1;
-                if (transformType != ItemTransforms.TransformType.GUI && !transformType.firstPerson() && itemStack.getItem() instanceof BlockItem) {
-                    Block block = ((BlockItem)itemStack.getItem()).getBlock();
+                if (pTransformType != ItemTransforms.TransformType.GUI && !pTransformType.firstPerson() && pItemStack.getItem() instanceof BlockItem) {
+                    Block block = ((BlockItem)pItemStack.getItem()).getBlock();
                     flag1 = !(block instanceof HalfTransparentBlock) && !(block instanceof StainedGlassPaneBlock);
                 } else {
                     flag1 = true;
                 }
-                for (var model : bakedModel.getRenderPasses(itemStack, flag1)) {
-                    for (var rendertype : model.getRenderTypes(itemStack, flag1)) {
+                for (var model : pModel.getRenderPasses(pItemStack, flag1)) {
+                    for (var rendertype : model.getRenderTypes(pItemStack, flag1)) {
                         VertexConsumer vertexconsumer;
-                        if (itemStack.is(ItemTags.COMPASSES) && itemStack.hasFoil()) {
-                            poseStack.pushPose();
-                            PoseStack.Pose posestack$pose = poseStack.last();
-                            if (transformType == ItemTransforms.TransformType.GUI) {
-                                posestack$pose.pose().multiply(0.5F);
-                            } else if (transformType.firstPerson()) {
-                                posestack$pose.pose().multiply(0.75F);
+                        if (pItemStack.is(ItemTags.COMPASSES) && pItemStack.hasFoil()) {
+                            pPoseStack.pushPose();
+                            PoseStack.Pose posestack$pose = pPoseStack.last();
+                            if (pTransformType == ItemTransforms.TransformType.GUI) {
+                                MatrixUtil.mulComponentWise(posestack$pose.pose(), 0.5F);
+                            } else if (pTransformType.firstPerson()) {
+                                MatrixUtil.mulComponentWise(posestack$pose.pose(), 0.75F);
                             }
 
                             if (flag1) {
-                                vertexconsumer = getCompassFoilBufferDirect(source, rendertype, posestack$pose);
+                                vertexconsumer = getCompassFoilBufferDirect(pBuffer, rendertype, posestack$pose);
                             } else {
-                                vertexconsumer = getCompassFoilBuffer(source, rendertype, posestack$pose);
+                                vertexconsumer = getCompassFoilBuffer(pBuffer, rendertype, posestack$pose);
                             }
 
-                            poseStack.popPose();
+                            pPoseStack.popPose();
                         } else if (flag1) {
-                            vertexconsumer = getFoilBufferDirect(source, rendertype, true, itemStack.hasFoil() && PPConfig.CLIENT.beltTextureGlow.get());
+                            vertexconsumer = getFoilBufferDirect(pBuffer, rendertype, true, PPConfig.CLIENT.beltTextureGlow.get());
                         } else {
-                            vertexconsumer = getFoilBuffer(source, rendertype, true, itemStack.hasFoil() && PPConfig.CLIENT.beltTextureGlow.get());
+                            vertexconsumer = getFoilBuffer(pBuffer, rendertype, true, PPConfig.CLIENT.beltTextureGlow.get());
                         }
 
-                        renderer.renderModelLists(model, itemStack, light, overLay, poseStack, vertexconsumer);
+                        renderer.renderModelLists(model, pItemStack, pCombinedLight, pCombinedOverlay, pPoseStack, vertexconsumer);
                     }
                 }
             } else {
-                net.minecraftforge.client.extensions.common.IClientItemExtensions.of(itemStack).getCustomRenderer().renderByItem(itemStack, transformType, poseStack, source, light, overLay);
+                net.minecraftforge.client.extensions.common.IClientItemExtensions.of(pItemStack).getCustomRenderer().renderByItem(pItemStack, pTransformType, pPoseStack, pBuffer, pCombinedLight, pCombinedOverlay);
             }
 
-            poseStack.popPose();
+            pPoseStack.popPose();
         }
     }
 
@@ -159,8 +160,8 @@ public class BeltRenderLayer<T extends PiglinAlchemist, M extends EntityModel<T>
         if (!p_117186_.isEmpty()) {
             p_117189_.pushPose();
             this.getParentModel().translateToHand(p_117188_, p_117189_);
-            p_117189_.mulPose(Vector3f.XP.rotationDegrees(-90.0F));
-            p_117189_.mulPose(Vector3f.YP.rotationDegrees(180.0F));
+            p_117189_.mulPose(Axis.XP.rotationDegrees(-90.0F));
+            p_117189_.mulPose(Axis.YP.rotationDegrees(180.0F));
             boolean flag = p_117188_ == HumanoidArm.LEFT;
             p_117189_.translate((double) ((float) (flag ? -1 : 1) / 16.0F), 0.125D, -0.625D);
             this.itemInHandRenderer.renderItem(p_117185_, p_117186_, p_117187_, flag, p_117189_, p_117190_, p_117191_);

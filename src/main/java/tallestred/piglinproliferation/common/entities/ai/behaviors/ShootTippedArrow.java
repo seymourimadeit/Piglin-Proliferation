@@ -5,7 +5,6 @@ import com.google.common.collect.ImmutableMap;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.ai.behavior.EntityTracker;
 import net.minecraft.world.entity.ai.memory.MemoryModuleType;
 import net.minecraft.world.entity.ai.memory.MemoryStatus;
 import net.minecraft.world.entity.monster.piglin.AbstractPiglin;
@@ -32,7 +31,7 @@ public class ShootTippedArrow extends BowAttack<PiglinAlchemist, LivingEntity> {
 
     @Override
     protected LivingEntity getTargetToShootAt(PiglinAlchemist alchemist) {
-        List<AbstractPiglin> list = alchemist.getBrain().getMemory(MemoryModuleType.NEAREST_VISIBLE_ADULT_PIGLINS).orElse(ImmutableList.of());;
+        List<AbstractPiglin> list = alchemist.getBrain().getMemory(MemoryModuleType.NEAREST_VISIBLE_ADULT_PIGLINS).orElse(ImmutableList.of());
         if (!list.isEmpty()) {
             for (AbstractPiglin piglin : list) {
                     piglinToTarget = piglin;
