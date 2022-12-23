@@ -26,9 +26,11 @@ import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.memory.MemoryModuleType;
 import net.minecraft.world.entity.monster.Creeper;
+import net.minecraft.world.entity.monster.Ghast;
 import net.minecraft.world.entity.monster.piglin.Piglin;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.AbstractArrow;
+import net.minecraft.world.entity.projectile.Fireball;
 import net.minecraft.world.entity.projectile.ProjectileUtil;
 import net.minecraft.world.entity.projectile.ThrownPotion;
 import net.minecraft.world.item.*;
@@ -214,6 +216,9 @@ public class PiglinAlchemist extends Piglin {
                 creeper.increaseDroppedSkulls();
                 this.spawnAtLocation(PPItems.PIGLIN_ALCHEMIST_HEAD_ITEM.get());
             }
+        }
+        if (pSource.getDirectEntity() instanceof Fireball fireball && fireball.getOwner() instanceof Ghast) {
+            this.spawnAtLocation(PPItems.PIGLIN_ALCHEMIST_HEAD_ITEM.get());
         }
         this.beltInventory.clear();
         super.dropCustomDeathLoot(pSource, pLooting, pRecentlyHit);

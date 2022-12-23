@@ -25,7 +25,7 @@ mixin {
 }
 
 
-version = '1.19-1.0.1'
+version = '1.19.3-1.0.2'
 group = 'seymourimadeit.piglinproliferation' // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 archivesBaseName = 'piglinproliferation'
 
@@ -159,7 +159,7 @@ repositories {
 }
 
 dependencies {
-    minecraft 'net.minecraftforge:forge:1.19.3-44.0.5'
+    minecraft 'net.minecraftforge:forge:1.19.3-44.0.11'
     annotationProcessor "org.spongepowered:mixin:0.8.5:processor"
   //  implementation fg.deobf("curse.maven:sapience-426097:3957817")
 }

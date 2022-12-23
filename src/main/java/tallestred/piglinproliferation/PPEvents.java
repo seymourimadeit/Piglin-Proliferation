@@ -1,5 +1,6 @@
 package tallestred.piglinproliferation;
 
+import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
@@ -7,18 +8,24 @@ import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.memory.MemoryModuleType;
 import net.minecraft.world.entity.monster.Creeper;
+import net.minecraft.world.entity.monster.Ghast;
 import net.minecraft.world.entity.monster.ZombifiedPiglin;
 import net.minecraft.world.entity.monster.piglin.AbstractPiglin;
 import net.minecraft.world.entity.projectile.Arrow;
+import net.minecraft.world.entity.projectile.Fireball;
+import net.minecraft.world.flag.FeatureFlags;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.item.alchemy.PotionUtils;
 import net.minecraft.world.item.alchemy.Potions;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.pathfinder.BlockPathTypes;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.entity.EntityJoinLevelEvent;
 import net.minecraftforge.event.entity.living.*;
 import net.minecraftforge.event.entity.player.PlayerEvent;
+import net.minecraftforge.event.level.NoteBlockEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.network.PacketDistributor;
@@ -28,6 +35,7 @@ import tallestred.piglinproliferation.capablities.TransformationSourceListener;
 import tallestred.piglinproliferation.capablities.TransformationSourceProvider;
 import tallestred.piglinproliferation.client.PPSounds;
 import tallestred.piglinproliferation.common.PPItems;
+import tallestred.piglinproliferation.common.blocks.PPBlocks;
 import tallestred.piglinproliferation.common.entities.ai.goals.PiglinCallForHelpGoal;
 import tallestred.piglinproliferation.common.entities.ai.goals.PiglinSwimInLavaGoal;
 import tallestred.piglinproliferation.configuration.PPConfig;
@@ -181,7 +189,7 @@ public class PPEvents {
     public static void onLootDropEntity(LivingDropsEvent event) {
         if (event.getSource().getEntity() instanceof Creeper creeper) {
             if (creeper.canDropMobsSkull()) {
-                if (event.getEntity().getType() == EntityType.PIGLIN) {
+                if (event.getEntity().getType() == EntityType.PIGLIN && !creeper.getLevel().enabledFeatures().contains(FeatureFlags.UPDATE_1_20)) {
                     event.getEntity().spawnAtLocation(PPItems.PIGLIN_HEAD_ITEM.get());
                 } else if (event.getEntity().getType() == EntityType.ZOMBIFIED_PIGLIN) {
                     event.getEntity().spawnAtLocation(PPItems.ZOMBIFIED_PIGLIN_HEAD_ITEM.get());
@@ -189,6 +197,34 @@ public class PPEvents {
                     event.getEntity().spawnAtLocation(PPItems.PIGLIN_BRUTE_HEAD_ITEM.get());
                 }
                 creeper.increaseDroppedSkulls();
+            }
+        }
+        if (event.getSource().getDirectEntity() instanceof Fireball fireBall && fireBall.getOwner() instanceof Ghast) {
+            if (event.getEntity().getType() == EntityType.PIGLIN) {
+                event.getEntity().spawnAtLocation(!fireBall.getLevel().enabledFeatures().contains(FeatureFlags.UPDATE_1_20) ? PPItems.PIGLIN_HEAD_ITEM.get() : Items.PIGLIN_HEAD);
+            } else if (event.getEntity().getType() == EntityType.ZOMBIFIED_PIGLIN) {
+                event.getEntity().spawnAtLocation(PPItems.ZOMBIFIED_PIGLIN_HEAD_ITEM.get());
+            } else if (event.getEntity().getType() == EntityType.PIGLIN_BRUTE) {
+                event.getEntity().spawnAtLocation(PPItems.PIGLIN_BRUTE_HEAD_ITEM.get());
+            }
+        }
+    }
+
+    @SubscribeEvent
+    public static void noteBlockPlay(NoteBlockEvent.Play event) {
+        BlockState stateAbove = event.getLevel().getBlockState(event.getPos().above());
+        if (event.getLevel().enabledFeatures().contains(FeatureFlags.UPDATE_1_20)) {
+            if (stateAbove.is(PPBlocks.PIGLIN_ALCHEMIST_HEAD.get())) {
+                event.setCanceled(true);
+                event.getLevel().playSound(null, event.getPos(), PPSounds.ALCHEMIST_ANGRY.get(), SoundSource.RECORDS);
+            }
+            if (stateAbove.is(PPBlocks.ZOMBIFIED_PIGLIN_HEAD.get())) {
+                event.setCanceled(true);
+                event.getLevel().playSound(null, event.getPos(), SoundEvents.PIGLIN_BRUTE_ANGRY, SoundSource.RECORDS);
+            }
+            if (stateAbove.is(PPBlocks.PIGLIN_BRUTE_HEAD.get())) {
+                event.setCanceled(true);
+                event.getLevel().playSound(null, event.getPos(), SoundEvents.ZOMBIFIED_PIGLIN_ANGRY, SoundSource.RECORDS);
             }
         }
     }
