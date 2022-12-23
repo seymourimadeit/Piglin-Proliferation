@@ -202,8 +202,6 @@ public class PPEvents {
         if (event.getSource().getDirectEntity() instanceof Fireball fireBall && fireBall.getOwner() instanceof Ghast) {
             if (event.getEntity().getType() == EntityType.PIGLIN) {
                 event.getEntity().spawnAtLocation(!fireBall.getLevel().enabledFeatures().contains(FeatureFlags.UPDATE_1_20) ? PPItems.PIGLIN_HEAD_ITEM.get() : Items.PIGLIN_HEAD);
-            } else if (event.getEntity().getType() == EntityType.ZOMBIFIED_PIGLIN) {
-                event.getEntity().spawnAtLocation(PPItems.ZOMBIFIED_PIGLIN_HEAD_ITEM.get());
             } else if (event.getEntity().getType() == EntityType.PIGLIN_BRUTE) {
                 event.getEntity().spawnAtLocation(PPItems.PIGLIN_BRUTE_HEAD_ITEM.get());
             }
