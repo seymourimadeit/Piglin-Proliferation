@@ -218,11 +218,11 @@ public class PPEvents {
             }
             if (stateAbove.is(PPBlocks.ZOMBIFIED_PIGLIN_HEAD.get())) {
                 event.setCanceled(true);
-                event.getLevel().playSound(null, event.getPos(), SoundEvents.PIGLIN_BRUTE_ANGRY, SoundSource.RECORDS);
+                event.getLevel().playSound(null, event.getPos(), SoundEvents.ZOMBIFIED_PIGLIN_ANGRY, SoundSource.RECORDS);
             }
             if (stateAbove.is(PPBlocks.PIGLIN_BRUTE_HEAD.get())) {
                 event.setCanceled(true);
-                event.getLevel().playSound(null, event.getPos(), SoundEvents.ZOMBIFIED_PIGLIN_ANGRY, SoundSource.RECORDS);
+                event.getLevel().playSound(null, event.getPos(), SoundEvents.PIGLIN_BRUTE_ANGRY, SoundSource.RECORDS);
             }
         }
     }
