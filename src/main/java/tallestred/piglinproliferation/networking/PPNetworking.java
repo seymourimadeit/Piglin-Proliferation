@@ -1,17 +1,9 @@
 package tallestred.piglinproliferation.networking;
 
-import net.minecraft.client.Minecraft;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.monster.ZombifiedPiglin;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.network.NetworkRegistry;
 import net.minecraftforge.network.simple.SimpleChannel;
-import tallestred.piglinproliferation.PPEvents;
 import tallestred.piglinproliferation.PiglinProliferation;
-import tallestred.piglinproliferation.capablities.TransformationSourceListener;
-import tallestred.piglinproliferation.common.entities.PiglinAlchemist;
 
 public class PPNetworking {
     private static final String PROTOCOL_VERSION = "1";
