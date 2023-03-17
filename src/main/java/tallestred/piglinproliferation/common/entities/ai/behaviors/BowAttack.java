@@ -108,7 +108,7 @@ public class BowAttack<E extends PiglinAlchemist, T extends LivingEntity> extend
                 if (distanceSquared <= this.attackRadiusSqr) {
                     if (vec3 != null && alchemist.getNavigation().isDone()) {
                         this.path = alchemist.getNavigation().createPath(vec3.x, vec3.y, vec3.z, 0);
-                        alchemist.getBrain().setMemory(MemoryModuleType.LOOK_TARGET, new BlockPosTracker(new BlockPos(vec3.x, alchemist.getEyeY(), vec3.z)));
+                        alchemist.getBrain().setMemory(MemoryModuleType.LOOK_TARGET, new BlockPosTracker(new BlockPos((int) vec3.x, (int) alchemist.getEyeY(), (int) vec3.z)));
                         if (this.path != null && this.path.canReach()) {
                             alchemist.getNavigation().moveTo(this.path, this.speedModifier);
                             this.attackTime = -1;

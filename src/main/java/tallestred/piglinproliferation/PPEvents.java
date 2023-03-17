@@ -2,6 +2,7 @@ package tallestred.piglinproliferation;
 
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
@@ -133,7 +134,7 @@ public class PPEvents {
         // horses they're riding on are considered undead, this should work as a quick fix for that, but further discussions with the mod creator is needed.
         if (event.getEntity() instanceof Mob mob) {
             for (Entity rider : mob.getPassengers()) {
-                if (mob.isInvertedHealAndHarm() && event.getSource().getEntity() instanceof AbstractPiglin && rider instanceof AbstractPiglin piglin && event.getSource().isMagic()) {
+                if (mob.isInvertedHealAndHarm() && event.getSource().getEntity() instanceof AbstractPiglin && rider instanceof AbstractPiglin piglin && event.getSource().is(DamageTypes.MAGIC)) {
                     if (event.getEntity().level.isClientSide)
                         return;
                     piglin.getBrain().eraseMemory(MemoryModuleType.ANGRY_AT);
