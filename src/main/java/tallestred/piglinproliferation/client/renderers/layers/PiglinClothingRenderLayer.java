@@ -32,8 +32,10 @@ public class PiglinClothingRenderLayer<T extends ZombifiedPiglin, M extends Pigl
             coloredCutoutModelCopyLayerRender(this.getParentModel(), this.layerModel, getClothingTexture(pLivingEntity), pMatrixStack, pBuffer, pPackedLight, pLivingEntity, pLimbSwing, pLimbSwingAmount, pAgeInTicks, pNetHeadYaw, pHeadPitch, pPartialTicks, 1.0F, 1.0F, 1.0F);
     }
 
-    protected ResourceLocation getClothingTexture(T livingEntity) { // TODO if it can't find a texture for a piglin fall back to the regular piglin texture
+    protected ResourceLocation getClothingTexture(T livingEntity) {
         TransformationSourceListener transformationSourceListener = PPEvents.getTransformationSourceListener(livingEntity);
+        if (transformationSourceListener == null)
+            return new ResourceLocation(PiglinProliferation.MODID, "textures/entity/piglin/clothing_piglin.png");
         String texture = "textures/entity/piglin/clothing_" + transformationSourceListener.getTransformationSource() + ".png";
         return ResourceLocation.isValidResourceLocation(texture) ? new ResourceLocation(PiglinProliferation.MODID, texture) : null;
     }

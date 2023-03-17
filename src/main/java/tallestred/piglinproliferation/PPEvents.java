@@ -129,7 +129,7 @@ public class PPEvents {
 
     @SubscribeEvent
     public static void attackEntity(LivingAttackEvent event) {
-        // Testing bygone nether compatiblity lead me to discover that alchemists healing piglin hunters leads to them attacking each other since the
+        // Testing bygone nether compatibility lead me to discover that alchemists healing piglin hunters leads to them attacking each other since the
         // horses they're riding on are considered undead, this should work as a quick fix for that, but further discussions with the mod creator is needed.
         if (event.getEntity() instanceof Mob mob) {
             for (Entity rider : mob.getPassengers()) {

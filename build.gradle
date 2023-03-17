@@ -161,7 +161,6 @@ repositories {
 dependencies {
     minecraft 'net.minecraftforge:forge:1.19.3-44.0.11'
     annotationProcessor "org.spongepowered:mixin:0.8.5:processor"
-  //  implementation fg.deobf("curse.maven:sapience-426097:3957817")
 }
 
 repositories {
