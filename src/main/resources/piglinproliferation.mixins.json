@@ -4,8 +4,7 @@
   "compatibilityLevel": "JAVA_17",
   "refmap": "piglinproliferation.refmap.json",
   "mixins": [
-     "ZombifiedPiglinMixin",
-    "NoteBlockMixin"
+     "ZombifiedPiglinMixin"
   ],
   "injectors": {
     "defaultRequire": 1

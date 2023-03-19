@@ -4,8 +4,10 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import com.mojang.datafixers.util.Pair;
+import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
+import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.RandomSource;
 import net.minecraft.util.TimeUtil;
 import net.minecraft.util.valueproviders.UniformInt;
@@ -13,7 +15,6 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.Brain;
 import net.minecraft.world.entity.ai.behavior.*;
-import net.minecraft.world.entity.ai.behavior.declarative.BehaviorBuilder;
 import net.minecraft.world.entity.ai.memory.MemoryModuleType;
 import net.minecraft.world.entity.ai.memory.MemoryStatus;
 import net.minecraft.world.entity.ai.sensing.Sensor;
@@ -83,41 +84,32 @@ public class PiglinAlchemistAi extends PiglinAi {
     }
 
     private static void initFightActivity(PiglinAlchemist piglin, Brain<PiglinAlchemist> brain) {
-        brain.addActivityAndRemoveMemoryWhenStopped(Activity.FIGHT,10, ImmutableList.<net.minecraft.world.entity.ai.behavior.BehaviorControl<? super Piglin>>of(StopAttackingIfTargetInvalid.create((p_34981_) -> {
-            return !isNearestValidAttackTarget(piglin, p_34981_);
-        }), BehaviorBuilder.triggerIf(PiglinAlchemistAi::hasCrossbow, BackUpIfTooClose.create(5, 0.75F)), SetWalkTargetFromAttackTargetIfTargetOutOfReach.create(1.0F), MeleeAttack.create(20), new CrossbowAttack(), new BowAttack(ImmutableMap.of(MemoryModuleType.WALK_TARGET, MemoryStatus.VALUE_ABSENT, MemoryModuleType.LOOK_TARGET, MemoryStatus.REGISTERED, MemoryModuleType.ATTACK_TARGET, MemoryStatus.VALUE_PRESENT), 1.5F, 15.0F, 20), RememberIfHoglinWasKilled.create(), EraseMemoryIf.create(PiglinAlchemistAi::isNearZombified, MemoryModuleType.ATTACK_TARGET)), MemoryModuleType.ATTACK_TARGET);
+        brain.addActivityAndRemoveMemoryWhenStopped(Activity.FIGHT, 10, ImmutableList.<net.minecraft.world.entity.ai.behavior.Behavior<? super PiglinAlchemist>>of
+                (new StopAttackingIfTargetInvalid<>((target) -> !isNearestValidAttackTarget(piglin, target)), new RunIf<>(PiglinAlchemistAi::hasCrossbow, new BackUpIfTooClose(5, 0.75F)), new SetWalkTargetFromAttackTargetIfTargetOutOfReach(1.0F), new MeleeAttack(20), new CrossbowAttack(), new RememberIfHoglinWasKilled(), new BowAttack(ImmutableMap.of(MemoryModuleType.WALK_TARGET, MemoryStatus.VALUE_ABSENT, MemoryModuleType.LOOK_TARGET, MemoryStatus.REGISTERED, MemoryModuleType.ATTACK_TARGET, MemoryStatus.VALUE_PRESENT), 1.5F, 15.0F, 20), new EraseMemoryIf<>(PiglinAlchemistAi::isNearZombified, MemoryModuleType.ATTACK_TARGET)), MemoryModuleType.ATTACK_TARGET);
     }
 
-    private static void initCoreActivity(Brain<PiglinAlchemist> brain, PiglinAlchemist alchemist) {
-        brain.addActivity(Activity.CORE, 0, ImmutableList.<net.minecraft.world.entity.ai.behavior.BehaviorControl<? super PiglinAlchemist>>of(new LookAtTargetSink(45, 90), new MoveToTargetSink(), InteractWithDoor.create(), new SwimOnlyOutOfLava(0.8F), avoidZombified(), generatePotionAi(alchemist), StopHoldingItemIfNoLongerAdmiringAlchemist.create(), new ShootTippedArrow(1.5F, 15.0F, 20, PotionUtils.setPotion(new ItemStack(Items.TIPPED_ARROW), Potions.STRONG_HEALING), (piglin -> piglin.isAlive() && piglin.getHealth() < piglin.getMaxHealth())),  StartAdmiringItemIfSeen.create(120), StartCelebratingIfTargetDead.create(300, PiglinAlchemistAi::wantsToDanceOnHoglin), StopBeingAngryIfTargetDead.create()));
+    private static void initCoreActivity(Brain<PiglinAlchemist> brain, PiglinAlchemist alchmeist) {
+        brain.addActivity(Activity.CORE, 0, ImmutableList.<Behavior<? super PiglinAlchemist>>of(new LookAtTargetSink(45, 90), new MoveToTargetSink(), new InteractWithDoor(), new SwimOnlyOutOfLava(0.8F), avoidZombified(), generatePotionAi(alchmeist), new StopHoldingItemIfNoLongerAdmiringAlchemist<>(), new ShootTippedArrow(1.5F, 15.0F, 20, PotionUtils.setPotion(new ItemStack(Items.TIPPED_ARROW), Potions.STRONG_HEALING), (piglin -> piglin.isAlive() && piglin.getHealth() < piglin.getMaxHealth())), new StartAdmiringItemIfSeen<>(120), new StartCelebratingIfTargetDead(300, PiglinAlchemistAi::wantsToDance), new StopBeingAngryIfTargetDead<>()));
     }
 
-    private static void initIdleActivity(Brain<PiglinAlchemist> pBrain) {
-        pBrain.addActivity(Activity.IDLE, 10, ImmutableList.of(SetEntityLookTarget.create(PiglinAi::isPlayerHoldingLovedItem, 14.0F), StartAttacking.<Piglin>create(AbstractPiglin::isAdult, PiglinAlchemistAi::findNearestValidAttackTarget), BehaviorBuilder.triggerIf(PiglinAlchemist::canHunt, StartHuntingHoglin.create()), avoidRepellent(), babySometimesRideBabyHoglin(), createIdleLookBehaviors(), createIdleMovementBehaviors(), SetLookAndInteract.create(EntityType.PLAYER, 4)));
+    private static void initIdleActivity(Brain<PiglinAlchemist> brain) {
+        brain.addActivity(Activity.IDLE, 10, ImmutableList.<net.minecraft.world.entity.ai.behavior.Behavior<? super PiglinAlchemist>>of(new SetEntityLookTarget(PiglinAi::isPlayerHoldingLovedItem, 14.0F), new StartAttacking<>(AbstractPiglin::isAdult, PiglinAlchemistAi::findNearestValidAttackTarget), new RunIf<>(PiglinAlchemist::canHunt, new StartHuntingHoglin<>()), avoidRepellent(), babySometimesRideBabyHoglin(), createIdleLookBehaviors(), createIdleMovementBehaviors(), new SetLookAndInteract(EntityType.PLAYER, 4)));
     }
 
     private static void initThrowPotionActivity(Brain<PiglinAlchemist> brain, PiglinAlchemist piglin) {
-        brain.addActivityAndRemoveMemoryWhenStopped(PPActivities.THROW_POTION_ACTIVITY.get(), 10, ImmutableList.<net.minecraft.world.entity.ai.behavior.BehaviorControl<? super PiglinAlchemist>>of(new ShootTippedArrow(1.5F, 15.0F, 20, PotionUtils.setPotion(new ItemStack(Items.TIPPED_ARROW), Potions.STRONG_HEALING), (piglin2 -> piglin2.isAlive() && piglin2.getHealth() < piglin2.getMaxHealth())), generatePotionAi(piglin)), PPMemoryModules.POTION_THROW_TARGET.get());
+        brain.addActivityAndRemoveMemoryWhenStopped(PPActivities.THROW_POTION_ACTIVITY.get(), 10, ImmutableList.<Behavior<? super PiglinAlchemist>>of(new ShootTippedArrow(1.5F, 15.0F, 20, PotionUtils.setPotion(new ItemStack(Items.TIPPED_ARROW), Potions.STRONG_HEALING), (piglin2 -> piglin2.isAlive() && piglin2.getHealth() < piglin2.getMaxHealth())), generatePotionAi(piglin)), PPMemoryModules.POTION_THROW_TARGET.get());
     }
 
-    private static BehaviorControl<LivingEntity> babySometimesRideBabyHoglin() {
-        SetEntityLookTargetSometimes.Ticker setentitylooktargetsometimes$ticker = new SetEntityLookTargetSometimes.Ticker(RIDE_START_INTERVAL);
-        return CopyMemoryWithExpiry.create((p_258952_) -> {
-            return p_258952_.isBaby() && setentitylooktargetsometimes$ticker.tickDownAndCheck(p_258952_.level.random);
-        }, MemoryModuleType.NEAREST_VISIBLE_BABY_HOGLIN, MemoryModuleType.RIDE_TARGET, RIDE_DURATION);
+    private static RunSometimes<Piglin> babySometimesRideBabyHoglin() {
+        return new RunSometimes<>(new CopyMemoryWithExpiry<>(Piglin::isBaby, MemoryModuleType.NEAREST_VISIBLE_BABY_HOGLIN, MemoryModuleType.RIDE_TARGET, RIDE_DURATION), RIDE_START_INTERVAL);
     }
 
-
-    private static RunOne<LivingEntity> createIdleLookBehaviors() {
-        return new RunOne<>(ImmutableList.<Pair<? extends BehaviorControl<? super LivingEntity>, Integer>>builder().addAll(createLookBehaviors()).add(Pair.of(new DoNothing(30, 60), 1)).build());
+    private static RunOne<Piglin> createIdleLookBehaviors() {
+        return new RunOne<>(ImmutableList.of(Pair.of(new SetEntityLookTarget(EntityType.PLAYER, 8.0F), 1), Pair.of(new SetEntityLookTarget(EntityType.PIGLIN, 8.0F), 1), Pair.of(new SetEntityLookTarget(8.0F), 1), Pair.of(new DoNothing(30, 60), 1)));
     }
 
     private static RunOne<Piglin> createIdleMovementBehaviors() {
-        return new RunOne<>(ImmutableList.of(Pair.of(MoveAroundPiglins.moveAroundPiglins(0.6F, true), 2), Pair.of(RandomStroll.stroll(0.6F), 2), Pair.of(InteractWith.of(EntityType.PIGLIN, 8, MemoryModuleType.INTERACTION_TARGET, 0.6F, 2), 2), Pair.of(BehaviorBuilder.triggerIf(PiglinAlchemistAi::doesntSeeAnyPlayerHoldingLovedItem, SetWalkTargetFromLookTarget.create(0.6F, 3)), 2), Pair.of(new DoNothing(30, 60), 1)));
-    }
-
-    private static ImmutableList<Pair<OneShot<LivingEntity>, Integer>> createLookBehaviors() {
-        return ImmutableList.of(Pair.of(SetEntityLookTarget.create(EntityType.PLAYER, 8.0F), 1), Pair.of(SetEntityLookTarget.create(EntityType.PIGLIN, 8.0F), 1), Pair.of(SetEntityLookTarget.create(8.0F), 1));
+        return new RunOne<>(ImmutableList.of(Pair.of(new MoveAroundPiglins(0.8F), 2), Pair.of(new RandomStroll(0.6F), 2), Pair.of(InteractWith.of(EntityType.PIGLIN, 8, MemoryModuleType.INTERACTION_TARGET, 0.6F, 2), 2), Pair.of(new RunIf<>(PiglinAlchemistAi::doesntSeeAnyPlayerHoldingLovedItem, new SetWalkTargetFromLookTarget(0.6F, 3)), 2), Pair.of(new DoNothing(30, 60), 1)));
     }
 
     private static RunOne<PiglinAlchemist> generatePotionAi(PiglinAlchemist piglinAlchemist) {
@@ -189,19 +181,19 @@ public class PiglinAlchemistAi extends PiglinAi {
         return p_34972_.getBrain().hasMemoryValue(MemoryModuleType.NEAREST_PLAYER_HOLDING_WANTED_ITEM);
     }
 
-    private static BehaviorControl<PathfinderMob> avoidRepellent() {
+    private static CopyMemoryWithExpiry<Piglin, LivingEntity> babyAvoidNemesis() {
+        return new CopyMemoryWithExpiry<>(Piglin::isBaby, MemoryModuleType.NEAREST_VISIBLE_NEMESIS, MemoryModuleType.AVOID_TARGET, BABY_AVOID_NEMESIS_DURATION);
+    }
+
+    private static CopyMemoryWithExpiry<Piglin, LivingEntity> avoidZombified() {
+        return new CopyMemoryWithExpiry<>(PiglinAlchemistAi::isNearZombified, MemoryModuleType.NEAREST_VISIBLE_ZOMBIFIED, MemoryModuleType.AVOID_TARGET, AVOID_ZOMBIFIED_DURATION);
+    }
+
+    private static SetWalkTargetAwayFrom<BlockPos> avoidRepellent() {
         return SetWalkTargetAwayFrom.pos(MemoryModuleType.NEAREST_REPELLENT, 1.0F, 8, false);
     }
 
-    private static BehaviorControl<Piglin> babyAvoidNemesis() {
-        return CopyMemoryWithExpiry.create(Piglin::isBaby, MemoryModuleType.NEAREST_VISIBLE_NEMESIS, MemoryModuleType.AVOID_TARGET, BABY_AVOID_NEMESIS_DURATION);
-    }
-
-    private static BehaviorControl<Piglin> avoidZombified() {
-        return CopyMemoryWithExpiry.create(PiglinAlchemistAi::isNearZombified, MemoryModuleType.NEAREST_VISIBLE_ZOMBIFIED, MemoryModuleType.AVOID_TARGET, AVOID_ZOMBIFIED_DURATION);
-    }
-
-    protected static boolean wantsToDanceOnHoglin(LivingEntity p_34811_, LivingEntity p_34812_) {
+    private static boolean wantsToDance(LivingEntity p_34811_, LivingEntity p_34812_) {
         if (p_34812_.getType() != EntityType.HOGLIN) {
             return false;
         } else {
@@ -218,13 +210,13 @@ public class PiglinAlchemistAi extends PiglinAi {
             if (barter && flag) {
                 throwItems(piglin, getBarterResponseItems(piglin));
             } else if (!flag) {
-                boolean flag1 = piglin.equipItemIfPossible(itemstack).isEmpty();
+                boolean flag1 = piglin.equipItemIfPossible(itemstack);
                 if (!flag1) {
                     putInInventory(piglin, itemstack);
                 }
             }
         } else {
-            boolean flag2 = piglin.equipItemIfPossible(itemstack).isEmpty();
+            boolean flag2 = piglin.equipItemIfPossible(itemstack);
             if (!flag2) {
                 ItemStack itemstack1 = piglin.getMainHandItem();
                 if (isLovedItem(itemstack1)) {
@@ -287,9 +279,9 @@ public class PiglinAlchemistAi extends PiglinAi {
         });
     }
 
-    private static boolean isNearestValidAttackTarget(Piglin pPiglin, LivingEntity pTarget) {
-        return findNearestValidAttackTarget(pPiglin).filter((p_34887_) -> {
-            return p_34887_ == pTarget;
+    private static boolean isNearestValidAttackTarget(Piglin piglin, LivingEntity p_34902_) {
+        return findNearestValidAttackTarget(piglin).filter((p_34887_) -> {
+            return p_34887_ == p_34902_;
         }).isPresent();
     }
 

@@ -1,22 +1,17 @@
 package tallestred.piglinproliferation;
 
 import com.mojang.datafixers.util.Pair;
-import net.minecraft.client.Minecraft;
 import net.minecraft.core.Holder;
 import net.minecraft.core.Registry;
-import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.SpawnPlacements;
-import net.minecraft.world.flag.FeatureFlags;
-import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.level.levelgen.structure.pools.SinglePoolElement;
 import net.minecraft.world.level.levelgen.structure.pools.StructurePoolElement;
 import net.minecraft.world.level.levelgen.structure.pools.StructureTemplatePool;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureProcessorList;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.event.CreativeModeTabEvent;
 import net.minecraftforge.event.entity.EntityAttributeCreationEvent;
 import net.minecraftforge.event.entity.SpawnPlacementRegisterEvent;
 import net.minecraftforge.event.server.ServerAboutToStartEvent;
@@ -43,7 +38,7 @@ import java.util.List;
 public class PiglinProliferation {
     public static final String MODID = "piglinproliferation";
     private static final ResourceKey<StructureProcessorList> EMPTY_PROCESSOR_LIST_KEY = ResourceKey.create(
-            Registries.PROCESSOR_LIST, new ResourceLocation("minecraft", "empty"));
+            Registry.PROCESSOR_LIST_REGISTRY, new ResourceLocation("minecraft", "empty"));
 
     public PiglinProliferation() {
         FMLJavaModLoadingContext.get().getModEventBus().addListener(this::setup);
@@ -51,7 +46,6 @@ public class PiglinProliferation {
         FMLJavaModLoadingContext.get().getModEventBus().addListener(this::processIMC);
         FMLJavaModLoadingContext.get().getModEventBus().addListener(this::addAttributes);
         FMLJavaModLoadingContext.get().getModEventBus().addListener(this::addSpawn);
-        FMLJavaModLoadingContext.get().getModEventBus().addListener(this::addCreativeTabs);
         MinecraftForge.EVENT_BUS.register(this);
         MinecraftForge.EVENT_BUS.addListener(this::serverStart);
         PPSounds.SOUNDS.register(FMLJavaModLoadingContext.get().getModEventBus());
@@ -109,18 +103,6 @@ public class PiglinProliferation {
         event.put(PPEntityTypes.PIGLIN_ALCHEMIST.get(), PiglinAlchemist.createAttributes().build());
     }
 
-    private void addCreativeTabs(final CreativeModeTabEvent.BuildContents event) {
-        if (event.getTab() == CreativeModeTabs.SPAWN_EGGS)
-            event.accept(PPItems.PIGLIN_ALCHEMIST_SPAWN_EGG.get());
-        if (event.getTab() == CreativeModeTabs.FUNCTIONAL_BLOCKS) {
-            event.accept(PPItems.PIGLIN_ALCHEMIST_HEAD_ITEM.get());
-            if (!Minecraft.getInstance().level.enabledFeatures().contains(FeatureFlags.UPDATE_1_20))
-                event.accept(PPItems.PIGLIN_HEAD_ITEM.get());
-            event.accept(PPItems.PIGLIN_BRUTE_HEAD_ITEM.get());
-            event.accept(PPItems.ZOMBIFIED_PIGLIN_HEAD_ITEM.get());
-        }
-    }
-
     private void addSpawn(final SpawnPlacementRegisterEvent event) {
         event.register(PPEntityTypes.PIGLIN_ALCHEMIST.get(), SpawnPlacements.Type.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, PiglinAlchemist::checkChemistSpawnRules, SpawnPlacementRegisterEvent.Operation.AND);
     }
@@ -135,8 +117,8 @@ public class PiglinProliferation {
     }
 
     private void serverStart(final ServerAboutToStartEvent event) {
-        Registry<StructureTemplatePool> templatePoolRegistry = event.getServer().registryAccess().registry(Registries.TEMPLATE_POOL).orElseThrow();
-        Registry<StructureProcessorList> processorListRegistry = event.getServer().registryAccess().registry(Registries.PROCESSOR_LIST).orElseThrow();
+        Registry<StructureTemplatePool> templatePoolRegistry = event.getServer().registryAccess().registry(Registry.TEMPLATE_POOL_REGISTRY).orElseThrow();
+        Registry<StructureProcessorList> processorListRegistry = event.getServer().registryAccess().registry(Registry.PROCESSOR_LIST_REGISTRY).orElseThrow();
         addBuildingToPool(templatePoolRegistry, processorListRegistry,
                 new ResourceLocation("minecraft:bastion/mobs/piglin"),
                 "piglinproliferation:bastion/alchemist_piglin", PPConfig.COMMON.alchemistWeightInBastions.get());
