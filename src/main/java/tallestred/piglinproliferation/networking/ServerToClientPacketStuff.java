@@ -8,7 +8,6 @@ import tallestred.piglinproliferation.capablities.TransformationSourceListener;
 import tallestred.piglinproliferation.common.entities.PiglinAlchemist;
 
 public class ServerToClientPacketStuff {
-
     public static void syncBelt(AlchemistBeltSyncPacket msg) {
         Entity entity = Minecraft.getInstance().level.getEntity(msg.getEntityId());
         if (entity != null && entity instanceof PiglinAlchemist alchemist) {

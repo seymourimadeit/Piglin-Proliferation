@@ -33,7 +33,7 @@ public class PiglinAlchemistRenderer extends PiglinRenderer {
         if (!mob.swinging && !mob.isGonnaThrowPotion() && mob.isAggressive()) {
             if (mob.isHolding((stack) -> stack.getItem() instanceof CrossbowItem) && CrossbowItem.isCharged(itemstack))
                 pose = HumanoidModel.ArmPose.CROSSBOW_HOLD;
-            if (mob.isHolding((stack) -> stack.getItem() instanceof BowItem) && mob.getDeltaMovement().y() <= 0 & mob.getDeltaMovement().x() <= 0 & mob.getDeltaMovement().z() <= 0)
+            if (mob.isHolding((stack) -> stack.getItem() instanceof BowItem) && mob.getDeltaMovement().y() <= 0 && mob.getDeltaMovement().x() <= 0 && mob.getDeltaMovement().z() <= 0)
                 pose = HumanoidModel.ArmPose.BOW_AND_ARROW;
         }
         if (mob.getUsedItemHand() == hand && mob.getUseItemRemainingTicks() > 0) {
