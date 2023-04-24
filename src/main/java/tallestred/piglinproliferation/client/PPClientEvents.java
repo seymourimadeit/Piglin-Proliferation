@@ -17,10 +17,12 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import tallestred.piglinproliferation.PiglinProliferation;
+import tallestred.piglinproliferation.client.models.PiglinTravellerModel;
 import tallestred.piglinproliferation.client.renderers.PiglinAlchemistRenderer;
+import tallestred.piglinproliferation.client.renderers.PiglinTravellerRenderer;
 import tallestred.piglinproliferation.client.renderers.layers.PiglinClothingRenderLayer;
-import tallestred.piglinproliferation.client.renderers.models.PiglinAlchemistModel;
-import tallestred.piglinproliferation.client.renderers.models.PiglinHeadEntityModel;
+import tallestred.piglinproliferation.client.models.PiglinAlchemistModel;
+import tallestred.piglinproliferation.client.models.PiglinHeadEntityModel;
 import tallestred.piglinproliferation.common.blockentities.PPBlockEntities;
 import tallestred.piglinproliferation.common.blocks.PiglinSkullBlock;
 import tallestred.piglinproliferation.common.entities.PPEntityTypes;
@@ -37,6 +39,8 @@ public class PPClientEvents {
             new ResourceLocation(PiglinProliferation.MODID + "piglin_alchemist_skull"), "piglin_alchemist_skull");
     public static final ModelLayerLocation PIGLIN_ALCHEMIST = new ModelLayerLocation(
             new ResourceLocation(PiglinProliferation.MODID + "piglin_alchemist"), "piglin_alchemist");
+    public static final ModelLayerLocation PIGLIN_TRAVELLER = new ModelLayerLocation(
+            new ResourceLocation(PiglinProliferation.MODID + "piglin_traveller"), "piglin_traveller");
     public static final ModelLayerLocation PIGLIN_ALCHEMIST_BELT_SLOTS = new ModelLayerLocation(
             new ResourceLocation(PiglinProliferation.MODID + "piglin_alchemist_belt"), "piglin_alchemist_belt");
 
@@ -46,6 +50,7 @@ public class PPClientEvents {
         event.registerLayerDefinition(PIGLIN_ALCHEMIST_SKULL, Lazy.of(PiglinHeadEntityModel::createAlchemistMesh));
         event.registerLayerDefinition(ZIGLIN_CLOTHING, () -> LayerDefinition.create(PiglinModel.createMesh(new CubeDeformation(0.25F)), 64, 64));
         event.registerLayerDefinition(PIGLIN_ALCHEMIST, () -> LayerDefinition.create(PiglinAlchemistModel.createBodyLayer(new CubeDeformation(0.25F), new CubeDeformation(0.70F), new CubeDeformation(1.05F)), 120, 64));
+        event.registerLayerDefinition(PIGLIN_TRAVELLER, PiglinTravellerModel::createBodyLayer);
         event.registerLayerDefinition(PIGLIN_ALCHEMIST_BELT_SLOTS, () -> LayerDefinition.create(PiglinAlchemistModel.createBodyLayer(new CubeDeformation(0.40F), new CubeDeformation(1.0F), new CubeDeformation(1.20F)), 120, 64));
     }
 
@@ -53,6 +58,7 @@ public class PPClientEvents {
     public static void entityRenderers(EntityRenderersEvent.RegisterRenderers event) {
         event.registerBlockEntityRenderer(PPBlockEntities.PIGLIN_SKULL.get(), SkullBlockRenderer::new);
         event.registerEntityRenderer(PPEntityTypes.PIGLIN_ALCHEMIST.get(), PiglinAlchemistRenderer::new);
+        event.registerEntityRenderer(PPEntityTypes.PIGLIN_TRAVELLER.get(), PiglinTravellerRenderer::new);
     }
 
     @SubscribeEvent

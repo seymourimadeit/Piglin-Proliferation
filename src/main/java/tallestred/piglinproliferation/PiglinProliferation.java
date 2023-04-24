@@ -106,6 +106,7 @@ public class PiglinProliferation {
     }
 
     private void addAttributes(final EntityAttributeCreationEvent event) {
+        event.put(PPEntityTypes.PIGLIN_TRAVELLER.get(), PiglinAlchemist.createAttributes().build());
         event.put(PPEntityTypes.PIGLIN_ALCHEMIST.get(), PiglinAlchemist.createAttributes().build());
     }
 

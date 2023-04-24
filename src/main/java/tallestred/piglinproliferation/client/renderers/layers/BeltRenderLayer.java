@@ -8,7 +8,6 @@ import net.minecraft.client.model.EntityModel;
 import net.minecraft.client.model.PiglinModel;
 import net.minecraft.client.renderer.ItemInHandRenderer;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.block.model.ItemTransforms;
 import net.minecraft.client.renderer.entity.LivingEntityRenderer;
 import net.minecraft.client.renderer.entity.RenderLayerParent;
 import net.minecraft.client.renderer.entity.layers.RenderLayer;
@@ -21,7 +20,7 @@ import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import tallestred.piglinproliferation.PiglinProliferation;
 import tallestred.piglinproliferation.client.PPClientEvents;
-import tallestred.piglinproliferation.client.renderers.models.PiglinAlchemistModel;
+import tallestred.piglinproliferation.client.models.PiglinAlchemistModel;
 import tallestred.piglinproliferation.common.entities.PiglinAlchemist;
 
 public class BeltRenderLayer<T extends PiglinAlchemist, M extends EntityModel<T> & ArmedModel> extends RenderLayer<T, M> {

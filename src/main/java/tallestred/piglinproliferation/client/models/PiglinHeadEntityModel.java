@@ -1,4 +1,4 @@
-package tallestred.piglinproliferation.client.renderers.models;
+package tallestred.piglinproliferation.client.models;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;

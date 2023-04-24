@@ -17,7 +17,7 @@ import net.minecraft.world.item.UseAnim;
 import tallestred.piglinproliferation.PiglinProliferation;
 import tallestred.piglinproliferation.client.PPClientEvents;
 import tallestred.piglinproliferation.client.renderers.layers.BeltRenderLayer;
-import tallestred.piglinproliferation.client.renderers.models.PiglinAlchemistModel;
+import tallestred.piglinproliferation.client.models.PiglinAlchemistModel;
 import tallestred.piglinproliferation.common.entities.PiglinAlchemist;
 
 public class PiglinAlchemistRenderer extends PiglinRenderer {

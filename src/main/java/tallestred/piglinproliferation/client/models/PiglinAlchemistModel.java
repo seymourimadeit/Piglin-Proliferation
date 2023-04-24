@@ -1,4 +1,4 @@
-package tallestred.piglinproliferation.client.renderers.models;
+package tallestred.piglinproliferation.client.models;
 
 import net.minecraft.client.model.PiglinModel;
 import net.minecraft.client.model.geom.ModelPart;
