@@ -1,24 +1,33 @@
 package tallestred.piglinproliferation;
 
+import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.*;
+import net.minecraft.world.entity.ai.attributes.AttributeInstance;
+import net.minecraft.world.entity.ai.attributes.AttributeModifier;
+import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.memory.MemoryModuleType;
 import net.minecraft.world.entity.monster.Creeper;
 import net.minecraft.world.entity.monster.Ghast;
 import net.minecraft.world.entity.monster.ZombifiedPiglin;
 import net.minecraft.world.entity.monster.piglin.AbstractPiglin;
+import net.minecraft.world.entity.monster.piglin.PiglinBrute;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.Arrow;
 import net.minecraft.world.entity.projectile.Fireball;
-import net.minecraft.world.flag.FeatureFlags;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.alchemy.PotionUtils;
 import net.minecraft.world.item.alchemy.Potions;
+import net.minecraft.world.item.enchantment.Enchantment;
+import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.pathfinder.BlockPathTypes;
 import net.minecraftforge.common.util.LazyOptional;
@@ -31,26 +40,48 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.network.PacketDistributor;
 import net.minecraftforge.registries.ForgeRegistries;
-import tallestred.piglinproliferation.capablities.PPCapablities;
-import tallestred.piglinproliferation.capablities.TransformationSourceListener;
-import tallestred.piglinproliferation.capablities.TransformationSourceProvider;
+import tallestred.piglinproliferation.capablities.*;
 import tallestred.piglinproliferation.client.PPSounds;
-import tallestred.piglinproliferation.common.PPItems;
 import tallestred.piglinproliferation.common.blocks.PPBlocks;
+import tallestred.piglinproliferation.common.enchantments.PPEnchantments;
 import tallestred.piglinproliferation.common.entities.ai.goals.PiglinCallForHelpGoal;
 import tallestred.piglinproliferation.common.entities.ai.goals.PiglinSwimInLavaGoal;
+import tallestred.piglinproliferation.common.items.BucklerItem;
+import tallestred.piglinproliferation.common.items.PPItems;
 import tallestred.piglinproliferation.configuration.PPConfig;
+import tallestred.piglinproliferation.networking.CriticalCapabilityPacket;
 import tallestred.piglinproliferation.networking.PPNetworking;
 import tallestred.piglinproliferation.networking.ZiglinCapablitySyncPacket;
 
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+
 @Mod.EventBusSubscriber(modid = PiglinProliferation.MODID)
 public class PPEvents {
+    private static final UUID CHARGE_SPEED_UUID = UUID.fromString("A2F995E8-B25A-4883-B9D0-93A676DC4045");
+    private static final UUID KNOCKBACK_RESISTANCE_UUID = UUID.fromString("93E74BB2-05A5-4AC0-8DF5-A55768208A95");
+    private static final AttributeModifier CHARGE_SPEED_BOOST = new AttributeModifier(CHARGE_SPEED_UUID, "Charge speed boost", 9.0D, AttributeModifier.Operation.MULTIPLY_BASE);
+    private static final AttributeModifier KNOCKBACK_RESISTANCE = new AttributeModifier(KNOCKBACK_RESISTANCE_UUID, "Knockback reduction", 1.0D, AttributeModifier.Operation.ADDITION);
+
     @SubscribeEvent
     public static void attach(AttachCapabilitiesEvent<Entity> event) {
         final TransformationSourceProvider provider = new TransformationSourceProvider();
         if (event.getObject() instanceof ZombifiedPiglin) {
             event.addCapability(TransformationSourceProvider.IDENTIFIER, provider);
             event.addListener(provider::invalidate);
+        }
+        final GuranteedCritProvider critProvider = new GuranteedCritProvider();
+        if (event.getObject() instanceof Player) {
+            event.addCapability(GuranteedCritProvider.IDENTIFIER, critProvider);
+            event.addListener(critProvider::invalidate);
+        }
+    }
+
+    @SubscribeEvent
+    public static void onJump(LivingEvent.LivingJumpEvent event) {
+        if (BucklerItem.getChargeTicks(PPItems.checkEachHandForBuckler(event.getEntity())) > 0) {
+            event.getEntity().setDeltaMovement(event.getEntity().getDeltaMovement().x(), 0.0D, event.getEntity().getDeltaMovement().z());
         }
     }
 
@@ -80,6 +111,49 @@ public class PPEvents {
                 if (transformationSource != null)
                     PPNetworking.INSTANCE.send(PacketDistributor.TRACKING_ENTITY.with(() -> ziglin), new ZiglinCapablitySyncPacket(ziglin.getId(), transformationSource.getTransformationSource()));
             }
+        }
+    }
+
+    @SubscribeEvent
+    public static void onLivingTick(LivingEvent.LivingTickEvent event) {
+        LivingEntity entity = event.getEntity();
+        int turningLevel = PPEnchantments.getBucklerEnchantsOnHands(PPEnchantments.TURNING.get(), entity);
+        ItemStack bucklerItemStack = PPItems.checkEachHandForBuckler(entity);
+        boolean bucklerReadyToCharge = BucklerItem.isReady(bucklerItemStack);
+        int bucklerChargeTicks = BucklerItem.getChargeTicks(bucklerItemStack);
+        if (bucklerReadyToCharge) {
+            BucklerItem.setChargeTicks(bucklerItemStack, bucklerChargeTicks - 1);
+            if (bucklerChargeTicks > 0) {
+                BucklerItem.moveFowards(entity);
+                BucklerItem.spawnRunningEffectsWhileCharging(entity);
+                if (turningLevel == 0 && !entity.level().isClientSide()) BucklerItem.bucklerBash(entity);
+            }
+            if (bucklerChargeTicks <= 0) {
+                AttributeInstance speed = entity.getAttribute(Attributes.MOVEMENT_SPEED);
+                AttributeInstance knockback = entity.getAttribute(Attributes.KNOCKBACK_RESISTANCE);
+                if (speed == null || knockback == null) {
+                    return;
+                }
+                knockback.removeModifier(KNOCKBACK_RESISTANCE);
+                speed.removeModifier(CHARGE_SPEED_BOOST);
+                entity.stopUsingItem();
+                BucklerItem.setChargeTicks(bucklerItemStack, 0);
+                BucklerItem.setReady(bucklerItemStack, false);
+            }
+        }
+        CriticalAfterCharge criticalAfterCharge = PPCapablities.getGuaranteedCritical(entity);
+        if (criticalAfterCharge != null) {
+            if (criticalAfterCharge.isCritical()) {
+                if (entity.swingTime > 0) {
+                    entity.level().playSound(null, entity.getX(), entity.getY(), entity.getZ(), PPSounds.CRITICAL_DEACTIVATE.get(), entity.getSoundSource(), 1.0F, 0.8F + entity.getRandom().nextFloat() * 0.4F);
+                    criticalAfterCharge.setCritical(false);
+                }
+                for (int i = 0; i < 2; ++i) {
+                    entity.level().addParticle(ParticleTypes.CRIT, entity.getRandomX(0.5D), entity.getRandomY(), entity.getRandomZ(0.5D), 0.0D, 0.0D, 0.0D);
+                }
+            }
+            if (event.getEntity() instanceof ServerPlayer player)
+                PPNetworking.INSTANCE.send(PacketDistributor.PLAYER.with(() -> player), new CriticalCapabilityPacket(player.getId(), criticalAfterCharge.isCritical()));
         }
     }
 
@@ -145,6 +219,65 @@ public class PPEvents {
     }
 
     @SubscribeEvent
+    public static void targetMob(LivingChangeTargetEvent event) {
+        if (event.getEntity() instanceof AbstractPiglin) {
+            if (event.getOriginalTarget() instanceof AbstractPiglin) {
+                event.setCanceled(true);
+            }
+        }
+    }
+
+    @SubscribeEvent
+    public static void finalizeSpawn(MobSpawnEvent.FinalizeSpawn event) {
+        MobSpawnType spawnType = event.getSpawnType();
+        RandomSource rSource = event.getLevel().getRandom();
+        if (event.getEntity() instanceof PiglinBrute piglinBrute) {
+            if (!PPConfig.COMMON.BruteBuckler.get()) return;
+            piglinBrute.setItemSlot(EquipmentSlot.OFFHAND, new ItemStack(PPItems.BUCKLER.get()));
+            ItemStack itemstack = piglinBrute.getOffhandItem();
+            if (itemstack.getItem() instanceof BucklerItem) {
+                if (rSource.nextInt(300) == 0) {
+                    Map<Enchantment, Integer> map = EnchantmentHelper.getEnchantments(itemstack);
+                    map.putIfAbsent(PPEnchantments.TURNING.get(), 1);
+                    EnchantmentHelper.setEnchantments(map, itemstack);
+                    piglinBrute.setItemSlot(EquipmentSlot.OFFHAND, itemstack);
+                }
+                if (rSource.nextInt(500) == 0) {
+                    Map<Enchantment, Integer> map = EnchantmentHelper.getEnchantments(itemstack);
+                    map.putIfAbsent(PPEnchantments.BANG.get(), 1);
+                    EnchantmentHelper.setEnchantments(map, itemstack);
+                    piglinBrute.setItemSlot(EquipmentSlot.OFFHAND, itemstack);
+                }
+            }
+        }
+        if (event.getEntity().getType() == EntityType.ZOMBIFIED_PIGLIN) { // Some mods have entities that extend zombified piglins in order to make their own ziglins have custom textures
+            ZombifiedPiglin zombifiedPiglin = (ZombifiedPiglin) event.getEntity();
+            TransformationSourceListener tSource = PPEvents.getTransformationSourceListener(zombifiedPiglin);
+            if (spawnType != MobSpawnType.CONVERSION) {
+                if (rSource.nextFloat() < PPConfig.COMMON.zombifiedPiglinDefaultChance.get().floatValue())
+                    tSource.setTransformationSource("piglin");
+                if (rSource.nextFloat() < PPConfig.COMMON.piglinVariantChances.get().floatValue()) {
+                    List<? extends String> piglinTypes = PPConfig.COMMON.zombifiedPiglinTypeList.get();
+                    if (!piglinTypes.isEmpty())
+                        tSource.setTransformationSource(piglinTypes.get(rSource.nextInt(piglinTypes.size())));
+                }
+                float bruteChance = PPConfig.COMMON.zombifiedBruteChance.get().floatValue();
+                if (tSource.getTransformationSource().equals("piglin")) {
+                    if (rSource.nextFloat() < bruteChance) {
+                        zombifiedPiglin.setItemSlot(EquipmentSlot.MAINHAND, new ItemStack(Items.GOLDEN_AXE));
+                        tSource.setTransformationSource("piglin_brute");
+                        zombifiedPiglin.setItemSlot(EquipmentSlot.OFFHAND, new ItemStack(PPItems.BUCKLER.get()));
+                    }
+                    if (rSource.nextFloat() < PPConfig.COMMON.zombifiedAlchemistChance.get().floatValue()) {
+                        zombifiedPiglin.setItemSlot(EquipmentSlot.MAINHAND, new ItemStack(Items.BOW));
+                        tSource.setTransformationSource("piglin_alchemist");
+                    }
+                }
+            }
+        }
+    }
+
+    @SubscribeEvent
     public static void visionPercent(LivingEvent.LivingVisibilityEvent event) {
         if (event.getLookingEntity() != null) {
             ItemStack itemstack = event.getEntity().getItemBySlot(EquipmentSlot.HEAD);
@@ -155,6 +288,23 @@ public class PPEvents {
         }
     }
 
+    @SubscribeEvent
+    public static void dropLoot(LivingDropsEvent event) {
+        if (event.getEntity() instanceof PiglinBrute brute) {
+            ItemStack itemstack = brute.getOffhandItem();
+            if (itemstack.getItem() instanceof BucklerItem) {
+                float f = 0.10F;
+                boolean flag = f > 1.0F;
+                if (!itemstack.isEmpty() && !EnchantmentHelper.hasVanishingCurse(itemstack) && (event.isRecentlyHit() || flag) && Math.max(brute.getRandom().nextFloat() - (float) event.getLootingLevel() * 0.01F, 0.0F) < f) {
+                    if (itemstack.isDamageableItem()) {
+                        itemstack.setDamageValue(brute.getRandom().nextInt(brute.getRandom().nextInt(itemstack.getMaxDamage() / 2)));
+                    }
+                    brute.spawnAtLocation(itemstack);
+                    brute.setItemSlot(EquipmentSlot.OFFHAND, ItemStack.EMPTY);
+                }
+            }
+        }
+    }
 
     @SubscribeEvent
     public static void onConvert(LivingConversionEvent.Post event) {

@@ -7,6 +7,8 @@ import net.minecraft.client.model.geom.builders.LayerDefinition;
 import net.minecraft.client.renderer.blockentity.SkullBlockRenderer;
 import net.minecraft.client.renderer.entity.LivingEntityRenderer;
 import net.minecraft.client.renderer.entity.layers.RenderLayer;
+import net.minecraft.client.renderer.texture.TextureAtlas;
+import net.minecraft.client.resources.model.Material;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.Mob;
@@ -17,12 +19,13 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import tallestred.piglinproliferation.PiglinProliferation;
+import tallestred.piglinproliferation.client.models.ModelGoldenBuckler;
+import tallestred.piglinproliferation.client.models.PiglinAlchemistModel;
+import tallestred.piglinproliferation.client.models.PiglinHeadEntityModel;
 import tallestred.piglinproliferation.client.models.PiglinTravellerModel;
 import tallestred.piglinproliferation.client.renderers.PiglinAlchemistRenderer;
 import tallestred.piglinproliferation.client.renderers.PiglinTravellerRenderer;
 import tallestred.piglinproliferation.client.renderers.layers.PiglinClothingRenderLayer;
-import tallestred.piglinproliferation.client.models.PiglinAlchemistModel;
-import tallestred.piglinproliferation.client.models.PiglinHeadEntityModel;
 import tallestred.piglinproliferation.common.blockentities.PPBlockEntities;
 import tallestred.piglinproliferation.common.blocks.PiglinSkullBlock;
 import tallestred.piglinproliferation.common.entities.PPEntityTypes;
@@ -43,6 +46,9 @@ public class PPClientEvents {
             new ResourceLocation(PiglinProliferation.MODID + "piglin_traveller"), "piglin_traveller");
     public static final ModelLayerLocation PIGLIN_ALCHEMIST_BELT_SLOTS = new ModelLayerLocation(
             new ResourceLocation(PiglinProliferation.MODID + "piglin_alchemist_belt"), "piglin_alchemist_belt");
+    public static final ModelLayerLocation BUCKLER = new ModelLayerLocation(new ResourceLocation(PiglinProliferation.MODID + "buckler"),
+            "buckler");
+    public static final Material BUCKLER_TEXTURE = new Material(TextureAtlas.LOCATION_BLOCKS, new ResourceLocation(PiglinProliferation.MODID, "entity/buckler/golden_buckler"));
 
     @SubscribeEvent
     public static void layerDefinitions(EntityRenderersEvent.RegisterLayerDefinitions event) {
@@ -52,6 +58,7 @@ public class PPClientEvents {
         event.registerLayerDefinition(PIGLIN_ALCHEMIST, () -> LayerDefinition.create(PiglinAlchemistModel.createBodyLayer(new CubeDeformation(0.25F), new CubeDeformation(0.70F), new CubeDeformation(1.05F)), 120, 64));
         event.registerLayerDefinition(PIGLIN_TRAVELLER, PiglinTravellerModel::createBodyLayer);
         event.registerLayerDefinition(PIGLIN_ALCHEMIST_BELT_SLOTS, () -> LayerDefinition.create(PiglinAlchemistModel.createBodyLayer(new CubeDeformation(0.40F), new CubeDeformation(1.0F), new CubeDeformation(1.20F)), 120, 64));
+        event.registerLayerDefinition(BUCKLER, ModelGoldenBuckler::createLayer);
     }
 
     @SubscribeEvent

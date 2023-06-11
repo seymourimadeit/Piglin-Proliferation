@@ -183,5 +183,34 @@
       }
     ],
     "subtitle": "subtitles.entity.piglin_alchemist.step"
+  },
+  "entity.piglin_brute.charge": {
+    "sounds": [
+      "piglinproliferation:mobs/piglin_brute/charge/charge1",
+      "piglinproliferation:mobs/piglin_brute/charge/charge2",
+      "piglinproliferation:mobs/piglin_brute/charge/charge3",
+      "piglinproliferation:mobs/piglin_brute/charge/charge4"
+    ],
+    "subtitle": "subtitles.entity.piglin_brute.charge"
+  },
+  "item.buckler.bash": {
+    "sounds": [
+      "piglinproliferation:buckler/bash1",
+      "piglinproliferation:buckler/bash2",
+      "piglinproliferation:buckler/bash3"
+    ],
+    "subtitle": "subtitles.item.buckler.bash"
+  },
+  "entity.criticalcharge.activate": {
+    "sounds": [
+      "block/beacon/activate"
+    ],
+    "subtitle": "subtitles.entity.criticalCharge.activate"
+  },
+  "entity.criticalcharge.deactivate": {
+    "sounds": [
+      "block/beacon/deactivate"
+    ],
+    "subtitle": "subtitles.entity.criticalCharge.deactivate"
   }
 }

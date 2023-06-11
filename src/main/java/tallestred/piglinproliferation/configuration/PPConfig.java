@@ -32,6 +32,8 @@ public class PPConfig {
 
     public static class CommonConfig {
         public final ForgeConfigSpec.BooleanValue healingArrowDamage;
+        public final ForgeConfigSpec.BooleanValue BruteBuckler;
+        public final ForgeConfigSpec.BooleanValue BangBlockDestruction;
         public final ForgeConfigSpec.IntValue alchemistWeightInBastions;
         public final ForgeConfigSpec.DoubleValue healingArrowChances;
         public final ForgeConfigSpec.DoubleValue piglinVariantChances;
@@ -41,6 +43,9 @@ public class PPConfig {
         public final ForgeConfigSpec.DoubleValue alchemistPotionChance;
         public final ForgeConfigSpec.IntValue healingArrowMinStackSize;
         public final ForgeConfigSpec.IntValue healingArrowMaxStackSize;
+        public final ForgeConfigSpec.IntValue BucklerCooldown;
+        public final ForgeConfigSpec.IntValue BucklerRunTime;
+        public final ForgeConfigSpec.IntValue BucklerTurningRunTime;
         public final ForgeConfigSpec.ConfigValue<List<? extends String>> zombifiedPiglinTypeList;
 
         public CommonConfig(ForgeConfigSpec.Builder builder) {
@@ -63,16 +68,29 @@ public class PPConfig {
             healingArrowMinStackSize = builder.defineInRange("Minmium healing arrow stack size", 1, Integer.MIN_VALUE, Integer.MAX_VALUE);
             healingArrowMaxStackSize = builder.defineInRange("Maximium healing arrow stack size", 6, Integer.MIN_VALUE, Integer.MAX_VALUE);
             builder.pop();
+            builder.push("buckler");
+            BangBlockDestruction = builder.define("Have the explosion spawned while using the Bang! enchant destroy blocks?", false);
+            BruteBuckler = builder.define("Have brutes spawn with bucklers?", true);
+            BucklerCooldown = builder.defineInRange("How long should the buckler's cooldown be in ticks?", 240, Integer.MIN_VALUE, Integer.MAX_VALUE);
+            BucklerRunTime = builder.defineInRange("How long should the buckler's charge move be in ticks?", 15, Integer.MIN_VALUE, Integer.MAX_VALUE); // Thinking of removing this in 1.17.
+            BucklerTurningRunTime = builder.defineInRange("How long should the buckler's charge move if you have the turning enchant be in ticks?", 30, Integer.MIN_VALUE, Integer.MAX_VALUE);
+            builder.pop();
             builder.pop();
         }
     }
 
     public static class ClientConfig {
         public final ForgeConfigSpec.BooleanValue ziglinTextures;
+        public final ForgeConfigSpec.BooleanValue RenderAfterImage;
+        public final ForgeConfigSpec.BooleanValue RenderEntityLayersDuringAfterImage;
 
         public ClientConfig(ForgeConfigSpec.Builder builder) {
             builder.push("vanilla changes");
             ziglinTextures = builder.define("Allow Zombified Piglins to render consistent clothing?", true);
+            builder.pop();
+            builder.push("after image");
+            RenderAfterImage = builder.define("Render an after image while an entity is charging with a buckler?", true);
+            RenderEntityLayersDuringAfterImage = builder.comment("Keep in mind this won't affect their opacity due to technical reasons.").define("Render entity layers while rendering the after image?", false);
             builder.pop();
         }
     }

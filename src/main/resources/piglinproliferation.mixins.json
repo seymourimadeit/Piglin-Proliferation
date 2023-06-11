@@ -4,8 +4,15 @@
   "compatibilityLevel": "JAVA_17",
   "refmap": "piglinproliferation.refmap.json",
   "mixins": [
-     "ZombifiedPiglinMixin",
-    "NoteBlockMixin"
+    "LookControllerMixin",
+    "MovementControllerMixin",
+    "NoteBlockMixin",
+    "PiglinBruteBrainMixin",
+    "ZombifiedPiglinMixin"
+  ],
+  "client": [
+    "MouseHelperMixin",
+    "HumanoidModelMixin"
   ],
   "injectors": {
     "defaultRequire": 1

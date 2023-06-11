@@ -24,4 +24,8 @@ public class PPSounds {
     public static final RegistryObject<SoundEvent> ALCHEMIST_CONVERTED = SOUNDS.register("entity.piglin_alchemist.conversion", () -> SoundEvent.createVariableRangeEvent(new ResourceLocation(PiglinProliferation.MODID, "entity.piglin_alchemist.conversion")));
     public static final RegistryObject<SoundEvent> ALCHEMIST_STEP = SOUNDS.register("entity.piglin_alchemist.step", () -> SoundEvent.createVariableRangeEvent(new ResourceLocation(PiglinProliferation.MODID, "entity.piglin_alchemist.step")));
     public static final RegistryObject<SoundEvent> REGEN_HEALING_ARROW_HIT = SOUNDS.register("arrow.regenhealingarrowhit", () -> SoundEvent.createVariableRangeEvent(new ResourceLocation(PiglinProliferation.MODID, "arrow.regenhealingarrowhit")));
+    public static final RegistryObject<SoundEvent> PIGLIN_BRUTE_CHARGE = SOUNDS.register("entity.piglin_brute.charge", () -> SoundEvent.createVariableRangeEvent(new ResourceLocation(PiglinProliferation.MODID, "entity.piglin_brute.charge")));
+    public static final RegistryObject<SoundEvent> SHIELD_BASH = SOUNDS.register("item.buckler.bash", () -> SoundEvent.createVariableRangeEvent(new ResourceLocation(PiglinProliferation.MODID, "item.buckler.bash")));
+    public static final RegistryObject<SoundEvent> CRITICAL_ACTIVATE = SOUNDS.register("entity.criticalcharge.activate", () -> SoundEvent.createVariableRangeEvent(new ResourceLocation(PiglinProliferation.MODID, "entity.criticalcharge.activate")));
+    public static final RegistryObject<SoundEvent> CRITICAL_DEACTIVATE = SOUNDS.register("entity.criticalcharge.deactivate", () -> SoundEvent.createVariableRangeEvent(new ResourceLocation(PiglinProliferation.MODID, "entity.criticalcharge.deactivate")));
 }

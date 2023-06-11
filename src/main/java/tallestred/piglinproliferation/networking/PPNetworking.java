@@ -13,5 +13,6 @@ public class PPNetworking {
         int id = 0;
         INSTANCE.registerMessage(id++, AlchemistBeltSyncPacket.class, AlchemistBeltSyncPacket::encode, AlchemistBeltSyncPacket::decode, AlchemistBeltSyncPacket::handle);
         INSTANCE.registerMessage(id++, ZiglinCapablitySyncPacket.class, ZiglinCapablitySyncPacket::encode, ZiglinCapablitySyncPacket::decode, ZiglinCapablitySyncPacket::handle);
+        INSTANCE.registerMessage(id++, CriticalCapabilityPacket.class, CriticalCapabilityPacket::encode, CriticalCapabilityPacket::decode, CriticalCapabilityPacket::handle);
     }
 }

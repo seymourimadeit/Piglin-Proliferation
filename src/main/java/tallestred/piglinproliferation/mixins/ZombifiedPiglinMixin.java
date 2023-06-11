@@ -15,13 +15,13 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.ServerLevelAccessor;
-import net.minecraftforge.fml.ModList;
 import net.minecraftforge.registries.ForgeRegistries;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import tallestred.piglinproliferation.PPEvents;
 import tallestred.piglinproliferation.capablities.TransformationSourceListener;
+import tallestred.piglinproliferation.common.items.PPItems;
 import tallestred.piglinproliferation.configuration.PPConfig;
 
 import java.util.List;
@@ -58,10 +58,7 @@ public abstract class ZombifiedPiglinMixin extends Zombie {
                     if (randomSource.nextFloat() < bruteChance) {
                         this.setItemSlot(EquipmentSlot.MAINHAND, new ItemStack(Items.GOLDEN_AXE));
                         tSource.setTransformationSource("piglin_brute");
-                        if (ModList.get().isLoaded("bigbrain")) {
-                            Item buckler = ForgeRegistries.ITEMS.getValue(new ResourceLocation("bigbrain:buckler"));
-                            this.setItemSlot(EquipmentSlot.OFFHAND, new ItemStack(buckler));
-                        }
+                        this.setItemSlot(EquipmentSlot.OFFHAND, new ItemStack(PPItems.BUCKLER.get()));
                     }
                     if (randomSource.nextFloat() < PPConfig.COMMON.zombifiedAlchemistChance.get().floatValue()) {
                         this.setItemSlot(EquipmentSlot.MAINHAND, new ItemStack(Items.BOW));

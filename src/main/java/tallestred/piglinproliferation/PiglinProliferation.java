@@ -1,6 +1,7 @@
 package tallestred.piglinproliferation;
 
 import com.mojang.datafixers.util.Pair;
+import net.minecraft.client.renderer.item.ItemProperties;
 import net.minecraft.core.Holder;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.Registries;
@@ -21,12 +22,15 @@ import net.minecraftforge.event.server.ServerAboutToStartEvent;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.config.ModConfig;
+import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.InterModEnqueueEvent;
 import net.minecraftforge.fml.event.lifecycle.InterModProcessEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import tallestred.piglinproliferation.client.PPSounds;
-import tallestred.piglinproliferation.common.PPItems;
+import tallestred.piglinproliferation.common.enchantments.PPEnchantments;
+import tallestred.piglinproliferation.common.items.BucklerItem;
+import tallestred.piglinproliferation.common.items.PPItems;
 import tallestred.piglinproliferation.common.blockentities.PPBlockEntities;
 import tallestred.piglinproliferation.common.blocks.PPBlocks;
 import tallestred.piglinproliferation.common.entities.PPEntityTypes;
@@ -50,6 +54,7 @@ public class PiglinProliferation {
         FMLJavaModLoadingContext.get().getModEventBus().addListener(this::addAttributes);
         FMLJavaModLoadingContext.get().getModEventBus().addListener(this::addSpawn);
         FMLJavaModLoadingContext.get().getModEventBus().addListener(this::addCreativeTabs);
+        FMLJavaModLoadingContext.get().getModEventBus().addListener(this::doClientStuff);
         MinecraftForge.EVENT_BUS.register(this);
         MinecraftForge.EVENT_BUS.addListener(this::serverStart);
         PPSounds.SOUNDS.register(FMLJavaModLoadingContext.get().getModEventBus());
@@ -59,6 +64,7 @@ public class PiglinProliferation {
         PPActivities.ACTIVITIES.register(FMLJavaModLoadingContext.get().getModEventBus());
         PPBlockEntities.BLOCK_ENTITIES.register(FMLJavaModLoadingContext.get().getModEventBus());
         PPBlocks.BLOCKS.register(FMLJavaModLoadingContext.get().getModEventBus());
+        PPEnchantments.ENCHANTMENTS.register(FMLJavaModLoadingContext.get().getModEventBus());
         ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, PPConfig.COMMON_SPEC);
         ModLoadingContext.get().registerConfig(ModConfig.Type.CLIENT, PPConfig.CLIENT_SPEC);
         PPNetworking.registerPackets();
@@ -116,6 +122,8 @@ public class PiglinProliferation {
             event.accept(PPItems.PIGLIN_BRUTE_HEAD_ITEM.get());
             event.accept(PPItems.ZOMBIFIED_PIGLIN_HEAD_ITEM.get());
         }
+        if (event.getTabKey() == CreativeModeTabs.COMBAT)
+            event.accept(PPItems.BUCKLER.get());
     }
 
     private void addSpawn(final SpawnPlacementRegisterEvent event) {
@@ -129,6 +137,22 @@ public class PiglinProliferation {
     }
 
     private void processIMC(final InterModProcessEvent event) {
+    }
+
+    private void doClientStuff(final FMLClientSetupEvent event) {
+        MinecraftForge.EVENT_BUS.register(new ItemModelHandler());
+    }
+
+    public static class ItemModelHandler {
+        public ItemModelHandler() {
+            ItemProperties.register(PPItems.BUCKLER.get(), new ResourceLocation("blocking"),
+                    (stack, clientWorld, livingEntity, useTime) -> {
+                        boolean active = livingEntity != null && livingEntity.isUsingItem()
+                                && livingEntity.getUseItem() == stack
+                                || livingEntity != null && BucklerItem.isReady(stack);
+                        return livingEntity != null && active ? 1.0F : 0.0F;
+                    });
+        }
     }
 
     private void serverStart(final ServerAboutToStartEvent event) {
