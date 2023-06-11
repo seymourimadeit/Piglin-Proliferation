@@ -49,7 +49,7 @@ public class ThrowPotionAtSelfTask<E extends PiglinAlchemist> extends BaseThrowP
     protected void tick(ServerLevel level, E alchemist, long gameTIme) {
         BlockPos lookPos = new BlockPos((int) alchemist.position().x, (int) (alchemist.getBoundingBox().minY - 0.5000001D), (int) alchemist.position().z);
         alchemist.getBrain().setMemory(MemoryModuleType.LOOK_TARGET, new BlockPosTracker(lookPos));
-        List<LivingEntity> list = alchemist.level.getEntitiesOfClass(LivingEntity.class, alchemist.getBoundingBox().inflate(5.0D, 3.0D, 5.0D));
+        List<LivingEntity> list = alchemist.level().getEntitiesOfClass(LivingEntity.class, alchemist.getBoundingBox().inflate(5.0D, 3.0D, 5.0D));
         if (!list.isEmpty()) {
             for (LivingEntity entity : list) {
                 if (entity != alchemist) {

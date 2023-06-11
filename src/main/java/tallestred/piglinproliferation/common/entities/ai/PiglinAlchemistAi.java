@@ -26,6 +26,7 @@ import net.minecraft.world.item.*;
 import net.minecraft.world.item.alchemy.PotionUtils;
 import net.minecraft.world.item.alchemy.Potions;
 import net.minecraft.world.level.storage.loot.LootContext;
+import net.minecraft.world.level.storage.loot.LootParams;
 import net.minecraft.world.level.storage.loot.LootTable;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
@@ -103,7 +104,7 @@ public class PiglinAlchemistAi extends PiglinAi {
     private static BehaviorControl<LivingEntity> babySometimesRideBabyHoglin() {
         SetEntityLookTargetSometimes.Ticker setentitylooktargetsometimes$ticker = new SetEntityLookTargetSometimes.Ticker(RIDE_START_INTERVAL);
         return CopyMemoryWithExpiry.create((p_258952_) -> {
-            return p_258952_.isBaby() && setentitylooktargetsometimes$ticker.tickDownAndCheck(p_258952_.level.random);
+            return p_258952_.isBaby() && setentitylooktargetsometimes$ticker.tickDownAndCheck(p_258952_.level().random);
         }, MemoryModuleType.NEAREST_VISIBLE_BABY_HOGLIN, MemoryModuleType.RIDE_TARGET, RIDE_DURATION);
     }
 
@@ -126,7 +127,7 @@ public class PiglinAlchemistAi extends PiglinAi {
                         (alchemist) -> alchemist.isAlive(), (piglin) -> piglin.isAlive() && piglin.isOnFire()), 1),
                 Pair.of(new ThrowPotionAtTargetTask<>(PotionUtils.setPotion(new ItemStack(Items.SPLASH_POTION), Potions.STRONG_REGENERATION),
                         (alchemist) -> alchemist.isAlive(), (piglin) -> {
-                    List<AbstractPiglin> list = piglinAlchemist.level.getEntitiesOfClass(AbstractPiglin.class, piglinAlchemist.getBoundingBox().inflate(10.0D, 3.0D, 10.0D));
+                    List<AbstractPiglin> list = piglinAlchemist.level().getEntitiesOfClass(AbstractPiglin.class, piglinAlchemist.getBoundingBox().inflate(10.0D, 3.0D, 10.0D));
                     if (!list.isEmpty()) {
                         for (AbstractPiglin piglin1 : list) {
                             if (piglin1.getTarget() != null || piglinAlchemist.getTarget() != null)
@@ -141,7 +142,7 @@ public class PiglinAlchemistAi extends PiglinAi {
                 Pair.of(new ThrowPotionAtTargetTask<>(PotionUtils.setPotion(new ItemStack(Items.SPLASH_POTION), Potions.STRONG_HEALING), (alchemist) -> {
                     return alchemist.isAlive();
                 }, (piglin) -> {
-                    List<AbstractPiglin> list = piglinAlchemist.level.getEntitiesOfClass(AbstractPiglin.class, piglinAlchemist.getBoundingBox().inflate(10.0D, 3.0D, 10.0D));
+                    List<AbstractPiglin> list = piglinAlchemist.level().getEntitiesOfClass(AbstractPiglin.class, piglinAlchemist.getBoundingBox().inflate(10.0D, 3.0D, 10.0D));
                     if (!list.isEmpty()) {
                         for (AbstractPiglin piglin1 : list) {
                             if (piglin1.getTarget() != null || piglinAlchemist.getTarget() != null)
@@ -205,7 +206,7 @@ public class PiglinAlchemistAi extends PiglinAi {
         if (p_34812_.getType() != EntityType.HOGLIN) {
             return false;
         } else {
-            return RandomSource.create(p_34811_.level.getGameTime()).nextFloat() < 0.1F;
+            return RandomSource.create(p_34811_.level().getGameTime()).nextFloat() < 0.1F;
         }
     }
 
@@ -275,9 +276,9 @@ public class PiglinAlchemistAi extends PiglinAi {
 
     }
 
-    private static List<ItemStack> getBarterResponseItems(Piglin p_34997_) {
-        LootTable loottable = p_34997_.level.getServer().getLootTables().get(PPLootTables.ALCHEMIST_BARTER);
-        List<ItemStack> list = loottable.getRandomItems((new LootContext.Builder((ServerLevel) p_34997_.level)).withParameter(LootContextParams.THIS_ENTITY, p_34997_).withRandom(p_34997_.level.random).create(LootContextParamSets.PIGLIN_BARTER));
+    private static List<ItemStack> getBarterResponseItems(Piglin piglin) {
+        LootTable loottable = piglin.level().getServer().getLootData().getLootTable(PPLootTables.ALCHEMIST_BARTER);
+        List<ItemStack> list = loottable.getRandomItems((new LootParams.Builder((ServerLevel)piglin.level())).withParameter(LootContextParams.THIS_ENTITY, piglin).create(LootContextParamSets.PIGLIN_BARTER));
         return list;
     }
 

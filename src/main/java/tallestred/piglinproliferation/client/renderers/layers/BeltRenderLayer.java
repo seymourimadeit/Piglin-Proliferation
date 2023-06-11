@@ -78,7 +78,7 @@ public class BeltRenderLayer<T extends PiglinAlchemist, M extends EntityModel<T>
                 poseStack.translate(-0.2D, 0.4D, inventorySlot == 2 ? secondSlotInflation : fifthSlotInflation);
             }
             poseStack.mulPose(Axis.XP.rotationDegrees(180.0F));
-            BakedModel model = Minecraft.getInstance().getItemRenderer().getModel(stack, entity.level, entity, light);
+            BakedModel model = Minecraft.getInstance().getItemRenderer().getModel(stack, entity.level(), entity, light);
             Minecraft.getInstance().getItemRenderer().render(stack, transformType, false, poseStack, source, light, LivingEntityRenderer.getOverlayCoords(entity, 0.0F), model);
             poseStack.popPose();
         }

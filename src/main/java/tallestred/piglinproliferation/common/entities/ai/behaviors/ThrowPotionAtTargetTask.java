@@ -31,7 +31,7 @@ public class ThrowPotionAtTargetTask<E extends PiglinAlchemist> extends BaseThro
 
     @Override
     protected boolean checkExtraStartConditions(ServerLevel level, E alchemist) {
-        List<AbstractPiglin> list = alchemist.level.getEntitiesOfClass(AbstractPiglin.class, alchemist.getBoundingBox().inflate(10.0D, 3.0D, 10.0D));
+        List<AbstractPiglin> list = alchemist.level().getEntitiesOfClass(AbstractPiglin.class, alchemist.getBoundingBox().inflate(10.0D, 3.0D, 10.0D));
         if (!list.isEmpty()) {
             for (AbstractPiglin piglin : list) {
                 if (piglin != alchemist) {
@@ -96,7 +96,7 @@ public class ThrowPotionAtTargetTask<E extends PiglinAlchemist> extends BaseThro
         if (alchemist.distanceTo(throwTarget) > 5.0D)
             alchemist.getNavigation().moveTo(throwTarget, 1.0D);
         else alchemist.getNavigation().stop();
-        List<LivingEntity> list = alchemist.level.getEntitiesOfClass(LivingEntity.class, alchemist.getBoundingBox().inflate(5.0D, 3.0D, 5.0D));
+        List<LivingEntity> list = alchemist.level().getEntitiesOfClass(LivingEntity.class, alchemist.getBoundingBox().inflate(5.0D, 3.0D, 5.0D));
         if (!list.isEmpty()) {
             for (LivingEntity entity : list) {
                 if (throwTarget.getTarget() != null && throwTarget.getTarget() == entity || entity instanceof Mob && (((Mob) entity).getTarget() != null && (((Mob) entity).getTarget() == alchemist || ((Mob) entity).getTarget() == throwTarget))) {

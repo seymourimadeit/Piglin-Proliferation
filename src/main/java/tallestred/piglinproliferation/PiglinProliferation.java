@@ -1,14 +1,12 @@
 package tallestred.piglinproliferation;
 
 import com.mojang.datafixers.util.Pair;
-import net.minecraft.client.Minecraft;
 import net.minecraft.core.Holder;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.SpawnPlacements;
-import net.minecraft.world.flag.FeatureFlags;
 import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.level.levelgen.structure.pools.SinglePoolElement;
@@ -16,7 +14,7 @@ import net.minecraft.world.level.levelgen.structure.pools.StructurePoolElement;
 import net.minecraft.world.level.levelgen.structure.pools.StructureTemplatePool;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureProcessorList;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.event.CreativeModeTabEvent;
+import net.minecraftforge.event.BuildCreativeModeTabContentsEvent;
 import net.minecraftforge.event.entity.EntityAttributeCreationEvent;
 import net.minecraftforge.event.entity.SpawnPlacementRegisterEvent;
 import net.minecraftforge.event.server.ServerAboutToStartEvent;
@@ -110,13 +108,11 @@ public class PiglinProliferation {
         event.put(PPEntityTypes.PIGLIN_ALCHEMIST.get(), PiglinAlchemist.createAttributes().build());
     }
 
-    private void addCreativeTabs(final CreativeModeTabEvent.BuildContents event) {
-        if (event.getTab() == CreativeModeTabs.SPAWN_EGGS)
+    private void addCreativeTabs(final BuildCreativeModeTabContentsEvent event) {
+        if (event.getTabKey() == CreativeModeTabs.SPAWN_EGGS)
             event.accept(PPItems.PIGLIN_ALCHEMIST_SPAWN_EGG.get());
-        if (event.getTab() == CreativeModeTabs.FUNCTIONAL_BLOCKS) {
+        if (event.getTabKey() == CreativeModeTabs.FUNCTIONAL_BLOCKS) {
             event.accept(PPItems.PIGLIN_ALCHEMIST_HEAD_ITEM.get());
-            if (!Minecraft.getInstance().level.enabledFeatures().contains(FeatureFlags.UPDATE_1_20))
-                event.accept(PPItems.PIGLIN_HEAD_ITEM.get());
             event.accept(PPItems.PIGLIN_BRUTE_HEAD_ITEM.get());
             event.accept(PPItems.ZOMBIFIED_PIGLIN_HEAD_ITEM.get());
         }

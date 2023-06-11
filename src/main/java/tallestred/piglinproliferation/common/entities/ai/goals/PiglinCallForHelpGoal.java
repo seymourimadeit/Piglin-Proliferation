@@ -28,7 +28,7 @@ public class PiglinCallForHelpGoal extends Goal {
 
     @Override
     public boolean canUse() {
-        List<PiglinAlchemist> list = this.piglin.level.getEntitiesOfClass(PiglinAlchemist.class, this.piglin.getBoundingBox().inflate(15.0D, 3.0D, 15.0D));
+        List<PiglinAlchemist> list = this.piglin.level().getEntitiesOfClass(PiglinAlchemist.class, this.piglin.getBoundingBox().inflate(15.0D, 3.0D, 15.0D));
         if (!list.isEmpty()) {
             for (PiglinAlchemist alchemist : list) {
                 if (alchemist.isAlive() && alchemist != piglin) {

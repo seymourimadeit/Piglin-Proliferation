@@ -57,7 +57,7 @@ public class PPEvents {
     @SubscribeEvent
     public static void entityJoin(EntityJoinLevelEvent event) {
         if (event.getEntity() instanceof ZombifiedPiglin ziglin) {
-            if (!event.getEntity().level.isClientSide) {
+            if (!event.getEntity().level().isClientSide) {
                 TransformationSourceListener transformationSource = getTransformationSourceListener(ziglin);
                 if (transformationSource != null)
                     PPNetworking.INSTANCE.send(PacketDistributor.TRACKING_ENTITY.with(() -> ziglin), new ZiglinCapablitySyncPacket(ziglin.getId(), transformationSource.getTransformationSource()));
@@ -75,7 +75,7 @@ public class PPEvents {
     @SubscribeEvent
     public static void startTracking(PlayerEvent.StartTracking event) {
         if (event.getTarget() instanceof ZombifiedPiglin ziglin) {
-            if (!event.getTarget().level.isClientSide) {
+            if (!event.getTarget().level().isClientSide) {
                 TransformationSourceListener transformationSource = getTransformationSourceListener(ziglin);
                 if (transformationSource != null)
                     PPNetworking.INSTANCE.send(PacketDistributor.TRACKING_ENTITY.with(() -> ziglin), new ZiglinCapablitySyncPacket(ziglin.getId(), transformationSource.getTransformationSource()));
@@ -119,7 +119,7 @@ public class PPEvents {
                     if ((event.getEntity() instanceof Mob && event.getEntity().isInvertedHealAndHarm()))
                         return;
                     event.setAmount(0.0F);
-                    arrow.level.playSound(null, arrow.blockPosition(), PPSounds.REGEN_HEALING_ARROW_HIT.get(), SoundSource.NEUTRAL, 1.0F, 1.0F);
+                    arrow.level().playSound(null, arrow.blockPosition(), PPSounds.REGEN_HEALING_ARROW_HIT.get(), SoundSource.NEUTRAL, 1.0F, 1.0F);
                     event.getEntity().setDeltaMovement(event.getEntity().getDeltaMovement().multiply(-1.0D, -1.0D, -1.0D));
                     event.getEntity().invulnerableTime = 0;
                     event.getEntity().hurtTime = 0;
@@ -135,7 +135,7 @@ public class PPEvents {
         if (event.getEntity() instanceof Mob mob) {
             for (Entity rider : mob.getPassengers()) {
                 if (mob.isInvertedHealAndHarm() && event.getSource().getEntity() instanceof AbstractPiglin && rider instanceof AbstractPiglin piglin && event.getSource().is(DamageTypes.MAGIC)) {
-                    if (event.getEntity().level.isClientSide)
+                    if (event.getEntity().level().isClientSide)
                         return;
                     piglin.getBrain().eraseMemory(MemoryModuleType.ANGRY_AT);
                     event.setCanceled(true);
@@ -149,7 +149,7 @@ public class PPEvents {
         if (event.getLookingEntity() != null) {
             ItemStack itemstack = event.getEntity().getItemBySlot(EquipmentSlot.HEAD);
             EntityType<?> entitytype = event.getLookingEntity().getType();
-            if (event.getLookingEntity() instanceof AbstractPiglin && (itemstack.is(PPItems.PIGLIN_HEAD_ITEM.get()) || itemstack.is(PPItems.PIGLIN_ALCHEMIST_HEAD_ITEM.get()) || itemstack.is(PPItems.PIGLIN_BRUTE_HEAD_ITEM.get())) || entitytype == EntityType.ZOMBIFIED_PIGLIN && itemstack.is(PPItems.ZOMBIFIED_PIGLIN_HEAD_ITEM.get())) {
+            if (event.getLookingEntity() instanceof AbstractPiglin && (itemstack.is(PPItems.PIGLIN_ALCHEMIST_HEAD_ITEM.get()) || itemstack.is(PPItems.PIGLIN_BRUTE_HEAD_ITEM.get())) || entitytype == EntityType.ZOMBIFIED_PIGLIN && itemstack.is(PPItems.ZOMBIFIED_PIGLIN_HEAD_ITEM.get())) {
                 event.modifyVisibility(0.5D);
             }
         }
@@ -159,7 +159,7 @@ public class PPEvents {
     @SubscribeEvent
     public static void onConvert(LivingConversionEvent.Post event) {
         if (event.getEntity() instanceof AbstractPiglin piglin && event.getOutcome().getType() == EntityType.ZOMBIFIED_PIGLIN) { // Some mods have entities that extend zombified piglins in order to make their own ziglins have custom textures
-            if (piglin.level.isClientSide)
+            if (piglin.level().isClientSide)
                 return;
             ZombifiedPiglin ziglin = (ZombifiedPiglin) event.getOutcome();
             TransformationSourceListener transformationSource = getTransformationSourceListener(ziglin);
@@ -173,9 +173,7 @@ public class PPEvents {
     public static void onLootDropEntity(LivingDropsEvent event) {
         if (event.getSource().getEntity() instanceof Creeper creeper) {
             if (creeper.canDropMobsSkull()) {
-                if (event.getEntity().getType() == EntityType.PIGLIN && !creeper.getLevel().enabledFeatures().contains(FeatureFlags.UPDATE_1_20)) {
-                    event.getEntity().spawnAtLocation(PPItems.PIGLIN_HEAD_ITEM.get());
-                } else if (event.getEntity().getType() == EntityType.ZOMBIFIED_PIGLIN) {
+                if (event.getEntity().getType() == EntityType.ZOMBIFIED_PIGLIN) {
                     event.getEntity().spawnAtLocation(PPItems.ZOMBIFIED_PIGLIN_HEAD_ITEM.get());
                 } else if (event.getEntity().getType() == EntityType.PIGLIN_BRUTE) {
                     event.getEntity().spawnAtLocation(PPItems.PIGLIN_BRUTE_HEAD_ITEM.get());
@@ -185,7 +183,7 @@ public class PPEvents {
         }
         if (event.getSource().getDirectEntity() instanceof Fireball fireBall && fireBall.getOwner() instanceof Ghast) {
             if (event.getEntity().getType() == EntityType.PIGLIN) {
-                event.getEntity().spawnAtLocation(!fireBall.getLevel().enabledFeatures().contains(FeatureFlags.UPDATE_1_20) ? PPItems.PIGLIN_HEAD_ITEM.get() : Items.PIGLIN_HEAD);
+                event.getEntity().spawnAtLocation(Items.PIGLIN_HEAD);
             } else if (event.getEntity().getType() == EntityType.PIGLIN_BRUTE) {
                 event.getEntity().spawnAtLocation(PPItems.PIGLIN_BRUTE_HEAD_ITEM.get());
             }
@@ -195,19 +193,17 @@ public class PPEvents {
     @SubscribeEvent
     public static void noteBlockPlay(NoteBlockEvent.Play event) {
         BlockState stateAbove = event.getLevel().getBlockState(event.getPos().above());
-        if (event.getLevel().enabledFeatures().contains(FeatureFlags.UPDATE_1_20)) {
-            if (stateAbove.is(PPBlocks.PIGLIN_ALCHEMIST_HEAD.get())) {
-                event.setCanceled(true);
-                event.getLevel().playSound(null, event.getPos(), PPSounds.ALCHEMIST_ANGRY.get(), SoundSource.RECORDS);
-            }
-            if (stateAbove.is(PPBlocks.ZOMBIFIED_PIGLIN_HEAD.get())) {
-                event.setCanceled(true);
-                event.getLevel().playSound(null, event.getPos(), SoundEvents.ZOMBIFIED_PIGLIN_ANGRY, SoundSource.RECORDS);
-            }
-            if (stateAbove.is(PPBlocks.PIGLIN_BRUTE_HEAD.get())) {
-                event.setCanceled(true);
-                event.getLevel().playSound(null, event.getPos(), SoundEvents.PIGLIN_BRUTE_ANGRY, SoundSource.RECORDS);
-            }
+        if (stateAbove.is(PPBlocks.PIGLIN_ALCHEMIST_HEAD.get())) {
+            event.setCanceled(true);
+            event.getLevel().playSound(null, event.getPos(), PPSounds.ALCHEMIST_ANGRY.get(), SoundSource.RECORDS);
+        }
+        if (stateAbove.is(PPBlocks.ZOMBIFIED_PIGLIN_HEAD.get())) {
+            event.setCanceled(true);
+            event.getLevel().playSound(null, event.getPos(), SoundEvents.ZOMBIFIED_PIGLIN_ANGRY, SoundSource.RECORDS);
+        }
+        if (stateAbove.is(PPBlocks.PIGLIN_BRUTE_HEAD.get())) {
+            event.setCanceled(true);
+            event.getLevel().playSound(null, event.getPos(), SoundEvents.PIGLIN_BRUTE_ANGRY, SoundSource.RECORDS);
         }
     }
 

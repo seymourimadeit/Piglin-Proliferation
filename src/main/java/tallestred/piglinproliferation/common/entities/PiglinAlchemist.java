@@ -158,11 +158,11 @@ public class PiglinAlchemist extends Piglin {
         }
         if (this.timeInOverworld > 300 && net.minecraftforge.event.ForgeEventFactory.canLivingConvert(this, EntityType.ZOMBIFIED_PIGLIN, (timer) -> this.timeInOverworld = timer)) {
             this.playConvertedSound();
-            this.finishConversion((ServerLevel) this.level);
+            this.finishConversion((ServerLevel) this.level());
         }
-        this.level.getProfiler().push("piglinBrain");
-        this.getBrain().tick((ServerLevel) this.level, this);
-        this.level.getProfiler().pop();
+        this.level().getProfiler().push("piglinBrain");
+        this.getBrain().tick((ServerLevel) this.level(), this);
+        this.level().getProfiler().pop();
         PiglinAlchemistAi.updateActivity(this);
     }
 
@@ -203,7 +203,7 @@ public class PiglinAlchemist extends Piglin {
                     if (itemStack.getItem() instanceof PotionItem) {
                         for (int i = 0; i < 5; ++i) {
                             BlockPos blockpos = this.blockPosition();
-                            ((ServerLevel) this.level).sendParticles((new ItemParticleOption(ParticleTypes.ITEM, itemStack)), (double) blockpos.getX() + level.random.nextDouble(), (double) (blockpos.getY() + 1), (double) blockpos.getZ() + level.random.nextDouble(), 0, 0.0D, 0.0D, 0.0D, 0.0D);
+                            ((ServerLevel) this.level()).sendParticles((new ItemParticleOption(ParticleTypes.ITEM, itemStack)), (double) blockpos.getX() + level().random.nextDouble(), (double) (blockpos.getY() + 1), (double) blockpos.getZ() + level().random.nextDouble(), 0, 0.0D, 0.0D, 0.0D, 0.0D);
                         }
                         this.playSound(SoundEvents.SPLASH_POTION_BREAK, 0.5F, 1.0F);
                     }
@@ -225,12 +225,12 @@ public class PiglinAlchemist extends Piglin {
     }
 
     public void throwPotion(ItemStack thrownPotion, float xRot, float yRot) {
-        ThrownPotion thrownpotion = new ThrownPotion(this.level, this);
+        ThrownPotion thrownpotion = new ThrownPotion(this.level(), this);
         thrownpotion.setItem(thrownPotion);
         thrownpotion.shootFromRotation(this, xRot, yRot, -20.0F, 0.5F, 1.0F);
         if (!this.isSilent())
-            this.level.playSound((Player) null, this.getX(), this.getY(), this.getZ(), SoundEvents.SPLASH_POTION_THROW, this.getSoundSource(), 1.0F, 0.8F + this.getRandom().nextFloat() * 0.4F);
-        this.level.addFreshEntity(thrownpotion);
+            this.level().playSound((Player) null, this.getX(), this.getY(), this.getZ(), SoundEvents.SPLASH_POTION_THROW, this.getSoundSource(), 1.0F, 0.8F + this.getRandom().nextFloat() * 0.4F);
+        this.level().addFreshEntity(thrownpotion);
         this.willThrowPotion(false);
         thrownPotion.shrink(1);
     }
@@ -286,9 +286,9 @@ public class PiglinAlchemist extends Piglin {
             double d2 = target.getZ() - this.getZ();
             double d3 = Mth.sqrt((float) (d0 * d0 + d2 * d2));
             abstractarrowentity.shoot(d0, d1 + d3 * (double) 0.2F, d2, 1.6F,
-                    (float) (14 - this.level.getDifficulty().getId() * 4));
+                    (float) (14 - this.level().getDifficulty().getId() * 4));
             this.playSound(SoundEvents.ARROW_SHOOT, 1.0F, 1.0F / (this.getRandom().nextFloat() * 0.4F + 0.8F));
-            this.level.addFreshEntity(abstractarrowentity);
+            this.level().addFreshEntity(abstractarrowentity);
             this.setArrowsShot(this.getArrowsShot() + 1);
             itemstack.shrink(1);
             if (itemstack.isEmpty() && this.getItemShownOnOffhand().is(itemstack.getItem())) {
@@ -344,7 +344,7 @@ public class PiglinAlchemist extends Piglin {
     }
 
     public void syncBeltToClient() {
-        if (!this.level.isClientSide) {
+        if (!this.level().isClientSide) {
             for (int i = 0; i < this.beltInventory.size(); i++) {
                 PPNetworking.INSTANCE.send(PacketDistributor.TRACKING_ENTITY.with(() -> this), new AlchemistBeltSyncPacket(this.getId(), i, this.beltInventory.get(i)));
             }
