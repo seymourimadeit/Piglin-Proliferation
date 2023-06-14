@@ -36,6 +36,7 @@ import tallestred.piglinproliferation.common.blocks.PPBlocks;
 import tallestred.piglinproliferation.common.entities.PPEntityTypes;
 import tallestred.piglinproliferation.common.entities.PiglinAlchemist;
 import tallestred.piglinproliferation.configuration.PPConfig;
+import tallestred.piglinproliferation.loot_modifiers.PPLootModifiers;
 import tallestred.piglinproliferation.networking.PPNetworking;
 
 import java.util.ArrayList;
@@ -65,6 +66,7 @@ public class PiglinProliferation {
         PPBlockEntities.BLOCK_ENTITIES.register(FMLJavaModLoadingContext.get().getModEventBus());
         PPBlocks.BLOCKS.register(FMLJavaModLoadingContext.get().getModEventBus());
         PPEnchantments.ENCHANTMENTS.register(FMLJavaModLoadingContext.get().getModEventBus());
+        PPLootModifiers.GLM.register(FMLJavaModLoadingContext.get().getModEventBus());
         ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, PPConfig.COMMON_SPEC);
         ModLoadingContext.get().registerConfig(ModConfig.Type.CLIENT, PPConfig.CLIENT_SPEC);
         PPNetworking.registerPackets();

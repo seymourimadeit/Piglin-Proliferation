@@ -34,8 +34,10 @@ import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.entity.EntityJoinLevelEvent;
 import net.minecraftforge.event.entity.living.*;
+import net.minecraftforge.event.entity.player.CriticalHitEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.level.NoteBlockEvent;
+import net.minecraftforge.eventbus.api.Event;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.network.PacketDistributor;
@@ -228,6 +230,24 @@ public class PPEvents {
     }
 
     @SubscribeEvent
+    public static void onCriticalHit(CriticalHitEvent event) {
+        Player player = event.getEntity();
+        CriticalAfterCharge criticalAfterCharge = PPCapablities.getGuaranteedCritical(player);
+        if (criticalAfterCharge.isCritical()) {
+            event.setResult(Event.Result.ALLOW);
+            event.setDamageModifier(1.5F);
+            event.getEntity().level().playSound(null, event.getEntity().getX(), event.getEntity().getY(), event.getEntity().getZ(), SoundEvents.PLAYER_ATTACK_CRIT, event.getEntity().getSoundSource(), 1.0F, 1.0F);
+            criticalAfterCharge.setCritical(false);
+        }
+    }
+
+    @SubscribeEvent
+    public static void onShieldBlock(ShieldBlockEvent event) {
+        if (event.getEntity().getUseItem().getItem() instanceof BucklerItem)
+            event.setCanceled(true);
+    }
+
+    @SubscribeEvent
     public static void finalizeSpawn(MobSpawnEvent.FinalizeSpawn event) {
         MobSpawnType spawnType = event.getSpawnType();
         RandomSource rSource = event.getLevel().getRandom();
@@ -289,24 +309,6 @@ public class PPEvents {
     }
 
     @SubscribeEvent
-    public static void dropLoot(LivingDropsEvent event) {
-        if (event.getEntity() instanceof PiglinBrute brute) {
-            ItemStack itemstack = brute.getOffhandItem();
-            if (itemstack.getItem() instanceof BucklerItem) {
-                float f = 0.10F;
-                boolean flag = f > 1.0F;
-                if (!itemstack.isEmpty() && !EnchantmentHelper.hasVanishingCurse(itemstack) && (event.isRecentlyHit() || flag) && Math.max(brute.getRandom().nextFloat() - (float) event.getLootingLevel() * 0.01F, 0.0F) < f) {
-                    if (itemstack.isDamageableItem()) {
-                        itemstack.setDamageValue(brute.getRandom().nextInt(brute.getRandom().nextInt(itemstack.getMaxDamage() / 2)));
-                    }
-                    brute.spawnAtLocation(itemstack);
-                    brute.setItemSlot(EquipmentSlot.OFFHAND, ItemStack.EMPTY);
-                }
-            }
-        }
-    }
-
-    @SubscribeEvent
     public static void onConvert(LivingConversionEvent.Post event) {
         if (event.getEntity() instanceof AbstractPiglin piglin && event.getOutcome().getType() == EntityType.ZOMBIFIED_PIGLIN) { // Some mods have entities that extend zombified piglins in order to make their own ziglins have custom textures
             if (piglin.level().isClientSide)
@@ -336,6 +338,20 @@ public class PPEvents {
                 event.getEntity().spawnAtLocation(Items.PIGLIN_HEAD);
             } else if (event.getEntity().getType() == EntityType.PIGLIN_BRUTE) {
                 event.getEntity().spawnAtLocation(PPItems.PIGLIN_BRUTE_HEAD_ITEM.get());
+            }
+        }
+        if (event.getEntity() instanceof PiglinBrute brute) {
+            ItemStack itemstack = brute.getOffhandItem();
+            if (itemstack.getItem() instanceof BucklerItem) {
+                float f = 0.10F;
+                boolean flag = f > 1.0F;
+                if (!itemstack.isEmpty() && !EnchantmentHelper.hasVanishingCurse(itemstack) && (event.isRecentlyHit() || flag) && Math.max(brute.getRandom().nextFloat() - (float) event.getLootingLevel() * 0.01F, 0.0F) < f) {
+                    if (itemstack.isDamageableItem()) {
+                        itemstack.setDamageValue(brute.getRandom().nextInt(brute.getRandom().nextInt(itemstack.getMaxDamage() / 2)));
+                    }
+                    brute.spawnAtLocation(itemstack);
+                    brute.setItemSlot(EquipmentSlot.OFFHAND, ItemStack.EMPTY);
+                }
             }
         }
     }

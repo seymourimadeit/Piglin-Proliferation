@@ -41,6 +41,7 @@ public class PPConfig {
         public final ForgeConfigSpec.DoubleValue zombifiedBruteChance;
         public final ForgeConfigSpec.DoubleValue zombifiedAlchemistChance;
         public final ForgeConfigSpec.DoubleValue alchemistPotionChance;
+        public final ForgeConfigSpec.DoubleValue bucklerChance;
         public final ForgeConfigSpec.IntValue healingArrowMinStackSize;
         public final ForgeConfigSpec.IntValue healingArrowMaxStackSize;
         public final ForgeConfigSpec.IntValue BucklerCooldown;
@@ -74,6 +75,7 @@ public class PPConfig {
             BucklerCooldown = builder.defineInRange("How long should the buckler's cooldown be in ticks?", 240, Integer.MIN_VALUE, Integer.MAX_VALUE);
             BucklerRunTime = builder.defineInRange("How long should the buckler's charge move be in ticks?", 15, Integer.MIN_VALUE, Integer.MAX_VALUE); // Thinking of removing this in 1.17.
             BucklerTurningRunTime = builder.defineInRange("How long should the buckler's charge move if you have the turning enchant be in ticks?", 30, Integer.MIN_VALUE, Integer.MAX_VALUE);
+            bucklerChance = builder.defineInRange("Chance of buckler appearing in bastion loot", 0.25F, 0.0F, 9999999.0F);
             builder.pop();
             builder.pop();
         }

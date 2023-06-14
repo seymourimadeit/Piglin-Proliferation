@@ -2,9 +2,7 @@ package tallestred.piglinproliferation.common.items;
 
 import net.minecraft.core.Direction;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.item.*;
 import net.minecraftforge.common.ForgeSpawnEggItem;
 import net.minecraftforge.fml.common.Mod;
@@ -14,7 +12,6 @@ import net.minecraftforge.registries.RegistryObject;
 import tallestred.piglinproliferation.PiglinProliferation;
 import tallestred.piglinproliferation.common.blocks.PPBlocks;
 import tallestred.piglinproliferation.common.entities.PPEntityTypes;
-import tallestred.piglinproliferation.common.entities.PiglinAlchemist;
 
 @Mod.EventBusSubscriber(modid = PiglinProliferation.MODID, bus = Mod.EventBusSubscriber.Bus.MOD)
 public class PPItems {
