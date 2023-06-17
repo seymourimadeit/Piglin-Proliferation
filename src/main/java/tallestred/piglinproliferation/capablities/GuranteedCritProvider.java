@@ -26,7 +26,6 @@ public class GuranteedCritProvider implements ICapabilityProvider, INBTSerializa
     public <T> LazyOptional<T> getCapability(@NotNull Capability<T> cap, @Nullable Direction side) {
         return PPCapablities.GUARANTEED_CRIT_TRACKER.orEmpty(cap, this.optionalData);
     }
-
     public void invalidate() {
         this.optionalData.invalidate();
     }
@@ -37,6 +36,7 @@ public class GuranteedCritProvider implements ICapabilityProvider, INBTSerializa
     }
 
     @Override
+
     public void deserializeNBT(CompoundTag nbt) {
         this.backend.deserializeNBT(nbt);
     }

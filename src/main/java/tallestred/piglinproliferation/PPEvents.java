@@ -68,15 +68,14 @@ public class PPEvents {
 
     @SubscribeEvent
     public static void attach(AttachCapabilitiesEvent<Entity> event) {
+        final GuranteedCritProvider critProvider = new GuranteedCritProvider();
         final TransformationSourceProvider provider = new TransformationSourceProvider();
         if (event.getObject() instanceof ZombifiedPiglin) {
             event.addCapability(TransformationSourceProvider.IDENTIFIER, provider);
             event.addListener(provider::invalidate);
         }
-        final GuranteedCritProvider critProvider = new GuranteedCritProvider();
         if (event.getObject() instanceof Player) {
             event.addCapability(GuranteedCritProvider.IDENTIFIER, critProvider);
-            event.addListener(critProvider::invalidate);
         }
     }
 

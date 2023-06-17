@@ -20,12 +20,13 @@ public class PPCapablities {
     @SubscribeEvent
     public static void register(RegisterCapabilitiesEvent event) {
         event.register(TransformationSourceListener.class);
+        event.register(CriticalAfterCharge.class);
     }
 
     public static CriticalAfterCharge getGuaranteedCritical(LivingEntity entity) {
         LazyOptional<CriticalAfterCharge> listener = entity.getCapability(GUARANTEED_CRIT_TRACKER);
         if (listener.isPresent())
-            return listener.orElseThrow(() -> new IllegalStateException("Capability not found! Report this to the Big Brain github!"));
+            return listener.orElseThrow(() -> new IllegalStateException("Capability not found! Report this to the Piglin Proliferation github!"));
         return null;
     }
 }
