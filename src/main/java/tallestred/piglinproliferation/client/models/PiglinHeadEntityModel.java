@@ -45,6 +45,19 @@ public class PiglinHeadEntityModel extends SkullModelBase {
         return LayerDefinition.create(meshdefinition, 120, 64);
     }
 
+    public static LayerDefinition createTravellerMesh() {
+        MeshDefinition meshdefinition = SkullModel.createHeadModel();
+        PartDefinition body = meshdefinition.getRoot();
+        PartDefinition head = body.addOrReplaceChild("head", CubeListBuilder.create().texOffs(62, 0).addBox(-5.0F, -8.0F, -4.0F, 10.0F, 8.0F, 8.0F, new CubeDeformation(0.25F)), PartPose.ZERO);
+        head.addOrReplaceChild("hat", CubeListBuilder.create().texOffs(80, 19).addBox(-8.0F, -5.0F, -8.0F, 16.0F, 1.0F, 16.0F, new CubeDeformation(0.1F)).texOffs(0, 0).addBox(-5.0F, -8.0F, -4.0F, 10.0F, 8.0F, 8.0F, new CubeDeformation(-0.02F))
+                .texOffs(31, 1).addBox(-2.0F, -4.0F, -5.0F, 4.0F, 4.0F, 1.0F, new CubeDeformation(0.0F))
+                .texOffs(2, 4).addBox(2.0F, -2.0F, -5.0F, 1.0F, 2.0F, 1.0F, new CubeDeformation(0.0F))
+                .texOffs(2, 0).addBox(-3.0F, -2.0F, -5.0F, 1.0F, 2.0F, 1.0F, new CubeDeformation(0.0F)), PartPose.offset(0.0F, 0.0F, 0.0F));
+        head.addOrReplaceChild("left_ear", CubeListBuilder.create().texOffs(51, 6).addBox(0.0F, 0.0F, -2.0F, 1.0F, 5.0F, 4.0F, CubeDeformation.NONE), PartPose.offsetAndRotation(4.5F, -6.0F, 0.0F, 0.0F, 0.0F, (-(float) Math.PI / 6F)));
+        head.addOrReplaceChild("right_ear", CubeListBuilder.create().texOffs(39, 6).addBox(-1.0F, 0.0F, -2.0F, 1.0F, 5.0F, 4.0F, CubeDeformation.NONE), PartPose.offsetAndRotation(-4.5F, -6.0F, 0.0F, 0.0F, 0.0F, ((float) Math.PI / 6F)));
+        return LayerDefinition.create(meshdefinition, 148, 64);
+    }
+
     @Override
     public void setupAnim(float animationProgress, float yaw, float pitch) {
         this.head.yRot = yaw * ((float) Math.PI / 180);

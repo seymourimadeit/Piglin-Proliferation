@@ -40,6 +40,8 @@ public class PPClientEvents {
             new ResourceLocation(PiglinProliferation.MODID + "piglin_skull"), "piglin_skull");
     public static final ModelLayerLocation PIGLIN_ALCHEMIST_SKULL = new ModelLayerLocation(
             new ResourceLocation(PiglinProliferation.MODID + "piglin_alchemist_skull"), "piglin_alchemist_skull");
+    public static final ModelLayerLocation PIGLIN_TRAVELLER_SKULL = new ModelLayerLocation(
+            new ResourceLocation(PiglinProliferation.MODID + "piglin_traveller_skull"), "piglin_traveller_skull");
     public static final ModelLayerLocation PIGLIN_ALCHEMIST = new ModelLayerLocation(
             new ResourceLocation(PiglinProliferation.MODID + "piglin_alchemist"), "piglin_alchemist");
     public static final ModelLayerLocation PIGLIN_TRAVELLER = new ModelLayerLocation(
@@ -54,6 +56,7 @@ public class PPClientEvents {
     public static void layerDefinitions(EntityRenderersEvent.RegisterLayerDefinitions event) {
         event.registerLayerDefinition(PIGLIN_SKULL, Lazy.of(PiglinHeadEntityModel::createMesh));
         event.registerLayerDefinition(PIGLIN_ALCHEMIST_SKULL, Lazy.of(PiglinHeadEntityModel::createAlchemistMesh));
+        event.registerLayerDefinition(PIGLIN_TRAVELLER_SKULL, Lazy.of(PiglinHeadEntityModel::createTravellerMesh));
         event.registerLayerDefinition(ZIGLIN_CLOTHING, () -> LayerDefinition.create(PiglinModel.createMesh(new CubeDeformation(0.25F)), 64, 64));
         event.registerLayerDefinition(PIGLIN_ALCHEMIST, () -> LayerDefinition.create(PiglinAlchemistModel.createBodyLayer(new CubeDeformation(0.25F), new CubeDeformation(0.70F), new CubeDeformation(1.05F)), 120, 64));
         event.registerLayerDefinition(PIGLIN_TRAVELLER, PiglinTravellerModel::createBodyLayer);
@@ -79,6 +82,7 @@ public class PPClientEvents {
         event.registerSkullModel(PiglinSkullBlock.Types.PIGLIN_BRUTE, new PiglinHeadEntityModel(event.getEntityModelSet().bakeLayer(PPClientEvents.PIGLIN_SKULL)));
         event.registerSkullModel(PiglinSkullBlock.Types.ZOMBIFIED_PIGLIN, new PiglinHeadEntityModel(event.getEntityModelSet().bakeLayer(PPClientEvents.PIGLIN_SKULL)));
         event.registerSkullModel(PiglinSkullBlock.Types.PIGLIN_ALCHEMIST, new PiglinHeadEntityModel(event.getEntityModelSet().bakeLayer(PPClientEvents.PIGLIN_ALCHEMIST_SKULL)));
+        event.registerSkullModel(PiglinSkullBlock.Types.PIGLIN_TRAVELLER, new PiglinHeadEntityModel(event.getEntityModelSet().bakeLayer(PPClientEvents.PIGLIN_TRAVELLER_SKULL)));
     }
 
     @SubscribeEvent
@@ -87,6 +91,7 @@ public class PPClientEvents {
         event.enqueueWork(() -> SkullBlockRenderer.SKIN_BY_TYPE.put(PiglinSkullBlock.Types.PIGLIN_BRUTE, new ResourceLocation("textures/entity/piglin/piglin_brute.png")));
         event.enqueueWork(() -> SkullBlockRenderer.SKIN_BY_TYPE.put(PiglinSkullBlock.Types.ZOMBIFIED_PIGLIN, new ResourceLocation("textures/entity/piglin/zombified_piglin.png")));
         event.enqueueWork(() -> SkullBlockRenderer.SKIN_BY_TYPE.put(PiglinSkullBlock.Types.PIGLIN_ALCHEMIST, new ResourceLocation(PiglinProliferation.MODID, "textures/entity/piglin/alchemist/alchemist.png")));
+        event.enqueueWork(() -> SkullBlockRenderer.SKIN_BY_TYPE.put(PiglinSkullBlock.Types.PIGLIN_TRAVELLER, new ResourceLocation(PiglinProliferation.MODID, "textures/entity/piglin/traveller/traveller.png")));
     }
 
     private static <T extends Mob, R extends LivingEntityRenderer<T, M>, M extends PiglinModel<T>> void addLayerToRenderer(EntityRenderersEvent.AddLayers event, EntityType<T> entityType, Function<R, ? extends RenderLayer<T, M>> factory) {

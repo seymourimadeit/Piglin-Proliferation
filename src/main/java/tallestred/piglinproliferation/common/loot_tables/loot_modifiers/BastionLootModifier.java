@@ -1,4 +1,4 @@
-package tallestred.piglinproliferation.loot_modifiers;
+package tallestred.piglinproliferation.common.loot_tables.loot_modifiers;
 
 import com.google.common.base.Suppliers;
 import com.mojang.serialization.Codec;

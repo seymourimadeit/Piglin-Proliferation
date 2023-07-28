@@ -43,6 +43,7 @@ public class PiglinSkullBlock extends SkullBlock {
         PIGLIN,
         PIGLIN_BRUTE,
         PIGLIN_ALCHEMIST,
-        ZOMBIFIED_PIGLIN
+        ZOMBIFIED_PIGLIN,
+        PIGLIN_TRAVELLER
     }
 }

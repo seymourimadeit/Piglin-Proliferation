@@ -1,15 +1,20 @@
 package tallestred.piglinproliferation;
 
 import com.mojang.datafixers.util.Pair;
+import net.minecraft.client.renderer.item.CompassItemPropertyFunction;
 import net.minecraft.client.renderer.item.ItemProperties;
+import net.minecraft.core.GlobalPos;
 import net.minecraft.core.Holder;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.SpawnPlacements;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.level.levelgen.Heightmap;
+import net.minecraft.world.level.levelgen.structure.Structure;
 import net.minecraft.world.level.levelgen.structure.pools.SinglePoolElement;
 import net.minecraft.world.level.levelgen.structure.pools.StructurePoolElement;
 import net.minecraft.world.level.levelgen.structure.pools.StructureTemplatePool;
@@ -35,8 +40,10 @@ import tallestred.piglinproliferation.common.blockentities.PPBlockEntities;
 import tallestred.piglinproliferation.common.blocks.PPBlocks;
 import tallestred.piglinproliferation.common.entities.PPEntityTypes;
 import tallestred.piglinproliferation.common.entities.PiglinAlchemist;
+import tallestred.piglinproliferation.common.items.TravellersCompassItem;
+import tallestred.piglinproliferation.common.loot_tables.PPLootTables;
 import tallestred.piglinproliferation.configuration.PPConfig;
-import tallestred.piglinproliferation.loot_modifiers.PPLootModifiers;
+import tallestred.piglinproliferation.common.loot_tables.loot_modifiers.PPLootModifiers;
 import tallestred.piglinproliferation.networking.PPNetworking;
 
 import java.util.ArrayList;
@@ -67,6 +74,7 @@ public class PiglinProliferation {
         PPBlocks.BLOCKS.register(FMLJavaModLoadingContext.get().getModEventBus());
         PPEnchantments.ENCHANTMENTS.register(FMLJavaModLoadingContext.get().getModEventBus());
         PPLootModifiers.GLM.register(FMLJavaModLoadingContext.get().getModEventBus());
+        PPLootTables.LOOT_ITEM_FUNCTION_TYPES.register(FMLJavaModLoadingContext.get().getModEventBus());
         ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, PPConfig.COMMON_SPEC);
         ModLoadingContext.get().registerConfig(ModConfig.Type.CLIENT, PPConfig.CLIENT_SPEC);
         PPNetworking.registerPackets();
@@ -117,12 +125,15 @@ public class PiglinProliferation {
     }
 
     private void addCreativeTabs(final BuildCreativeModeTabContentsEvent event) {
-        if (event.getTabKey() == CreativeModeTabs.SPAWN_EGGS)
+        if (event.getTabKey() == CreativeModeTabs.SPAWN_EGGS) {
             event.accept(PPItems.PIGLIN_ALCHEMIST_SPAWN_EGG.get());
+            event.accept(PPItems.PIGLIN_TRAVELLER_SPAWN_EGG.get());
+        }
         if (event.getTabKey() == CreativeModeTabs.FUNCTIONAL_BLOCKS) {
             event.accept(PPItems.PIGLIN_ALCHEMIST_HEAD_ITEM.get());
             event.accept(PPItems.PIGLIN_BRUTE_HEAD_ITEM.get());
             event.accept(PPItems.ZOMBIFIED_PIGLIN_HEAD_ITEM.get());
+            event.accept(PPItems.PIGLIN_TRAVELLER_HEAD_ITEM.get());
         }
         if (event.getTabKey() == CreativeModeTabs.COMBAT)
             event.accept(PPItems.BUCKLER.get());
@@ -154,6 +165,7 @@ public class PiglinProliferation {
                                 || livingEntity != null && BucklerItem.isReady(stack);
                         return livingEntity != null && active ? 1.0F : 0.0F;
                     });
+            ItemProperties.register(PPItems.TRAVELLERS_COMPASS.get(), new ResourceLocation("angle"), new CompassItemPropertyFunction((level, itemStack, player) -> TravellersCompassItem.getPosition(itemStack.getOrCreateTag())));
         }
     }
 
@@ -164,5 +176,4 @@ public class PiglinProliferation {
                 new ResourceLocation("minecraft:bastion/mobs/piglin"),
                 "piglinproliferation:bastion/alchemist_piglin", PPConfig.COMMON.alchemistWeightInBastions.get());
     }
-
 }

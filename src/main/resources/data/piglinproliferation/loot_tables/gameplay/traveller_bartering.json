@@ -1,0 +1,31 @@
+{
+  "pools": [
+    {
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "piglinproliferation:travellers_compass",
+          "weight": 5,
+          "functions": [
+            {
+              "function": "piglinproliferation:travellers_compass_location",
+              "destination": "piglinproliferation:bastion"
+            }
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "name": "piglinproliferation:travellers_compass",
+          "weight": 10,
+          "functions": [
+            {
+              "function": "piglinproliferation:travellers_compass_location",
+              "destination": "piglinproliferation:ruined_portal_nether"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

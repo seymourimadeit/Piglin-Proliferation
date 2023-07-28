@@ -17,4 +17,6 @@ public class PPBlocks {
     public static final RegistryObject<Block> ZOMBIFIED_PIGLIN_HEAD_WALL = BLOCKS.register("zombified_piglin_wall_head", () -> new PiglinWallSkullBlock(PiglinSkullBlock.Types.ZOMBIFIED_PIGLIN, BlockBehaviour.Properties.of().strength(1.0F)));
     public static final RegistryObject<Block> PIGLIN_ALCHEMIST_HEAD = BLOCKS.register("piglin_alchemist_head", () -> new PiglinSkullBlock(PiglinSkullBlock.Types.PIGLIN_ALCHEMIST, BlockBehaviour.Properties.of().strength(1.0F)));
     public static final RegistryObject<Block> PIGLIN_ALCHEMIST_HEAD_WALL = BLOCKS.register("piglin_alchemist_wall_head", () -> new PiglinWallSkullBlock(PiglinSkullBlock.Types.PIGLIN_ALCHEMIST, BlockBehaviour.Properties.of().strength(1.0F)));
+    public static final RegistryObject<Block> PIGLIN_TRAVELLER_HEAD = BLOCKS.register("piglin_traveller_head", () -> new PiglinSkullBlock(PiglinSkullBlock.Types.PIGLIN_TRAVELLER, BlockBehaviour.Properties.of().strength(1.0F)));
+    public static final RegistryObject<Block> PIGLIN_TRAVELLER_HEAD_WALL = BLOCKS.register("piglin_traveller_wall_head", () -> new PiglinWallSkullBlock(PiglinSkullBlock.Types.PIGLIN_TRAVELLER, BlockBehaviour.Properties.of().strength(1.0F)));
 }
