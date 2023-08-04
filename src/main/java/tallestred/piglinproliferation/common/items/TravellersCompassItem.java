@@ -30,24 +30,29 @@ public class TravellersCompassItem extends CompassItem {
         return Level.RESOURCE_KEY_CODEC.parse(NbtOps.INSTANCE, pCompoundTag.get("Dimension")).result();
     }
 
-    @Override
-    public void appendHoverText(ItemStack stack, @Nullable Level worldIn, List<Component> list, TooltipFlag tooltip) {
-        list.add((Component.translatable("Locked on to " + stack.getTag().getString("Destination"))).withStyle(ChatFormatting.BLUE));
-    }
-
     @Nullable
-    public static GlobalPos getPosition(CompoundTag p_220022_) {
-        boolean flag = p_220022_.contains("Position");
-        boolean flag1 = p_220022_.contains("Dimension");
+    public static GlobalPos getPosition(CompoundTag tag) {
+        boolean flag = tag.contains("Position");
+        boolean flag1 = tag.contains("Dimension");
         if (flag && flag1) {
-            Optional<ResourceKey<Level>> optional = getDimension(p_220022_);
+            Optional<ResourceKey<Level>> optional = getDimension(tag);
             if (optional.isPresent()) {
-                BlockPos blockpos = NbtUtils.readBlockPos(p_220022_.getCompound("Position"));
+                BlockPos blockpos = NbtUtils.readBlockPos(tag.getCompound("Position"));
                 return GlobalPos.of(optional.get(), blockpos);
             }
         }
 
         return null;
+    }
+
+    @Override
+    public void appendHoverText(ItemStack stack, @Nullable Level worldIn, List<Component> list, TooltipFlag tooltip) {
+        if (!stack.getTag().getString("Destination").isEmpty()) {
+            list.add((Component.translatable("item.piglinproliferation.travellers_compass.desc.locked")).withStyle(ChatFormatting.BLUE));
+            list.add((Component.translatable("item.piglinproliferation.travellers_compass.desc." + stack.getTag().getString("Destination")).withStyle(ChatFormatting.GRAY)));
+            if (!stack.getTag().get("Position").getAsString().isEmpty())
+                list.add((Component.translatable(String.valueOf(TravellersCompassItem.getPosition(stack.getTag()).pos().getX() + ", " + "~" + ", " + (TravellersCompassItem.getPosition(stack.getTag()).pos().getZ()))).withStyle(ChatFormatting.GRAY)));
+        }
     }
 
     public void addTags(ResourceKey<Level> pLodestoneDimension, BlockPos pLodestonePos, CompoundTag pCompoundTag, String point) {

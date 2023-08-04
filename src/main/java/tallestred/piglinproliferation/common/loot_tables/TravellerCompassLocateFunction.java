@@ -43,7 +43,7 @@ public class TravellerCompassLocateFunction extends LootItemConditionalFunction 
                 ServerLevel serverlevel = pContext.getLevel();
                 BlockPos blockpos = serverlevel.findNearestMapStructure(this.destination, entity.blockPosition(), 50, this.skipKnownStructures);
                 if (blockpos != null) {
-                    compass.addTags(serverlevel.dimension(), blockpos, pStack.getOrCreateTag(), this.destination.location().toString());
+                    compass.addTags(serverlevel.dimension(), blockpos, pStack.getOrCreateTag(), this.destination.location().getPath());
                     return pStack;
                 }
             } else {

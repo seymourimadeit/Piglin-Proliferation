@@ -82,4 +82,9 @@ public class PiglinTraveller extends Piglin {
     protected Brain<?> makeBrain(Dynamic<?> p_34723_) {
         return PiglinTravellerAi.makeBrain(this, this.travellerBrainProvider().makeBrain(p_34723_));
     }
+
+    @Override
+    public boolean isBaby() {
+        return false;
+    }
 }
