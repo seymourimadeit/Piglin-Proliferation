@@ -5,14 +5,12 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonSerializationContext;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.tags.TagKey;
 import net.minecraft.util.GsonHelper;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
 import net.minecraft.world.level.levelgen.structure.Structure;
 import net.minecraft.world.level.storage.loot.LootContext;
 import net.minecraft.world.level.storage.loot.functions.ExplorationMapFunction;
@@ -20,15 +18,14 @@ import net.minecraft.world.level.storage.loot.functions.LootItemConditionalFunct
 import net.minecraft.world.level.storage.loot.functions.LootItemFunctionType;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
-import net.minecraft.world.phys.Vec3;
 import tallestred.piglinproliferation.common.items.PPItems;
 import tallestred.piglinproliferation.common.items.TravellersCompassItem;
 
-public class TravellerCompassLocateFunction extends LootItemConditionalFunction {
+public class TravellerCompassStructureLocateFunction extends LootItemConditionalFunction {
     final TagKey<Structure> destination;
     final boolean skipKnownStructures;
 
-    TravellerCompassLocateFunction(LootItemCondition[] pPredicates, TagKey<Structure> pDestination, boolean pSkipKnownStructures) {
+    TravellerCompassStructureLocateFunction(LootItemCondition[] pPredicates, TagKey<Structure> pDestination, boolean pSkipKnownStructures) {
         super(pPredicates);
         this.destination = pDestination;
         this.skipKnownStructures = pSkipKnownStructures;
@@ -43,7 +40,7 @@ public class TravellerCompassLocateFunction extends LootItemConditionalFunction 
                 ServerLevel serverlevel = pContext.getLevel();
                 BlockPos blockpos = serverlevel.findNearestMapStructure(this.destination, entity.blockPosition(), 50, this.skipKnownStructures);
                 if (blockpos != null) {
-                    compass.addTags(serverlevel.dimension(), blockpos, pStack.getOrCreateTag(), this.destination.location().getPath());
+                    compass.addTags(serverlevel.dimension(), blockpos, pStack.getOrCreateTag(), this.destination.location().getPath(), false);
                     return pStack;
                 }
             } else {
@@ -55,10 +52,10 @@ public class TravellerCompassLocateFunction extends LootItemConditionalFunction 
 
     @Override
     public LootItemFunctionType getType() {
-        return PPLootTables.TRAVELLERS_COMPASS_LOCATION.get();
+        return PPLootTables.TRAVELLERS_BIOME_COMPASS_LOCATION.get();
     }
 
-    public static class Serializer extends LootItemConditionalFunction.Serializer<TravellerCompassLocateFunction> {
+    public static class Serializer extends LootItemConditionalFunction.Serializer<TravellerCompassStructureLocateFunction> {
         private static TagKey<Structure> readStructure(JsonObject p_210661_) {
             if (p_210661_.has("destination")) {
                 String s = GsonHelper.getAsString(p_210661_, "destination");
@@ -68,7 +65,7 @@ public class TravellerCompassLocateFunction extends LootItemConditionalFunction 
             }
         }
 
-        public void serialize(JsonObject pJson, TravellerCompassLocateFunction pValue, JsonSerializationContext pSerializationContext) {
+        public void serialize(JsonObject pJson, TravellerCompassStructureLocateFunction pValue, JsonSerializationContext pSerializationContext) {
             super.serialize(pJson, pValue, pSerializationContext);
             pJson.addProperty("destination", pValue.destination.location().toString());
             if (!pValue.skipKnownStructures) {
@@ -76,10 +73,10 @@ public class TravellerCompassLocateFunction extends LootItemConditionalFunction 
             }
         }
 
-        public TravellerCompassLocateFunction deserialize(JsonObject pObject, JsonDeserializationContext pDeserializationContext, LootItemCondition[] pConditions) {
+        public TravellerCompassStructureLocateFunction deserialize(JsonObject pObject, JsonDeserializationContext pDeserializationContext, LootItemCondition[] pConditions) {
             TagKey<Structure> tagkey = readStructure(pObject);
             boolean flag = GsonHelper.getAsBoolean(pObject, "skip_existing_chunks", true);
-            return new TravellerCompassLocateFunction(pConditions, tagkey, flag);
+            return new TravellerCompassStructureLocateFunction(pConditions, tagkey, flag);
         }
     }
 }

@@ -6,11 +6,11 @@
         {
           "type": "minecraft:item",
           "name": "piglinproliferation:travellers_compass",
-          "weight": 5,
+          "weight": 10,
           "functions": [
             {
-              "function": "piglinproliferation:travellers_compass_location",
-              "destination": "piglinproliferation:bastion"
+              "function": "piglinproliferation:travellers_compass_biome_location",
+              "destination": "piglinproliferation:is_warped_forest"
             }
           ]
         },
@@ -22,6 +22,17 @@
             {
               "function": "piglinproliferation:travellers_compass_location",
               "destination": "piglinproliferation:ruined_portal_nether"
+            }
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "name": "piglinproliferation:travellers_compass",
+          "weight": 5,
+          "functions": [
+            {
+              "function": "piglinproliferation:travellers_compass_location",
+              "destination": "piglinproliferation:nether_fortress"
             }
           ]
         }

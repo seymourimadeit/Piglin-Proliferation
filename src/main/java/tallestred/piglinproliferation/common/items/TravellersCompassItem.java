@@ -50,13 +50,15 @@ public class TravellersCompassItem extends CompassItem {
         if (!stack.getTag().getString("Destination").isEmpty()) {
             list.add((Component.translatable("item.piglinproliferation.travellers_compass.desc.locked")).withStyle(ChatFormatting.BLUE));
             list.add((Component.translatable("item.piglinproliferation.travellers_compass.desc." + stack.getTag().getString("Destination")).withStyle(ChatFormatting.GRAY)));
+            String yValue = stack.getTag().getBoolean("HasBiome") ? String.valueOf(TravellersCompassItem.getPosition(stack.getTag()).pos().getY()) : "~";
             if (!stack.getTag().get("Position").getAsString().isEmpty())
-                list.add((Component.translatable(String.valueOf(TravellersCompassItem.getPosition(stack.getTag()).pos().getX() + ", " + "~" + ", " + (TravellersCompassItem.getPosition(stack.getTag()).pos().getZ()))).withStyle(ChatFormatting.GRAY)));
+                list.add((Component.translatable(TravellersCompassItem.getPosition(stack.getTag()).pos().getX() + ", " + yValue + ", " + (TravellersCompassItem.getPosition(stack.getTag()).pos().getZ())).withStyle(ChatFormatting.GRAY)));
         }
     }
 
-    public void addTags(ResourceKey<Level> pLodestoneDimension, BlockPos pLodestonePos, CompoundTag pCompoundTag, String point) {
+    public void addTags(ResourceKey<Level> pLodestoneDimension, BlockPos pLodestonePos, CompoundTag pCompoundTag, String point, boolean hasBiome) {
         pCompoundTag.put("Position", NbtUtils.writeBlockPos(pLodestonePos));
+        pCompoundTag.putBoolean("HasBiome", hasBiome);
         pCompoundTag.putString("Destination", point);
         Level.RESOURCE_KEY_CODEC.encodeStart(NbtOps.INSTANCE, pLodestoneDimension).resultOrPartial(LOGGER::error).ifPresent((p_40731_) -> {
             pCompoundTag.put("Dimension", p_40731_);
