@@ -69,7 +69,7 @@ public class BucklerItem extends ShieldItem {
             } else {
                 // This is the only way to make the piglin brute go faster without having it
                 // spazz out.
-                entity.setDeltaMovement(look.x * 1.0D, motion.y, look.z * 1.0D);
+                entity.setDeltaMovement(look.x, motion.y, look.z);
             }
         }
     }
@@ -198,9 +198,9 @@ public class BucklerItem extends ShieldItem {
         BucklerItem.setChargeTicks(stack, configValue);
         AttributeInstance speed = entityLiving.getAttribute(Attributes.MOVEMENT_SPEED);
         AttributeInstance knockback = entityLiving.getAttribute(Attributes.KNOCKBACK_RESISTANCE);
-        knockback.removeModifier(KNOCKBACK_RESISTANCE);
+        knockback.removeModifier(KNOCKBACK_RESISTANCE_UUID);
         knockback.addTransientModifier(KNOCKBACK_RESISTANCE);
-        speed.removeModifier(CHARGE_SPEED_BOOST);
+        speed.removeModifier(CHARGE_SPEED_UUID);
         speed.addTransientModifier(CHARGE_SPEED_BOOST);
         stack.hurtAndBreak(1, entityLiving, (entityLiving1) -> entityLiving1.broadcastBreakEvent(EquipmentSlot.OFFHAND));
         if (entityLiving instanceof Player)

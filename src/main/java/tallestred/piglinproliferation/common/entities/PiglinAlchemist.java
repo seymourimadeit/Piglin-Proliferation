@@ -346,7 +346,7 @@ public class PiglinAlchemist extends Piglin {
     public void syncBeltToClient() {
         if (!this.level().isClientSide) {
             for (int i = 0; i < this.beltInventory.size(); i++) {
-                PPNetworking.INSTANCE.send(PacketDistributor.TRACKING_ENTITY.with(() -> this), new AlchemistBeltSyncPacket(this.getId(), i, this.beltInventory.get(i)));
+                PPNetworking.INSTANCE.send(new AlchemistBeltSyncPacket(this.getId(), i, this.beltInventory.get(i)), PacketDistributor.TRACKING_ENTITY.with(this));
             }
         }
     }

@@ -17,6 +17,6 @@ public class PPLootTables {
             "gameplay/traveller_bartering");
     public static final ResourceLocation PIGLIN_BARTERING_CHEAP = new ResourceLocation(PiglinProliferation.MODID, "gameplay/compat/alchemist_bartering_cheap");
     public static final ResourceLocation PIGLIN_BARTERING_EXPENSIVE = new ResourceLocation(PiglinProliferation.MODID, "gameplay/compat/alchemist_bartering_expensive");
-    public static final RegistryObject<LootItemFunctionType> TRAVELLERS_COMPASS_LOCATION = LOOT_ITEM_FUNCTION_TYPES.register("travellers_compass_location", () ->  new LootItemFunctionType(new TravellerCompassStructureLocateFunction.Serializer()));
-    public static final RegistryObject<LootItemFunctionType> TRAVELLERS_BIOME_COMPASS_LOCATION = LOOT_ITEM_FUNCTION_TYPES.register("travellers_compass_biome_location", () ->  new LootItemFunctionType(new TravellerCompassBiomeLocateFunction.Serializer()));
+    public static final RegistryObject<LootItemFunctionType> TRAVELLERS_COMPASS_LOCATION = LOOT_ITEM_FUNCTION_TYPES.register("travellers_compass_location", () ->  new LootItemFunctionType(TravellerCompassStructureLocateFunction.CODEC));
+    public static final RegistryObject<LootItemFunctionType> TRAVELLERS_BIOME_COMPASS_LOCATION = LOOT_ITEM_FUNCTION_TYPES.register("travellers_compass_biome_location", () ->  new LootItemFunctionType(TravellerCompassBiomeLocateFunction.CODEC));
 }

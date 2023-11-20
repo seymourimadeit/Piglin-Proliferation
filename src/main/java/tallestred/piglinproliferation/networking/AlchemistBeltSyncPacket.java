@@ -2,9 +2,7 @@ package tallestred.piglinproliferation.networking;
 
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.network.NetworkEvent;
-
-import java.util.function.Supplier;
+import net.minecraftforge.event.network.CustomPayloadEvent;
 
 public class AlchemistBeltSyncPacket {
     final int slotId;
@@ -27,11 +25,11 @@ public class AlchemistBeltSyncPacket {
         buf.writeItem(msg.stack);
     }
 
-    public static void handle(AlchemistBeltSyncPacket msg, Supplier<NetworkEvent.Context> context) {
-        context.get().enqueueWork(() -> {
-            ServerToClientPacketStuff.syncBelt(msg);
+    public void handle(CustomPayloadEvent.Context context) {
+        context.enqueueWork(() -> {
+            ServerToClientPacketStuff.syncBelt(this);
         });
-        context.get().setPacketHandled(true);
+        context.setPacketHandled(true);
     }
 
     public int getEntityId() {

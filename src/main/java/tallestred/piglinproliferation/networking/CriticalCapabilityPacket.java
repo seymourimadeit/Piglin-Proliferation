@@ -1,9 +1,7 @@
 package tallestred.piglinproliferation.networking;
 
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraftforge.network.NetworkEvent;
-
-import java.util.function.Supplier;
+import net.minecraftforge.event.network.CustomPayloadEvent;
 
 public class CriticalCapabilityPacket {
     private final int entityId;
@@ -23,11 +21,11 @@ public class CriticalCapabilityPacket {
         buf.writeBoolean(msg.crit);
     }
 
-    public static void handle(CriticalCapabilityPacket msg, Supplier<NetworkEvent.Context> context) {
-        context.get().enqueueWork(() -> {
-            ServerToClientPacketStuff.syncCritical(msg);
+    public void handle(CustomPayloadEvent.Context context) {
+        context.enqueueWork(() -> {
+            ServerToClientPacketStuff.syncCritical(this);
         });
-        context.get().setPacketHandled(true);
+        context.setPacketHandled(true);
     }
 
     public int getEntityId() {

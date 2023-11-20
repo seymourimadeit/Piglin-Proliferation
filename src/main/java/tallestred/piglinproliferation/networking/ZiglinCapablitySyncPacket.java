@@ -1,9 +1,7 @@
 package tallestred.piglinproliferation.networking;
 
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraftforge.network.NetworkEvent;
-
-import java.util.function.Supplier;
+import net.minecraftforge.event.network.CustomPayloadEvent;
 
 public class ZiglinCapablitySyncPacket {
     private final int entityId;
@@ -23,11 +21,11 @@ public class ZiglinCapablitySyncPacket {
         buf.writeUtf(msg.transformedFromId);
     }
 
-    public static void handle(ZiglinCapablitySyncPacket msg, Supplier<NetworkEvent.Context> context) {
-        context.get().enqueueWork(() -> {
-            ServerToClientPacketStuff.syncZiglinClothes(msg);
+    public void handle(CustomPayloadEvent.Context context) {
+        context.enqueueWork(() -> {
+            ServerToClientPacketStuff.syncZiglinClothes(this);
         });
-        context.get().setPacketHandled(true);
+        context.setPacketHandled(true);
     }
 
     public int getEntityId() {

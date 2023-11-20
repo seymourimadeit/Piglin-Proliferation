@@ -92,7 +92,7 @@ public class PPEvents {
             if (!event.getEntity().level().isClientSide) {
                 TransformationSourceListener transformationSource = getTransformationSourceListener(ziglin);
                 if (transformationSource != null)
-                    PPNetworking.INSTANCE.send(PacketDistributor.TRACKING_ENTITY.with(() -> ziglin), new ZiglinCapablitySyncPacket(ziglin.getId(), transformationSource.getTransformationSource()));
+                    PPNetworking.INSTANCE.send(new ZiglinCapablitySyncPacket(ziglin.getId(), transformationSource.getTransformationSource()), PacketDistributor.TRACKING_ENTITY.with(ziglin));
             }
         }
         if (event.getEntity() instanceof AbstractPiglin piglin) {
@@ -110,7 +110,7 @@ public class PPEvents {
             if (!event.getTarget().level().isClientSide) {
                 TransformationSourceListener transformationSource = getTransformationSourceListener(ziglin);
                 if (transformationSource != null)
-                    PPNetworking.INSTANCE.send(PacketDistributor.TRACKING_ENTITY.with(() -> ziglin), new ZiglinCapablitySyncPacket(ziglin.getId(), transformationSource.getTransformationSource()));
+                    PPNetworking.INSTANCE.send(new ZiglinCapablitySyncPacket(ziglin.getId(), transformationSource.getTransformationSource()), PacketDistributor.TRACKING_ENTITY.with((ziglin)));
             }
         }
     }
@@ -135,8 +135,8 @@ public class PPEvents {
                 if (speed == null || knockback == null) {
                     return;
                 }
-                knockback.removeModifier(KNOCKBACK_RESISTANCE);
-                speed.removeModifier(CHARGE_SPEED_BOOST);
+                knockback.removeModifier(KNOCKBACK_RESISTANCE_UUID);
+                speed.removeModifier(CHARGE_SPEED_UUID);
                 entity.stopUsingItem();
                 BucklerItem.setChargeTicks(bucklerItemStack, 0);
                 BucklerItem.setReady(bucklerItemStack, false);
@@ -154,7 +154,7 @@ public class PPEvents {
                 }
             }
             if (event.getEntity() instanceof ServerPlayer player)
-                PPNetworking.INSTANCE.send(PacketDistributor.PLAYER.with(() -> player), new CriticalCapabilityPacket(player.getId(), criticalAfterCharge.isCritical()));
+                PPNetworking.INSTANCE.send(new CriticalCapabilityPacket(player.getId(), criticalAfterCharge.isCritical()), PacketDistributor.PLAYER.with(player));
         }
     }
 
@@ -316,7 +316,7 @@ public class PPEvents {
             TransformationSourceListener transformationSource = getTransformationSourceListener(ziglin);
             String piglinName = ForgeRegistries.ENTITY_TYPES.getKey(piglin.getType()).getPath();
             transformationSource.setTransformationSource(piglinName);
-            PPNetworking.INSTANCE.send(PacketDistributor.TRACKING_ENTITY.with(() -> ziglin), new ZiglinCapablitySyncPacket(ziglin.getId(), piglinName));
+            PPNetworking.INSTANCE.send(new ZiglinCapablitySyncPacket(ziglin.getId(), piglinName), PacketDistributor.TRACKING_ENTITY.with(ziglin));
         }
     }
 
