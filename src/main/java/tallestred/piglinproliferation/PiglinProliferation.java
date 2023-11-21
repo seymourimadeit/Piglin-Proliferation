@@ -120,20 +120,20 @@ public class PiglinProliferation {
     }
 
     private void addAttributes(final EntityAttributeCreationEvent event) {
-        event.put(PPEntityTypes.PIGLIN_TRAVELLER.get(), PiglinAlchemist.createAttributes().build());
+     //   event.put(PPEntityTypes.PIGLIN_TRAVELLER.get(), PiglinAlchemist.createAttributes().build());
         event.put(PPEntityTypes.PIGLIN_ALCHEMIST.get(), PiglinAlchemist.createAttributes().build());
     }
 
     private void addCreativeTabs(final BuildCreativeModeTabContentsEvent event) {
         if (event.getTabKey() == CreativeModeTabs.SPAWN_EGGS) {
             event.accept(PPItems.PIGLIN_ALCHEMIST_SPAWN_EGG.get());
-            event.accept(PPItems.PIGLIN_TRAVELLER_SPAWN_EGG.get());
+          //  event.accept(PPItems.PIGLIN_TRAVELLER_SPAWN_EGG.get());
         }
         if (event.getTabKey() == CreativeModeTabs.FUNCTIONAL_BLOCKS) {
             event.accept(PPItems.PIGLIN_ALCHEMIST_HEAD_ITEM.get());
             event.accept(PPItems.PIGLIN_BRUTE_HEAD_ITEM.get());
             event.accept(PPItems.ZOMBIFIED_PIGLIN_HEAD_ITEM.get());
-            event.accept(PPItems.PIGLIN_TRAVELLER_HEAD_ITEM.get());
+          //  event.accept(PPItems.PIGLIN_TRAVELLER_HEAD_ITEM.get());
         }
         if (event.getTabKey() == CreativeModeTabs.COMBAT)
             event.accept(PPItems.BUCKLER.get());
