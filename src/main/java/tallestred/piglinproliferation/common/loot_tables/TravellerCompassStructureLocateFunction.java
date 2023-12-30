@@ -26,12 +26,11 @@ import tallestred.piglinproliferation.common.items.TravellersCompassItem;
 import java.util.List;
 
 public class TravellerCompassStructureLocateFunction extends LootItemConditionalFunction {
-    public static final Codec<TravellerCompassStructureLocateFunction> CODEC = RecordCodecBuilder.create((p_297135_) -> {
-        return commonFields(p_297135_).and(TagKey.hashedCodec(Registries.STRUCTURE).fieldOf("destination").forGetter((p_297134_) -> {
-            return p_297134_.destination;
-        })).apply(p_297135_, TravellerCompassStructureLocateFunction::new);
-    });
-
+    public static final Codec<TravellerCompassStructureLocateFunction> CODEC =  RecordCodecBuilder.create(
+            p_298123_ -> commonFields(p_298123_)
+                    .and(TagKey.codec(Registries.STRUCTURE).fieldOf("destination").forGetter(p_298122_ -> p_298122_.destination))
+                    .apply(p_298123_, TravellerCompassStructureLocateFunction::new)
+    );
     final TagKey<Structure> destination;
 
     TravellerCompassStructureLocateFunction(List<LootItemCondition> pPredicates, TagKey<Structure> pDestination) {
@@ -60,6 +59,6 @@ public class TravellerCompassStructureLocateFunction extends LootItemConditional
 
     @Override
     public LootItemFunctionType getType() {
-        return PPLootTables.TRAVELLERS_BIOME_COMPASS_LOCATION.get();
+        return PPLootTables.TRAVELLERS_COMPASS_LOCATION.get();
     }
 }

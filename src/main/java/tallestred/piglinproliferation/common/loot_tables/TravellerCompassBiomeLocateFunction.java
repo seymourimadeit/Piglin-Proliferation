@@ -1,43 +1,33 @@
 package tallestred.piglinproliferation.common.loot_tables;
 
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonSerializationContext;
 import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
-import net.minecraft.core.HolderSet;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.tags.TagKey;
-import net.minecraft.util.ExtraCodecs;
-import net.minecraft.util.GsonHelper;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.biome.Biome;
-import net.minecraft.world.level.levelgen.structure.Structure;
 import net.minecraft.world.level.storage.loot.LootContext;
-import net.minecraft.world.level.storage.loot.functions.*;
+import net.minecraft.world.level.storage.loot.functions.LootItemConditionalFunction;
+import net.minecraft.world.level.storage.loot.functions.LootItemFunctionType;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
-import net.minecraft.world.level.storage.loot.providers.number.NumberProviders;
 import tallestred.piglinproliferation.common.items.PPItems;
 import tallestred.piglinproliferation.common.items.TravellersCompassItem;
 
 import java.util.List;
-import java.util.Optional;
-import java.util.function.Predicate;
 
 public class TravellerCompassBiomeLocateFunction extends LootItemConditionalFunction {
+    public static final Codec<TravellerCompassBiomeLocateFunction> CODEC =  RecordCodecBuilder.create(
+            p_298123_ -> commonFields(p_298123_)
+                    .and(TagKey.codec(Registries.BIOME).fieldOf("destination").forGetter(p_298122_ -> p_298122_.destination))
+                    .apply(p_298123_, TravellerCompassBiomeLocateFunction::new)
+    );
     private final TagKey<Biome> destination;
-    public static final Codec<TravellerCompassBiomeLocateFunction> CODEC = RecordCodecBuilder.create((p_297135_) -> {
-        return commonFields(p_297135_).and(TagKey.hashedCodec(Registries.BIOME).fieldOf("destination").forGetter((p_297134_) -> {
-            return p_297134_.destination;
-        })).apply(p_297135_, TravellerCompassBiomeLocateFunction::new);
-    });
 
     TravellerCompassBiomeLocateFunction(List<LootItemCondition> pPredicates, TagKey<Biome> pDestination) {
         super(pPredicates);
@@ -65,6 +55,6 @@ public class TravellerCompassBiomeLocateFunction extends LootItemConditionalFunc
 
     @Override
     public LootItemFunctionType getType() {
-        return PPLootTables.TRAVELLERS_COMPASS_LOCATION.get();
+        return PPLootTables.TRAVELLERS_BIOME_COMPASS_LOCATION.get();
     }
 }
