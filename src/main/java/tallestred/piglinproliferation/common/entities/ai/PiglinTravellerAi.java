@@ -340,6 +340,8 @@ public class PiglinTravellerAi extends PiglinAi {
         piglin.setAggressive(brain.hasMemoryValue(MemoryModuleType.ATTACK_TARGET));
         if (!brain.hasMemoryValue(MemoryModuleType.RIDE_TARGET) && isBabyRidingBaby(piglin))
             piglin.stopRiding();
+        if (brain.hasMemoryValue(MemoryModuleType.ADMIRING_ITEM))
+            piglin.playBarteringAnimation();
         if (!brain.hasMemoryValue(MemoryModuleType.CELEBRATE_LOCATION))
             brain.eraseMemory(MemoryModuleType.DANCING);
         piglin.setDancing(brain.hasMemoryValue(MemoryModuleType.DANCING));

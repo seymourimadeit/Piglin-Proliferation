@@ -36,6 +36,7 @@ import tallestred.piglinproliferation.PPActivities;
 import tallestred.piglinproliferation.PPMemoryModules;
 import tallestred.piglinproliferation.client.PPSounds;
 import tallestred.piglinproliferation.common.entities.PiglinAlchemist;
+import tallestred.piglinproliferation.common.entities.PiglinTraveller;
 import tallestred.piglinproliferation.common.entities.ai.behaviors.*;
 import tallestred.piglinproliferation.common.loot_tables.PPLootTables;
 

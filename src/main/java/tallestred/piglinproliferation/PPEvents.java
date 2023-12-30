@@ -122,7 +122,7 @@ public class PPEvents {
         ItemStack bucklerItemStack = PPItems.checkEachHandForBuckler(entity);
         boolean bucklerReadyToCharge = BucklerItem.isReady(bucklerItemStack);
         int bucklerChargeTicks = BucklerItem.getChargeTicks(bucklerItemStack);
-        if (bucklerReadyToCharge) {
+        if (bucklerReadyToCharge && bucklerItemStack.getItem() instanceof BucklerItem) {
             BucklerItem.setChargeTicks(bucklerItemStack, bucklerChargeTicks - 1);
             if (bucklerChargeTicks > 0) {
                 BucklerItem.moveFowards(entity);
@@ -141,6 +141,18 @@ public class PPEvents {
                 BucklerItem.setChargeTicks(bucklerItemStack, 0);
                 BucklerItem.setReady(bucklerItemStack, false);
             }
+        }
+        if (!(bucklerItemStack.getItem() instanceof BucklerItem)) { // This is ugly but it's 12:17 am and I can't be bothered to do something else
+            AttributeInstance speed = entity.getAttribute(Attributes.MOVEMENT_SPEED);
+            AttributeInstance knockback = entity.getAttribute(Attributes.KNOCKBACK_RESISTANCE);
+            if (speed == null || knockback == null) {
+                return;
+            }
+            knockback.removeModifier(KNOCKBACK_RESISTANCE_UUID);
+            speed.removeModifier(CHARGE_SPEED_UUID);
+            entity.stopUsingItem();
+            BucklerItem.setChargeTicks(bucklerItemStack, 0);
+            BucklerItem.setReady(bucklerItemStack, false);
         }
         CriticalAfterCharge criticalAfterCharge = PPCapablities.getGuaranteedCritical(entity);
         if (criticalAfterCharge != null) {
