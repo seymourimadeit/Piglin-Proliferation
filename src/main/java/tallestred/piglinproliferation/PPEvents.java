@@ -151,8 +151,14 @@ public class PPEvents {
             knockback.removeModifier(KNOCKBACK_RESISTANCE_UUID);
             speed.removeModifier(CHARGE_SPEED_UUID);
             entity.stopUsingItem();
-            BucklerItem.setChargeTicks(bucklerItemStack, 0);
-            BucklerItem.setReady(bucklerItemStack, false);
+            if (entity instanceof Player player) {
+                for (int i = 0; i < player.getInventory().getContainerSize(); i++) {
+                    if (player.getInventory().getItem(i).getItem() instanceof BucklerItem) {
+                        BucklerItem.setChargeTicks(player.getInventory().getItem(i), 0);
+                        BucklerItem.setReady(player.getInventory().getItem(i), false);
+                    }
+                }
+            }
         }
         CriticalAfterCharge criticalAfterCharge = PPCapablities.getGuaranteedCritical(entity);
         if (criticalAfterCharge != null) {
