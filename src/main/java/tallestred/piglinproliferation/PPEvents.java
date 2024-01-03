@@ -122,27 +122,16 @@ public class PPEvents {
         ItemStack bucklerItemStack = PPItems.checkEachHandForBuckler(entity);
         boolean bucklerReadyToCharge = BucklerItem.isReady(bucklerItemStack);
         int bucklerChargeTicks = BucklerItem.getChargeTicks(bucklerItemStack);
-        if (bucklerReadyToCharge && bucklerItemStack.getItem() instanceof BucklerItem) {
+        if (bucklerReadyToCharge) {
             BucklerItem.setChargeTicks(bucklerItemStack, bucklerChargeTicks - 1);
             if (bucklerChargeTicks > 0) {
                 BucklerItem.moveFowards(entity);
                 BucklerItem.spawnRunningEffectsWhileCharging(entity);
                 if (turningLevel == 0 && !entity.level().isClientSide()) BucklerItem.bucklerBash(entity);
             }
-            if (bucklerChargeTicks <= 0) {
-                AttributeInstance speed = entity.getAttribute(Attributes.MOVEMENT_SPEED);
-                AttributeInstance knockback = entity.getAttribute(Attributes.KNOCKBACK_RESISTANCE);
-                if (speed == null || knockback == null) {
-                    return;
-                }
-                knockback.removeModifier(KNOCKBACK_RESISTANCE_UUID);
-                speed.removeModifier(CHARGE_SPEED_UUID);
-                entity.stopUsingItem();
-                BucklerItem.setChargeTicks(bucklerItemStack, 0);
-                BucklerItem.setReady(bucklerItemStack, false);
-            }
         }
-        if (!(bucklerItemStack.getItem() instanceof BucklerItem)) { // This is ugly but it's 12:17 am and I can't be bothered to do something else
+        if (bucklerChargeTicks <= 0 && bucklerReadyToCharge || entity.getAttribute(Attributes.MOVEMENT_SPEED).hasModifier(CHARGE_SPEED_BOOST)
+                && (!(bucklerItemStack.getItem() instanceof BucklerItem) || !bucklerReadyToCharge)) {
             AttributeInstance speed = entity.getAttribute(Attributes.MOVEMENT_SPEED);
             AttributeInstance knockback = entity.getAttribute(Attributes.KNOCKBACK_RESISTANCE);
             if (speed == null || knockback == null) {
@@ -152,13 +141,15 @@ public class PPEvents {
             speed.removeModifier(CHARGE_SPEED_UUID);
             entity.stopUsingItem();
             if (entity instanceof Player player) {
-                for (int i = 0; i < player.getInventory().getContainerSize(); i++) {
-                    if (player.getInventory().getItem(i).getItem() instanceof BucklerItem) {
-                        BucklerItem.setChargeTicks(player.getInventory().getItem(i), 0);
-                        BucklerItem.setReady(player.getInventory().getItem(i), false);
+                for (int slot = 0; slot < player.getInventory().getContainerSize(); slot++) {
+                    if (player.getInventory().getItem(slot).getItem() instanceof BucklerItem) {
+                        BucklerItem.setChargeTicks(player.getInventory().getItem(slot), 0);
+                        BucklerItem.setReady(player.getInventory().getItem(slot), false);
                     }
                 }
             }
+            BucklerItem.setChargeTicks(bucklerItemStack, 0);
+            BucklerItem.setReady(bucklerItemStack, false);
         }
         CriticalAfterCharge criticalAfterCharge = PPCapablities.getGuaranteedCritical(entity);
         if (criticalAfterCharge != null) {

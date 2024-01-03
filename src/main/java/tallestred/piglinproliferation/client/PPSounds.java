@@ -28,4 +28,5 @@ public class PPSounds {
     public static final RegistryObject<SoundEvent> SHIELD_BASH = SOUNDS.register("item.buckler.bash", () -> SoundEvent.createVariableRangeEvent(new ResourceLocation(PiglinProliferation.MODID, "item.buckler.bash")));
     public static final RegistryObject<SoundEvent> CRITICAL_ACTIVATE = SOUNDS.register("entity.criticalcharge.activate", () -> SoundEvent.createVariableRangeEvent(new ResourceLocation(PiglinProliferation.MODID, "entity.criticalcharge.activate")));
     public static final RegistryObject<SoundEvent> CRITICAL_DEACTIVATE = SOUNDS.register("entity.criticalcharge.deactivate", () -> SoundEvent.createVariableRangeEvent(new ResourceLocation(PiglinProliferation.MODID, "entity.criticalcharge.deactivate")));
+    public static final RegistryObject<SoundEvent> MAKING_COMPASS = SOUNDS.register("entity.traveller.make_compass", () -> SoundEvent.createVariableRangeEvent(new ResourceLocation(PiglinProliferation.MODID, "entity.traveller.make_compass")));
 }

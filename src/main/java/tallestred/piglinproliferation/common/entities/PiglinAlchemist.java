@@ -270,8 +270,8 @@ public class PiglinAlchemist extends Piglin {
             if (this.getItemShownOnOffhand().getItem() instanceof TippedArrowItem)
                 itemstack = this.getItemShownOnOffhand();
             AbstractArrow abstractarrowentity = ProjectileUtil.getMobArrow(this, itemstack, distanceFactor);
-            abstractarrowentity = ((net.minecraft.world.item.BowItem) this.getMainHandItem().getItem())
-                    .customArrow(abstractarrowentity);
+            if (this.getMainHandItem().getItem() instanceof net.minecraft.world.item.BowItem)
+                abstractarrowentity = ((net.minecraft.world.item.BowItem)this.getMainHandItem().getItem()).customArrow(abstractarrowentity);
             int powerLevel = itemstack.getEnchantmentLevel(Enchantments.POWER_ARROWS);
             if (powerLevel > 0)
                 abstractarrowentity

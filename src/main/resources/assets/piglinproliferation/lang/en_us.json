@@ -50,5 +50,6 @@
    "item.piglinproliferation.travellers_compass.desc.bastion": "Bastion",
    "item.piglinproliferation.travellers_compass.desc.nether_fortress": "Nether Fortress",
    "item.piglinproliferation.travellers_compass.desc.ruined_portal_nether": "Ruined Portal",
-   "item.piglinproliferation.travellers_compass.desc.is_warped_forest": "Warped Forest"
+   "item.piglinproliferation.travellers_compass.desc.is_warped_forest": "Warped Forest",
+   "subtitles.entity.traveller.making_compass": "Traveler makes compass"
 }

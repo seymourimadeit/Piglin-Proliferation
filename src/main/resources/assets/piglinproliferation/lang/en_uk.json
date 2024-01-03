@@ -2,5 +2,6 @@
   "entity.piglinproliferation.piglin_traveller": "Piglin Traveller",
   "block.piglinproliferation.piglin_traveller_head": "Piglin Traveller Head",
   "block.piglinproliferation.piglin_traveller_wall_head": "Piglin Traveller Wall Head",
-  "item.piglinproliferation.travellers_compass": "Piglin Traveller's Compass"
+  "item.piglinproliferation.travellers_compass": "Piglin Traveller's Compass",
+  "subtitles.entity.traveller.making_compass": "Traveller makes compass"
 }

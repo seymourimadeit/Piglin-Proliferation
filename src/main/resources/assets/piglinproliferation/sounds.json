@@ -186,10 +186,10 @@
   },
   "entity.piglin_brute.charge": {
     "sounds": [
-      "piglinproliferation:mobs/piglin_brute/charge/charge1",
-      "piglinproliferation:mobs/piglin_brute/charge/charge2",
-      "piglinproliferation:mobs/piglin_brute/charge/charge3",
-      "piglinproliferation:mobs/piglin_brute/charge/charge4"
+      "piglinproliferation:charge/charge1",
+      "piglinproliferation:charge/charge2",
+      "piglinproliferation:charge/charge3",
+      "piglinproliferation:charge/charge4"
     ],
     "subtitle": "subtitles.entity.piglin_brute.charge"
   },
@@ -212,5 +212,11 @@
       "block/beacon/deactivate"
     ],
     "subtitle": "subtitles.entity.criticalCharge.deactivate"
+  },
+  "entity.traveller.make_compass": {
+    "sounds": [
+      "piglinproliferation:mob/piglin/traveller/traveller_making_compass"
+    ],
+    "subtitle": "subtitles.entity.traveller.making_compass"
   }
 }
