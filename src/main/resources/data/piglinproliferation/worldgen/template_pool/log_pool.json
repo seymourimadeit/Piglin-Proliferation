@@ -1,0 +1,15 @@
+{
+  "name": "piglinproliferation:log_pool",
+  "fallback": "minecraft:empty",
+  "elements": [
+	{	
+      "weight": 1,
+      "element": {
+        "location": "piglinproliferation:traveller_hangout_crimson_forest/traveler_logs_0",
+        "processors": "minecraft:empty",
+		"projection": "rigid",
+        "element_type": "minecraft:single_pool_element"
+      }
+    }
+  ]
+}

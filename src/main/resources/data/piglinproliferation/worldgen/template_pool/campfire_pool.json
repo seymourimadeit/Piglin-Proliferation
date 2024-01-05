@@ -1,0 +1,15 @@
+{
+  "name": "piglinproliferation:campfire_pool",
+  "fallback": "minecraft:empty",
+  "elements": [
+	{	
+      "weight": 1,
+      "element": {
+        "location": "piglinproliferation:traveller_hangout_crimson_forest/traveller_campfire_0",
+        "processors": "minecraft:empty",
+		"projection": "rigid",
+        "element_type": "minecraft:single_pool_element"
+      }
+    }
+  ]
+}

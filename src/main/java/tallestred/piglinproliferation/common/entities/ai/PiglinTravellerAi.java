@@ -34,6 +34,7 @@ import tallestred.piglinproliferation.common.entities.PiglinTraveller;
 import tallestred.piglinproliferation.common.entities.ai.behaviors.MoveAroundPiglins;
 import tallestred.piglinproliferation.common.entities.ai.behaviors.StopHoldingItemAfterAdmiring;
 import tallestred.piglinproliferation.common.entities.ai.behaviors.SwimOnlyOutOfLava;
+import tallestred.piglinproliferation.common.entities.ai.behaviors.TravellerSit;
 import tallestred.piglinproliferation.common.loot_tables.PPLootTables;
 
 import java.lang.reflect.InvocationTargetException;
@@ -47,14 +48,10 @@ public class PiglinTravellerAi extends PiglinAi {
     private static final UniformInt RIDE_DURATION = TimeUtil.rangeOfSeconds(10, 30);
     private static final UniformInt AVOID_ZOMBIFIED_DURATION = TimeUtil.rangeOfSeconds(5, 7);
     private static final UniformInt BABY_AVOID_NEMESIS_DURATION = TimeUtil.rangeOfSeconds(5, 7);
-    private static final Method hoglinRiding = ObfuscationReflectionHelper.findMethod(PiglinAi.class, "m_34973_",
-            Brain.class);
-    private static final Method retreatActivity = ObfuscationReflectionHelper.findMethod(PiglinAi.class, "m_34958_",
-            Brain.class);
-    private static final Method celebrateActivity = ObfuscationReflectionHelper.findMethod(PiglinAi.class, "m_34920_",
-            Brain.class);
-    private static final Method admireItem = ObfuscationReflectionHelper.findMethod(PiglinAi.class, "m_34940_",
-            Brain.class);
+    private static final Method hoglinRiding = ObfuscationReflectionHelper.findMethod(PiglinAi.class, "m_34973_", Brain.class);
+    private static final Method retreatActivity = ObfuscationReflectionHelper.findMethod(PiglinAi.class, "m_34958_", Brain.class);
+    private static final Method celebrateActivity = ObfuscationReflectionHelper.findMethod(PiglinAi.class, "m_34920_", Brain.class);
+    private static final Method admireItem = ObfuscationReflectionHelper.findMethod(PiglinAi.class, "m_34940_", Brain.class);
     // This has to be done because I don't feel like copying and pasting every method from PiglinAi
 
     public PiglinTravellerAi() {
@@ -106,7 +103,7 @@ public class PiglinTravellerAi extends PiglinAi {
     }
 
     private static RunOne<Piglin> createIdleMovementBehaviors() {
-        return new RunOne<>(ImmutableList.of(Pair.of(MoveAroundPiglins.moveAroundPiglins(0.6F, true), 2), Pair.of(RandomStroll.stroll(0.6F), 2), Pair.of(InteractWith.of(EntityType.PIGLIN, 8, MemoryModuleType.INTERACTION_TARGET, 0.6F, 2), 2), Pair.of(BehaviorBuilder.triggerIf(PiglinTravellerAi::doesntSeeAnyPlayerHoldingLovedItem, SetWalkTargetFromLookTarget.create(0.6F, 3)), 2), Pair.of(new DoNothing(30, 60), 1)));
+        return new RunOne<>(ImmutableList.of(Pair.of(MoveAroundPiglins.moveAroundPiglins(0.6F, true), 2), Pair.of(new TravellerSit(), 1), Pair.of(RandomStroll.stroll(0.6F), 2), Pair.of(InteractWith.of(EntityType.PIGLIN, 8, MemoryModuleType.INTERACTION_TARGET, 0.6F, 2), 2), Pair.of(BehaviorBuilder.triggerIf(PiglinTravellerAi::doesntSeeAnyPlayerHoldingLovedItem, SetWalkTargetFromLookTarget.create(0.6F, 3)), 2), Pair.of(StrollToPoi.create(MemoryModuleType.HOME, 0.6F, 2, 100), 2), Pair.of(StrollAroundPoi.create(MemoryModuleType.HOME, 0.6F, 5), 2), Pair.of(new DoNothing(30, 60), 1)));
     }
 
     private static ImmutableList<Pair<OneShot<LivingEntity>, Integer>> createLookBehaviors() {
@@ -314,18 +311,15 @@ public class PiglinTravellerAi extends PiglinAi {
         Activity activity = brain.getActiveNonCoreActivity().orElse(null);
         brain.setActiveActivityToFirstValid(ImmutableList.of(PPActivities.THROW_POTION_ACTIVITY.get(), Activity.ADMIRE_ITEM, Activity.FIGHT, Activity.AVOID, Activity.CELEBRATE, Activity.RIDE, Activity.IDLE));
         Activity activity1 = brain.getActiveNonCoreActivity().orElse(null);
-        if (activity != activity1)
-            getAlchemistSoundForCurrentActivity(piglin).ifPresent(piglin::playSoundEvent);
+        if (activity != activity1) getAlchemistSoundForCurrentActivity(piglin).ifPresent(piglin::playSoundEvent);
         piglin.setAggressive(brain.hasMemoryValue(MemoryModuleType.ATTACK_TARGET));
-        if (!brain.hasMemoryValue(MemoryModuleType.RIDE_TARGET) && isBabyRidingBaby(piglin))
-            piglin.stopRiding();
+        if (!brain.hasMemoryValue(MemoryModuleType.RIDE_TARGET) && isBabyRidingBaby(piglin)) piglin.stopRiding();
         if (brain.hasMemoryValue(MemoryModuleType.ADMIRING_ITEM)) {
             piglin.playBarteringAnimation();
             if (piglin.getRandom().nextInt(10) == 0)
                 piglin.level().playSound(null, piglin.getX(), piglin.getY(), piglin.getZ(), PPSounds.MAKING_COMPASS.get(), piglin.getSoundSource(), 1.0F, 1.0F);
         }
-        if (!brain.hasMemoryValue(MemoryModuleType.CELEBRATE_LOCATION))
-            brain.eraseMemory(MemoryModuleType.DANCING);
+        if (!brain.hasMemoryValue(MemoryModuleType.CELEBRATE_LOCATION)) brain.eraseMemory(MemoryModuleType.DANCING);
         piglin.setDancing(brain.hasMemoryValue(MemoryModuleType.DANCING));
     }
 }
