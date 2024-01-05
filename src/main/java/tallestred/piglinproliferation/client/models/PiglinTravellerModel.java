@@ -45,6 +45,5 @@ public class PiglinTravellerModel<T extends PiglinTraveller> extends PiglinModel
         this.rightPants.copyFrom(this.rightLeg);
         this.leftSleeve.copyFrom(this.leftArm);
         this.rightSleeve.copyFrom(this.rightArm);
-        this.jacket.copyFrom(this.body);
     }
 }

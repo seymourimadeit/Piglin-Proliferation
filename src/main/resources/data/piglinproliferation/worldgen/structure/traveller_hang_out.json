@@ -5,10 +5,16 @@
   "size": 6,
   "spawn_overrides": {},
   "start_height": {
-    "absolute": 33
+    "type": "minecraft:uniform",
+    "max_inclusive": {
+      "below_top": 10
+    },
+    "min_inclusive": {
+      "above_bottom": 33
+    }
   },
   "start_pool": "piglinproliferation:log_pool",
   "step": "surface_structures",
   "use_expansion_hack": false,
-  "terrain_adaptation": "beard_thin"
+  "terrain_adaptation": "beard_box"
 }

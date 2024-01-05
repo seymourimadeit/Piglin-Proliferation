@@ -26,7 +26,7 @@ public class TravellerSit<T extends PiglinTraveller> extends Behavior<T> {
 
     @Override
     protected boolean canStillUse(ServerLevel worldIn, T entityIn, long gameTimeIn) {
-        return entityIn.isSitting();
+        return entityIn.isSitting() && !entityIn.isAggressive() && !entityIn.getBrain().hasMemoryValue(MemoryModuleType.INTERACTION_TARGET);
     }
 
     @Override
