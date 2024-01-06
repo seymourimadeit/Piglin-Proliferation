@@ -10,11 +10,11 @@
       "below_top": 10
     },
     "min_inclusive": {
-      "above_bottom": 33
+      "above_bottom": 32
     }
   },
   "start_pool": "piglinproliferation:log_pool",
-  "step": "surface_structures",
+  "step": "underground_decoration",
   "use_expansion_hack": false,
   "terrain_adaptation": "beard_box"
 }
