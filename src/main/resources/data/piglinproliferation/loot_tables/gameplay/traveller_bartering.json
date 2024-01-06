@@ -7,7 +7,7 @@
         {
           "type": "minecraft:item",
           "name": "piglinproliferation:travellers_compass",
-          "weight": 10,
+          "weight": 25,
           "functions": [
             {
               "function": "piglinproliferation:travellers_compass_biome_location",
@@ -18,9 +18,12 @@
             {
               "condition": "minecraft:inverted",
               "term": {
-                "condition": "minecraft:location_check",
+                "condition": "minecraft:entity_properties",
+                "entity": "this",
                 "predicate": {
-                  "biome": "minecraft:warped_forest"
+                  "location": {
+                    "biome": "minecraft:warped_forest"
+                  }
                 }
               }
             }
@@ -29,7 +32,7 @@
         {
           "type": "minecraft:item",
           "name": "piglinproliferation:travellers_compass",
-          "weight": 10,
+          "weight": 45,
           "functions": [
             {
               "function": "piglinproliferation:travellers_compass_biome_location",
@@ -40,9 +43,12 @@
             {
               "condition": "minecraft:inverted",
               "term": {
-                "condition": "minecraft:location_check",
+                "condition": "minecraft:entity_properties",
+                "entity": "this",
                 "predicate": {
-                  "biome": "minecraft:crimson_forest"
+                  "location": {
+                    "biome": "minecraft:crimson_forest"
+                  }
                 }
               }
             }
@@ -62,9 +68,12 @@
             {
               "condition": "minecraft:inverted",
               "term": {
-                "condition": "minecraft:location_check",
+                "condition": "minecraft:entity_properties",
+                "entity": "this",
                 "predicate": {
-                  "biome": "minecraft:basalt_deltas"
+                  "location": {
+                    "biome": "minecraft:basalt_deltas"
+                  }
                 }
               }
             }
@@ -73,7 +82,7 @@
         {
           "type": "minecraft:item",
           "name": "piglinproliferation:travellers_compass",
-          "weight": 1,
+          "weight": 25,
           "functions": [
             {
               "function": "piglinproliferation:travellers_compass_biome_location",
@@ -84,9 +93,12 @@
             {
               "condition": "minecraft:inverted",
               "term": {
-                "condition": "minecraft:location_check",
+                "condition": "minecraft:entity_properties",
+                "entity": "this",
                 "predicate": {
-                  "biome": "minecraft:nether_wastes"
+                  "location": {
+                    "biome": "minecraft:nether_wastes"
+                  }
                 }
               }
             }
@@ -106,9 +118,12 @@
             {
               "condition": "minecraft:inverted",
               "term": {
-                "condition": "minecraft:location_check",
+                "condition": "minecraft:entity_properties",
+                "entity": "this",
                 "predicate": {
-                  "biome": "minecraft:soul_sand_valley"
+                  "location": {
+                    "biome": "minecraft:soul_sand_valley"
+                  }
                 }
               }
             }
@@ -117,7 +132,7 @@
         {
           "type": "minecraft:item",
           "name": "piglinproliferation:travellers_compass",
-          "weight": 5,
+          "weight": 12,
           "functions": [
             {
               "function": "piglinproliferation:travellers_compass_location",
@@ -128,9 +143,12 @@
             {
               "condition": "minecraft:inverted",
               "term": {
-                "condition": "minecraft:location_check",
+                "condition": "minecraft:entity_properties",
+                "entity": "this",
                 "predicate": {
-                  "structure": "minecraft:bastion_remnant"
+                  "location": {
+                    "structure": "minecraft:bastion_remnant"
+                  }
                 }
               }
             }
@@ -150,9 +168,12 @@
             {
               "condition": "minecraft:inverted",
               "term": {
-                "condition": "minecraft:location_check",
+                "condition": "minecraft:entity_properties",
+                "entity": "this",
                 "predicate": {
-                  "structure": "minecraft:ruined_portal_nether"
+                  "location": {
+                    "structure": "minecraft:ruined_portal_nether"
+                  }
                 }
               }
             }
@@ -161,7 +182,7 @@
         {
           "type": "minecraft:item",
           "name": "minecraft:saddle",
-          "weight": 10
+          "weight": 20
         },
         {
           "type": "minecraft:item",
@@ -171,7 +192,7 @@
         {
           "type": "minecraft:item",
           "name": "piglinproliferation:travellers_compass",
-          "weight": 5,
+          "weight": 25,
           "functions": [
             {
               "function": "piglinproliferation:travellers_compass_location",
@@ -182,9 +203,12 @@
             {
               "condition": "minecraft:inverted",
               "term": {
-                "condition": "minecraft:location_check",
+                "condition": "minecraft:entity_properties",
+                "entity": "this",
                 "predicate": {
-                  "structure": "minecraft:forest"
+                  "location": {
+                    "structure": "minecraft:nether_fortress"
+                  }
                 }
               }
             }

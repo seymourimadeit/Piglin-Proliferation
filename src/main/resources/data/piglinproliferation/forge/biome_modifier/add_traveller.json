@@ -1,0 +1,11 @@
+{
+  "type": "forge:add_spawns",
+  "biomes": ["minecraft:nether_wastes", "minecraft:crimson_forest", "minecraft:basalt_deltas", "minecraft:warped_forest", "minecraft:soul_sand_valley"],
+  "spawners": {
+    "type": "piglinproliferation:piglin_traveller",
+    "maxCount": 1,
+    "minCount": 3,
+    "weight": 1
+  },
+  "category": "monster"
+}
