@@ -213,10 +213,131 @@
     ],
     "subtitle": "subtitles.entity.criticalCharge.deactivate"
   },
-  "entity.traveller.make_compass": {
+  "entity.piglin_traveller.make_compass": {
     "sounds": [
       "piglinproliferation:mob/piglin/traveller/traveller_making_compass"
     ],
-    "subtitle": "subtitles.entity.traveller.making_compass"
+    "subtitle": "subtitles.entity.piglin_traveller.making_compass"
+  },
+  "entity.piglin_traveller.idle": {
+    "sounds": [
+      {
+        "name": "piglinproliferation:mob/piglin/traveller/idle1",
+        "volume": 0.9
+      },
+      {
+        "name": "piglinproliferation:mob/piglin/traveller/idle2",
+        "volume": 0.9
+      },
+      {
+        "name": "piglinproliferation:mob/piglin/traveller/idle3",
+        "volume": 0.9
+      },
+      {
+        "name": "piglinproliferation:mob/piglin/traveller/idle4",
+        "volume": 0.9
+      }
+    ],
+    "subtitle": "subtitles.entity.piglin_traveller.idle"
+  },
+  "entity.piglin_traveller.hurt": {
+    "sounds": [
+      {
+        "name": "piglinproliferation:mob/piglin/traveller/hurt1",
+        "volume": 0.9
+      },
+      {
+        "name": "piglinproliferation:mob/piglin/traveller/hurt2",
+        "volume": 0.9
+      }
+    ],
+    "subtitle": "subtitles.entity.piglin_traveller.hurt"
+  },
+  "entity.piglin_traveller.death": {
+    "sounds": [
+      {
+        "name": "piglinproliferation:mob/piglin/traveller/death1",
+        "volume": 0.9
+      },
+      {
+        "name": "piglinproliferation:mob/piglin/traveller/death2",
+        "volume": 0.9
+      }
+    ],
+    "subtitle": "subtitles.entity.piglin_traveller.death"
+  },
+  "entity.piglin_traveller.celebrate": {
+    "sounds": [
+      {
+        "name": "piglinproliferation:mob/piglin/traveller/celebrate1",
+        "volume": 0.9
+      }
+    ],
+    "subtitle": "subtitles.entity.piglin_traveller.celebrate"
+  },
+  "entity.piglin_traveller.retreat": {
+    "sounds": [
+      {
+        "name": "piglinproliferation:mob/piglin/traveller/retreat1",
+        "volume": 0.9
+      },
+      {
+        "name": "piglinproliferation:mob/piglin/traveller/retreat2",
+        "volume": 0.9
+      }
+    ],
+    "subtitle": "subtitles.entity.piglin_traveller.retreat"
+  },
+  "entity.piglin_traveller.jealous": {
+    "sounds": [
+      {
+        "name": "piglinproliferation:mob/piglin/traveller/jealous1",
+        "volume": 0.9
+      }
+    ],
+    "subtitle": "subtitles.entity.piglin_traveller.jealous"
+  },
+  "entity.piglin_traveller.angry": {
+    "sounds": [
+      {
+        "name": "piglinproliferation:mob/piglin/traveller/angry1",
+        "volume": 0.9
+      },
+      {
+        "name": "piglinproliferation:mob/piglin/traveller/angry2",
+        "volume": 0.9
+      },
+      {
+        "name": "piglinproliferation:mob/piglin/traveller/angry3",
+        "volume": 0.9
+      },
+      {
+        "name": "piglinproliferation:mob/piglin/traveller/angry4",
+        "volume": 0.9
+      }
+    ],
+    "subtitle": "subtitles.entity.piglin_traveller.angry"
+  },
+  "entity.piglin_traveller.admire": {
+    "sounds": [
+      {
+        "name": "piglinproliferation:mob/piglin/traveller/admire1",
+        "volume": 0.9
+      }
+    ],
+    "subtitle": "subtitles.entity.piglin_traveller.admire"
+  },
+  "entity.piglin_traveller.conversion": {
+    "sounds": [
+      {
+        "name": "mob/piglin/converted1",
+        "volume": 0.9
+      },
+      {
+        "name": "mob/piglin/converted2",
+        "volume": 0.9
+      }
+    ],
+    "subtitle": "subtitles.entity.piglin_traveller.conversion"
   }
 }

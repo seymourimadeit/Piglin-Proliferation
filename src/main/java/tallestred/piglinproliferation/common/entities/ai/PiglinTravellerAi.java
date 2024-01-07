@@ -280,19 +280,19 @@ public class PiglinTravellerAi extends PiglinAi {
 
     private static SoundEvent getAlchemistSoundForActivity(Piglin piglin, Activity activity) {
         if (activity == Activity.FIGHT) {
-            return PPSounds.ALCHEMIST_ANGRY.get();
+            return PPSounds.TRAVELLER_ANGRY.get();
         } else if (piglin.isConverting()) {
-            return PPSounds.ALCHEMIST_RETREAT.get();
+            return PPSounds.TRAVELLER_RETREAT.get();
         } else if (activity == Activity.AVOID && isNearAvoidTarget(piglin)) {
-            return PPSounds.ALCHEMIST_RETREAT.get();
+            return PPSounds.TRAVELLER_RETREAT.get();
         } else if (activity == Activity.ADMIRE_ITEM) {
-            return PPSounds.ALCHEMIST_ADMIRE.get();
+            return PPSounds.TRAVELLER_ADMIRE.get();
         } else if (activity == Activity.CELEBRATE) {
-            return PPSounds.ALCHEMIST_CELEBRATE.get();
+            return PPSounds.TRAVELLER_CELEBRATE.get();
         } else if (seesPlayerHoldingLovedItem(piglin)) {
-            return PPSounds.ALCHEMIST_JEALOUS.get();
+            return PPSounds.TRAVELLER_JEALOUS.get();
         } else {
-            return isNearRepellent(piglin) ? PPSounds.ALCHEMIST_RETREAT.get() : PPSounds.ALCHEMIST_IDLE.get();
+            return isNearRepellent(piglin) ? PPSounds.TRAVELLER_RETREAT.get() : PPSounds.TRAVELLER_IDLE.get();
         }
     }
 

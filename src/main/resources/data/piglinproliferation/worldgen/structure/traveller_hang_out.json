@@ -14,7 +14,7 @@
     }
   },
   "start_pool": "piglinproliferation:log_pool",
-  "step": "underground_decoration",
+  "step": "surface_structures",
   "use_expansion_hack": false,
   "terrain_adaptation": "beard_box"
 }

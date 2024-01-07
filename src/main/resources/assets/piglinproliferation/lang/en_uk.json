@@ -3,5 +3,15 @@
   "block.piglinproliferation.piglin_traveller_head": "Piglin Traveller Head",
   "block.piglinproliferation.piglin_traveller_wall_head": "Piglin Traveller Wall Head",
   "item.piglinproliferation.travellers_compass": "Piglin Traveller's Compass",
-  "subtitles.entity.traveller.making_compass": "Traveller makes compass"
+  "subtitles.entity.traveller.making_compass": "Piglin Traveller makes compass",
+  "subtitles.entity.piglin_traveller.idle": "Piglin Traveller grunts",
+  "subtitles.entity.piglin_traveller.hurt": "Piglin Traveller hurts",
+  "subtitles.entity.piglin_traveller.admire": "Piglin Traveller admires",
+  "subtitles.entity.piglin_traveller.jealous": "Piglin Traveller snorts enviously",
+  "subtitles.entity.piglin_traveller.retreat": "Piglin Traveller retreats",
+  "subtitles.entity.piglin_traveller.death": "Piglin Traveller dies",
+  "subtitles.entity.piglin_traveller.celebrate": "Piglin Traveller celebrates",
+  "subtitles.entity.piglin_traveller.angry": "Piglin Traveller snorts angrily",
+  "subtitles.entity.piglin_traveller.conversion": "Piglin Traveller converts to Zombified Piglin",
+  "subtitles.entity.piglin_traveller.step": "Piglin Traveller steps"
 }

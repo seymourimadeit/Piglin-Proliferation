@@ -34,6 +34,7 @@ import net.minecraftforge.fml.event.lifecycle.InterModProcessEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import tallestred.piglinproliferation.client.PPSounds;
 import tallestred.piglinproliferation.common.enchantments.PPEnchantments;
+import tallestred.piglinproliferation.common.entities.PiglinTraveller;
 import tallestred.piglinproliferation.common.items.BucklerItem;
 import tallestred.piglinproliferation.common.items.PPItems;
 import tallestred.piglinproliferation.common.blockentities.PPBlockEntities;
@@ -141,6 +142,7 @@ public class PiglinProliferation {
 
     private void addSpawn(final SpawnPlacementRegisterEvent event) {
         event.register(PPEntityTypes.PIGLIN_ALCHEMIST.get(), SpawnPlacements.Type.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, PiglinAlchemist::checkChemistSpawnRules, SpawnPlacementRegisterEvent.Operation.AND);
+        event.register(PPEntityTypes.PIGLIN_TRAVELLER.get(), SpawnPlacements.Type.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, PiglinTraveller::checkTravellerSpawnRules, SpawnPlacementRegisterEvent.Operation.AND);
     }
 
     private void setup(final FMLCommonSetupEvent event) {
