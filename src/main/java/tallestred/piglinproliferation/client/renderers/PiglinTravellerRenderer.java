@@ -17,7 +17,7 @@ import tallestred.piglinproliferation.common.entities.PiglinTraveller;
 
 public class PiglinTravellerRenderer extends PiglinRenderer {
     public PiglinTravellerRenderer(EntityRendererProvider.Context context) {
-        super(context, PPClientEvents.PIGLIN_TRAVELLER, ModelLayers.PIGLIN_INNER_ARMOR, ModelLayers.PIGLIN_OUTER_ARMOR, false);
+        super(context, PPClientEvents.PIGLIN_TRAVELLER, ModelLayers.PIGLIN_INNER_ARMOR, PPClientEvents.TRAVELLER_ARMOR_OUTER_LAYER, false);
         this.model = new PiglinTravellerModel(context.bakeLayer(PPClientEvents.PIGLIN_TRAVELLER));
     }
 
