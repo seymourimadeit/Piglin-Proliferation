@@ -13,6 +13,8 @@ import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.entity.ai.goal.RangedBowAttackGoal;
+import net.minecraft.world.entity.ai.goal.RangedCrossbowAttackGoal;
 import net.minecraft.world.entity.ai.memory.MemoryModuleType;
 import net.minecraft.world.entity.monster.Creeper;
 import net.minecraft.world.entity.monster.Ghast;
@@ -46,6 +48,8 @@ import tallestred.piglinproliferation.capablities.*;
 import tallestred.piglinproliferation.client.PPSounds;
 import tallestred.piglinproliferation.common.blocks.PPBlocks;
 import tallestred.piglinproliferation.common.enchantments.PPEnchantments;
+import tallestred.piglinproliferation.common.entities.ai.goals.DumbBowAttackGoal;
+import tallestred.piglinproliferation.common.entities.ai.goals.DumbCrossbowAttackGoal;
 import tallestred.piglinproliferation.common.entities.ai.goals.PiglinCallForHelpGoal;
 import tallestred.piglinproliferation.common.entities.ai.goals.PiglinSwimInLavaGoal;
 import tallestred.piglinproliferation.common.items.BucklerItem;
@@ -94,6 +98,8 @@ public class PPEvents {
                 if (transformationSource != null)
                     PPNetworking.INSTANCE.send(new ZiglinCapablitySyncPacket(ziglin.getId(), transformationSource.getTransformationSource()), PacketDistributor.TRACKING_ENTITY.with(ziglin));
             }
+            ziglin.goalSelector.addGoal(2, new DumbBowAttackGoal(ziglin, 0.5D, 20, 15.0F));
+            ziglin.goalSelector.addGoal(2, new DumbCrossbowAttackGoal(ziglin, 1.0D, 8.0F));
         }
         if (event.getEntity() instanceof AbstractPiglin piglin) {
             piglin.goalSelector.addGoal(0, new PiglinCallForHelpGoal(piglin, (piglin1) -> piglin1.isOnFire() && !piglin1.hasEffect(MobEffects.FIRE_RESISTANCE), (alchemist -> alchemist.getItemShownOnOffhand() != null && PotionUtils.getPotion(alchemist.getItemShownOnOffhand()) == Potions.FIRE_RESISTANCE)));
@@ -235,6 +241,11 @@ public class PPEvents {
                 event.setCanceled(true);
             }
         }
+        if (event.getEntity() instanceof ZombifiedPiglin) {
+            if (event.getOriginalTarget() instanceof ZombifiedPiglin) {
+                event.setCanceled(true);
+            }
+        }
     }
 
     @SubscribeEvent
@@ -292,13 +303,14 @@ public class PPEvents {
                 float bruteChance = PPConfig.COMMON.zombifiedBruteChance.get().floatValue();
                 if (tSource.getTransformationSource().equals("piglin")) {
                     if (rSource.nextFloat() < bruteChance) {
-                        zombifiedPiglin.setItemSlot(EquipmentSlot.MAINHAND, new ItemStack(Items.GOLDEN_AXE));
                         tSource.setTransformationSource("piglin_brute");
+                        zombifiedPiglin.setItemSlot(EquipmentSlot.MAINHAND, new ItemStack(Items.GOLDEN_AXE));
                         zombifiedPiglin.setItemSlot(EquipmentSlot.OFFHAND, new ItemStack(PPItems.BUCKLER.get()));
-                    }
-                    if (rSource.nextFloat() < PPConfig.COMMON.zombifiedAlchemistChance.get().floatValue()) {
+                    } else if (rSource.nextFloat() < PPConfig.COMMON.zombifiedAlchemistChance.get().floatValue()) {
                         zombifiedPiglin.setItemSlot(EquipmentSlot.MAINHAND, new ItemStack(Items.BOW));
                         tSource.setTransformationSource("piglin_alchemist");
+                    } else if (rSource.nextFloat() < PPConfig.COMMON.crossbowChance.get().floatValue()) {
+                        zombifiedPiglin.setItemSlot(EquipmentSlot.MAINHAND, new ItemStack(Items.CROSSBOW));
                     }
                 }
             }
