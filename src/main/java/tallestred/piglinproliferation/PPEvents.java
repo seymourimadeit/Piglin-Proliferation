@@ -303,13 +303,16 @@ public class PPEvents {
                 float bruteChance = PPConfig.COMMON.zombifiedBruteChance.get().floatValue();
                 if (tSource.getTransformationSource().equals("piglin")) {
                     if (rSource.nextFloat() < bruteChance) {
+                        event.setCanceled(true);
                         tSource.setTransformationSource("piglin_brute");
                         zombifiedPiglin.setItemSlot(EquipmentSlot.MAINHAND, new ItemStack(Items.GOLDEN_AXE));
                         zombifiedPiglin.setItemSlot(EquipmentSlot.OFFHAND, new ItemStack(PPItems.BUCKLER.get()));
                     } else if (rSource.nextFloat() < PPConfig.COMMON.zombifiedAlchemistChance.get().floatValue()) {
+                        event.setCanceled(true);
                         zombifiedPiglin.setItemSlot(EquipmentSlot.MAINHAND, new ItemStack(Items.BOW));
                         tSource.setTransformationSource("piglin_alchemist");
                     } else if (rSource.nextFloat() < PPConfig.COMMON.crossbowChance.get().floatValue()) {
+                        event.setCanceled(true);
                         zombifiedPiglin.setItemSlot(EquipmentSlot.MAINHAND, new ItemStack(Items.CROSSBOW));
                     }
                 }

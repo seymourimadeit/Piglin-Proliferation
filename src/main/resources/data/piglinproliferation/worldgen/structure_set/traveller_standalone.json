@@ -1,0 +1,14 @@
+{
+  "structures": [
+    {
+      "structure": "piglinproliferation:traveller_standalone",
+      "weight": 1
+    }
+  ],
+  "placement": {
+    "salt": 121545697,
+    "spacing": 12,
+    "separation": 6,
+    "type": "minecraft:random_spread"
+  }
+}

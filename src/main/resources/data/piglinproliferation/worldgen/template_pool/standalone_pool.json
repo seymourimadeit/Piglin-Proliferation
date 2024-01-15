@@ -1,13 +1,13 @@
 {
-  "name": "piglinproliferation:log_pool",
+  "name": "piglinproliferation:standalone_pool",
   "fallback": "minecraft:empty",
   "elements": [
-	{	
+    {
       "weight": 1,
       "element": {
-        "location": "piglinproliferation:traveller_hangout/traveler_logs_0",
+        "location": "piglinproliferation:traveller_hangout/campfire_traveller_standalone",
         "processors": "minecraft:empty",
-		"projection": "rigid",
+        "projection": "rigid",
         "element_type": "minecraft:single_pool_element"
       }
     }
