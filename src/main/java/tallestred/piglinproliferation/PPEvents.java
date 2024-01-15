@@ -18,6 +18,7 @@ import net.minecraft.world.entity.ai.goal.RangedCrossbowAttackGoal;
 import net.minecraft.world.entity.ai.memory.MemoryModuleType;
 import net.minecraft.world.entity.monster.Creeper;
 import net.minecraft.world.entity.monster.Ghast;
+import net.minecraft.world.entity.monster.Strider;
 import net.minecraft.world.entity.monster.ZombifiedPiglin;
 import net.minecraft.world.entity.monster.piglin.AbstractPiglin;
 import net.minecraft.world.entity.monster.piglin.PiglinBrute;
@@ -314,6 +315,8 @@ public class PPEvents {
                     } else if (rSource.nextFloat() < PPConfig.COMMON.crossbowChance.get().floatValue()) {
                         event.setCanceled(true);
                         zombifiedPiglin.setItemSlot(EquipmentSlot.MAINHAND, new ItemStack(Items.CROSSBOW));
+                    } else if (zombifiedPiglin.getControlledVehicle() instanceof Strider) {
+                        tSource.setTransformationSource("piglin_traveller");
                     }
                 }
             }
@@ -324,8 +327,7 @@ public class PPEvents {
     public static void visionPercent(LivingEvent.LivingVisibilityEvent event) {
         if (event.getLookingEntity() != null) {
             ItemStack itemstack = event.getEntity().getItemBySlot(EquipmentSlot.HEAD);
-            EntityType<?> entitytype = event.getLookingEntity().getType();
-            if (event.getLookingEntity() instanceof AbstractPiglin && (itemstack.is(PPItems.PIGLIN_ALCHEMIST_HEAD_ITEM.get()) || itemstack.is(PPItems.PIGLIN_BRUTE_HEAD_ITEM.get())) || entitytype == EntityType.ZOMBIFIED_PIGLIN && itemstack.is(PPItems.ZOMBIFIED_PIGLIN_HEAD_ITEM.get())) {
+            if (event.getLookingEntity() instanceof AbstractPiglin && (itemstack.is(PPItems.PIGLIN_ALCHEMIST_HEAD_ITEM.get()) || itemstack.is(PPItems.PIGLIN_BRUTE_HEAD_ITEM.get())) || itemstack.is(PPItems.ZOMBIFIED_PIGLIN_HEAD_ITEM.get()) || itemstack.is(PPItems.PIGLIN_TRAVELLER_HEAD_ITEM.get())) {
                 event.modifyVisibility(0.5D);
             }
         }
