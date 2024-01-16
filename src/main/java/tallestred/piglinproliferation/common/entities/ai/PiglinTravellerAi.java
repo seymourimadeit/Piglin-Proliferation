@@ -3,12 +3,6 @@ package tallestred.piglinproliferation.common.entities.ai;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import com.mojang.datafixers.util.Pair;
-
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.util.RandomSource;
@@ -17,31 +11,7 @@ import net.minecraft.util.valueproviders.UniformInt;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.Brain;
-import net.minecraft.world.entity.ai.behavior.BackUpIfTooClose;
-import net.minecraft.world.entity.ai.behavior.BehaviorControl;
-import net.minecraft.world.entity.ai.behavior.BehaviorUtils;
-import net.minecraft.world.entity.ai.behavior.CopyMemoryWithExpiry;
-import net.minecraft.world.entity.ai.behavior.CrossbowAttack;
-import net.minecraft.world.entity.ai.behavior.DoNothing;
-import net.minecraft.world.entity.ai.behavior.EraseMemoryIf;
-import net.minecraft.world.entity.ai.behavior.InteractWith;
-import net.minecraft.world.entity.ai.behavior.InteractWithDoor;
-import net.minecraft.world.entity.ai.behavior.LookAtTargetSink;
-import net.minecraft.world.entity.ai.behavior.MeleeAttack;
-import net.minecraft.world.entity.ai.behavior.MoveToTargetSink;
-import net.minecraft.world.entity.ai.behavior.OneShot;
-import net.minecraft.world.entity.ai.behavior.RandomStroll;
-import net.minecraft.world.entity.ai.behavior.RunOne;
-import net.minecraft.world.entity.ai.behavior.SetEntityLookTarget;
-import net.minecraft.world.entity.ai.behavior.SetEntityLookTargetSometimes;
-import net.minecraft.world.entity.ai.behavior.SetLookAndInteract;
-import net.minecraft.world.entity.ai.behavior.SetWalkTargetAwayFrom;
-import net.minecraft.world.entity.ai.behavior.SetWalkTargetFromAttackTargetIfTargetOutOfReach;
-import net.minecraft.world.entity.ai.behavior.SetWalkTargetFromLookTarget;
-import net.minecraft.world.entity.ai.behavior.StartAttacking;
-import net.minecraft.world.entity.ai.behavior.StartCelebratingIfTargetDead;
-import net.minecraft.world.entity.ai.behavior.StopAttackingIfTargetInvalid;
-import net.minecraft.world.entity.ai.behavior.StopBeingAngryIfTargetDead;
+import net.minecraft.world.entity.ai.behavior.*;
 import net.minecraft.world.entity.ai.behavior.declarative.BehaviorBuilder;
 import net.minecraft.world.entity.ai.memory.MemoryModuleType;
 import net.minecraft.world.entity.ai.sensing.Sensor;
@@ -50,7 +20,8 @@ import net.minecraft.world.entity.monster.hoglin.Hoglin;
 import net.minecraft.world.entity.monster.piglin.*;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.schedule.Activity;
-import net.minecraft.world.item.*;
+import net.minecraft.world.item.CrossbowItem;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.storage.loot.LootParams;
 import net.minecraft.world.level.storage.loot.LootTable;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
@@ -59,23 +30,28 @@ import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.fml.util.ObfuscationReflectionHelper;
 import tallestred.piglinproliferation.PPActivities;
 import tallestred.piglinproliferation.client.PPSounds;
-import tallestred.piglinproliferation.common.loot_tables.PPLootTables;
 import tallestred.piglinproliferation.common.entities.PiglinTraveller;
-import tallestred.piglinproliferation.common.entities.ai.behaviors.*;
+import tallestred.piglinproliferation.common.entities.ai.behaviors.MoveAroundPiglins;
+import tallestred.piglinproliferation.common.entities.ai.behaviors.StopHoldingItemAfterAdmiring;
+import tallestred.piglinproliferation.common.entities.ai.behaviors.SwimOnlyOutOfLava;
+import tallestred.piglinproliferation.common.entities.ai.behaviors.TravellerSit;
+import tallestred.piglinproliferation.common.loot_tables.PPLootTables;
+
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
 
 public class PiglinTravellerAi extends PiglinAi {
     private static final UniformInt RIDE_START_INTERVAL = TimeUtil.rangeOfSeconds(10, 40);
     private static final UniformInt RIDE_DURATION = TimeUtil.rangeOfSeconds(10, 30);
     private static final UniformInt AVOID_ZOMBIFIED_DURATION = TimeUtil.rangeOfSeconds(5, 7);
     private static final UniformInt BABY_AVOID_NEMESIS_DURATION = TimeUtil.rangeOfSeconds(5, 7);
-    private static final Method hoglinRiding = ObfuscationReflectionHelper.findMethod(PiglinAi.class, "m_34973_",
-            Brain.class);
-    private static final Method retreatActivity = ObfuscationReflectionHelper.findMethod(PiglinAi.class, "m_34958_",
-            Brain.class);
-    private static final Method celebrateActivity = ObfuscationReflectionHelper.findMethod(PiglinAi.class, "m_34920_",
-            Brain.class);
-    private static final Method admireItem = ObfuscationReflectionHelper.findMethod(PiglinAi.class, "m_34940_",
-            Brain.class);
+    private static final Method hoglinRiding = ObfuscationReflectionHelper.findMethod(PiglinAi.class, "m_34973_", Brain.class);
+    private static final Method retreatActivity = ObfuscationReflectionHelper.findMethod(PiglinAi.class, "m_34958_", Brain.class);
+    private static final Method celebrateActivity = ObfuscationReflectionHelper.findMethod(PiglinAi.class, "m_34920_", Brain.class);
+    private static final Method admireItem = ObfuscationReflectionHelper.findMethod(PiglinAi.class, "m_34940_", Brain.class);
     // This has to be done because I don't feel like copying and pasting every method from PiglinAi
 
     public PiglinTravellerAi() {
@@ -101,7 +77,7 @@ public class PiglinTravellerAi extends PiglinAi {
     }
 
     private static void initFightActivity(PiglinTraveller piglin, Brain<PiglinTraveller> brain) {
-        brain.addActivityAndRemoveMemoryWhenStopped(Activity.FIGHT,10, ImmutableList.<net.minecraft.world.entity.ai.behavior.BehaviorControl<? super Piglin>>of(StopAttackingIfTargetInvalid.create((p_34981_) -> {
+        brain.addActivityAndRemoveMemoryWhenStopped(Activity.FIGHT, 10, ImmutableList.<net.minecraft.world.entity.ai.behavior.BehaviorControl<? super Piglin>>of(StopAttackingIfTargetInvalid.create((p_34981_) -> {
             return !isNearestValidAttackTarget(piglin, p_34981_);
         }), BehaviorBuilder.triggerIf(PiglinTravellerAi::hasCrossbow, BackUpIfTooClose.create(5, 0.75F)), SetWalkTargetFromAttackTargetIfTargetOutOfReach.create(1.0F), MeleeAttack.create(20), new CrossbowAttack(), RememberIfHoglinWasKilled.create(), EraseMemoryIf.create(PiglinTravellerAi::isNearZombified, MemoryModuleType.ATTACK_TARGET)), MemoryModuleType.ATTACK_TARGET);
     }
@@ -127,7 +103,7 @@ public class PiglinTravellerAi extends PiglinAi {
     }
 
     private static RunOne<Piglin> createIdleMovementBehaviors() {
-        return new RunOne<>(ImmutableList.of(Pair.of(MoveAroundPiglins.moveAroundPiglins(0.6F, true), 2), Pair.of(RandomStroll.stroll(0.6F), 2), Pair.of(InteractWith.of(EntityType.PIGLIN, 8, MemoryModuleType.INTERACTION_TARGET, 0.6F, 2), 2), Pair.of(BehaviorBuilder.triggerIf(PiglinTravellerAi::doesntSeeAnyPlayerHoldingLovedItem, SetWalkTargetFromLookTarget.create(0.6F, 3)), 2), Pair.of(new DoNothing(30, 60), 1)));
+        return new RunOne<>(ImmutableList.of(Pair.of(MoveAroundPiglins.moveAroundPiglins(0.6F, true), 2), Pair.of(new TravellerSit(), 1), Pair.of(RandomStroll.stroll(0.6F), 2), Pair.of(InteractWith.of(EntityType.PIGLIN, 8, MemoryModuleType.INTERACTION_TARGET, 0.6F, 2), 2), Pair.of(BehaviorBuilder.triggerIf(PiglinTravellerAi::doesntSeeAnyPlayerHoldingLovedItem, SetWalkTargetFromLookTarget.create(0.6F, 3)), 2), Pair.of(StrollToPoi.create(MemoryModuleType.HOME, 0.6F, 2, 100), 2), Pair.of(StrollAroundPoi.create(MemoryModuleType.HOME, 0.6F, 5), 2), Pair.of(new DoNothing(30, 60), 1)));
     }
 
     private static ImmutableList<Pair<OneShot<LivingEntity>, Integer>> createLookBehaviors() {
@@ -230,7 +206,7 @@ public class PiglinTravellerAi extends PiglinAi {
 
     private static List<ItemStack> getBarterResponseItems(Piglin piglin) {
         LootTable loottable = piglin.level().getServer().getLootData().getLootTable(PPLootTables.ALCHEMIST_BARTER);
-        List<ItemStack> list = loottable.getRandomItems((new LootParams.Builder((ServerLevel)piglin.level())).withParameter(LootContextParams.THIS_ENTITY, piglin).create(LootContextParamSets.PIGLIN_BARTER));
+        List<ItemStack> list = loottable.getRandomItems((new LootParams.Builder((ServerLevel) piglin.level())).withParameter(LootContextParams.THIS_ENTITY, piglin).create(LootContextParamSets.PIGLIN_BARTER));
         return list;
     }
 
@@ -304,19 +280,19 @@ public class PiglinTravellerAi extends PiglinAi {
 
     private static SoundEvent getAlchemistSoundForActivity(Piglin piglin, Activity activity) {
         if (activity == Activity.FIGHT) {
-            return PPSounds.ALCHEMIST_ANGRY.get();
+            return PPSounds.TRAVELLER_ANGRY.get();
         } else if (piglin.isConverting()) {
-            return PPSounds.ALCHEMIST_RETREAT.get();
+            return PPSounds.TRAVELLER_RETREAT.get();
         } else if (activity == Activity.AVOID && isNearAvoidTarget(piglin)) {
-            return PPSounds.ALCHEMIST_RETREAT.get();
+            return PPSounds.TRAVELLER_RETREAT.get();
         } else if (activity == Activity.ADMIRE_ITEM) {
-            return PPSounds.ALCHEMIST_ADMIRE.get();
+            return PPSounds.TRAVELLER_ADMIRE.get();
         } else if (activity == Activity.CELEBRATE) {
-            return PPSounds.ALCHEMIST_CELEBRATE.get();
+            return PPSounds.TRAVELLER_CELEBRATE.get();
         } else if (seesPlayerHoldingLovedItem(piglin)) {
-            return PPSounds.ALCHEMIST_JEALOUS.get();
+            return PPSounds.TRAVELLER_JEALOUS.get();
         } else {
-            return isNearRepellent(piglin) ? PPSounds.ALCHEMIST_RETREAT.get() : PPSounds.ALCHEMIST_IDLE.get();
+            return isNearRepellent(piglin) ? PPSounds.TRAVELLER_RETREAT.get() : PPSounds.TRAVELLER_IDLE.get();
         }
     }
 
@@ -335,13 +311,10 @@ public class PiglinTravellerAi extends PiglinAi {
         Activity activity = brain.getActiveNonCoreActivity().orElse(null);
         brain.setActiveActivityToFirstValid(ImmutableList.of(PPActivities.THROW_POTION_ACTIVITY.get(), Activity.ADMIRE_ITEM, Activity.FIGHT, Activity.AVOID, Activity.CELEBRATE, Activity.RIDE, Activity.IDLE));
         Activity activity1 = brain.getActiveNonCoreActivity().orElse(null);
-        if (activity != activity1)
-            getAlchemistSoundForCurrentActivity(piglin).ifPresent(piglin::playSoundEvent);
+        if (activity != activity1) getAlchemistSoundForCurrentActivity(piglin).ifPresent(piglin::playSoundEvent);
         piglin.setAggressive(brain.hasMemoryValue(MemoryModuleType.ATTACK_TARGET));
-        if (!brain.hasMemoryValue(MemoryModuleType.RIDE_TARGET) && isBabyRidingBaby(piglin))
-            piglin.stopRiding();
-        if (!brain.hasMemoryValue(MemoryModuleType.CELEBRATE_LOCATION))
-            brain.eraseMemory(MemoryModuleType.DANCING);
+        if (!brain.hasMemoryValue(MemoryModuleType.RIDE_TARGET) && isBabyRidingBaby(piglin)) piglin.stopRiding();
+        if (!brain.hasMemoryValue(MemoryModuleType.CELEBRATE_LOCATION)) brain.eraseMemory(MemoryModuleType.DANCING);
         piglin.setDancing(brain.hasMemoryValue(MemoryModuleType.DANCING));
     }
 }

@@ -1,5 +1,7 @@
 package tallestred.piglinproliferation.client;
 
+import net.minecraft.client.model.HumanoidArmorModel;
+import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.model.PiglinModel;
 import net.minecraft.client.model.geom.ModelLayerLocation;
 import net.minecraft.client.model.geom.builders.CubeDeformation;
@@ -50,6 +52,8 @@ public class PPClientEvents {
             new ResourceLocation(PiglinProliferation.MODID + "piglin_alchemist_belt"), "piglin_alchemist_belt");
     public static final ModelLayerLocation BUCKLER = new ModelLayerLocation(new ResourceLocation(PiglinProliferation.MODID + "buckler"),
             "buckler");
+    public static final ModelLayerLocation TRAVELLER_ARMOR_OUTER_LAYER = new ModelLayerLocation(
+            new ResourceLocation(PiglinProliferation.MODID + "traveller_outer_armor"), "traveller_outer_armor");
     public static final Material BUCKLER_TEXTURE = new Material(TextureAtlas.LOCATION_BLOCKS, new ResourceLocation(PiglinProliferation.MODID, "entity/buckler/golden_buckler"));
 
     @SubscribeEvent
@@ -60,6 +64,7 @@ public class PPClientEvents {
         event.registerLayerDefinition(ZIGLIN_CLOTHING, () -> LayerDefinition.create(PiglinModel.createMesh(new CubeDeformation(0.25F)), 64, 64));
         event.registerLayerDefinition(PIGLIN_ALCHEMIST, () -> LayerDefinition.create(PiglinAlchemistModel.createBodyLayer(new CubeDeformation(0.25F), new CubeDeformation(0.70F), new CubeDeformation(1.05F)), 120, 64));
         event.registerLayerDefinition(PIGLIN_TRAVELLER, PiglinTravellerModel::createBodyLayer);
+        event.registerLayerDefinition(TRAVELLER_ARMOR_OUTER_LAYER, () -> LayerDefinition.create(HumanoidArmorModel.createBodyLayer(new CubeDeformation(1.3F)), 64, 32));
         event.registerLayerDefinition(PIGLIN_ALCHEMIST_BELT_SLOTS, () -> LayerDefinition.create(PiglinAlchemistModel.createBodyLayer(new CubeDeformation(0.40F), new CubeDeformation(1.0F), new CubeDeformation(1.20F)), 120, 64));
         event.registerLayerDefinition(BUCKLER, ModelGoldenBuckler::createLayer);
     }
@@ -68,7 +73,7 @@ public class PPClientEvents {
     public static void entityRenderers(EntityRenderersEvent.RegisterRenderers event) {
         event.registerBlockEntityRenderer(PPBlockEntities.PIGLIN_SKULL.get(), SkullBlockRenderer::new);
         event.registerEntityRenderer(PPEntityTypes.PIGLIN_ALCHEMIST.get(), PiglinAlchemistRenderer::new);
-        //event.registerEntityRenderer(PPEntityTypes.PIGLIN_TRAVELLER.get(), PiglinTravellerRenderer::new);
+        event.registerEntityRenderer(PPEntityTypes.PIGLIN_TRAVELLER.get(), PiglinTravellerRenderer::new);
     }
 
     @SubscribeEvent

@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "piglinproliferation:item/travellers_compass_25"
+  }
+}

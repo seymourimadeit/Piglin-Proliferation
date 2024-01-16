@@ -13,9 +13,12 @@ import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.entity.ai.goal.RangedBowAttackGoal;
+import net.minecraft.world.entity.ai.goal.RangedCrossbowAttackGoal;
 import net.minecraft.world.entity.ai.memory.MemoryModuleType;
 import net.minecraft.world.entity.monster.Creeper;
 import net.minecraft.world.entity.monster.Ghast;
+import net.minecraft.world.entity.monster.Strider;
 import net.minecraft.world.entity.monster.ZombifiedPiglin;
 import net.minecraft.world.entity.monster.piglin.AbstractPiglin;
 import net.minecraft.world.entity.monster.piglin.PiglinBrute;
@@ -46,6 +49,8 @@ import tallestred.piglinproliferation.capablities.*;
 import tallestred.piglinproliferation.client.PPSounds;
 import tallestred.piglinproliferation.common.blocks.PPBlocks;
 import tallestred.piglinproliferation.common.enchantments.PPEnchantments;
+import tallestred.piglinproliferation.common.entities.ai.goals.DumbBowAttackGoal;
+import tallestred.piglinproliferation.common.entities.ai.goals.DumbCrossbowAttackGoal;
 import tallestred.piglinproliferation.common.entities.ai.goals.PiglinCallForHelpGoal;
 import tallestred.piglinproliferation.common.entities.ai.goals.PiglinSwimInLavaGoal;
 import tallestred.piglinproliferation.common.items.BucklerItem;
@@ -94,6 +99,8 @@ public class PPEvents {
                 if (transformationSource != null)
                     PPNetworking.INSTANCE.send(PacketDistributor.TRACKING_ENTITY.with(() -> ziglin), new ZiglinCapablitySyncPacket(ziglin.getId(), transformationSource.getTransformationSource()));
             }
+            ziglin.goalSelector.addGoal(2, new DumbBowAttackGoal(ziglin, 0.5D, 20, 15.0F));
+            ziglin.goalSelector.addGoal(2, new DumbCrossbowAttackGoal(ziglin, 1.0D, 8.0F));
         }
         if (event.getEntity() instanceof AbstractPiglin piglin) {
             piglin.goalSelector.addGoal(0, new PiglinCallForHelpGoal(piglin, (piglin1) -> piglin1.isOnFire() && !piglin1.hasEffect(MobEffects.FIRE_RESISTANCE), (alchemist -> alchemist.getItemShownOnOffhand() != null && PotionUtils.getPotion(alchemist.getItemShownOnOffhand()) == Potions.FIRE_RESISTANCE)));
@@ -129,18 +136,27 @@ public class PPEvents {
                 BucklerItem.spawnRunningEffectsWhileCharging(entity);
                 if (turningLevel == 0 && !entity.level().isClientSide()) BucklerItem.bucklerBash(entity);
             }
-            if (bucklerChargeTicks <= 0) {
-                AttributeInstance speed = entity.getAttribute(Attributes.MOVEMENT_SPEED);
-                AttributeInstance knockback = entity.getAttribute(Attributes.KNOCKBACK_RESISTANCE);
-                if (speed == null || knockback == null) {
-                    return;
-                }
-                knockback.removeModifier(KNOCKBACK_RESISTANCE);
-                speed.removeModifier(CHARGE_SPEED_BOOST);
-                entity.stopUsingItem();
-                BucklerItem.setChargeTicks(bucklerItemStack, 0);
-                BucklerItem.setReady(bucklerItemStack, false);
+        }
+        if (bucklerChargeTicks <= 0 && bucklerReadyToCharge || entity.getAttribute(Attributes.MOVEMENT_SPEED).hasModifier(CHARGE_SPEED_BOOST)
+                && (!(bucklerItemStack.getItem() instanceof BucklerItem) || !bucklerReadyToCharge)) {
+            AttributeInstance speed = entity.getAttribute(Attributes.MOVEMENT_SPEED);
+            AttributeInstance knockback = entity.getAttribute(Attributes.KNOCKBACK_RESISTANCE);
+            if (speed == null || knockback == null) {
+                return;
             }
+            knockback.removeModifier(KNOCKBACK_RESISTANCE_UUID);
+            speed.removeModifier(CHARGE_SPEED_UUID);
+            entity.stopUsingItem();
+            if (entity instanceof Player player) {
+                for (int slot = 0; slot < player.getInventory().getContainerSize(); slot++) {
+                    if (player.getInventory().getItem(slot).getItem() instanceof BucklerItem) {
+                        BucklerItem.setChargeTicks(player.getInventory().getItem(slot), 0);
+                        BucklerItem.setReady(player.getInventory().getItem(slot), false);
+                    }
+                }
+            }
+            BucklerItem.setChargeTicks(bucklerItemStack, 0);
+            BucklerItem.setReady(bucklerItemStack, false);
         }
         CriticalAfterCharge criticalAfterCharge = PPCapablities.getGuaranteedCritical(entity);
         if (criticalAfterCharge != null) {
@@ -226,6 +242,11 @@ public class PPEvents {
                 event.setCanceled(true);
             }
         }
+        if (event.getEntity() instanceof ZombifiedPiglin) {
+            if (event.getOriginalTarget() instanceof ZombifiedPiglin) {
+                event.setCanceled(true);
+            }
+        }
     }
 
     @SubscribeEvent
@@ -283,13 +304,19 @@ public class PPEvents {
                 float bruteChance = PPConfig.COMMON.zombifiedBruteChance.get().floatValue();
                 if (tSource.getTransformationSource().equals("piglin")) {
                     if (rSource.nextFloat() < bruteChance) {
-                        zombifiedPiglin.setItemSlot(EquipmentSlot.MAINHAND, new ItemStack(Items.GOLDEN_AXE));
+                        event.setCanceled(true);
                         tSource.setTransformationSource("piglin_brute");
+                        zombifiedPiglin.setItemSlot(EquipmentSlot.MAINHAND, new ItemStack(Items.GOLDEN_AXE));
                         zombifiedPiglin.setItemSlot(EquipmentSlot.OFFHAND, new ItemStack(PPItems.BUCKLER.get()));
-                    }
-                    if (rSource.nextFloat() < PPConfig.COMMON.zombifiedAlchemistChance.get().floatValue()) {
+                    } else if (rSource.nextFloat() < PPConfig.COMMON.zombifiedAlchemistChance.get().floatValue()) {
+                        event.setCanceled(true);
                         zombifiedPiglin.setItemSlot(EquipmentSlot.MAINHAND, new ItemStack(Items.BOW));
                         tSource.setTransformationSource("piglin_alchemist");
+                    } else if (rSource.nextFloat() < PPConfig.COMMON.crossbowChance.get().floatValue()) {
+                        event.setCanceled(true);
+                        zombifiedPiglin.setItemSlot(EquipmentSlot.MAINHAND, new ItemStack(Items.CROSSBOW));
+                    } else if (zombifiedPiglin.getControlledVehicle() instanceof Strider) {
+                        tSource.setTransformationSource("piglin_traveller");
                     }
                 }
             }
@@ -300,8 +327,7 @@ public class PPEvents {
     public static void visionPercent(LivingEvent.LivingVisibilityEvent event) {
         if (event.getLookingEntity() != null) {
             ItemStack itemstack = event.getEntity().getItemBySlot(EquipmentSlot.HEAD);
-            EntityType<?> entitytype = event.getLookingEntity().getType();
-            if (event.getLookingEntity() instanceof AbstractPiglin && (itemstack.is(PPItems.PIGLIN_ALCHEMIST_HEAD_ITEM.get()) || itemstack.is(PPItems.PIGLIN_BRUTE_HEAD_ITEM.get())) || entitytype == EntityType.ZOMBIFIED_PIGLIN && itemstack.is(PPItems.ZOMBIFIED_PIGLIN_HEAD_ITEM.get())) {
+            if (event.getLookingEntity() instanceof AbstractPiglin && (itemstack.is(PPItems.PIGLIN_ALCHEMIST_HEAD_ITEM.get()) || itemstack.is(PPItems.PIGLIN_BRUTE_HEAD_ITEM.get())) || itemstack.is(PPItems.ZOMBIFIED_PIGLIN_HEAD_ITEM.get()) || itemstack.is(PPItems.PIGLIN_TRAVELLER_HEAD_ITEM.get())) {
                 event.modifyVisibility(0.5D);
             }
         }

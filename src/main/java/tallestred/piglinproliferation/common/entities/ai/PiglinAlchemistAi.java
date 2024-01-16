@@ -36,7 +36,9 @@ import tallestred.piglinproliferation.PPActivities;
 import tallestred.piglinproliferation.PPMemoryModules;
 import tallestred.piglinproliferation.client.PPSounds;
 import tallestred.piglinproliferation.common.entities.PiglinAlchemist;
+import tallestred.piglinproliferation.common.entities.PiglinTraveller;
 import tallestred.piglinproliferation.common.entities.ai.behaviors.*;
+import tallestred.piglinproliferation.common.items.TravellersCompassItem;
 import tallestred.piglinproliferation.common.loot_tables.PPLootTables;
 
 import java.lang.reflect.InvocationTargetException;
@@ -239,7 +241,6 @@ public class PiglinAlchemistAi extends PiglinAi {
                 piglin.setPersistenceRequired();
             }
         }
-
     }
 
     private static void putInInventory(Piglin piglin, ItemStack item) {
@@ -265,21 +266,19 @@ public class PiglinAlchemistAi extends PiglinAi {
         throwItemsTowardPos(p_34851_, p_34853_, p_34852_.position());
     }
 
-    private static void throwItemsTowardPos(Piglin p_34864_, List<ItemStack> p_34865_, Vec3 p_34866_) {
-        if (!p_34865_.isEmpty()) {
-            p_34864_.swing(InteractionHand.OFF_HAND);
+    private static void throwItemsTowardPos(Piglin piglin, List<ItemStack> itemstack, Vec3 pos) {
+        if (!itemstack.isEmpty()) {
+            piglin.swing(InteractionHand.OFF_HAND);
 
-            for (ItemStack itemstack : p_34865_) {
-                BehaviorUtils.throwItem(p_34864_, itemstack, p_34866_.add(0.0D, 1.0D, 0.0D));
+            for (ItemStack stack : itemstack) {
+                if (piglin instanceof PiglinTraveller traveller && stack.getItem() instanceof TravellersCompassItem) {
+                    traveller.playBarteringAnimation();
+                    piglin.level().playSound(null, piglin.getX(), piglin.getY(), piglin.getZ(), PPSounds.MAKING_COMPASS.get(), piglin.getSoundSource(), 1.0F, 1.0F);
+                }
+                BehaviorUtils.throwItem(piglin, stack, pos.add(0.0D, 1.0D, 0.0D));
             }
         }
 
-    }
-
-    private static List<ItemStack> getBarterResponseItems(Piglin piglin) {
-        LootTable loottable = piglin.level().getServer().getLootData().getLootTable(PPLootTables.ALCHEMIST_BARTER);
-        List<ItemStack> list = loottable.getRandomItems((new LootParams.Builder((ServerLevel) piglin.level())).withParameter(LootContextParams.THIS_ENTITY, piglin).create(LootContextParamSets.PIGLIN_BARTER));
-        return list;
     }
 
     private static boolean hasCrossbow(LivingEntity entity) {

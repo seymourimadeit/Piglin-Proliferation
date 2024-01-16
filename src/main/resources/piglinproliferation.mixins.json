@@ -7,12 +7,12 @@
     "LookControllerMixin",
     "MovementControllerMixin",
     "NoteBlockMixin",
-    "PiglinBruteBrainMixin",
-    "ZombifiedPiglinMixin"
+    "PiglinBruteBrainMixin"
   ],
   "client": [
     "MouseHelperMixin",
-    "HumanoidModelMixin"
+    "HumanoidModelMixin",
+    "PiglinModelMixin"
   ],
   "injectors": {
     "defaultRequire": 1

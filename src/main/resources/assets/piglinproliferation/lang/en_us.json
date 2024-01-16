@@ -50,5 +50,20 @@
    "item.piglinproliferation.travellers_compass.desc.bastion": "Bastion",
    "item.piglinproliferation.travellers_compass.desc.nether_fortress": "Nether Fortress",
    "item.piglinproliferation.travellers_compass.desc.ruined_portal_nether": "Ruined Portal",
-   "item.piglinproliferation.travellers_compass.desc.is_warped_forest": "Warped Forest"
+   "item.piglinproliferation.travellers_compass.desc.is_warped_forest": "Warped Forest",
+   "item.piglinproliferation.travellers_compass.desc.is_crimson_forest": "Crimson Forest",
+   "item.piglinproliferation.travellers_compass.desc.is_soul_sand_valley": "Soul Sand Valley",
+   "item.piglinproliferation.travellers_compass.desc.is_basalt_delta": "Basalt Deltas",
+   "item.piglinproliferation.travellers_compass.desc.is_nether_wastes": "Nether Wastes",
+   "subtitles.entity.traveller.making_compass": "Piglin Traveler makes compass",
+   "subtitles.entity.piglin_traveller.idle": "Piglin Traveler grunts",
+   "subtitles.entity.piglin_traveller.hurt": "Piglin Traveler hurts",
+   "subtitles.entity.piglin_traveller.admire": "Piglin Traveler admires",
+   "subtitles.entity.piglin_traveller.jealous": "Piglin Traveler snorts enviously",
+   "subtitles.entity.piglin_traveller.retreat": "Piglin Traveler retreats",
+   "subtitles.entity.piglin_traveller.death": "Piglin Traveler dies",
+   "subtitles.entity.piglin_traveller.celebrate": "Piglin Traveler celebrates",
+   "subtitles.entity.piglin_traveller.angry": "Piglin Traveler snorts angrily",
+   "subtitles.entity.piglin_traveller.conversion": "Piglin Traveler converts to Zombified Piglin",
+   "subtitles.entity.piglin_traveller.step": "Piglin Traveler steps"
 }

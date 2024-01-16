@@ -34,6 +34,7 @@ import net.minecraftforge.fml.event.lifecycle.InterModProcessEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import tallestred.piglinproliferation.client.PPSounds;
 import tallestred.piglinproliferation.common.enchantments.PPEnchantments;
+import tallestred.piglinproliferation.common.entities.PiglinTraveller;
 import tallestred.piglinproliferation.common.items.BucklerItem;
 import tallestred.piglinproliferation.common.items.PPItems;
 import tallestred.piglinproliferation.common.blockentities.PPBlockEntities;
@@ -120,20 +121,20 @@ public class PiglinProliferation {
     }
 
     private void addAttributes(final EntityAttributeCreationEvent event) {
-     //   event.put(PPEntityTypes.PIGLIN_TRAVELLER.get(), PiglinAlchemist.createAttributes().build());
+        event.put(PPEntityTypes.PIGLIN_TRAVELLER.get(), PiglinAlchemist.createAttributes().build());
         event.put(PPEntityTypes.PIGLIN_ALCHEMIST.get(), PiglinAlchemist.createAttributes().build());
     }
 
     private void addCreativeTabs(final BuildCreativeModeTabContentsEvent event) {
         if (event.getTabKey() == CreativeModeTabs.SPAWN_EGGS) {
             event.accept(PPItems.PIGLIN_ALCHEMIST_SPAWN_EGG.get());
-          //  event.accept(PPItems.PIGLIN_TRAVELLER_SPAWN_EGG.get());
+            event.accept(PPItems.PIGLIN_TRAVELLER_SPAWN_EGG.get());
         }
         if (event.getTabKey() == CreativeModeTabs.FUNCTIONAL_BLOCKS) {
             event.accept(PPItems.PIGLIN_ALCHEMIST_HEAD_ITEM.get());
             event.accept(PPItems.PIGLIN_BRUTE_HEAD_ITEM.get());
             event.accept(PPItems.ZOMBIFIED_PIGLIN_HEAD_ITEM.get());
-          //  event.accept(PPItems.PIGLIN_TRAVELLER_HEAD_ITEM.get());
+           event.accept(PPItems.PIGLIN_TRAVELLER_HEAD_ITEM.get());
         }
         if (event.getTabKey() == CreativeModeTabs.COMBAT)
             event.accept(PPItems.BUCKLER.get());
@@ -141,6 +142,7 @@ public class PiglinProliferation {
 
     private void addSpawn(final SpawnPlacementRegisterEvent event) {
         event.register(PPEntityTypes.PIGLIN_ALCHEMIST.get(), SpawnPlacements.Type.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, PiglinAlchemist::checkChemistSpawnRules, SpawnPlacementRegisterEvent.Operation.AND);
+        event.register(PPEntityTypes.PIGLIN_TRAVELLER.get(), SpawnPlacements.Type.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, PiglinTraveller::checkTravellerSpawnRules, SpawnPlacementRegisterEvent.Operation.AND);
     }
 
     private void setup(final FMLCommonSetupEvent event) {
