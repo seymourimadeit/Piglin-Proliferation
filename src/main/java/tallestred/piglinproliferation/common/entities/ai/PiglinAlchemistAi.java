@@ -92,7 +92,7 @@ public class PiglinAlchemistAi extends PiglinAi {
     }
 
     private static void initCoreActivity(Brain<PiglinAlchemist> brain, PiglinAlchemist alchemist) {
-        brain.addActivity(Activity.CORE, 0, ImmutableList.<net.minecraft.world.entity.ai.behavior.BehaviorControl<? super PiglinAlchemist>>of(new LookAtTargetSink(45, 90), new MoveToTargetSink(), InteractWithDoor.create(), new SwimOnlyOutOfLava(0.8F), avoidZombified(), generatePotionAi(alchemist), StopHoldingItemAfterAdmiring.create(PPLootTables.ALCHEMIST_BARTER), new ShootTippedArrow(1.5F, 15.0F, 20, PotionUtils.setPotion(new ItemStack(Items.TIPPED_ARROW), Potions.STRONG_HEALING), (piglin -> piglin.isAlive() && piglin.getHealth() < piglin.getMaxHealth())), StartAdmiringItemIfSeen.create(120), StartCelebratingIfTargetDead.create(300, PiglinAlchemistAi::wantsToDanceOnHoglin), StopBeingAngryIfTargetDead.create()));
+        brain.addActivity(Activity.CORE, 0, ImmutableList.<net.minecraft.world.entity.ai.behavior.BehaviorControl<? super PiglinAlchemist>>of(new LookAtTargetSink(45, 90), new MoveToTargetSink(), InteractWithDoor.create(), new SwimOnlyOutOfLava(0.8F), avoidZombified(), generatePotionAi(alchemist), StopHoldingItemAfterAdmiring.create(PPLootTables.ALCHEMIST_BARTER, PPLootTables.PIGLIN_BARTERING_CHEAP, PPLootTables.PIGLIN_BARTERING_EXPENSIVE), new ShootTippedArrow(1.5F, 15.0F, 20, PotionUtils.setPotion(new ItemStack(Items.TIPPED_ARROW), Potions.STRONG_HEALING), (piglin -> piglin.isAlive() && piglin.getHealth() < piglin.getMaxHealth())), StartAdmiringItemIfSeen.create(120), StartCelebratingIfTargetDead.create(300, PiglinAlchemistAi::wantsToDanceOnHoglin), StopBeingAngryIfTargetDead.create()));
     }
 
     private static void initIdleActivity(Brain<PiglinAlchemist> pBrain) {

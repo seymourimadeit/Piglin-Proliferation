@@ -83,7 +83,7 @@ public class PiglinTravellerAi extends PiglinAi {
     }
 
     private static void initCoreActivity(Brain<PiglinTraveller> brain, PiglinTraveller traveller) {
-        brain.addActivity(Activity.CORE, 0, ImmutableList.<net.minecraft.world.entity.ai.behavior.BehaviorControl<? super PiglinTraveller>>of(new LookAtTargetSink(45, 90), new MoveToTargetSink(), InteractWithDoor.create(), new SwimOnlyOutOfLava(0.8F), avoidZombified(), StopHoldingItemAfterAdmiring.create(PPLootTables.TRAVELLER_BARTER), StartAdmiringItemIfSeen.create(120), StartCelebratingIfTargetDead.create(300, PiglinTravellerAi::wantsToDanceOnHoglin), StopBeingAngryIfTargetDead.create()));
+        brain.addActivity(Activity.CORE, 0, ImmutableList.<net.minecraft.world.entity.ai.behavior.BehaviorControl<? super PiglinTraveller>>of(new LookAtTargetSink(45, 90), new MoveToTargetSink(), InteractWithDoor.create(), new SwimOnlyOutOfLava(0.8F), avoidZombified(), StopHoldingItemAfterAdmiring.create(PPLootTables.TRAVELLER_BARTER, PPLootTables.TRAVELLER_BARTER_CHEAP, PPLootTables.TRAVELLER_BARTER_EXPENSIVE), StartAdmiringItemIfSeen.create(120), StartCelebratingIfTargetDead.create(300, PiglinTravellerAi::wantsToDanceOnHoglin), StopBeingAngryIfTargetDead.create()));
     }
 
     private static void initIdleActivity(Brain<PiglinTraveller> pBrain) {
