@@ -26,6 +26,13 @@
                   }
                 }
               }
+            },
+            {
+              "condition": "minecraft:inverted",
+              "term": {
+                "condition": "piglinproliferation:travellers_compass_biome_already_rolled",
+                "destination": "piglinproliferation:is_warped_forest"
+              }
             }
           ]
         },
@@ -50,6 +57,13 @@
                     "biome": "minecraft:crimson_forest"
                   }
                 }
+              }
+            },
+            {
+              "condition": "minecraft:inverted",
+              "term": {
+                "condition": "piglinproliferation:travellers_compass_biome_already_rolled",
+                "destination": "piglinproliferation:is_crimson_forest"
               }
             }
           ]
@@ -76,6 +90,13 @@
                   }
                 }
               }
+            },
+            {
+              "condition": "minecraft:inverted",
+              "term": {
+                "condition": "piglinproliferation:travellers_compass_biome_already_rolled",
+                "destination": "piglinproliferation:is_basalt_delta"
+              }
             }
           ]
         },
@@ -100,6 +121,13 @@
                     "biome": "minecraft:nether_wastes"
                   }
                 }
+              }
+            },
+            {
+              "condition": "minecraft:inverted",
+              "term": {
+                "condition": "piglinproliferation:travellers_compass_biome_already_rolled",
+                "destination": "piglinproliferation:is_nether_wastes"
               }
             }
           ]
@@ -126,6 +154,13 @@
                   }
                 }
               }
+            },
+            {
+              "condition": "minecraft:inverted",
+              "term": {
+                "condition": "piglinproliferation:travellers_compass_biome_already_rolled",
+                "destination": "piglinproliferation:is_soul_sand_valley"
+              }
             }
           ]
         },
@@ -150,6 +185,13 @@
                     "structure": "minecraft:bastion_remnant"
                   }
                 }
+              }
+            },
+            {
+              "condition": "minecraft:inverted",
+              "term": {
+                "condition": "piglinproliferation:travellers_compass_structure_already_rolled",
+                "destination": "piglinproliferation:bastion"
               }
             }
           ]
@@ -176,18 +218,15 @@
                   }
                 }
               }
+            },
+            {
+              "condition": "minecraft:inverted",
+              "term": {
+                "condition": "piglinproliferation:travellers_compass_structure_already_rolled",
+                "destination": "piglinproliferation:ruined_portal_nether"
+              }
             }
           ]
-        },
-        {
-          "type": "minecraft:item",
-          "name": "minecraft:saddle",
-          "weight": 20
-        },
-        {
-          "type": "minecraft:item",
-          "name": "minecraft:warped_fungus_on_a_stick",
-          "weight": 10
         },
         {
           "type": "minecraft:item",
@@ -200,7 +239,7 @@
             }
           ],
           "conditions": [
-            {
+             {
               "condition": "minecraft:inverted",
               "term": {
                 "condition": "minecraft:entity_properties",
@@ -211,8 +250,25 @@
                   }
                 }
               }
+            },
+            {
+              "condition": "minecraft:inverted",
+              "term": {
+                "condition": "piglinproliferation:travellers_compass_structure_already_rolled",
+                "destination": "piglinproliferation:nether_fortress"
+              }
             }
           ]
+        },
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:saddle",
+          "weight": 20
+        },
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:warped_fungus_on_a_stick",
+          "weight": 10
         }
       ]
     }

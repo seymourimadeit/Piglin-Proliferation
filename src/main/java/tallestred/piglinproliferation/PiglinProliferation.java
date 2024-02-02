@@ -76,6 +76,7 @@ public class PiglinProliferation {
         PPEnchantments.ENCHANTMENTS.register(FMLJavaModLoadingContext.get().getModEventBus());
         PPLootModifiers.GLM.register(FMLJavaModLoadingContext.get().getModEventBus());
         PPLootTables.LOOT_ITEM_FUNCTION_TYPES.register(FMLJavaModLoadingContext.get().getModEventBus());
+        PPLootTables.LOOT_ITEM_CONDITION_TYPES.register(FMLJavaModLoadingContext.get().getModEventBus());
         ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, PPConfig.COMMON_SPEC);
         ModLoadingContext.get().registerConfig(ModConfig.Type.CLIENT, PPConfig.CLIENT_SPEC);
         PPNetworking.registerPackets();

@@ -6,12 +6,14 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.GlobalPos;
 import net.minecraft.core.particles.ItemParticleOption;
 import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
+import net.minecraft.tags.TagKey;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.DifficultyInstance;
 import net.minecraft.world.InteractionHand;
@@ -25,17 +27,27 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.ServerLevelAccessor;
+import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.levelgen.structure.Structure;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
 import tallestred.piglinproliferation.client.PPSounds;
 import tallestred.piglinproliferation.common.entities.ai.PiglinTravellerAi;
+import tallestred.piglinproliferation.networking.PPSerialisation;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
-public class PiglinTraveller extends Piglin {
+public class PiglinTraveller extends Piglin implements TravellersCompassBarterer {
     protected static final EntityDataAccessor<Boolean> SITTING = SynchedEntityData.defineId(PiglinTraveller.class, EntityDataSerializers.BOOLEAN);
+    protected static final int ROLL_EXPIRY_TIME = 24000; //TODO Should be 24000 (one in-game day), set to one minute for testing
+    protected ConcurrentMap<TagKey<Biome>, Integer> alreadyRolledBiomes = new ConcurrentHashMap<>();
+    protected ConcurrentMap<TagKey<Structure>, Integer> alreadyRolledStructures = new ConcurrentHashMap<>();
 
     public PiglinTraveller(EntityType<? extends PiglinTraveller> pEntityType, Level pLevel) {
         super(pEntityType, pLevel);
@@ -117,6 +129,16 @@ public class PiglinTraveller extends Piglin {
         this.getBrain().tick((ServerLevel) this.level(), this);
         this.level().getProfiler().pop();
         PiglinTravellerAi.updateActivity(this);
+        for (Map.Entry<TagKey<Biome>, Integer> entry : alreadyRolledBiomes.entrySet()) {
+            if (entry.getValue() <= 0)
+                alreadyRolledBiomes.remove(entry.getKey());
+            else alreadyRolledBiomes.replace(entry.getKey(), entry.getValue()-1);
+        }
+        for (Map.Entry<TagKey<Structure>, Integer> entry : alreadyRolledStructures.entrySet()) {
+            if (entry.getValue() <= 0)
+                alreadyRolledStructures.remove(entry.getKey());
+            else alreadyRolledStructures.replace(entry.getKey(), entry.getValue()-1);
+        }
     }
 
     @Override
@@ -138,7 +160,6 @@ public class PiglinTraveller extends Piglin {
         super.defineSynchedData();
         this.entityData.define(SITTING, false);
     }
-
 
     public boolean isSitting() {
         return this.entityData.get(SITTING);
@@ -168,5 +189,37 @@ public class PiglinTraveller extends Piglin {
         this.playSound(PPSounds.TRAVELLER_CONVERTED.get(), this.getSoundVolume(), this.getVoicePitch() / 0.10F);
     }
 
+    @Override
+    public void readAdditionalSaveData(CompoundTag pCompound) {
+        super.readAdditionalSaveData(pCompound);
+        this.alreadyRolledBiomes = PPSerialisation.readTagMapFromNBT(Registries.BIOME, pCompound.getCompound("AlreadyRolledBiomes"));
+        this.alreadyRolledStructures = PPSerialisation.readTagMapFromNBT(Registries.STRUCTURE, pCompound.getCompound("AlreadyRolledBiomes"));
+    }
 
+    @Override
+    public void addAdditionalSaveData(CompoundTag pCompound) {
+        super.addAdditionalSaveData(pCompound);
+        pCompound.put("AleadyRolledBiomes", PPSerialisation.writeTagMapToNBT(new HashMap<>(this.alreadyRolledBiomes)));
+        pCompound.put("AlreadyRolledStructures", PPSerialisation.writeTagMapToNBT(new HashMap<>(this.alreadyRolledStructures)));
+    }
+
+    @Override
+    public void setBiomeAlreadyRolled(TagKey<Biome> biomeTag) {
+        this.alreadyRolledBiomes.put(biomeTag, ROLL_EXPIRY_TIME);
+    }
+
+    @Override
+    public boolean hasBiomeAlreadyRolled(TagKey<Biome> biomeTag) {
+        return this.alreadyRolledBiomes.containsKey(biomeTag);
+    }
+
+    @Override
+    public void setStructureAlreadyRolled(TagKey<Structure> structureTag) {
+        this.alreadyRolledStructures.put(structureTag, ROLL_EXPIRY_TIME);
+    }
+
+    @Override
+    public boolean hasStructureAlreadyRolled(TagKey<Structure> structureTag) {
+        return this.alreadyRolledStructures.containsKey(structureTag);
+    }
 }
