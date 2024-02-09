@@ -1,5 +1,5 @@
 {
-  "type": "minecraft:barter",
+  "type": "piglinproliferation:modded_bartering",
   "pools": [
     {
       "rolls": 1,

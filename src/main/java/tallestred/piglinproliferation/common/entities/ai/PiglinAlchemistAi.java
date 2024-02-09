@@ -217,7 +217,7 @@ public class PiglinAlchemistAi extends PiglinAi {
             if (barter && flag) {
                 LootTable loottable = piglin.level().getServer().getLootData().getLootTable(lootTableLocation);
                 if (loottable != null) {
-                    List<ItemStack> list = loottable.getRandomItems((new LootParams.Builder((ServerLevel) piglin.level())).withParameter(LootContextParams.THIS_ENTITY, piglin).create(LootContextParamSets.PIGLIN_BARTER));
+                    List<ItemStack> list = loottable.getRandomItems((new LootParams.Builder((ServerLevel) piglin.level())).withParameter(LootContextParams.ORIGIN, piglin.position()).withParameter(LootContextParams.THIS_ENTITY, piglin).create(PPLootTables.MODDED_BARTERING));
                     throwItems(piglin, list);
                 }
             } else if (!flag) {

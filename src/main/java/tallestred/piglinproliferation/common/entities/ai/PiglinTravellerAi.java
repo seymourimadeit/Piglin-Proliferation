@@ -138,38 +138,6 @@ public class PiglinTravellerAi extends PiglinAi {
         }
     }
 
-    // Now I feel like it
-    public static void stopHoldingOffHandItem(Piglin piglin, boolean barter) {
-        ItemStack itemstack = piglin.getItemInHand(InteractionHand.OFF_HAND);
-        piglin.setItemInHand(InteractionHand.OFF_HAND, ItemStack.EMPTY);
-        if (piglin.isAdult()) {
-            boolean flag = itemstack.isPiglinCurrency();
-            if (barter && flag) {
-                throwItems(piglin, getBarterResponseItems(piglin));
-            } else if (!flag) {
-                boolean flag1 = piglin.equipItemIfPossible(itemstack).isEmpty();
-                if (!flag1) {
-                    putInInventory(piglin, itemstack);
-                }
-            }
-        } else {
-            boolean flag2 = piglin.equipItemIfPossible(itemstack).isEmpty();
-            if (!flag2) {
-                ItemStack itemstack1 = piglin.getMainHandItem();
-                if (isLovedItem(itemstack1)) {
-                    putInInventory(piglin, itemstack1);
-                } else {
-                    throwItems(piglin, Collections.singletonList(itemstack1));
-                }
-
-                piglin.setItemSlot(EquipmentSlot.MAINHAND, itemstack);
-                piglin.setGuaranteedDrop(EquipmentSlot.MAINHAND);
-                piglin.setPersistenceRequired();
-            }
-        }
-
-    }
-
     private static void putInInventory(Piglin piglin, ItemStack item) {
         ItemStack itemstack = piglin.getInventory().addItem(item);
         throwItemsTowardRandomPos(piglin, Collections.singletonList(itemstack));
@@ -206,7 +174,7 @@ public class PiglinTravellerAi extends PiglinAi {
 
     private static List<ItemStack> getBarterResponseItems(Piglin piglin) {
         LootTable loottable = piglin.level().getServer().getLootData().getLootTable(PPLootTables.ALCHEMIST_BARTER);
-        List<ItemStack> list = loottable.getRandomItems((new LootParams.Builder((ServerLevel) piglin.level())).withParameter(LootContextParams.THIS_ENTITY, piglin).create(LootContextParamSets.PIGLIN_BARTER));
+        List<ItemStack> list = loottable.getRandomItems((new LootParams.Builder((ServerLevel) piglin.level())).withParameter(LootContextParams.ORIGIN, piglin.position()).withParameter(LootContextParams.THIS_ENTITY, piglin).create(LootContextParamSets.PIGLIN_BARTER));
         return list;
     }
 
