@@ -203,10 +203,6 @@ public class PiglinTraveller extends Piglin implements TravellersCompassBarterer
         pCompound.put("AlreadyRolledStructures", PPSerialisation.writeTagMapToNBT(new HashMap<>(this.alreadyRolledStructures)));
     }
 
-    public boolean nuts(CompoundTag pCompound){
-        return pCompound.contains("AlreadyRolledBiomes");
-    }
-
     @Override
     public void setBiomeAlreadyRolled(TagKey<Biome> biomeTag) {
         this.alreadyRolledBiomes.put(biomeTag, ROLL_EXPIRY_TIME);
