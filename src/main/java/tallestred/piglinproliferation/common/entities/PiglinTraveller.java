@@ -193,14 +193,18 @@ public class PiglinTraveller extends Piglin implements TravellersCompassBarterer
     public void readAdditionalSaveData(CompoundTag pCompound) {
         super.readAdditionalSaveData(pCompound);
         this.alreadyRolledBiomes = PPSerialisation.readTagMapFromNBT(Registries.BIOME, pCompound.getCompound("AlreadyRolledBiomes"));
-        this.alreadyRolledStructures = PPSerialisation.readTagMapFromNBT(Registries.STRUCTURE, pCompound.getCompound("AlreadyRolledBiomes"));
+        this.alreadyRolledStructures = PPSerialisation.readTagMapFromNBT(Registries.STRUCTURE, pCompound.getCompound("AlreadyRolledStructures"));
     }
 
     @Override
     public void addAdditionalSaveData(CompoundTag pCompound) {
         super.addAdditionalSaveData(pCompound);
-        pCompound.put("AleadyRolledBiomes", PPSerialisation.writeTagMapToNBT(new HashMap<>(this.alreadyRolledBiomes)));
+        pCompound.put("AlreadyRolledBiomes", PPSerialisation.writeTagMapToNBT(new HashMap<>(this.alreadyRolledBiomes)));
         pCompound.put("AlreadyRolledStructures", PPSerialisation.writeTagMapToNBT(new HashMap<>(this.alreadyRolledStructures)));
+    }
+
+    public boolean nuts(CompoundTag pCompound){
+        return pCompound.contains("AlreadyRolledBiomes");
     }
 
     @Override
