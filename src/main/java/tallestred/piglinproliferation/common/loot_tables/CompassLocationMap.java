@@ -40,6 +40,7 @@ public class CompassLocationMap extends ConcurrentHashMap<CompassLocationMap.Sea
         }
 
 
+        //TODO this is not working!! think it's because of the tagkey being wrong
         public BlockPos locateObject(ServerLevel level, BlockPos sourcePos) {
             return this.isBiome
                     ? Objects.requireNonNull(level.findClosestBiome3d(holder -> holder.is(location), sourcePos, 64000, 32, 64)).getFirst()
@@ -62,7 +63,7 @@ public class CompassLocationMap extends ConcurrentHashMap<CompassLocationMap.Sea
 
         @Override
         public String toString() {
-            return isBiome ? "B-" : "S-" + location.toString();
+            return (isBiome ? "B-" : "S-") + location.toString();
         }
     }
 
@@ -87,6 +88,7 @@ public class CompassLocationMap extends ConcurrentHashMap<CompassLocationMap.Sea
                 Registry<Structure> structureRegistry = level.registryAccess().registryOrThrow(Registries.STRUCTURE);
                 List<Biome> possibleBiomes = level.getChunkSource().getGenerator().getBiomeSource().possibleBiomes().stream().map(Holder::get).toList();
                 List<Structure> possibleStructures = new ArrayList<>();
+                //TODO - this is adding features e.g. fossils and specific ruined portals!! how to make it only find actual structures
                 for (Holder<StructureSet> holder: level.getChunkSource().getGeneratorState().possibleStructureSets())
                     holder.get().structures().forEach(entry -> possibleStructures.add(entry.structure().get()));
                 OBJECTS_TO_SEARCH.addAll(biomeRegistry.stream().filter(possibleBiomes::contains).map(b -> new SearchObject(true, biomeRegistry.getKey(b))).toList());
