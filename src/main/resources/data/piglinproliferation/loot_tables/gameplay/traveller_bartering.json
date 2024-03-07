@@ -7,140 +7,27 @@
         {
           "type": "minecraft:item",
           "name": "piglinproliferation:travellers_compass",
-          "weight": 3,
-          "functions": [
-            {
-              "function": "piglinproliferation:travellers_compass_locate",
-              "destination": "piglinproliferation:travellers_compass_locate"
-            }
-          ],
+          "weight": 1,
           "conditions": [
             {
-              "condition": "minecraft:inverted",
-              "term": {
-                "condition": "minecraft:entity_properties",
-                "entity": "this",
-                "predicate": {
-                  "location": {
-                    "biome": "minecraft:soul_sand_valley"
-                  }
-                }
-              }
-            },
-            {
-              "condition": "minecraft:inverted",
-              "term": {
-                "condition": "piglinproliferation:travellers_compass_biome_already_rolled",
-                "destination": "piglinproliferation:is_soul_sand_valley"
-              }
-            }
-          ]
-        },
-        {
-          "type": "minecraft:item",
-          "name": "piglinproliferation:travellers_compass",
-          "weight": 12,
-          "functions": [
-            {
-              "function": "piglinproliferation:travellers_compass_location",
-              "destination": "piglinproliferation:bastion"
+              "condition": "piglinproliferation:travellers_compass_validate"
             }
           ],
-          "conditions": [
-            {
-              "condition": "minecraft:inverted",
-              "term": {
-                "condition": "minecraft:entity_properties",
-                "entity": "this",
-                "predicate": {
-                  "location": {
-                    "structure": "minecraft:bastion_remnant"
-                  }
-                }
-              }
-            },
-            {
-              "condition": "minecraft:inverted",
-              "term": {
-                "condition": "piglinproliferation:travellers_compass_structure_already_rolled",
-                "destination": "piglinproliferation:bastion"
-              }
-            }
-          ]
-        },
-        {
-          "type": "minecraft:item",
-          "name": "piglinproliferation:travellers_compass",
-          "weight": 10,
           "functions": [
             {
-              "function": "piglinproliferation:travellers_compass_location",
-              "destination": "piglinproliferation:ruined_portal_nether"
-            }
-          ],
-          "conditions": [
-            {
-              "condition": "minecraft:inverted",
-              "term": {
-                "condition": "minecraft:entity_properties",
-                "entity": "this",
-                "predicate": {
-                  "location": {
-                    "structure": "minecraft:ruined_portal_nether"
-                  }
-                }
-              }
-            },
-            {
-              "condition": "minecraft:inverted",
-              "term": {
-                "condition": "piglinproliferation:travellers_compass_structure_already_rolled",
-                "destination": "piglinproliferation:ruined_portal_nether"
-              }
-            }
-          ]
-        },
-        {
-          "type": "minecraft:item",
-          "name": "piglinproliferation:travellers_compass",
-          "weight": 25,
-          "functions": [
-            {
-              "function": "piglinproliferation:travellers_compass_location",
-              "destination": "piglinproliferation:nether_fortress"
-            }
-          ],
-          "conditions": [
-             {
-              "condition": "minecraft:inverted",
-              "term": {
-                "condition": "minecraft:entity_properties",
-                "entity": "this",
-                "predicate": {
-                  "location": {
-                    "structure": "minecraft:nether_fortress"
-                  }
-                }
-              }
-            },
-            {
-              "condition": "minecraft:inverted",
-              "term": {
-                "condition": "piglinproliferation:travellers_compass_structure_already_rolled",
-                "destination": "piglinproliferation:nether_fortress"
-              }
+              "function": "piglinproliferation:travellers_compass_locate"
             }
           ]
         },
         {
           "type": "minecraft:item",
           "name": "minecraft:saddle",
-          "weight": 20
+          "weight": 1
         },
         {
           "type": "minecraft:item",
           "name": "minecraft:warped_fungus_on_a_stick",
-          "weight": 10
+          "weight": 1
         }
       ]
     }

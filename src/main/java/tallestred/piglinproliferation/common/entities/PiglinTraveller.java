@@ -6,7 +6,6 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.GlobalPos;
 import net.minecraft.core.particles.ItemParticleOption;
 import net.minecraft.core.particles.ParticleTypes;
-import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
@@ -26,22 +25,19 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.ServerLevelAccessor;
-import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.levelgen.structure.Structure;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
 import tallestred.piglinproliferation.client.PPSounds;
 import tallestred.piglinproliferation.common.entities.ai.PiglinTravellerAi;
-import tallestred.piglinproliferation.common.loot_tables.CompassLocateObject;
-import tallestred.piglinproliferation.networking.PPSerialisation;
+import tallestred.piglinproliferation.common.loot_tables.CompassLocationMap;
 
 import java.util.*;
 
 public class PiglinTraveller extends Piglin {
     protected static final EntityDataAccessor<Boolean> SITTING = SynchedEntityData.defineId(PiglinTraveller.class, EntityDataSerializers.BOOLEAN);
-    public List<CompassLocateObject> alreadyLocatedObjects = Collections.synchronizedList(new ArrayList<>());
-    public Map.Entry<CompassLocateObject, BlockPos> currentlyLocatedObject;
+    public CompassLocationMap alreadyLocatedObjects = new CompassLocationMap();
+    public Map.Entry<CompassLocationMap.SearchObject, BlockPos> currentlyLocatedObject;
 
     public PiglinTraveller(EntityType<? extends PiglinTraveller> pEntityType, Level pLevel) {
         super(pEntityType, pLevel);
@@ -123,11 +119,11 @@ public class PiglinTraveller extends Piglin {
         this.getBrain().tick((ServerLevel) this.level(), this);
         this.level().getProfiler().pop();
         PiglinTravellerAi.updateActivity(this);
-        for (CompassLocateObject object : new ArrayList<>(alreadyLocatedObjects)) {
-            object.decrementExpiryTime();
-            if (object.hasExpired())
-                alreadyLocatedObjects.remove(object);
-
+        for (Map.Entry<CompassLocationMap.SearchObject, Integer> entry : new HashMap<>(this.alreadyLocatedObjects).entrySet()) {
+            CompassLocationMap.SearchObject searchObject = entry.getKey();
+            this.alreadyLocatedObjects.put(searchObject, entry.getValue()-1);
+            if (this.alreadyLocatedObjects.get(searchObject) <= 0)
+                this.alreadyLocatedObjects.remove(searchObject);
         }
     }
 
@@ -179,17 +175,15 @@ public class PiglinTraveller extends Piglin {
         this.playSound(PPSounds.TRAVELLER_CONVERTED.get(), this.getSoundVolume(), this.getVoicePitch() / 0.10F);
     }
 
-    /*@Override
-    public void readAdditionalSaveData(CompoundTag pCompound) { TODO REIMPLEMENT!!!
+    @Override
+    public void readAdditionalSaveData(CompoundTag pCompound) {
         super.readAdditionalSaveData(pCompound);
-        this.alreadyRolledBiomes = PPSerialisation.readTagMapFromNBT(Registries.BIOME, pCompound.getCompound("AlreadyRolledBiomes"));
-        this.alreadyRolledStructures = PPSerialisation.readTagMapFromNBT(Registries.STRUCTURE, pCompound.getCompound("AlreadyRolledStructures"));
+        this.alreadyLocatedObjects = new CompassLocationMap(pCompound.getCompound("CompassLocationMap"));
     }
 
     @Override
     public void addAdditionalSaveData(CompoundTag pCompound) {
         super.addAdditionalSaveData(pCompound);
-        pCompound.put("AlreadyRolledBiomes", PPSerialisation.writeTagMapToNBT(new HashMap<>(this.alreadyRolledBiomes)));
-        pCompound.put("AlreadyRolledStructures", PPSerialisation.writeTagMapToNBT(new HashMap<>(this.alreadyRolledStructures)));
-    }*/
+        pCompound.put("CompassLocationMap", this.alreadyLocatedObjects.toNBT());
+    }
 }
