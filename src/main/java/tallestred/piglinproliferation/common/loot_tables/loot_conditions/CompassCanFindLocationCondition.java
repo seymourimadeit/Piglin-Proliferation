@@ -16,12 +16,12 @@ import java.util.List;
 import java.util.Map;
 
 //TODO: Might need to make this a predicate rather than a condition!!
-public class TravellersCompassValidateCondition implements LootItemCondition {
-    public static final Codec<TravellersCompassValidateCondition> CODEC = Codec.unit(new TravellersCompassValidateCondition());
+public class CompassCanFindLocationCondition implements LootItemCondition {
+    public static final Codec<CompassCanFindLocationCondition> CODEC = Codec.unit(new CompassCanFindLocationCondition());
 
     @Override
     public LootItemConditionType getType() {
-        return PPLootTables.TRAVELLERS_COMPASS_VALIDATE.get();
+        return PPLootTables.COMPASS_CAN_FIND_LOCATION.get();
     }
 
     @Override

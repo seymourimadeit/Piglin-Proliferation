@@ -88,6 +88,7 @@ public class CompassLocationMap extends ConcurrentHashMap<CompassLocationMap.Sea
                 Registry<Structure> structureRegistry = level.registryAccess().registryOrThrow(Registries.STRUCTURE);
                 List<Biome> possibleBiomes = level.getChunkSource().getGenerator().getBiomeSource().possibleBiomes().stream().map(Holder::get).toList();
                 List<Structure> possibleStructures = new ArrayList<>();
+                //level.structureManager()
                 //TODO - this is adding features e.g. fossils and specific ruined portals!! how to make it only find actual structures
                 for (Holder<StructureSet> holder: level.getChunkSource().getGeneratorState().possibleStructureSets())
                     holder.get().structures().forEach(entry -> possibleStructures.add(entry.structure().get()));

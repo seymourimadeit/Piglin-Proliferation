@@ -10,12 +10,12 @@
           "weight": 1,
           "conditions": [
             {
-              "condition": "piglinproliferation:travellers_compass_validate"
+              "condition": "piglinproliferation:compass_can_find_location"
             }
           ],
           "functions": [
             {
-              "function": "piglinproliferation:travellers_compass_locate"
+              "function": "piglinproliferation:add_location_to_compass"
             }
           ]
         },

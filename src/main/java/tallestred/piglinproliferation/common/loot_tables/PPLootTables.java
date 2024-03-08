@@ -12,8 +12,8 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.RegistryObject;
 import tallestred.piglinproliferation.PiglinProliferation;
-import tallestred.piglinproliferation.common.loot_tables.loot_conditions.TravellersCompassValidateCondition;
-import tallestred.piglinproliferation.common.loot_tables.loot_functions.TravellersCompassLocateFunction;
+import tallestred.piglinproliferation.common.loot_tables.loot_conditions.CompassCanFindLocationCondition;
+import tallestred.piglinproliferation.common.loot_tables.loot_functions.AddLocationToCompassFunction;
 
 import java.util.function.Consumer;
 
@@ -31,8 +31,9 @@ public class PPLootTables {
             "gameplay/traveller_bartering");
     public static final ResourceLocation PIGLIN_BARTERING_CHEAP = new ResourceLocation(PiglinProliferation.MODID, "gameplay/compat/alchemist_bartering_cheap");
     public static final ResourceLocation PIGLIN_BARTERING_EXPENSIVE = new ResourceLocation(PiglinProliferation.MODID, "gameplay/compat/alchemist_bartering_expensive");
-    public static final RegistryObject<LootItemFunctionType> TRAVELLERS_COMPASS_LOCATION = LOOT_ITEM_FUNCTION_TYPES.register("travellers_compass_locate", () ->  new LootItemFunctionType(TravellersCompassLocateFunction.CODEC));
-    public static final RegistryObject<LootItemConditionType> TRAVELLERS_COMPASS_VALIDATE = LOOT_ITEM_CONDITION_TYPES.register("travellers_compass_validate", () -> new LootItemConditionType(TravellersCompassValidateCondition.CODEC));
+    public static final RegistryObject<LootItemConditionType> COMPASS_CAN_FIND_LOCATION = LOOT_ITEM_CONDITION_TYPES.register("compass_can_find_location", () -> new LootItemConditionType(CompassCanFindLocationCondition.CODEC));
+    public static final RegistryObject<LootItemFunctionType> ADD_LOCATION_TO_COMPASS = LOOT_ITEM_FUNCTION_TYPES.register("add_location_to_compass", () ->  new LootItemFunctionType(AddLocationToCompassFunction.CODEC));
+
     public static LootContextParamSet register(String p_81429_, Consumer<LootContextParamSet.Builder> p_81430_) {
         LootContextParamSet.Builder lootcontextparamset$builder = new LootContextParamSet.Builder();
         p_81430_.accept(lootcontextparamset$builder);

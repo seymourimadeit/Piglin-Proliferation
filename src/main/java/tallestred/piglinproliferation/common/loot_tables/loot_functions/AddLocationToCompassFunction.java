@@ -16,11 +16,11 @@ import tallestred.piglinproliferation.common.loot_tables.PPLootTables;
 
 import java.util.*;
 
-public class TravellersCompassLocateFunction extends LootItemConditionalFunction {
-    public static final Codec<TravellersCompassLocateFunction> CODEC =  RecordCodecBuilder.create(
-            builder -> commonFields(builder).apply(builder, TravellersCompassLocateFunction::new));
+public class AddLocationToCompassFunction extends LootItemConditionalFunction {
+    public static final Codec<AddLocationToCompassFunction> CODEC =  RecordCodecBuilder.create(
+            builder -> commonFields(builder).apply(builder, AddLocationToCompassFunction::new));
 
-    TravellersCompassLocateFunction(List<LootItemCondition> pPredicates) {
+    AddLocationToCompassFunction(List<LootItemCondition> pPredicates) {
         super(pPredicates);
     }
 
@@ -31,6 +31,7 @@ public class TravellersCompassLocateFunction extends LootItemConditionalFunction
                 CompassLocationMap.SearchObject object = traveller.currentlyLocatedObject.getKey();
                 BlockPos pos = traveller.currentlyLocatedObject.getValue();
                 traveller.alreadyLocatedObjects.put(object, CompassLocationMap.DEFAULT_EXPIRY_TIME);
+                traveller.currentlyLocatedObject = null;
                 compass.addTags(lootContext.getLevel().dimension(), pos, itemStack.getOrCreateTag(), object.getLocation().getPath(), true);
             }
         }
@@ -39,6 +40,6 @@ public class TravellersCompassLocateFunction extends LootItemConditionalFunction
 
     @Override
     public LootItemFunctionType getType() {
-        return PPLootTables.TRAVELLERS_COMPASS_LOCATION.get();
+        return PPLootTables.ADD_LOCATION_TO_COMPASS.get();
     }
 }
