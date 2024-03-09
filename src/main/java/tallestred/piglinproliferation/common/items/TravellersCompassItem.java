@@ -81,9 +81,9 @@ public class TravellersCompassItem extends CompassItem {
         ResourceLocation location = new ResourceLocation(searchObjectLocation);
         String namespace = location.getNamespace();
         String path = location.getPath();
-        returnComponent = Component.translatable(TRANSLATION_PREFIX + location.getPath());
+        returnComponent = Component.translatable(TRANSLATION_PREFIX + namespace + '.' + path);
         if(returnComponent.getString().contains(TRANSLATION_PREFIX))
-            returnComponent = Component.translatableWithFallback((isBiome? "biome." + namespace + "." : TRANSLATION_PREFIX) + path, CodeUtilities.snakeCaseToEnglish(path));
+            returnComponent = Component.translatableWithFallback((isBiome? "biome." + namespace + "." : TRANSLATION_PREFIX + namespace + '.') + path, CodeUtilities.snakeCaseToEnglish(path));
         return returnComponent;
     }
 }

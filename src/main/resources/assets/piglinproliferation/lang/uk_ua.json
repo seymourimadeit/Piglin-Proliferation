@@ -47,8 +47,8 @@
    "piglinproliferation.advancements.nether.obtain_buckler.title": "Що за «щит»",
    "piglinproliferation.advancements.nether.obtain_buckler.description": "Отримайте баклер зі скрині бастіона чи при вбивстві брутального піґліна.",
    "item.piglinproliferation.travellers_compass.desc.locked": "Замкнено на: ",
-   "item.piglinproliferation.travellers_compass.desc.bastion_remnant": "Бастіон",
-   "item.piglinproliferation.travellers_compass.desc.fortress": "Незерська фортеця",
-   "item.piglinproliferation.travellers_compass.desc.ruined_portal_nether": "Зруйнований портал",
-   "item.piglinproliferation.travellers_compass.desc.warped_forest": "Химерний ліс"
+   "item.piglinproliferation.travellers_compass.desc.minecraft.bastion_remnant": "Бастіон",
+   "item.piglinproliferation.travellers_compass.desc.minecraft.fortress": "Незерська фортеця",
+   "item.piglinproliferation.travellers_compass.desc.minecraft.ruined_portal_nether": "Зруйнований портал",
+   "item.piglinproliferation.travellers_compass.desc.minecraft.warped_forest": "Химерний ліс"
 }
