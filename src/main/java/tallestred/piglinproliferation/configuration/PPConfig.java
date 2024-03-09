@@ -40,8 +40,6 @@ public class PPConfig {
         public final ForgeConfigSpec.DoubleValue zombifiedBruteChance;
         public final ForgeConfigSpec.DoubleValue zombifiedAlchemistChance;
         public final ForgeConfigSpec.DoubleValue alchemistPotionChance;
-        public final ForgeConfigSpec.BooleanValue shouldTravellersCompassUseWhitelist;
-
         public final ForgeConfigSpec.DoubleValue bucklerChance;
         public final ForgeConfigSpec.DoubleValue crossbowChance;
         public final ForgeConfigSpec.IntValue healingArrowMinStackSize;
@@ -50,6 +48,9 @@ public class PPConfig {
         public final ForgeConfigSpec.IntValue BucklerRunTime;
         public final ForgeConfigSpec.IntValue BucklerTurningRunTime;
         public final ForgeConfigSpec.ConfigValue<List<? extends String>> zombifiedPiglinTypeList;
+        public final ForgeConfigSpec.BooleanValue travellersCompassBiomeWhitelist;
+        public final ForgeConfigSpec.BooleanValue travellersCompassStructureWhitelist;
+
 
         public CommonConfig(ForgeConfigSpec.Builder builder) {
             builder.push("Vanilla Changes");
@@ -82,7 +83,9 @@ public class PPConfig {
             builder.pop();
             builder.pop();
             builder.push("Piglin Traveller");
-            shouldTravellersCompassUseWhitelist = builder.define("Should the Traveller's Compass use a whitelist instead of a blacklist when looking for biomes and structures?", true);
+            travellersCompassBiomeWhitelist = builder.define("Should the Traveller's Compass only search for biomes in the whitelist? (If disabled, all nether biomes will be eligible except for those in the blacklist)", false);
+            travellersCompassStructureWhitelist = builder.define("Should the Traveller's Compass only search for structures in the whitelist? (If disabled, all nether structures will be eligible except for those in the blacklist)", true);
+
             builder.pop();
         }
     }

@@ -6,29 +6,21 @@ import net.minecraft.core.Holder;
 import net.minecraft.core.HolderSet;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.data.tags.BiomeTagsProvider;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.IntTag;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.tags.BiomeTags;
-import net.minecraft.tags.TagLoader;
-import net.minecraft.tags.TagManager;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.levelgen.structure.Structure;
 import net.minecraft.world.level.levelgen.structure.StructureSet;
-import net.minecraftforge.common.Tags;
-import net.minecraftforge.registries.ForgeRegistries;
-import net.minecraftforge.registries.tags.ITag;
 import tallestred.piglinproliferation.common.PPTags;
 import tallestred.piglinproliferation.configuration.PPConfig;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public class CompassLocationMap extends ConcurrentHashMap<CompassLocationMap.SearchObject, Integer> {
     public static final int DEFAULT_EXPIRY_TIME = 24000;
@@ -102,16 +94,16 @@ public class CompassLocationMap extends ConcurrentHashMap<CompassLocationMap.Sea
             Registry<Biome> biomeRegistry = level.registryAccess().registryOrThrow(Registries.BIOME);
             Registry<Structure> structureRegistry = level.registryAccess().registryOrThrow(Registries.STRUCTURE);
             Registry<StructureSet> structureSetRegistry = level.registryAccess().registryOrThrow(Registries.STRUCTURE_SET);
-            Set<Biome> possibleBiomes = new HashSet<>();
+            Set<Biome> possibleBiomes = PPConfig.COMMON.travellersCompassBiomeWhitelist.get()
+                    ? biomeRegistry.holders().filter(h -> h.containsTag(PPTags.TRAVELLERS_COMPASS_BIOME_WHITELIST)).map(Holder::get).collect(Collectors.toSet())
+                    : level.getChunkSource().getGenerator().getBiomeSource().possibleBiomes().stream().filter(h -> !h.containsTag(PPTags.TRAVELLERS_COMPASS_BIOME_BLACKLIST)).map(Holder::get).collect(Collectors.toSet());
             Set<Structure> possibleStructures = new HashSet<>();
-            if (PPConfig.COMMON.shouldTravellersCompassUseWhitelist.get()) {
-                biomeRegistry.holders().filter(h -> h.containsTag(PPTags.TRAVELLERS_COMPASS_BIOME_WHITELIST)).forEach(h -> possibleBiomes.add(h.get()));
+            if (PPConfig.COMMON.travellersCompassStructureWhitelist.get()) {
                 structureRegistry.holders().filter(h -> h.containsTag(PPTags.TRAVELLERS_COMPASS_STRUCTURE_WHITELIST)).forEach(h -> possibleStructures.add(h.get()));
-                structureSetRegistry.holders().filter(h -> h.containsTag(PPTags.TRAVELLERS_COMPASS_STRUCTURE_SET_WHITELIST)).map(Holder::get).forEach(structureSet -> {
-                    structureSet.structures().forEach(s -> possibleStructures.add(s.structure().get()));
+                structureSetRegistry.holders().filter(h -> h.containsTag(PPTags.TRAVELLERS_COMPASS_STRUCTURE_SET_WHITELIST)).forEach(holder -> {
+                    holder.get().structures().forEach(s -> possibleStructures.add(s.structure().get()));
                 });
             } else {
-                level.getChunkSource().getGenerator().getBiomeSource().possibleBiomes().stream().filter(h -> !h.containsTag(PPTags.TRAVELLERS_COMPASS_BIOME_BLACKLIST)).forEach(h -> possibleBiomes.add(h.get()));
                 level.getChunkSource().getGeneratorState().possibleStructureSets().stream().filter(s -> !s.containsTag(PPTags.TRAVELLERS_COMPASS_STRUCTURE_SET_BLACKLIST)).forEach(holder -> {
                     holder.get().structures().stream().map(StructureSet.StructureSelectionEntry::structure).filter(s -> !s.containsTag(PPTags.TRAVELLERS_COMPASS_STRUCTURE_BLACKLIST)).forEach(s -> possibleStructures.add(s.get()));
                 });
