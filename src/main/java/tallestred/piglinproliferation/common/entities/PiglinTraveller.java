@@ -123,7 +123,7 @@ public class PiglinTraveller extends Piglin {
             CompassLocationMap.SearchObject searchObject = entry.getKey();
             this.alreadyLocatedObjects.put(searchObject, entry.getValue()-1);
             if (this.alreadyLocatedObjects.get(searchObject) <= 0)
-                this.alreadyLocatedObjects.remove(searchObject); //TODO properly check this works!!
+                this.alreadyLocatedObjects.remove(searchObject);
         }
     }
 

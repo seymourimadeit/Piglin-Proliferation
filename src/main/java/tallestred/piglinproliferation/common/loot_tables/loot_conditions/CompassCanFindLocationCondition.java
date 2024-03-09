@@ -15,7 +15,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-//TODO: Might need to make this a predicate rather than a condition!!
 public class CompassCanFindLocationCondition implements LootItemCondition {
     public static final Codec<CompassCanFindLocationCondition> CODEC = Codec.unit(new CompassCanFindLocationCondition());
 
