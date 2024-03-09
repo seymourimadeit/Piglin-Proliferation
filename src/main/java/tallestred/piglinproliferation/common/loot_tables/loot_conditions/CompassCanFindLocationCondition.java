@@ -31,7 +31,7 @@ public class CompassCanFindLocationCondition implements LootItemCondition {
             List<CompassLocationMap.SearchObject> objectsToSearch = CompassLocationMap.objectsToSearch(level);
             Collections.shuffle(objectsToSearch);
             for (CompassLocationMap.SearchObject object : objectsToSearch) {
-                if (!object.entityAtObjectType(traveller)) {
+                if (!traveller.alreadyLocatedObjects.containsKey(object) && !object.entityAtObjectType(traveller)) {
                     BlockPos pos = object.locateObject(level, traveller.getOnPos());
                     if (pos != null) {
                         traveller.currentlyLocatedObject = Map.entry(object, pos);
