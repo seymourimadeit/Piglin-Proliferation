@@ -1,0 +1,8 @@
+{
+  "replace": "false",
+  "values": [
+    "minecraft:nether_fossil",
+    "piglinproliferation:traveller_hang_out",
+    "piglinproliferation:traveller_standalone"
+  ]
+}

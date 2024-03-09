@@ -15,12 +15,12 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.levelgen.structure.Structure;
 import net.minecraft.world.level.levelgen.structure.StructureSet;
+import tallestred.piglinproliferation.common.PPTags;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class CompassLocationMap extends ConcurrentHashMap<CompassLocationMap.SearchObject, Integer> {
     public static final int DEFAULT_EXPIRY_TIME = 24000;
@@ -40,8 +40,6 @@ public class CompassLocationMap extends ConcurrentHashMap<CompassLocationMap.Sea
             this.location = new ResourceLocation(parts[1]);
         }
 
-
-        //TODO test that this works for structures
         public BlockPos locateObject(ServerLevel level, BlockPos sourcePos) {
             Pair<BlockPos, ?> output;
             if (this.isBiome)
@@ -63,13 +61,17 @@ public class CompassLocationMap extends ConcurrentHashMap<CompassLocationMap.Sea
             return false;
         }
 
+        public boolean isBiome() {
+            return this.isBiome;
+        }
+
         public ResourceLocation getLocation() {
             return this.location;
         }
 
         @Override
         public String toString() {
-            return (isBiome ? "B-" : "S-") + location.toString();
+            return (this.isBiome ? "B-" : "S-") + location.toString();
         }
     }
 
@@ -87,19 +89,18 @@ public class CompassLocationMap extends ConcurrentHashMap<CompassLocationMap.Sea
         return output;
     }
 
-    //TODO this being ran when the first piglin trade happens is causing lag - any way to do it earlier?
     public static List<SearchObject> objectsToSearch(ServerLevel level) {
         if (OBJECTS_TO_SEARCH.isEmpty()) {
             if (level.dimension() == ServerLevel.NETHER) {
                 Registry<Biome> biomeRegistry = level.registryAccess().registryOrThrow(Registries.BIOME);
                 Registry<Structure> structureRegistry = level.registryAccess().registryOrThrow(Registries.STRUCTURE);
-                List<Biome> possibleBiomes = level.getChunkSource().getGenerator().getBiomeSource().possibleBiomes().stream().map(Holder::get).toList();
-                List<Structure> possibleStructures = new ArrayList<>();
-                //TODO - add a blacklist for this!
-                for (Holder<StructureSet> holder: level.getChunkSource().getGeneratorState().possibleStructureSets())
-                    holder.get().structures().stream().filter(s -> s.structure().get().biomes().stream().anyMatch(b -> possibleBiomes.contains(b.get()))).forEach(s -> possibleStructures.add(s.structure().get()));
-                OBJECTS_TO_SEARCH.addAll(biomeRegistry.stream().filter(possibleBiomes::contains).map(b -> new SearchObject(true, biomeRegistry.getKey(b))).toList());
-                OBJECTS_TO_SEARCH.addAll(structureRegistry.stream().filter(possibleStructures::contains).map(s -> new SearchObject(false, structureRegistry.getKey(s))).toList());
+                Set<Holder<Biome>> possibleBiomes = level.getChunkSource().getGenerator().getBiomeSource().possibleBiomes().stream().filter(h -> !h.containsTag(PPTags.TRAVELLERS_COMPASS_BIOME_BLACKLIST)).collect(Collectors.toSet());
+                possibleBiomes.forEach(h -> OBJECTS_TO_SEARCH.add(new SearchObject(true, biomeRegistry.getKey(h.get()))));
+                for (Holder<StructureSet> holder: level.getChunkSource().getGeneratorState().possibleStructureSets()) {
+                    Set<Holder<Structure>> possibleStructures = holder.get().structures().stream().map(StructureSet.StructureSelectionEntry::structure).collect(Collectors.toSet());
+                    possibleStructures.removeIf(s -> s.get().biomes().stream().noneMatch(possibleBiomes::contains) || s.containsTag(PPTags.TRAVELLERS_COMPASS_STRUCTURE_BLACKLIST));
+                    possibleStructures.forEach(s -> OBJECTS_TO_SEARCH.add(new SearchObject(false, structureRegistry.getKey(s.get()))));
+                }
             }
         }
         return OBJECTS_TO_SEARCH;

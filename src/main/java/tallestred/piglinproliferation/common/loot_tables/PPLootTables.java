@@ -25,10 +25,8 @@ public class PPLootTables {
     public static final LootContextParamSet MODDED_BARTERING = register("modded_bartering", (p_81436_) -> {
         p_81436_.required(LootContextParams.THIS_ENTITY).required(LootContextParams.ORIGIN);
     });
-    public static final ResourceLocation ALCHEMIST_BARTER = new ResourceLocation(PiglinProliferation.MODID,
-            "gameplay/alchemist_bartering");
-    public static final ResourceLocation TRAVELLER_BARTER = new ResourceLocation(PiglinProliferation.MODID,
-            "gameplay/traveller_bartering");
+    public static final ResourceLocation ALCHEMIST_BARTER = new ResourceLocation(PiglinProliferation.MODID, "gameplay/alchemist_bartering");
+    public static final ResourceLocation TRAVELLER_BARTER = new ResourceLocation(PiglinProliferation.MODID, "gameplay/traveller_bartering");
     public static final ResourceLocation PIGLIN_BARTERING_CHEAP = new ResourceLocation(PiglinProliferation.MODID, "gameplay/compat/alchemist_bartering_cheap");
     public static final ResourceLocation PIGLIN_BARTERING_EXPENSIVE = new ResourceLocation(PiglinProliferation.MODID, "gameplay/compat/alchemist_bartering_expensive");
     public static final RegistryObject<LootItemConditionType> COMPASS_CAN_FIND_LOCATION = LOOT_ITEM_CONDITION_TYPES.register("compass_can_find_location", () -> new LootItemConditionType(CompassCanFindLocationCondition.CODEC));

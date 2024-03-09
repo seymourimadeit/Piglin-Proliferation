@@ -14,6 +14,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
 import org.slf4j.Logger;
+import tallestred.piglinproliferation.CodeUtilities;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -49,8 +50,10 @@ public class TravellersCompassItem extends CompassItem {
     public void appendHoverText(ItemStack stack, @Nullable Level worldIn, List<Component> list, TooltipFlag tooltip) {
         if (!stack.getTag().getString("Destination").isEmpty()) {
             list.add((Component.translatable("item.piglinproliferation.travellers_compass.desc.locked")).withStyle(ChatFormatting.BLUE));
-            list.add((Component.translatable("item.piglinproliferation.travellers_compass.desc." + stack.getTag().getString("Destination")).withStyle(ChatFormatting.GRAY)));
-            String yValue = stack.getTag().getBoolean("HasBiome") ? String.valueOf(TravellersCompassItem.getPosition(stack.getTag()).pos().getY()) : "~";
+            String raw = stack.getTag().getString("Destination");
+            boolean hasBiome = stack.getTag().getBoolean("HasBiome");
+            list.add((Component.translatableWithFallback((hasBiome ? "biome.minecraft." : "item.piglinproliferation.travellers_compass.desc.") + raw, CodeUtilities.snakeCaseToEnglish(raw)).withStyle(ChatFormatting.GRAY)));
+            String yValue = hasBiome ? String.valueOf(TravellersCompassItem.getPosition(stack.getTag()).pos().getY()) : "~";
             if (!stack.getTag().get("Position").getAsString().isEmpty())
                 list.add((Component.translatable(TravellersCompassItem.getPosition(stack.getTag()).pos().getX() + ", " + yValue + ", " + (TravellersCompassItem.getPosition(stack.getTag()).pos().getZ())).withStyle(ChatFormatting.GRAY)));
         }
