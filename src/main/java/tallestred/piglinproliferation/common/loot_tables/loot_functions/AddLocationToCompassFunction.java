@@ -32,7 +32,7 @@ public class AddLocationToCompassFunction extends LootItemConditionalFunction {
                 BlockPos pos = traveller.currentlyLocatedObject.getValue();
                 traveller.alreadyLocatedObjects.put(object, CompassLocationMap.DEFAULT_EXPIRY_TIME);
                 traveller.currentlyLocatedObject = null;
-                compass.addTags(lootContext.getLevel().dimension(), pos, itemStack.getOrCreateTag(), object.getLocation().getPath(), object.isBiome());
+                compass.addTags(lootContext.getLevel().dimension(), pos, itemStack.getOrCreateTag(), object.getLocation(), object.isBiome());
             }
         }
         return itemStack;
