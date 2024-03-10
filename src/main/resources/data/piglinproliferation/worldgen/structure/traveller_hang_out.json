@@ -1,6 +1,6 @@
 {
   "type": "minecraft:jigsaw",
-  "biomes": "#piglinproliferation:is_crimson_forest",
+  "biomes": "#piglinproliferation:can_spawn_traveller_hang_out",
   "max_distance_from_center": 80,
   "size": 6,
   "spawn_overrides": {},
@@ -14,7 +14,7 @@
     }
   },
   "start_pool": "piglinproliferation:log_pool",
-  "step": "underground_decoration",
+  "step": "surface_structures",
   "use_expansion_hack": false,
-  "terrain_adaptation": "beard_thin"
+  "terrain_adaptation": "beard_box"
 }
