@@ -70,6 +70,11 @@ public class CompassLocationMap extends ConcurrentHashMap<CompassLocationMap.Sea
         }
 
         @Override
+        public boolean equals(Object obj) {
+            return obj instanceof SearchObject && this.toString().equals(obj.toString());
+        }
+
+        @Override
         public String toString() {
             return (this.isBiome ? "B-" : "S-") + location.toString();
         }

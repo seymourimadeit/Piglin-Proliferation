@@ -178,12 +178,12 @@ public class PiglinTraveller extends Piglin {
     @Override
     public void readAdditionalSaveData(CompoundTag pCompound) {
         super.readAdditionalSaveData(pCompound);
-        this.alreadyLocatedObjects = new CompassLocationMap(pCompound.getCompound("CompassLocationMap"));
+        this.alreadyLocatedObjects = new CompassLocationMap(pCompound.getCompound("AlreadyLocatedObjects"));
     }
 
     @Override
     public void addAdditionalSaveData(CompoundTag pCompound) {
         super.addAdditionalSaveData(pCompound);
-        pCompound.put("CompassLocationMap", this.alreadyLocatedObjects.toNBT());
+        pCompound.put("AlreadyLocatedObjects", this.alreadyLocatedObjects.toNBT());
     }
 }
