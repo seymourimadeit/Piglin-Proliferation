@@ -38,10 +38,9 @@ import tallestred.piglinproliferation.common.blocks.PPBlocks;
 import tallestred.piglinproliferation.common.entities.PPEntityTypes;
 import tallestred.piglinproliferation.common.entities.PiglinAlchemist;
 import tallestred.piglinproliferation.common.items.TravellersCompassItem;
-import tallestred.piglinproliferation.common.loot_tables.PPLootTables;
+import tallestred.piglinproliferation.common.loot.PPLoot;
 import tallestred.piglinproliferation.common.recipes.PPRecipeSerializers;
 import tallestred.piglinproliferation.configuration.PPConfig;
-import tallestred.piglinproliferation.common.loot_tables.loot_modifiers.PPLootModifiers;
 import tallestred.piglinproliferation.networking.PPNetworking;
 
 import java.util.ArrayList;
@@ -71,9 +70,9 @@ public class PiglinProliferation {
         PPBlockEntities.BLOCK_ENTITIES.register(FMLJavaModLoadingContext.get().getModEventBus());
         PPBlocks.BLOCKS.register(FMLJavaModLoadingContext.get().getModEventBus());
         PPEnchantments.ENCHANTMENTS.register(FMLJavaModLoadingContext.get().getModEventBus());
-        PPLootModifiers.GLM.register(FMLJavaModLoadingContext.get().getModEventBus());
-        PPLootTables.LOOT_ITEM_FUNCTION_TYPES.register(FMLJavaModLoadingContext.get().getModEventBus());
-        PPLootTables.LOOT_ITEM_CONDITION_TYPES.register(FMLJavaModLoadingContext.get().getModEventBus());
+        PPLoot.GLM.register(FMLJavaModLoadingContext.get().getModEventBus());
+        PPLoot.LOOT_ITEM_FUNCTION_TYPES.register(FMLJavaModLoadingContext.get().getModEventBus());
+        PPLoot.LOOT_ITEM_CONDITION_TYPES.register(FMLJavaModLoadingContext.get().getModEventBus());
         PPRecipeSerializers.RECIPE_SERIALIZERS.register(FMLJavaModLoadingContext.get().getModEventBus());
         ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, PPConfig.COMMON_SPEC);
         ModLoadingContext.get().registerConfig(ModConfig.Type.CLIENT, PPConfig.CLIENT_SPEC);

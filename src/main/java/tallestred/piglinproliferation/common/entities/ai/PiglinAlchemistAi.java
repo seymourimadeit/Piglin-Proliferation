@@ -39,7 +39,7 @@ import tallestred.piglinproliferation.common.entities.PiglinAlchemist;
 import tallestred.piglinproliferation.common.entities.PiglinTraveller;
 import tallestred.piglinproliferation.common.entities.ai.behaviors.*;
 import tallestred.piglinproliferation.common.items.TravellersCompassItem;
-import tallestred.piglinproliferation.common.loot_tables.PPLootTables;
+import tallestred.piglinproliferation.common.loot.PPLoot;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -92,7 +92,7 @@ public class PiglinAlchemistAi extends PiglinAi {
     }
 
     private static void initCoreActivity(Brain<PiglinAlchemist> brain, PiglinAlchemist alchemist) {
-        brain.addActivity(Activity.CORE, 0, ImmutableList.<net.minecraft.world.entity.ai.behavior.BehaviorControl<? super PiglinAlchemist>>of(new LookAtTargetSink(45, 90), new MoveToTargetSink(), InteractWithDoor.create(), new SwimOnlyOutOfLava(0.8F), avoidZombified(), generatePotionAi(alchemist), StopHoldingItemAfterAdmiring.create(PPLootTables.ALCHEMIST_BARTER), new ShootTippedArrow(1.5F, 15.0F, 20, PotionUtils.setPotion(new ItemStack(Items.TIPPED_ARROW), Potions.STRONG_HEALING), (piglin -> piglin.isAlive() && piglin.getHealth() < piglin.getMaxHealth())), StartAdmiringItemIfSeen.create(120), StartCelebratingIfTargetDead.create(300, PiglinAlchemistAi::wantsToDanceOnHoglin), StopBeingAngryIfTargetDead.create()));
+        brain.addActivity(Activity.CORE, 0, ImmutableList.<net.minecraft.world.entity.ai.behavior.BehaviorControl<? super PiglinAlchemist>>of(new LookAtTargetSink(45, 90), new MoveToTargetSink(), InteractWithDoor.create(), new SwimOnlyOutOfLava(0.8F), avoidZombified(), generatePotionAi(alchemist), StopHoldingItemAfterAdmiring.create(PPLoot.ALCHEMIST_BARTER), new ShootTippedArrow(1.5F, 15.0F, 20, PotionUtils.setPotion(new ItemStack(Items.TIPPED_ARROW), Potions.STRONG_HEALING), (piglin -> piglin.isAlive() && piglin.getHealth() < piglin.getMaxHealth())), StartAdmiringItemIfSeen.create(120), StartCelebratingIfTargetDead.create(300, PiglinAlchemistAi::wantsToDanceOnHoglin), StopBeingAngryIfTargetDead.create()));
     }
 
     private static void initIdleActivity(Brain<PiglinAlchemist> pBrain) {
@@ -217,7 +217,7 @@ public class PiglinAlchemistAi extends PiglinAi {
             if (barter && flag) {
                 LootTable loottable = piglin.level().getServer().getLootData().getLootTable(lootTableLocation);
                 if (loottable != null) {
-                    List<ItemStack> list = loottable.getRandomItems((new LootParams.Builder((ServerLevel) piglin.level())).withParameter(LootContextParams.ORIGIN, piglin.position()).withParameter(LootContextParams.THIS_ENTITY, piglin).create(PPLootTables.MODDED_BARTERING));
+                    List<ItemStack> list = loottable.getRandomItems((new LootParams.Builder((ServerLevel) piglin.level())).withParameter(LootContextParams.ORIGIN, piglin.position()).withParameter(LootContextParams.THIS_ENTITY, piglin).create(LootContextParamSets.PIGLIN_BARTER));
                     throwItems(piglin, list);
                 }
             } else if (!flag) {

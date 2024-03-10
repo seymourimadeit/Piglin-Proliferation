@@ -7,7 +7,7 @@
         {
           "type": "minecraft:item",
           "name": "piglinproliferation:travellers_compass",
-          "weight": 21,
+          "weight": 55,
           "conditions": [
             {
               "condition": "piglinproliferation:compass_can_find_location"
@@ -30,18 +30,18 @@
               "function": "minecraft:enchant_randomly"
             }
           ],
-          "weight": 3
+          "weight": 7
         },
         {
           "type": "minecraft:item",
-          "weight": 4,
+          "weight": 8,
           "name": "minecraft:ender_pearl",
           "functions": [
             {
               "function": "minecraft:set_count",
               "count": {
-                "min": 2,
-                "max": 4
+                "min": 4,
+                "max": 8
               },
               "add": false
             }
@@ -49,14 +49,14 @@
         },
         {
           "type": "minecraft:item",
-          "weight": 7,
+          "weight": 9,
           "name": "minecraft:bone",
           "functions": [
             {
               "function": "minecraft:set_count",
               "count": {
-                "min": 2,
-                "max": 6
+                "min": 4,
+                "max": 12
               },
               "add": false
             }
@@ -64,14 +64,14 @@
         },
         {
           "type": "minecraft:item",
-          "weight": 12,
+          "weight": 10,
           "name": "minecraft:basalt",
           "functions": [
             {
               "function": "minecraft:set_count",
               "count": {
-                "min": 4,
-                "max": 10
+                "min": 8,
+                "max": 20
               },
               "add": false
             }
@@ -79,29 +79,29 @@
         },
         {
           "type": "minecraft:item",
-          "weight": 6,
+          "weight": 12,
           "name": "minecraft:warped_fungus_on_a_stick"
         },
         {
           "type": "minecraft:item",
-          "weight": 6,
+          "weight": 12,
           "name": "minecraft:saddle"
         },
         {
           "type": "minecraft:item",
-          "weight": 3,
+          "weight": 8,
           "name": "minecraft:iron_ingot"
         },
         {
           "type": "minecraft:item",
-          "weight": 7,
+          "weight": 14,
           "name": "minecraft:quartz",
           "functions": [
             {
               "function": "minecraft:set_count",
               "count": {
-                "min": 5,
-                "max": 12
+                "min": 10,
+                "max": 24
               },
               "add": false
             }
@@ -109,14 +109,14 @@
         },
         {
           "type": "minecraft:item",
-          "weight": 7,
+          "weight": 14,
           "name": "minecraft:glowstone_dust",
           "functions": [
             {
               "function": "minecraft:set_count",
               "count": {
-                "min": 5,
-                "max": 12
+                "min": 10,
+                "max": 24
               },
               "add": false
             }
@@ -124,19 +124,19 @@
         },
         {
           "type": "minecraft:item",
-          "weight": 11,
+          "weight": 16,
           "name": "minecraft:fire_charge"
         },
         {
           "type": "minecraft:item",
-          "weight": 12,
+          "weight": 10,
           "name": "minecraft:soul_soil",
           "functions": [
             {
               "function": "minecraft:set_count",
               "count": {
-                "min": 2,
-                "max": 8
+                "min": 4,
+                "max": 16
               },
               "add": false
             }
@@ -144,14 +144,14 @@
         },
         {
           "type": "minecraft:item",
-          "weight": 12,
+          "weight": 10,
           "name": "minecraft:warped_planks",
           "functions": [
             {
               "function": "minecraft:set_count",
               "count": {
-                "min": 4,
-                "max": 8
+                "min": 8,
+                "max": 16
               },
               "add": false
             }
@@ -159,14 +159,14 @@
         },
         {
           "type": "minecraft:item",
-          "weight": 12,
+          "weight": 10,
           "name": "minecraft:crimson_planks",
           "functions": [
             {
               "function": "minecraft:set_count",
               "count": {
-                "min": 4,
-                "max": 8
+                "min": 8,
+                "max": 16
               },
               "add": false
             }
@@ -180,8 +180,8 @@
             {
               "function": "minecraft:set_count",
               "count": {
-                "min": 6,
-                "max": 8
+                "min": 12,
+                "max": 16
               },
               "add": false
             }
@@ -189,14 +189,14 @@
         },
         {
           "type": "minecraft:item",
-          "weight": 7,
+          "weight": 14,
           "name": "minecraft:spectral_arrow",
           "functions": [
             {
               "function": "minecraft:set_count",
               "count": {
-                "min": 6,
-                "max": 12
+                "min": 12,
+                "max": 24
               },
               "add": false
             }

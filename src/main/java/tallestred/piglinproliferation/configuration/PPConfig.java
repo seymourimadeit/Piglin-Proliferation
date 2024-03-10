@@ -85,7 +85,6 @@ public class PPConfig {
             builder.push("Piglin Traveller");
             travellersCompassBiomeWhitelist = builder.define("Should the Traveller's Compass only search for biomes in the whitelist? (If disabled, all nether biomes will be eligible except for those in the blacklist)", false);
             travellersCompassStructureWhitelist = builder.define("Should the Traveller's Compass only search for structures in the whitelist? (If disabled, all nether structures will be eligible except for those in the blacklist)", true);
-
             builder.pop();
         }
     }

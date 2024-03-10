@@ -1,4 +1,4 @@
-package tallestred.piglinproliferation.common.loot_tables.loot_functions;
+package tallestred.piglinproliferation.common.loot;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
@@ -11,8 +11,6 @@ import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
 import tallestred.piglinproliferation.common.entities.PiglinTraveller;
 import tallestred.piglinproliferation.common.items.TravellersCompassItem;
-import tallestred.piglinproliferation.common.loot_tables.CompassLocationMap;
-import tallestred.piglinproliferation.common.loot_tables.PPLootTables;
 
 import java.util.*;
 
@@ -40,6 +38,6 @@ public class AddLocationToCompassFunction extends LootItemConditionalFunction {
 
     @Override
     public LootItemFunctionType getType() {
-        return PPLootTables.ADD_LOCATION_TO_COMPASS.get();
+        return PPLoot.ADD_LOCATION_TO_COMPASS.get();
     }
 }

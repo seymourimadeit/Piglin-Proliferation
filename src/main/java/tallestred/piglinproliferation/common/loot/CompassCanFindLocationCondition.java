@@ -1,4 +1,4 @@
-package tallestred.piglinproliferation.common.loot_tables.loot_conditions;
+package tallestred.piglinproliferation.common.loot;
 
 import com.mojang.serialization.Codec;
 import net.minecraft.core.BlockPos;
@@ -8,8 +8,6 @@ import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
 import net.minecraft.world.level.storage.loot.predicates.LootItemConditionType;
 import tallestred.piglinproliferation.common.entities.PiglinTraveller;
-import tallestred.piglinproliferation.common.loot_tables.CompassLocationMap;
-import tallestred.piglinproliferation.common.loot_tables.PPLootTables;
 
 import java.util.Collections;
 import java.util.List;
@@ -20,7 +18,7 @@ public class CompassCanFindLocationCondition implements LootItemCondition {
 
     @Override
     public LootItemConditionType getType() {
-        return PPLootTables.COMPASS_CAN_FIND_LOCATION.get();
+        return PPLoot.COMPASS_CAN_FIND_LOCATION.get();
     }
 
     @Override

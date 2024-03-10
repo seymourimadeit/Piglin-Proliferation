@@ -1,4 +1,4 @@
-package tallestred.piglinproliferation.common.loot_tables;
+package tallestred.piglinproliferation.common.loot;
 
 import com.mojang.datafixers.util.Pair;
 import net.minecraft.core.BlockPos;

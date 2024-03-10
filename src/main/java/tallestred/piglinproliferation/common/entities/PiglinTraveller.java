@@ -30,7 +30,7 @@ import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
 import tallestred.piglinproliferation.client.PPSounds;
 import tallestred.piglinproliferation.common.entities.ai.PiglinTravellerAi;
-import tallestred.piglinproliferation.common.loot_tables.CompassLocationMap;
+import tallestred.piglinproliferation.common.loot.CompassLocationMap;
 
 import java.util.*;
 

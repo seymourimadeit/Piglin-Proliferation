@@ -35,7 +35,7 @@ import tallestred.piglinproliferation.common.entities.ai.behaviors.MoveAroundPig
 import tallestred.piglinproliferation.common.entities.ai.behaviors.StopHoldingItemAfterAdmiring;
 import tallestred.piglinproliferation.common.entities.ai.behaviors.SwimOnlyOutOfLava;
 import tallestred.piglinproliferation.common.entities.ai.behaviors.TravellerSit;
-import tallestred.piglinproliferation.common.loot_tables.PPLootTables;
+import tallestred.piglinproliferation.common.loot.PPLoot;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -83,7 +83,7 @@ public class PiglinTravellerAi extends PiglinAi {
     }
 
     private static void initCoreActivity(Brain<PiglinTraveller> brain, PiglinTraveller traveller) {
-        brain.addActivity(Activity.CORE, 0, ImmutableList.<net.minecraft.world.entity.ai.behavior.BehaviorControl<? super PiglinTraveller>>of(new LookAtTargetSink(45, 90), new MoveToTargetSink(), InteractWithDoor.create(), new SwimOnlyOutOfLava(0.8F), avoidZombified(), StopHoldingItemAfterAdmiring.create(PPLootTables.TRAVELLER_BARTER), StartAdmiringItemIfSeen.create(120), StartCelebratingIfTargetDead.create(300, PiglinTravellerAi::wantsToDanceOnHoglin), StopBeingAngryIfTargetDead.create()));
+        brain.addActivity(Activity.CORE, 0, ImmutableList.<net.minecraft.world.entity.ai.behavior.BehaviorControl<? super PiglinTraveller>>of(new LookAtTargetSink(45, 90), new MoveToTargetSink(), InteractWithDoor.create(), new SwimOnlyOutOfLava(0.8F), avoidZombified(), StopHoldingItemAfterAdmiring.create(PPLoot.TRAVELLER_BARTER), StartAdmiringItemIfSeen.create(120), StartCelebratingIfTargetDead.create(300, PiglinTravellerAi::wantsToDanceOnHoglin), StopBeingAngryIfTargetDead.create()));
     }
 
     private static void initIdleActivity(Brain<PiglinTraveller> pBrain) {
@@ -173,7 +173,7 @@ public class PiglinTravellerAi extends PiglinAi {
     }
 
     private static List<ItemStack> getBarterResponseItems(Piglin piglin) {
-        LootTable loottable = piglin.level().getServer().getLootData().getLootTable(PPLootTables.ALCHEMIST_BARTER);
+        LootTable loottable = piglin.level().getServer().getLootData().getLootTable(PPLoot.TRAVELLER_BARTER);
         List<ItemStack> list = loottable.getRandomItems((new LootParams.Builder((ServerLevel) piglin.level())).withParameter(LootContextParams.ORIGIN, piglin.position()).withParameter(LootContextParams.THIS_ENTITY, piglin).create(LootContextParamSets.PIGLIN_BARTER));
         return list;
     }
