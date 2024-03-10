@@ -18,13 +18,15 @@ import net.minecraft.world.entity.monster.piglin.AbstractPiglin;
 import net.minecraft.world.entity.monster.piglin.Piglin;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.storage.loot.LootContext;
+import net.minecraft.world.level.storage.loot.BuiltInLootTables;
 import net.minecraft.world.level.storage.loot.LootParams;
 import net.minecraft.world.level.storage.loot.LootTable;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.minecraft.world.phys.Vec3;
-import tallestred.piglinproliferation.common.loot_tables.PPLootTables;
+import tallestred.piglinproliferation.common.entities.PiglinAlchemist;
+import tallestred.piglinproliferation.common.entities.PiglinTraveller;
+import tallestred.piglinproliferation.common.loot.PPLoot;
 
 import java.util.Collections;
 import java.util.List;
@@ -149,7 +151,11 @@ public class ModCompat {
      * @author infamous
      */
     private static List<ItemStack> getBarterResponseItems(AbstractPiglin piglin) {
-        LootTable loottable = piglin.level().getServer().getLootData().getLootTable(PPLootTables.ALCHEMIST_BARTER);
+        ResourceLocation lootTableID =
+                piglin instanceof PiglinTraveller ? PPLoot.TRAVELLER_BARTER :
+                        piglin instanceof PiglinAlchemist ? PPLoot.ALCHEMIST_BARTER :
+                                BuiltInLootTables.PIGLIN_BARTERING;
+        LootTable loottable = piglin.level().getServer().getLootData().getLootTable(lootTableID);
         return loottable.getRandomItems((new LootParams.Builder((ServerLevel) piglin.level())).withParameter(LootContextParams.THIS_ENTITY, piglin).create(LootContextParamSets.PIGLIN_BARTER));
     }
 

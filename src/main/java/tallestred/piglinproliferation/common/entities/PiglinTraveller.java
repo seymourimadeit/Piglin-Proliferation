@@ -30,12 +30,17 @@ import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
 import tallestred.piglinproliferation.client.PPSounds;
 import tallestred.piglinproliferation.common.entities.ai.PiglinTravellerAi;
+import tallestred.piglinproliferation.common.loot.CompassLocationMap;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class PiglinTraveller extends Piglin {
     protected static final EntityDataAccessor<Boolean> SITTING = SynchedEntityData.defineId(PiglinTraveller.class, EntityDataSerializers.BOOLEAN);
+    public CompassLocationMap alreadyLocatedObjects = new CompassLocationMap();
+    public Map.Entry<CompassLocationMap.SearchObject, BlockPos> currentlyLocatedObject;
 
     public PiglinTraveller(EntityType<? extends PiglinTraveller> pEntityType, Level pLevel) {
         super(pEntityType, pLevel);
@@ -117,6 +122,12 @@ public class PiglinTraveller extends Piglin {
         this.getBrain().tick((ServerLevel) this.level(), this);
         this.level().getProfiler().pop();
         PiglinTravellerAi.updateActivity(this);
+        for (Map.Entry<CompassLocationMap.SearchObject, Integer> entry : new HashMap<>(this.alreadyLocatedObjects).entrySet()) {
+            CompassLocationMap.SearchObject searchObject = entry.getKey();
+            this.alreadyLocatedObjects.put(searchObject, entry.getValue()-1);
+            if (this.alreadyLocatedObjects.get(searchObject) <= 0)
+                this.alreadyLocatedObjects.remove(searchObject);
+        }
     }
 
     @Override
@@ -138,7 +149,6 @@ public class PiglinTraveller extends Piglin {
         super.defineSynchedData();
         this.entityData.define(SITTING, false);
     }
-
 
     public boolean isSitting() {
         return this.entityData.get(SITTING);
@@ -168,5 +178,15 @@ public class PiglinTraveller extends Piglin {
         this.playSound(PPSounds.TRAVELLER_CONVERTED.get(), this.getSoundVolume(), this.getVoicePitch() / 0.10F);
     }
 
+    @Override
+    public void readAdditionalSaveData(CompoundTag pCompound) {
+        super.readAdditionalSaveData(pCompound);
+        this.alreadyLocatedObjects = new CompassLocationMap(pCompound.getCompound("AlreadyLocatedObjects"));
+    }
 
+    @Override
+    public void addAdditionalSaveData(CompoundTag pCompound) {
+        super.addAdditionalSaveData(pCompound);
+        pCompound.put("AlreadyLocatedObjects", this.alreadyLocatedObjects.toNBT());
+    }
 }

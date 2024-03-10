@@ -47,8 +47,8 @@
    "piglinproliferation.advancements.nether.obtain_buckler.title": "Штурмовой щит",
    "piglinproliferation.advancements.nether.obtain_buckler.description": "Получите баклер",
    "item.piglinproliferation.travellers_compass.desc.locked": "Привязан к: ",
-   "item.piglinproliferation.travellers_compass.desc.bastion": "Бастион",
-   "item.piglinproliferation.travellers_compass.desc.nether_fortress": "Крепость Незера",
-   "item.piglinproliferation.travellers_compass.desc.ruined_portal_nether": "Разрушенный портал",
-   "item.piglinproliferation.travellers_compass.desc.is_warped_forest": "Искажённый лес"
+   "item.piglinproliferation.travellers_compass.desc.minecraft.bastion_remnant": "Бастион",
+   "item.piglinproliferation.travellers_compass.desc.minecraft.fortress": "Крепость Незера",
+   "item.piglinproliferation.travellers_compass.desc.minecraft.ruined_portal_nether": "Разрушенный портал",
+   "item.piglinproliferation.travellers_compass.desc.minecraft.warped_forest": "Искажённый лес"
 }

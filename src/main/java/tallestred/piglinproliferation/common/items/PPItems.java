@@ -24,7 +24,7 @@ public class PPItems {
     public static final RegistryObject<Item> PIGLIN_ALCHEMIST_HEAD_ITEM = ITEMS.register("piglin_alchemist_head", () -> new StandingAndWallBlockItem(PPBlocks.PIGLIN_ALCHEMIST_HEAD.get(), PPBlocks.PIGLIN_ALCHEMIST_HEAD_WALL.get(), new Item.Properties().rarity(Rarity.UNCOMMON), Direction.DOWN));
     public static final RegistryObject<Item> PIGLIN_TRAVELLER_HEAD_ITEM = ITEMS.register("piglin_traveller_head", () -> new StandingAndWallBlockItem(PPBlocks.PIGLIN_TRAVELLER_HEAD.get(), PPBlocks.PIGLIN_TRAVELLER_HEAD_WALL.get(), new Item.Properties().rarity(Rarity.UNCOMMON), Direction.DOWN));
     public static final RegistryObject<BucklerItem> BUCKLER = ITEMS.register("buckler", () -> new BucklerItem((new Item.Properties()).durability(64)));
-    public static final RegistryObject<TravellersCompassItem> TRAVELLERS_COMPASS = ITEMS.register("travellers_compass", () -> new TravellersCompassItem((new Item.Properties()).durability(64)));
+    public static final RegistryObject<TravellersCompassItem> TRAVELLERS_COMPASS = ITEMS.register("travellers_compass", () -> new TravellersCompassItem((new Item.Properties())));
 
     public static ItemStack checkEachHandForBuckler(LivingEntity entity) {
         InteractionHand hand = entity.getMainHandItem().getItem() instanceof BucklerItem ? InteractionHand.MAIN_HAND : InteractionHand.OFF_HAND;

@@ -7,210 +7,198 @@
         {
           "type": "minecraft:item",
           "name": "piglinproliferation:travellers_compass",
-          "weight": 25,
-          "functions": [
-            {
-              "function": "piglinproliferation:travellers_compass_biome_location",
-              "destination": "piglinproliferation:is_warped_forest"
-            }
-          ],
+          "weight": 21,
           "conditions": [
             {
-              "condition": "minecraft:inverted",
-              "term": {
-                "condition": "minecraft:entity_properties",
-                "entity": "this",
-                "predicate": {
-                  "location": {
-                    "biome": "minecraft:warped_forest"
-                  }
-                }
-              }
+              "condition": "piglinproliferation:compass_can_find_location"
+            }
+          ],
+          "functions": [
+            {
+              "function": "piglinproliferation:add_location_to_compass"
             }
           ]
         },
         {
           "type": "minecraft:item",
-          "name": "piglinproliferation:travellers_compass",
-          "weight": 45,
+          "name": "minecraft:book",
           "functions": [
             {
-              "function": "piglinproliferation:travellers_compass_biome_location",
-              "destination": "piglinproliferation:is_crimson_forest"
+              "enchantments": [
+                "minecraft:soul_speed"
+              ],
+              "function": "minecraft:enchant_randomly"
             }
           ],
-          "conditions": [
+          "weight": 3
+        },
+        {
+          "type": "minecraft:item",
+          "weight": 4,
+          "name": "minecraft:ender_pearl",
+          "functions": [
             {
-              "condition": "minecraft:inverted",
-              "term": {
-                "condition": "minecraft:entity_properties",
-                "entity": "this",
-                "predicate": {
-                  "location": {
-                    "biome": "minecraft:crimson_forest"
-                  }
-                }
-              }
+              "function": "minecraft:set_count",
+              "count": {
+                "min": 2,
+                "max": 4
+              },
+              "add": false
             }
           ]
         },
         {
           "type": "minecraft:item",
-          "name": "piglinproliferation:travellers_compass",
-          "weight": 5,
+          "weight": 7,
+          "name": "minecraft:bone",
           "functions": [
             {
-              "function": "piglinproliferation:travellers_compass_biome_location",
-              "destination": "piglinproliferation:is_basalt_delta"
-            }
-          ],
-          "conditions": [
-            {
-              "condition": "minecraft:inverted",
-              "term": {
-                "condition": "minecraft:entity_properties",
-                "entity": "this",
-                "predicate": {
-                  "location": {
-                    "biome": "minecraft:basalt_deltas"
-                  }
-                }
-              }
+              "function": "minecraft:set_count",
+              "count": {
+                "min": 2,
+                "max": 6
+              },
+              "add": false
             }
           ]
         },
         {
           "type": "minecraft:item",
-          "name": "piglinproliferation:travellers_compass",
-          "weight": 25,
-          "functions": [
-            {
-              "function": "piglinproliferation:travellers_compass_biome_location",
-              "destination": "piglinproliferation:is_nether_wastes"
-            }
-          ],
-          "conditions": [
-            {
-              "condition": "minecraft:inverted",
-              "term": {
-                "condition": "minecraft:entity_properties",
-                "entity": "this",
-                "predicate": {
-                  "location": {
-                    "biome": "minecraft:nether_wastes"
-                  }
-                }
-              }
-            }
-          ]
-        },
-        {
-          "type": "minecraft:item",
-          "name": "piglinproliferation:travellers_compass",
-          "weight": 3,
-          "functions": [
-            {
-              "function": "piglinproliferation:travellers_compass_biome_location",
-              "destination": "piglinproliferation:is_soul_sand_valley"
-            }
-          ],
-          "conditions": [
-            {
-              "condition": "minecraft:inverted",
-              "term": {
-                "condition": "minecraft:entity_properties",
-                "entity": "this",
-                "predicate": {
-                  "location": {
-                    "biome": "minecraft:soul_sand_valley"
-                  }
-                }
-              }
-            }
-          ]
-        },
-        {
-          "type": "minecraft:item",
-          "name": "piglinproliferation:travellers_compass",
           "weight": 12,
+          "name": "minecraft:basalt",
           "functions": [
             {
-              "function": "piglinproliferation:travellers_compass_location",
-              "destination": "piglinproliferation:bastion"
-            }
-          ],
-          "conditions": [
-            {
-              "condition": "minecraft:inverted",
-              "term": {
-                "condition": "minecraft:entity_properties",
-                "entity": "this",
-                "predicate": {
-                  "location": {
-                    "structure": "minecraft:bastion_remnant"
-                  }
-                }
-              }
+              "function": "minecraft:set_count",
+              "count": {
+                "min": 4,
+                "max": 10
+              },
+              "add": false
             }
           ]
         },
         {
           "type": "minecraft:item",
-          "name": "piglinproliferation:travellers_compass",
-          "weight": 10,
+          "weight": 6,
+          "name": "minecraft:warped_fungus_on_a_stick"
+        },
+        {
+          "type": "minecraft:item",
+          "weight": 6,
+          "name": "minecraft:saddle"
+        },
+        {
+          "type": "minecraft:item",
+          "weight": 3,
+          "name": "minecraft:iron_ingot"
+        },
+        {
+          "type": "minecraft:item",
+          "weight": 7,
+          "name": "minecraft:quartz",
           "functions": [
             {
-              "function": "piglinproliferation:travellers_compass_location",
-              "destination": "piglinproliferation:ruined_portal_nether"
-            }
-          ],
-          "conditions": [
-            {
-              "condition": "minecraft:inverted",
-              "term": {
-                "condition": "minecraft:entity_properties",
-                "entity": "this",
-                "predicate": {
-                  "location": {
-                    "structure": "minecraft:ruined_portal_nether"
-                  }
-                }
-              }
+              "function": "minecraft:set_count",
+              "count": {
+                "min": 5,
+                "max": 12
+              },
+              "add": false
             }
           ]
         },
         {
           "type": "minecraft:item",
-          "name": "minecraft:saddle",
-          "weight": 20
-        },
-        {
-          "type": "minecraft:item",
-          "name": "minecraft:warped_fungus_on_a_stick",
-          "weight": 10
-        },
-        {
-          "type": "minecraft:item",
-          "name": "piglinproliferation:travellers_compass",
-          "weight": 25,
+          "weight": 7,
+          "name": "minecraft:glowstone_dust",
           "functions": [
             {
-              "function": "piglinproliferation:travellers_compass_location",
-              "destination": "piglinproliferation:nether_fortress"
+              "function": "minecraft:set_count",
+              "count": {
+                "min": 5,
+                "max": 12
+              },
+              "add": false
             }
-          ],
-          "conditions": [
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "weight": 11,
+          "name": "minecraft:fire_charge"
+        },
+        {
+          "type": "minecraft:item",
+          "weight": 12,
+          "name": "minecraft:soul_soil",
+          "functions": [
             {
-              "condition": "minecraft:inverted",
-              "term": {
-                "condition": "minecraft:entity_properties",
-                "entity": "this",
-                "predicate": {
-                  "location": {
-                    "structure": "minecraft:nether_fortress"
-                  }
-                }
-              }
+              "function": "minecraft:set_count",
+              "count": {
+                "min": 2,
+                "max": 8
+              },
+              "add": false
+            }
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "weight": 12,
+          "name": "minecraft:warped_planks",
+          "functions": [
+            {
+              "function": "minecraft:set_count",
+              "count": {
+                "min": 4,
+                "max": 8
+              },
+              "add": false
+            }
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "weight": 12,
+          "name": "minecraft:crimson_planks",
+          "functions": [
+            {
+              "function": "minecraft:set_count",
+              "count": {
+                "min": 4,
+                "max": 8
+              },
+              "add": false
+            }
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "weight": 7,
+          "name": "minecraft:nether_brick",
+          "functions": [
+            {
+              "function": "minecraft:set_count",
+              "count": {
+                "min": 6,
+                "max": 8
+              },
+              "add": false
+            }
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "weight": 7,
+          "name": "minecraft:spectral_arrow",
+          "functions": [
+            {
+              "function": "minecraft:set_count",
+              "count": {
+                "min": 6,
+                "max": 12
+              },
+              "add": false
             }
           ]
         }

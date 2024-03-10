@@ -49,6 +49,8 @@ public class PPConfig {
         public final ForgeConfigSpec.IntValue BucklerRunTime;
         public final ForgeConfigSpec.IntValue BucklerTurningRunTime;
         public final ForgeConfigSpec.ConfigValue<List<? extends String>> zombifiedPiglinTypeList;
+        public final ForgeConfigSpec.BooleanValue travellersCompassBiomeWhitelist;
+        public final ForgeConfigSpec.BooleanValue travellersCompassStructureWhitelist;
 
         public CommonConfig(ForgeConfigSpec.Builder builder) {
             builder.push("Vanilla Changes");
@@ -64,14 +66,7 @@ public class PPConfig {
             piglinVariantChances = builder.defineInRange("Chance of zombified piglin variants spawning from the list below", 0.50F, 0.0F, 9000.0F);
             zombifiedPiglinTypeList = builder.comment("List of variants a zombified piglin has a 50% of turning into when spawning.", "Keep in mind they will still spawn with golden swords, this will be changed in the future.").defineList("List of piglin variants to use", ImmutableList.of(), obj -> true);
             builder.pop();
-            builder.push("Piglin Alchemist");
-            alchemistPotionChance = builder.defineInRange("Chance of alchemist potions not getting broken when killed", 0.20F, 0.0F, 9000.0F);
-            builder.push("Healing Arrow Chances");
-            healingArrowChances = builder.defineInRange("Chances of an alchemist getting healing arrows", 0.30F, 0.0F, 100.0F);
-            healingArrowMinStackSize = builder.defineInRange("Minmium healing arrow stack size", 1, Integer.MIN_VALUE, Integer.MAX_VALUE);
-            healingArrowMaxStackSize = builder.defineInRange("Maximium healing arrow stack size", 6, Integer.MIN_VALUE, Integer.MAX_VALUE);
-            builder.pop();
-            builder.push("buckler");
+            builder.push("Buckler");
             BangBlockDestruction = builder.define("Have the explosion spawned while using the Bang! enchant destroy blocks?", false);
             BruteBuckler = builder.define("Have brutes spawn with bucklers?", true);
             BucklerCooldown = builder.defineInRange("How long should the buckler's cooldown be in ticks?", 240, Integer.MIN_VALUE, Integer.MAX_VALUE);
@@ -79,6 +74,17 @@ public class PPConfig {
             BucklerTurningRunTime = builder.defineInRange("How long should the buckler's charge move if you have the turning enchant be in ticks?", 30, Integer.MIN_VALUE, Integer.MAX_VALUE);
             bucklerChance = builder.defineInRange("Chance of buckler appearing in bastion loot", 0.25F, 0.0F, 9999999.0F);
             builder.pop();
+            builder.push("Piglin Alchemist");
+            alchemistPotionChance = builder.defineInRange("Chance of alchemist potions not getting broken when killed", 0.20F, 0.0F, 9000.0F);
+            builder.push("Healing Arrow Chances");
+            healingArrowChances = builder.defineInRange("Chances of an alchemist getting healing arrows", 0.30F, 0.0F, 100.0F);
+            healingArrowMinStackSize = builder.defineInRange("Minmium healing arrow stack size", 1, Integer.MIN_VALUE, Integer.MAX_VALUE);
+            healingArrowMaxStackSize = builder.defineInRange("Maximium healing arrow stack size", 6, Integer.MIN_VALUE, Integer.MAX_VALUE);
+            builder.pop();
+            builder.pop();
+            builder.push("Piglin Traveller");
+            travellersCompassBiomeWhitelist = builder.define("Should the Traveller's Compass only search for biomes in the whitelist? (If disabled, all nether biomes will be eligible except for those in the blacklist)", false);
+            travellersCompassStructureWhitelist = builder.define("Should the Traveller's Compass only search for structures in the whitelist? (If disabled, all nether structures will be eligible except for those in the blacklist)", true);
             builder.pop();
         }
     }
