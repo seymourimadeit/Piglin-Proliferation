@@ -1,5 +1,4 @@
 {
-
   "type": "minecraft:barter",
   "pools": [
     {
@@ -8,7 +7,7 @@
         {
           "type": "minecraft:item",
           "name": "piglinproliferation:travellers_compass",
-          "weight": 10,
+          "weight": 30,
           "conditions": [
             {
               "condition": "piglinproliferation:compass_can_find_location"
@@ -22,6 +21,7 @@
         },
         {
           "type": "minecraft:item",
+          "weight": 1,
           "name": "minecraft:book",
           "functions": [
             {
@@ -30,12 +30,11 @@
               ],
               "function": "minecraft:enchant_randomly"
             }
-          ],
-          "weight": 1
+          ]
         },
         {
           "type": "minecraft:item",
-          "weight": 1,
+          "weight": 5,
           "name": "minecraft:ender_pearl",
           "functions": [
             {
@@ -50,7 +49,7 @@
         },
         {
           "type": "minecraft:item",
-          "weight": 15,
+          "weight": 10,
           "name": "minecraft:bone",
           "functions": [
             {
@@ -65,44 +64,24 @@
         },
         {
           "type": "minecraft:item",
-          "weight": 20,
-          "name": "minecraft:basalt",
-          "functions": [
-            {
-              "function": "minecraft:set_count",
-              "count": {
-                "min": 2,
-                "max": 5
-              },
-              "add": false
-            }
-          ]
-        },
-        {
-          "type": "minecraft:item",
-          "weight": 3,
+          "weight": 10,
           "name": "minecraft:warped_fungus_on_a_stick"
         },
         {
           "type": "minecraft:item",
-          "weight": 3,
+          "weight": 10,
           "name": "minecraft:saddle"
         },
         {
           "type": "minecraft:item",
-          "weight": 2,
-          "name": "minecraft:iron_ingot"
-        },
-        {
-          "type": "minecraft:item",
-          "weight": 4,
-          "name": "minecraft:quartz",
+          "weight": 5,
+          "name": "minecraft:iron_ingot",
           "functions": [
             {
               "function": "minecraft:set_count",
               "count": {
-                "min": 2,
-                "max": 6
+                "min": 1,
+                "max": 2
               },
               "add": false
             }
@@ -110,13 +89,13 @@
         },
         {
           "type": "minecraft:item",
-          "weight": 4,
+          "weight": 30,
           "name": "minecraft:glowstone_dust",
           "functions": [
             {
               "function": "minecraft:set_count",
               "count": {
-                "min": 2,
+                "min": 3,
                 "max": 6
               },
               "add": false
@@ -125,12 +104,12 @@
         },
         {
           "type": "minecraft:item",
-          "weight": 11,
+          "weight": 40,
           "name": "minecraft:fire_charge"
         },
         {
           "type": "minecraft:item",
-          "weight": 12,
+          "weight": 80,
           "name": "minecraft:soul_soil",
           "functions": [
             {
@@ -145,7 +124,7 @@
         },
         {
           "type": "minecraft:item",
-          "weight": 20,
+          "weight": 80,
           "name": "minecraft:warped_planks",
           "functions": [
             {
@@ -160,7 +139,7 @@
         },
         {
           "type": "minecraft:item",
-          "weight": 20,
+          "weight": 80,
           "name": "minecraft:crimson_planks",
           "functions": [
             {
@@ -175,14 +154,14 @@
         },
         {
           "type": "minecraft:item",
-          "weight": 15,
+          "weight": 80,
           "name": "minecraft:nether_brick",
           "functions": [
             {
               "function": "minecraft:set_count",
               "count": {
-                "min": 7,
-                "max": 8
+                "min": 3,
+                "max": 4
               },
               "add": false
             }
@@ -190,7 +169,7 @@
         },
         {
           "type": "minecraft:item",
-          "weight": 2,
+          "weight": 80,
           "name": "minecraft:spectral_arrow",
           "functions": [
             {
@@ -198,6 +177,37 @@
               "count": {
                 "min": 3,
                 "max": 6
+              },
+              "add": false
+            }
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "weight": 10,
+          "name": "minecraft:crossbow",
+          "functions": [
+            {
+              "function": "minecraft:enchant_randomly",
+              "conditions": [
+                {
+                  "condition": "minecraft:random_chance",
+                  "chance": 0.5
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "weight": 40,
+          "name": "minecraft:crying_obsidian",
+          "functions": [
+            {
+              "function": "minecraft:set_count",
+              "count": {
+                "min": 1,
+                "max": 2
               },
               "add": false
             }
