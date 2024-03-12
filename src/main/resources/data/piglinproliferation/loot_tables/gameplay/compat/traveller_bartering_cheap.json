@@ -7,7 +7,7 @@
         {
           "type": "minecraft:item",
           "name": "piglinproliferation:travellers_compass",
-          "weight": 30,
+          "weight": 50,
           "conditions": [
             {
               "condition": "piglinproliferation:compass_can_find_location"

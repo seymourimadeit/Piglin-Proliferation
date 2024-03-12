@@ -51,14 +51,19 @@ public class TravellersCompassItem extends CompassItem {
 
     @Override
     public void appendHoverText(ItemStack stack, @Nullable Level worldIn, List<Component> list, TooltipFlag tooltip) {
-        if (!stack.getTag().getString("Destination").isEmpty()) {
-            list.add((Component.translatable("item.piglinproliferation.travellers_compass.desc.locked")).withStyle(ChatFormatting.BLUE));
-            String raw = stack.getTag().getString("Destination");
-            boolean hasBiome = stack.getTag().getBoolean("HasBiome");
-            list.add(getTranslation(raw, hasBiome).withStyle(ChatFormatting.GRAY));
-            String yValue = hasBiome ? String.valueOf(TravellersCompassItem.getPosition(stack.getTag()).pos().getY()) : "~";
-            if (!stack.getTag().get("Position").getAsString().isEmpty())
-                list.add((Component.translatable(TravellersCompassItem.getPosition(stack.getTag()).pos().getX() + ", " + yValue + ", " + (TravellersCompassItem.getPosition(stack.getTag()).pos().getZ())).withStyle(ChatFormatting.GRAY)));
+        CompoundTag tag = stack.getTag();
+        if (tag != null) {
+            if (!tag.getString("Destination").isEmpty()) {
+                list.add((Component.translatable("item.piglinproliferation.travellers_compass.desc.locked")).withStyle(ChatFormatting.BLUE));
+                String raw = tag.getString("Destination");
+                boolean hasBiome = tag.getBoolean("HasBiome");
+                list.add(getTranslation(raw, hasBiome).withStyle(ChatFormatting.GRAY));
+                GlobalPos globalPos = getPosition(tag);
+                if (globalPos != null) {
+                    BlockPos pos = globalPos.pos();
+                    list.add((Component.translatable(pos.getX() + ", " + (hasBiome ? String.valueOf(pos.getY()) : "~") + ", " + (pos.getZ())).withStyle(ChatFormatting.GRAY)));
+                }
+            }
         }
     }
 
