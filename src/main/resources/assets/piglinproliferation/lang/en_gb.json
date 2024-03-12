@@ -1,5 +1,6 @@
 {
   "entity.piglinproliferation.piglin_traveller": "Piglin Traveller",
+  "item.piglinproliferation.piglin_traveller_spawn_egg": "Piglin Traveller Spawn Egg",
   "block.piglinproliferation.piglin_traveller_head": "Piglin Traveller Head",
   "block.piglinproliferation.piglin_traveller_wall_head": "Piglin Traveller Wall Head",
   "item.piglinproliferation.travellers_compass": "Piglin Traveller's Compass",
@@ -13,5 +14,7 @@
   "subtitles.entity.piglin_traveller.celebrate": "Piglin Traveller celebrates",
   "subtitles.entity.piglin_traveller.angry": "Piglin Traveller snorts angrily",
   "subtitles.entity.piglin_traveller.conversion": "Piglin Traveller converts to Zombified Piglin",
-  "subtitles.entity.piglin_traveller.step": "Piglin Traveller steps"
+  "subtitles.entity.piglin_traveller.step": "Piglin Traveller steps",
+  "piglinproliferation.advancements.nether.obtain_travellers_compass.description": "Obtain a Traveller's Compass by bartering with a Piglin Traveller - it may help you find what you need..."
+
 }
