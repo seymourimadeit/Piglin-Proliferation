@@ -54,6 +54,8 @@ public class PPClientEvents {
             "buckler");
     public static final ModelLayerLocation TRAVELLER_ARMOR_OUTER_LAYER = new ModelLayerLocation(
             new ResourceLocation(PiglinProliferation.MODID + "traveller_outer_armor"), "traveller_outer_armor");
+    public static final ModelLayerLocation ALCHEMIST_ARMOR_OUTER_LAYER = new ModelLayerLocation(
+            new ResourceLocation(PiglinProliferation.MODID + "alchemist_outer_armor"), "alchemist_outer_armor");
     public static final Material BUCKLER_TEXTURE = new Material(TextureAtlas.LOCATION_BLOCKS, new ResourceLocation(PiglinProliferation.MODID, "entity/buckler/golden_buckler"));
 
     @SubscribeEvent
@@ -65,6 +67,7 @@ public class PPClientEvents {
         event.registerLayerDefinition(PIGLIN_ALCHEMIST, () -> LayerDefinition.create(PiglinAlchemistModel.createBodyLayer(new CubeDeformation(0.25F), new CubeDeformation(0.70F), new CubeDeformation(1.05F)), 120, 64));
         event.registerLayerDefinition(PIGLIN_TRAVELLER, PiglinTravellerModel::createBodyLayer);
         event.registerLayerDefinition(TRAVELLER_ARMOR_OUTER_LAYER, () -> LayerDefinition.create(HumanoidArmorModel.createBodyLayer(new CubeDeformation(1.3F)), 64, 32));
+        event.registerLayerDefinition(ALCHEMIST_ARMOR_OUTER_LAYER, () -> LayerDefinition.create(HumanoidArmorModel.createBodyLayer(new CubeDeformation(1.3F)), 64, 32));
         event.registerLayerDefinition(PIGLIN_ALCHEMIST_BELT_SLOTS, () -> LayerDefinition.create(PiglinAlchemistModel.createBodyLayer(new CubeDeformation(0.40F), new CubeDeformation(1.0F), new CubeDeformation(1.20F)), 120, 64));
         event.registerLayerDefinition(BUCKLER, ModelGoldenBuckler::createLayer);
     }
