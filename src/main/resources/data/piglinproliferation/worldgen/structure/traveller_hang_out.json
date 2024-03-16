@@ -1,5 +1,5 @@
 {
-  "type": "minecraft:jigsaw",
+  "type": "piglinproliferation:custom_jigsaw",
   "biomes": "#piglinproliferation:can_spawn_traveller_hang_out",
   "max_distance_from_center": 80,
   "size": 6,

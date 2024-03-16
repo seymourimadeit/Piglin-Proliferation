@@ -55,10 +55,12 @@ public class PPConfig {
         public CommonConfig(ForgeConfigSpec.Builder builder) {
             builder.push("Vanilla Changes");
             healingArrowDamage = builder.define("Allow healing and Regeneration arrows to not do damage?", true);
-            alchemistWeightInBastions = builder.comment("Weight is calculated by dividing the current value by the sum of all weights combined.",
-                    "Use https://minecraft.fandom.com/wiki/Bastion_Remnant?so=search#cite_ref-piglin_group_1-39 as a guide.",
-                    "The default weight for alchemists spawning is 4, giving them a 28% chance of spawning in bastions",
-                    "(Due to this, regular piglins have a spawn rate of 28% aswell, and brutes have a spawn rate of 7% spawn rate, changed values will have to account for this).", "To change the natural spawn rates, use a datapack that overrides add_alchemist.json file, located in data/piglinproliferation/data/forge/biome_modifier").defineInRange("Alchemist spawnrate weight in bastions", 4, Integer.MIN_VALUE, Integer.MAX_VALUE);
+            alchemistWeightInBastions = builder.comment("""
+                    Weight is calculated by dividing the current value by the sum of all weights combined.
+                    Use https://minecraft.fandom.com/wiki/Bastion_Remnant?so=search#cite_ref-piglin_group_1-39 as a guide.
+                    The default weight for alchemists spawning is 4, giving them a 28% chance of spawning in bastions.
+                    (Due to this, regular piglins have a spawn rate of 28% aswell, and brutes have a spawn rate of 7% spawn rate, changed values will have to account for this).
+                    To change the natural spawn rates, use a datapack that overrides add_alchemist.json file, located in data/piglinproliferation/data/forge/biome_modifier""").defineInRange("Alchemist spawnrate weight in bastions", 4, Integer.MIN_VALUE, Integer.MAX_VALUE);
             zombifiedPiglinDefaultChance = builder.defineInRange("Chance of zombified piglins spawning with regular piglin clothing", 0.90F, 0.0F, 9000.0F);
             zombifiedBruteChance = builder.defineInRange("Chance of zombified piglins spawning with brute clothing (including items)", 0.015F, 0.0F, 9000.0F);
             crossbowChance = builder.defineInRange("Chance of zombified piglins spawning with crossbows", 0.50F, 0.0F, 9000.0F);
@@ -83,8 +85,14 @@ public class PPConfig {
             builder.pop();
             builder.pop();
             builder.push("Piglin Traveller");
-            travellersCompassBiomeWhitelist = builder.define("Should the Traveller's Compass only search for biomes in the whitelist? (If disabled, all nether biomes will be eligible except for those in the blacklist)", false);
-            travellersCompassStructureWhitelist = builder.define("Should the Traveller's Compass only search for structures in the whitelist? (If disabled, all nether structures will be eligible except for those in the blacklist)", true);
+            travellersCompassBiomeWhitelist = builder.comment("""
+                    This config option determines which biomes the Traveller's Compass can point to.
+                    If enabled, it will only point to biomes in the "piglinproliferation:travellers_compass_whitelist" biome tag.
+                    If disabled, it will point to all biomes except those in the "piglinproliferation_travellers_compass_blacklist" biome tag.""").define("Should the Traveller's Compass only search for biomes in the whitelist?", false);
+            travellersCompassStructureWhitelist = builder.comment("""
+                    This config option determines which structures the Traveller's Compass can point to.
+                    If enabled, it will only point to biomes in the "piglinproliferation:travellers_compass_whitelist" structure and structure_set tags.
+                    If disabled, it will point to all biomes except those in the "piglinproliferation_travellers_compass_blacklist" structure and structure_set tag.""").define("Should the Traveller's Compass only search for structures in the whitelist?", true);
             builder.pop();
         }
     }

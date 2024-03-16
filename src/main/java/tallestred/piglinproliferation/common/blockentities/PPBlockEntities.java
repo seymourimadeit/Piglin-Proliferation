@@ -6,7 +6,6 @@ import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
 import tallestred.piglinproliferation.PiglinProliferation;
 import tallestred.piglinproliferation.common.blocks.PPBlocks;
-import tallestred.piglinproliferation.common.blocks.PiglinSkullBlock;
 
 public class PPBlockEntities {
     public static final DeferredRegister<BlockEntityType<?>> BLOCK_ENTITIES = DeferredRegister.create(ForgeRegistries.BLOCK_ENTITY_TYPES, PiglinProliferation.MODID);

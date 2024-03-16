@@ -40,6 +40,6 @@ public class BangEnchantment extends Enchantment {
 
     @Override
     public boolean checkCompatibility(Enchantment ench) {
-        return ench instanceof TurningEnchantment ? false : super.checkCompatibility(ench);
+        return !(ench instanceof TurningEnchantment) && super.checkCompatibility(ench);
     }
 }

@@ -1,5 +1,5 @@
 {
-  "type": "minecraft:jigsaw",
+  "type": "piglinproliferation:custom_jigsaw",
   "biomes": "#piglinproliferation:can_spawn_traveller_standalone",
   "max_distance_from_center": 80,
   "size": 6,
@@ -16,5 +16,5 @@
   "start_pool": "piglinproliferation:standalone_pool",
   "step": "surface_structures",
   "use_expansion_hack": false,
-  "terrain_adaptation": "beard_box"
+  "terrain_adaptation": "beard_thin"
 }
