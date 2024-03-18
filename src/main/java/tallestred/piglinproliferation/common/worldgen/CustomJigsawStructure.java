@@ -81,8 +81,7 @@ public class CustomJigsawStructure extends Structure {
         if (highLand == null)
             return Optional.empty();
         BlockPos blockPos = new BlockPos(chunkpos.getMinBlockX(), highLand.getY(), chunkpos.getMinBlockZ());
-        Optional<Structure.GenerationStub> optional = JigsawPlacement.addPieces(context, this.startPool, this.startJigsawName, this.maxDepth, blockPos, this.useExpansionHack, this.projectStartToHeightmap, this.maxDistanceFromCenter);
-        return optional;
+        return JigsawPlacement.addPieces(context, this.startPool, this.startJigsawName, this.maxDepth, blockPos, this.useExpansionHack, this.projectStartToHeightmap, this.maxDistanceFromCenter);
     }
 
 

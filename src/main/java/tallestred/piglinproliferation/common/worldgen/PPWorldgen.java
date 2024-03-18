@@ -74,7 +74,7 @@ public class PPWorldgen {
     /**
      * @author telepathicgrunt
      *
-     * <p>Finds the highest possible surface land in the nether, used to prevent structures from generating in solid blocks.</p>
+     * <p>Finds the highest possible surface land in the nether, used to prevent structures from generating in solid terrain.</p>
      */
     public static BlockPos getHighestLand(ChunkGenerator chunkGenerator, RandomState randomState, BoundingBox boundingBox, LevelHeightAccessor heightLimitView) {
         BlockPos.MutableBlockPos mutable = new BlockPos.MutableBlockPos().set(boundingBox.getCenter().getX(), (chunkGenerator.getMinY() + chunkGenerator.getGenDepth()) - 40, boundingBox.getCenter().getZ());
