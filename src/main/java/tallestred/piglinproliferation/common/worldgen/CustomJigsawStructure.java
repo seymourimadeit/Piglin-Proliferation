@@ -11,6 +11,7 @@ import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.level.levelgen.WorldGenerationContext;
 import net.minecraft.world.level.levelgen.heightproviders.HeightProvider;
+import net.minecraft.world.level.levelgen.structure.BoundingBox;
 import net.minecraft.world.level.levelgen.structure.Structure;
 import net.minecraft.world.level.levelgen.structure.StructureType;
 import net.minecraft.world.level.levelgen.structure.pools.JigsawPlacement;
@@ -20,7 +21,7 @@ import java.util.Optional;
 
 /**
  * Copied from vanilla {@link net.minecraft.world.level.levelgen.structure.structures.JigsawStructure}
- * */
+ */
 public class CustomJigsawStructure extends Structure {
     public static final Codec<CustomJigsawStructure> CODEC = ExtraCodecs.validate(RecordCodecBuilder.mapCodec((kind) -> {
         return kind.group(settingsCodec(kind), StructureTemplatePool.CODEC.fieldOf("start_pool").forGetter((structure) -> {
@@ -76,13 +77,13 @@ public class CustomJigsawStructure extends Structure {
 
     public Optional<Structure.GenerationStub> findGenerationPoint(Structure.GenerationContext context) {
         ChunkPos chunkpos = context.chunkPos();
-        BlockPos blockPos = new BlockPos(chunkpos.getMinBlockX(), this.startHeight.sample(context.random(), new WorldGenerationContext(context.chunkGenerator(), context.heightAccessor())), chunkpos.getMinBlockZ());
+        BlockPos highLand = PPWorldgen.getHighestLand(context.chunkGenerator(), context.randomState(), new BoundingBox(new BlockPos(chunkpos.getMinBlockX(), this.startHeight.sample(context.random(), new WorldGenerationContext(context.chunkGenerator(), context.heightAccessor())), chunkpos.getMinBlockZ())), context.heightAccessor());
+        if (highLand == null)
+            return Optional.empty();
+        BlockPos blockPos = new BlockPos(chunkpos.getMinBlockX(), highLand.getY(), chunkpos.getMinBlockZ());
         Optional<Structure.GenerationStub> optional = JigsawPlacement.addPieces(context, this.startPool, this.startJigsawName, this.maxDepth, blockPos, this.useExpansionHack, this.projectStartToHeightmap, this.maxDistanceFromCenter);
-        //I know this is deprecated but not sure how else to do this
-        optional.ifPresent(stub -> stub.getPiecesBuilder().offsetPiecesVertically(PPWorldgen.getHighestLand(context.chunkGenerator(), context.randomState(), stub.getPiecesBuilder().getBoundingBox(), context.heightAccessor()).getY() - blockPos.getY()));
         return optional;
     }
-
 
 
     public StructureType<?> type() {
