@@ -4,10 +4,13 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.core.Holder;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.ExtraCodecs;
 import net.minecraft.world.level.ChunkPos;
+import net.minecraft.world.level.NoiseColumn;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.level.levelgen.WorldGenerationContext;
 import net.minecraft.world.level.levelgen.heightproviders.HeightProvider;
@@ -20,7 +23,7 @@ import java.util.Optional;
 
 /**
  * Copied from vanilla {@link net.minecraft.world.level.levelgen.structure.structures.JigsawStructure}
- * */
+ */
 public class CustomJigsawStructure extends Structure {
     public static final Codec<CustomJigsawStructure> CODEC = ExtraCodecs.validate(RecordCodecBuilder.mapCodec((kind) -> {
         return kind.group(settingsCodec(kind), StructureTemplatePool.CODEC.fieldOf("start_pool").forGetter((structure) -> {
@@ -74,15 +77,38 @@ public class CustomJigsawStructure extends Structure {
         this(pSettings, startPool, Optional.empty(), maxDepth, startHeight, useExpansionHack, Optional.empty(), 80);
     }
 
+    /**
+     * @author telepathicgrunt
+     **/
+    protected boolean extraSpawningChecks(GenerationContext context, BlockPos blockPos) {
+        ChunkPos chunkPos = new ChunkPos(blockPos);
+        BlockPos.MutableBlockPos mutable = new BlockPos.MutableBlockPos();
+        for (int curChunkX = chunkPos.x - 1; curChunkX <= chunkPos.x + 1; curChunkX++) {
+            for (int curChunkZ = chunkPos.z - 1; curChunkZ <= chunkPos.z + 1; curChunkZ++) {
+                mutable.set(curChunkX << 2, (context.chunkGenerator().getMinY() + context.chunkGenerator().getGenDepth()) - 40, curChunkZ << 2);
+                NoiseColumn blockView = context.chunkGenerator().getBaseColumn(mutable.getX(), mutable.getZ(), context.heightAccessor(), context.randomState());
+
+                while (mutable.getY() < 90) {
+                    BlockState state = blockView.getBlock(mutable.getY());
+                    if (!state.isAir()) {
+                        return false;
+                    }
+                    mutable.move(Direction.UP);
+                }
+            }
+        }
+        return true;
+    }
+
+    @Override
     public Optional<Structure.GenerationStub> findGenerationPoint(Structure.GenerationContext context) {
         ChunkPos chunkpos = context.chunkPos();
         BlockPos blockPos = new BlockPos(chunkpos.getMinBlockX(), this.startHeight.sample(context.random(), new WorldGenerationContext(context.chunkGenerator(), context.heightAccessor())), chunkpos.getMinBlockZ());
+        if (!extraSpawningChecks(context, blockPos))
+            return Optional.empty();
         Optional<Structure.GenerationStub> optional = JigsawPlacement.addPieces(context, this.startPool, this.startJigsawName, this.maxDepth, blockPos, this.useExpansionHack, this.projectStartToHeightmap, this.maxDistanceFromCenter);
-        //I know this is deprecated but not sure how else to do this
-        optional.ifPresent(stub -> stub.getPiecesBuilder().offsetPiecesVertically(PPWorldgen.getHighestLand(context.chunkGenerator(), context.randomState(), stub.getPiecesBuilder().getBoundingBox(), context.heightAccessor()).getY() - blockPos.getY()));
         return optional;
     }
-
 
 
     public StructureType<?> type() {
