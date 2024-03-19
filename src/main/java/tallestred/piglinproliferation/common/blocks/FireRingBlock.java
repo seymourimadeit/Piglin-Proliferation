@@ -5,6 +5,8 @@ import net.minecraft.stats.Stats;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.projectile.Projectile;
+import net.minecraft.world.entity.projectile.ThrownPotion;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.alchemy.PotionUtils;
@@ -29,10 +31,11 @@ import java.util.Optional;
 
 public class FireRingBlock extends CampfireBlock {
     protected static final VoxelShape SHAPE = Block.box(0.0, 0.0, 0.0, 16.0, 5.0, 16.0);
-    public static final int LIGHT_VALUE = 10;
+    protected final int potionTime;
 
-    public FireRingBlock(boolean spawnParticles, int fireDamage, Properties properties) {
+    public FireRingBlock(boolean spawnParticles, int fireDamage, int potionTime, Properties properties) {
         super(spawnParticles, fireDamage, properties);
+        this.potionTime = potionTime;
     }
 
     @Override
@@ -52,11 +55,9 @@ public class FireRingBlock extends CampfireBlock {
                 }
                 return InteractionResult.CONSUME;
             }
-            else if (stack.getItem() == Items.POTION) { //TODO add some kind of lit check
-                return blockEntity.addPotion(player, hand, stack, PotionUtils.getPotion(stack)) ? InteractionResult.SUCCESS : InteractionResult.PASS;
-            }
+            else if (state.getValue(LIT) && stack.getItem() == Items.POTION)
+                return blockEntity.addEffects(player, hand, stack, PotionUtils.getMobEffects(stack), this.potionTime) ? InteractionResult.SUCCESS : InteractionResult.PASS;
         }
-
         return InteractionResult.PASS;
     }
 
@@ -65,14 +66,20 @@ public class FireRingBlock extends CampfireBlock {
         return SHAPE;
     }
 
-    //TODO why is particle tick not working?? Something else is not right here, it's just not calling potion tick
     @Nullable
     @Override
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState state, BlockEntityType<T> blockEntityType) {
         if (level.isClientSide) {
-            return state.getValue(LIT) ? createTickerHelper(blockEntityType, PPBlockEntities.FIRE_RING.get(), FireRingBlockEntity::particleTick) : null;
+             return state.getValue(LIT) ? createTickerHelper(blockEntityType, PPBlockEntities.FIRE_RING.get(), FireRingBlockEntity::particleTick) : null;
         } else {
             return state.getValue(LIT) ? createTickerHelper(blockEntityType, PPBlockEntities.FIRE_RING.get(), FireRingBlockEntity::cookTick) : createTickerHelper(blockEntityType, PPBlockEntities.FIRE_RING.get(), FireRingBlockEntity::cooldownTick);
         }
+    }
+
+    @Override
+    public void onProjectileHit(Level level, BlockState state, BlockHitResult hitResult, Projectile projectile) {
+        super.onProjectileHit(level, state, hitResult, projectile);
+        if (state.getValue(LIT) && level.getBlockEntity(hitResult.getBlockPos()) instanceof FireRingBlockEntity blockEntity && projectile instanceof ThrownPotion potion)
+            blockEntity.addEffects(null, null, null, PotionUtils.getMobEffects(potion.getItem()), this.potionTime);
     }
 }

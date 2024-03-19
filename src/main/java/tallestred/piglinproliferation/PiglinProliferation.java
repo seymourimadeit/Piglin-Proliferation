@@ -92,6 +92,7 @@ public class PiglinProliferation {
             addToCreativeTabAfter(PPItems.PIGLIN_TRAVELLER_HEAD_ITEM.get(), PPItems.PIGLIN_BRUTE_HEAD_ITEM.get(), creativeTab);
             addToCreativeTabAfter(PPItems.PIGLIN_BRUTE_HEAD_ITEM.get(), PPItems.ZOMBIFIED_PIGLIN_HEAD_ITEM.get(), creativeTab);
             addToCreativeTabAfter(Items.SOUL_CAMPFIRE, PPItems.BLACKSTONE_FIRE_RING_ITEM.get(), creativeTab);
+            addToCreativeTabAfter(PPItems.BLACKSTONE_FIRE_RING_ITEM.get(), PPItems.BLACKSTONE_SOUL_FIRE_RING_ITEM.get(), creativeTab);
         }
         if (event.getTabKey() == CreativeModeTabs.COMBAT)
             addToCreativeTabAfter(Items.SHIELD, PPItems.BUCKLER.get(), creativeTab);

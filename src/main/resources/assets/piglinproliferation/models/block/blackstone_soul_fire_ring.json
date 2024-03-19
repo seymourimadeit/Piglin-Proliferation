@@ -1,0 +1,10 @@
+{
+  "parent": "piglinproliferation:block/template_fire_ring",
+  "textures": {
+    "fire": "block/soul_campfire_fire",
+    "up": "piglinproliferation:block/blackstone_soul_fire_ring_lit",
+    "down": "piglinproliferation:block/blackstone_fire_ring_bottom",
+    "side": "piglinproliferation:block/blackstone_fire_ring_side",
+    "particle": "piglinproliferation:block/blackstone_fire_ring_side"
+  }
+}
