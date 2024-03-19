@@ -1,6 +1,7 @@
 package tallestred.piglinproliferation.common.blockentities;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.Connection;
@@ -18,6 +19,7 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.item.alchemy.PotionUtils;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.CampfireBlock;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.entity.CampfireBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
@@ -76,7 +78,25 @@ public class FireRingBlockEntity extends CampfireBlockEntity {
             RandomSource randomSource = level.getRandom();
             level.addAlwaysVisibleParticle(randomSource.nextBoolean() ? ParticleTypes.ENTITY_EFFECT : ParticleTypes.AMBIENT_ENTITY_EFFECT, true, (double)pos.getX() + 0.5 + randomSource.nextDouble() / 3.0 * (double)(randomSource.nextBoolean() ? 1 : -1), (double)pos.getY() + randomSource.nextDouble() + randomSource.nextDouble(), (double)pos.getZ() + 0.5 + randomSource.nextDouble() / 3.0 * (double)(randomSource.nextBoolean() ? 1 : -1), xComponent, yComponent, zComponent);
         }
-        CampfireBlockEntity.particleTick(level, pos, state, blockEntity);
+        RandomSource random = level.random;
+        int i;
+        if (random.nextFloat() < 0.11F) {
+            for(i = 0; i < random.nextInt(2) + 2; ++i) {
+                CampfireBlock.makeParticles(level, pos, state.getValue(CampfireBlock.SIGNAL_FIRE), false);
+            }
+        }
+        i = state.getValue(CampfireBlock.FACING).get2DDataValue();
+        for(int j = 0; j < blockEntity.getItems().size(); ++j) {
+            if (!blockEntity.getItems().get(j).isEmpty() && random.nextFloat() < 0.2F) {
+                Direction direction = Direction.from2DDataValue(Math.floorMod(j + i, 4));
+                double x = (double)pos.getX() + 0.5 - (double)((float)direction.getStepX() * 0.3125F) + (double)((float)direction.getClockWise().getStepX() * 0.3125F);
+                double y = (double)pos.getY() + 0.378;
+                double z = (double)pos.getZ() + 0.5 - (double)((float)direction.getStepZ() * 0.3125F) + (double)((float)direction.getClockWise().getStepZ() * 0.3125F);
+
+                for(int k = 0; k < 4; ++k)
+                    level.addParticle(ParticleTypes.SMOKE, x, y, z, 0.0, 5.0E-4, 0.0);
+            }
+        }
     }
 
     public static void cookTick(Level level, BlockPos pos, BlockState state, FireRingBlockEntity blockEntity) {
