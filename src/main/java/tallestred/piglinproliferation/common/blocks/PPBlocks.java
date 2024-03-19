@@ -1,7 +1,11 @@
 package tallestred.piglinproliferation.common.blocks;
 
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
+import net.minecraft.world.level.block.state.properties.NoteBlockInstrument;
+import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.level.material.PushReaction;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.registries.DeferredRegister;
@@ -20,4 +24,7 @@ public class PPBlocks {
     public static final RegistryObject<Block> PIGLIN_ALCHEMIST_HEAD_WALL = BLOCKS.register("piglin_alchemist_wall_head", () -> new PiglinWallSkullBlock(PiglinSkullBlock.Types.PIGLIN_ALCHEMIST, BlockBehaviour.Properties.of().strength(1.0F).pushReaction(PushReaction.DESTROY)));
     public static final RegistryObject<Block> PIGLIN_TRAVELLER_HEAD = BLOCKS.register("piglin_traveller_head", () -> new PiglinSkullBlock(PiglinSkullBlock.Types.PIGLIN_TRAVELLER, BlockBehaviour.Properties.of().strength(1.0F).pushReaction(PushReaction.DESTROY)));
     public static final RegistryObject<Block> PIGLIN_TRAVELLER_HEAD_WALL = BLOCKS.register("piglin_traveller_wall_head", () -> new PiglinWallSkullBlock(PiglinSkullBlock.Types.PIGLIN_TRAVELLER, BlockBehaviour.Properties.of().strength(1.0F).pushReaction(PushReaction.DESTROY)));
+    public static final RegistryObject<Block> BLACKSTONE_FIRE_RING = BLOCKS.register("blackstone_fire_ring", () -> new FireRingBlock(true, 1, BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_BLACK).instrument(NoteBlockInstrument.BASS).strength(2.0F).sound(SoundType.WOOD).lightLevel(Blocks.litBlockEmission(10)).noOcclusion().ignitedByLava()));
+    //public static final RegistryObject<Block> BLACKSTONE_SOUL_FIRE_RING = BLOCKS.register("blackstone_soul_fire_ring", () -> new FireRingBlock(true, 1, BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_BLACK).instrument(NoteBlockInstrument.BASS).strength(2.0F).sound(SoundType.WOOD).lightLevel(Blocks.litBlockEmission(FireRingBlock.LIGHT_VALUE)).noOcclusion().ignitedByLava()));
+    //TODO implement this as well
 }

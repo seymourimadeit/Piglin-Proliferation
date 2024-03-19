@@ -25,6 +25,8 @@
    "block.piglinproliferation.piglin_brute_wall_head": "Piglin Brute Wall Head",
    "block.piglinproliferation.piglin_traveller_head": "Piglin Traveler Head",
    "block.piglinproliferation.piglin_traveller_wall_head": "Piglin Traveler Wall Head",
+   "block.piglinproliferation.blackstone_fire_ring": "Blackstone Fire Ring",
+   "block.piglinproliferation.blackstone_soul_fire_ring": "Blackstone Soul Fire Ring",
    "item.piglinproliferation.buckler": "Buckler",
    "subtitles.entity.piglin_brute.charge": "Piglin Brute charges",
    "subtitles.item.buckler.bash": "Buckler bashes",

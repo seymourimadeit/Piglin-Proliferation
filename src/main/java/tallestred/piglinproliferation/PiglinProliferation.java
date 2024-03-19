@@ -88,7 +88,8 @@ public class PiglinProliferation {
             event.accept(PPItems.PIGLIN_ALCHEMIST_HEAD_ITEM.get());
             event.accept(PPItems.PIGLIN_BRUTE_HEAD_ITEM.get());
             event.accept(PPItems.ZOMBIFIED_PIGLIN_HEAD_ITEM.get());
-           event.accept(PPItems.PIGLIN_TRAVELLER_HEAD_ITEM.get());
+            event.accept(PPItems.PIGLIN_TRAVELLER_HEAD_ITEM.get());
+            event.accept(PPItems.BLACKSTONE_FIRE_RING_ITEM.get());
         }
         if (event.getTabKey() == CreativeModeTabs.COMBAT)
             event.accept(PPItems.BUCKLER.get());
