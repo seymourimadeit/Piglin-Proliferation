@@ -74,8 +74,8 @@ public class PPWorldgen {
     /**
      * @author telepathicgrunt
      *
-     * <p>Finds the highest possible surface land in the nether, used to prevent structures from generating in solid blocks.</p>
-     * */
+     * <p>Finds the highest possible surface land in the nether, used to prevent structures from generating in solid terrain.</p>
+     */
     public static BlockPos getHighestLand(ChunkGenerator chunkGenerator, RandomState randomState, BoundingBox boundingBox, LevelHeightAccessor heightLimitView) {
         BlockPos.MutableBlockPos mutable = new BlockPos.MutableBlockPos().set(boundingBox.getCenter().getX(), (chunkGenerator.getMinY() + chunkGenerator.getGenDepth()) - 40, boundingBox.getCenter().getZ());
         NoiseColumn blockView = chunkGenerator.getBaseColumn(mutable.getX(), mutable.getZ(), heightLimitView, randomState);
@@ -85,14 +85,12 @@ public class PPWorldgen {
             if (!currentBlockstate.canOcclude()) {
                 mutable.move(Direction.DOWN);
                 continue;
-            }
-            else if (blockView.getBlock(mutable.getY() + 3).isAir() && currentBlockstate.canOcclude()) {
+            } else if (blockView.getBlock(mutable.getY() + 3).isAir() && currentBlockstate.getFluidState().isEmpty() && currentBlockstate.getFluidState().isEmpty() && currentBlockstate.canOcclude()) {
                 return mutable;
             }
             mutable.move(Direction.DOWN);
         }
-
-        return mutable;
+        return null;
     }
 
 }
