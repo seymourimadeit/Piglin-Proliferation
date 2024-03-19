@@ -25,6 +25,7 @@ import tallestred.piglinproliferation.client.models.ModelGoldenBuckler;
 import tallestred.piglinproliferation.client.models.PiglinAlchemistModel;
 import tallestred.piglinproliferation.client.models.PiglinHeadEntityModel;
 import tallestred.piglinproliferation.client.models.PiglinTravellerModel;
+import tallestred.piglinproliferation.client.renderers.FireRingRenderer;
 import tallestred.piglinproliferation.client.renderers.PiglinAlchemistRenderer;
 import tallestred.piglinproliferation.client.renderers.PiglinTravellerRenderer;
 import tallestred.piglinproliferation.client.renderers.layers.PiglinClothingRenderLayer;
@@ -76,6 +77,7 @@ public class PPClientEvents {
     @SubscribeEvent
     public static void entityRenderers(EntityRenderersEvent.RegisterRenderers event) {
         event.registerBlockEntityRenderer(PPBlockEntities.PIGLIN_SKULL.get(), SkullBlockRenderer::new);
+        event.registerBlockEntityRenderer(PPBlockEntities.FIRE_RING.get(), FireRingRenderer::new);
         event.registerEntityRenderer(PPEntityTypes.PIGLIN_ALCHEMIST.get(), PiglinAlchemistRenderer::new);
         event.registerEntityRenderer(PPEntityTypes.PIGLIN_TRAVELLER.get(), PiglinTravellerRenderer::new);
     }

@@ -6,11 +6,12 @@ import net.minecraft.core.Registry;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.SpawnPlacements;
-import net.minecraft.world.item.CreativeModeTabs;
+import net.minecraft.world.item.*;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.level.levelgen.structure.pools.StructureTemplatePool;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureProcessorList;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.common.util.MutableHashedLinkedMap;
 import net.minecraftforge.event.BuildCreativeModeTabContentsEvent;
 import net.minecraftforge.event.entity.EntityAttributeCreationEvent;
 import net.minecraftforge.event.entity.SpawnPlacementRegisterEvent;
@@ -80,19 +81,24 @@ public class PiglinProliferation {
     }
 
     private void addCreativeTabs(final BuildCreativeModeTabContentsEvent event) {
+        MutableHashedLinkedMap<ItemStack, CreativeModeTab.TabVisibility> creativeTab = event.getEntries();
         if (event.getTabKey() == CreativeModeTabs.SPAWN_EGGS) {
-            event.accept(PPItems.PIGLIN_ALCHEMIST_SPAWN_EGG.get());
-            event.accept(PPItems.PIGLIN_TRAVELLER_SPAWN_EGG.get());
+            addToCreativeTabAfter(Items.PIGLIN_SPAWN_EGG, PPItems.PIGLIN_ALCHEMIST_SPAWN_EGG.get(), creativeTab);
+            addToCreativeTabAfter(Items.PIGLIN_BRUTE_SPAWN_EGG, PPItems.PIGLIN_TRAVELLER_SPAWN_EGG.get(), creativeTab);
         }
         if (event.getTabKey() == CreativeModeTabs.FUNCTIONAL_BLOCKS) {
-            event.accept(PPItems.PIGLIN_ALCHEMIST_HEAD_ITEM.get());
-            event.accept(PPItems.PIGLIN_BRUTE_HEAD_ITEM.get());
-            event.accept(PPItems.ZOMBIFIED_PIGLIN_HEAD_ITEM.get());
-            event.accept(PPItems.PIGLIN_TRAVELLER_HEAD_ITEM.get());
-            event.accept(PPItems.BLACKSTONE_FIRE_RING_ITEM.get());
+            addToCreativeTabAfter(Items.PIGLIN_HEAD, PPItems.PIGLIN_ALCHEMIST_HEAD_ITEM.get(), creativeTab);
+            addToCreativeTabAfter(PPItems.PIGLIN_ALCHEMIST_HEAD_ITEM.get(), PPItems.PIGLIN_TRAVELLER_HEAD_ITEM.get(), creativeTab);
+            addToCreativeTabAfter(PPItems.PIGLIN_TRAVELLER_HEAD_ITEM.get(), PPItems.PIGLIN_BRUTE_HEAD_ITEM.get(), creativeTab);
+            addToCreativeTabAfter(PPItems.PIGLIN_BRUTE_HEAD_ITEM.get(), PPItems.ZOMBIFIED_PIGLIN_HEAD_ITEM.get(), creativeTab);
+            addToCreativeTabAfter(Items.SOUL_CAMPFIRE, PPItems.BLACKSTONE_FIRE_RING_ITEM.get(), creativeTab);
         }
         if (event.getTabKey() == CreativeModeTabs.COMBAT)
-            event.accept(PPItems.BUCKLER.get());
+            addToCreativeTabAfter(Items.SHIELD, PPItems.BUCKLER.get(), creativeTab);
+    }
+
+    private void addToCreativeTabAfter(Item after, Item toAdd, MutableHashedLinkedMap<ItemStack, CreativeModeTab.TabVisibility> creativeTab) {
+        creativeTab.putAfter(new ItemStack(after), new ItemStack(toAdd), CreativeModeTab.TabVisibility.PARENT_AND_SEARCH_TABS);
     }
 
     private void addSpawn(final SpawnPlacementRegisterEvent event) {

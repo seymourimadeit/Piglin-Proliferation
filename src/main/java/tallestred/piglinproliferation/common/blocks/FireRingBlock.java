@@ -17,7 +17,6 @@ import net.minecraft.world.level.block.CampfireBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityTicker;
 import net.minecraft.world.level.block.entity.BlockEntityType;
-import net.minecraft.world.level.block.entity.CampfireBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
@@ -41,7 +40,6 @@ public class FireRingBlock extends CampfireBlock {
         return new FireRingBlockEntity(pos, state);
     }
 
-    //TODO what?? sometimes the block entity is aactually a campfire block entity??
     @Override
     public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
         if (level.getBlockEntity(pos) instanceof FireRingBlockEntity blockEntity) {
@@ -54,7 +52,7 @@ public class FireRingBlock extends CampfireBlock {
                 }
                 return InteractionResult.CONSUME;
             }
-            else if (stack.getItem() == Items.POTION) {
+            else if (stack.getItem() == Items.POTION) { //TODO add some kind of lit check
                 return blockEntity.addPotion(player, hand, stack, PotionUtils.getPotion(stack)) ? InteractionResult.SUCCESS : InteractionResult.PASS;
             }
         }
@@ -74,7 +72,7 @@ public class FireRingBlock extends CampfireBlock {
         if (level.isClientSide) {
             return state.getValue(LIT) ? createTickerHelper(blockEntityType, PPBlockEntities.FIRE_RING.get(), FireRingBlockEntity::particleTick) : null;
         } else {
-            return state.getValue(LIT) ? createTickerHelper(blockEntityType, PPBlockEntities.FIRE_RING.get(), FireRingBlockEntity::newCookTick) : createTickerHelper(blockEntityType, PPBlockEntities.FIRE_RING.get(), FireRingBlockEntity::newCooldownTick);
+            return state.getValue(LIT) ? createTickerHelper(blockEntityType, PPBlockEntities.FIRE_RING.get(), FireRingBlockEntity::cookTick) : createTickerHelper(blockEntityType, PPBlockEntities.FIRE_RING.get(), FireRingBlockEntity::cooldownTick);
         }
     }
 }
