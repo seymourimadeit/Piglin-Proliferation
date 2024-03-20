@@ -2,7 +2,6 @@
   "replace": "false",
   "values": [
     "minecraft:nether_wastes",
-    "minecraft:basalt_deltas",
-    "minecraft:soul_sand_valley"
+    "minecraft:basalt_deltas"
   ]
 }

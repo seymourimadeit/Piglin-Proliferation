@@ -9,7 +9,6 @@ import net.minecraft.world.level.levelgen.structure.StructureSet;
 import tallestred.piglinproliferation.PiglinProliferation;
 
 public class PPTags {
-    public static final TagKey<Biome> SHOULD_USE_SOUL_FIRE_PIT = TagKey.create(Registries.BIOME, new ResourceLocation(PiglinProliferation.MODID, "should_use_soul_fire_pit"));
     public static final TagKey<Biome> TRAVELLERS_COMPASS_BIOME_WHITELIST = TagKey.create(Registries.BIOME, new ResourceLocation(PiglinProliferation.MODID, "travellers_compass_whitelist"));
     public static final TagKey<Biome> TRAVELLERS_COMPASS_BIOME_BLACKLIST = TagKey.create(Registries.BIOME, new ResourceLocation(PiglinProliferation.MODID, "travellers_compass_blacklist"));
 
