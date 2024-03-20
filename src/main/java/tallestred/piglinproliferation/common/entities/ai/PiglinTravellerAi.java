@@ -22,6 +22,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.schedule.Activity;
 import net.minecraft.world.item.CrossbowItem;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.biome.Biomes;
 import net.minecraft.world.level.storage.loot.LootParams;
 import net.minecraft.world.level.storage.loot.LootTable;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
@@ -220,12 +221,13 @@ public class PiglinTravellerAi extends PiglinAi {
                 optional3 = brain.getMemory(MemoryModuleType.NEAREST_VISIBLE_NEMESIS);
                 if (optional3.isPresent()) {
                     return optional3;
-                } else {
+                } else if (!piglin.level().getBiome(piglin.getOnPos()).is(Biomes.WARPED_FOREST)){
                     Optional<Player> optional2 = brain.getMemory(MemoryModuleType.NEAREST_TARGETABLE_PLAYER_NOT_WEARING_GOLD);
                     return optional2.isPresent() && Sensor.isEntityAttackable(piglin, (LivingEntity) optional2.get()) ? optional2 : Optional.empty();
                 }
             }
         }
+        return Optional.empty();
     }
 
     private static Vec3 getRandomNearbyPos(Piglin piglin) {
