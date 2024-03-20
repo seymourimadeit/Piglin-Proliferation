@@ -29,6 +29,7 @@ import net.minecraft.world.item.alchemy.PotionUtils;
 import net.minecraft.world.item.alchemy.Potions;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.pathfinder.BlockPathTypes;
 import net.minecraftforge.common.util.LazyOptional;
@@ -48,6 +49,7 @@ import tallestred.piglinproliferation.client.PPSounds;
 import tallestred.piglinproliferation.common.blocks.PPBlocks;
 import tallestred.piglinproliferation.common.enchantments.PPEnchantments;
 import tallestred.piglinproliferation.common.entities.PPEntityTypes;
+import tallestred.piglinproliferation.common.entities.PiglinTraveller;
 import tallestred.piglinproliferation.common.entities.ai.goals.DumbBowAttackGoal;
 import tallestred.piglinproliferation.common.entities.ai.goals.DumbCrossbowAttackGoal;
 import tallestred.piglinproliferation.common.entities.ai.goals.PiglinCallForHelpGoal;
@@ -270,6 +272,14 @@ public class PPEvents {
     public static void finalizeSpawn(MobSpawnEvent.FinalizeSpawn event) {
         MobSpawnType spawnType = event.getSpawnType();
         RandomSource rSource = event.getLevel().getRandom();
+        if (event.getEntity() instanceof Strider strider && rSource.nextInt(60) == 0 && !strider.isBaby()) {
+            event.setCanceled(true);
+            PiglinTraveller traveller = PPEntityTypes.PIGLIN_TRAVELLER.get().create(strider.level());
+            traveller.copyPosition(strider);
+            traveller.startRiding(strider);
+            strider.equipSaddle(null);
+            traveller.setItemSlot(EquipmentSlot.MAINHAND, new ItemStack(Items.WARPED_FUNGUS_ON_A_STICK));
+        }
         if (event.getEntity() instanceof PiglinBrute piglinBrute) {
             if (!PPConfig.COMMON.BruteBuckler.get()) return;
             piglinBrute.setItemSlot(EquipmentSlot.OFFHAND, new ItemStack(PPItems.BUCKLER.get()));
@@ -314,9 +324,12 @@ public class PPEvents {
                     } else if (rSource.nextFloat() < PPConfig.COMMON.crossbowChance.get().floatValue()) {
                         event.setCanceled(true);
                         zombifiedPiglin.setItemSlot(EquipmentSlot.MAINHAND, new ItemStack(Items.CROSSBOW));
-                    } else if (zombifiedPiglin.getControlledVehicle() instanceof Strider) {
-                        tSource.setTransformationSource("piglin_traveller");
                     }
+                }
+                if (spawnType == MobSpawnType.JOCKEY) {
+                    event.setCanceled(true);
+                    tSource.setTransformationSource("piglin_traveller");
+                    zombifiedPiglin.setItemSlot(EquipmentSlot.MAINHAND, new ItemStack(Items.WARPED_FUNGUS_ON_A_STICK));
                 }
             }
         }
