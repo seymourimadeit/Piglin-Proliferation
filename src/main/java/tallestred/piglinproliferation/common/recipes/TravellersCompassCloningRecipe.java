@@ -1,4 +1,3 @@
-
 package tallestred.piglinproliferation.common.recipes;
 
 import net.minecraft.core.RegistryAccess;

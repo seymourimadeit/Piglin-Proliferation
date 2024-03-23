@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "S": {
+      "item": "minecraft:stick"
+    },
+    "C": {
+      "tag": "minecraft:coals"
+    },
+    "B": {
+      "item": "minecraft:cobblestone"
+    }
+  },
+  "pattern": [
+    " S ",
+    "SCS",
+    "BBB"
+  ],
+  "result": {
+    "item": "piglinproliferation:stone_fire_ring"
+  },
+  "show_notification": true
+}

@@ -1,0 +1,27 @@
+{
+	"credit": "Made with Blockbench",
+	"parent": "block/campfire",
+	"render_type": "minecraft:cutout",
+	"elements": [
+		{
+			"from": [0, 0, 0],
+			"to": [16, 5, 16],
+			"faces": {
+				"north": {"uv": [0, 11, 16, 16], "texture": "#side"},
+				"east": {"uv": [0, 11, 16, 16], "texture": "#side"},
+				"south": {"uv": [0, 11, 16, 16], "texture": "#side"},
+				"west": {"uv": [0, 11, 16, 16], "texture": "#side"},
+				"up": {"uv": [16, 16, 0, 0], "texture": "#up"},
+				"down": {"uv": [16, 0, 0, 16], "texture": "#down"}
+			}
+		}
+	],
+	"groups": [
+		{
+			"name": "group",
+			"origin": [8, 8, 8],
+			"color": 0,
+			"children": [0]
+		}
+	]
+}

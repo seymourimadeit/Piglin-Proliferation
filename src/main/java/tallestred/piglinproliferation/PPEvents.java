@@ -13,8 +13,6 @@ import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
-import net.minecraft.world.entity.ai.goal.RangedBowAttackGoal;
-import net.minecraft.world.entity.ai.goal.RangedCrossbowAttackGoal;
 import net.minecraft.world.entity.ai.memory.MemoryModuleType;
 import net.minecraft.world.entity.monster.Creeper;
 import net.minecraft.world.entity.monster.Ghast;
@@ -31,6 +29,7 @@ import net.minecraft.world.item.alchemy.PotionUtils;
 import net.minecraft.world.item.alchemy.Potions;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.pathfinder.BlockPathTypes;
 import net.minecraftforge.common.util.LazyOptional;
@@ -49,6 +48,8 @@ import tallestred.piglinproliferation.capablities.*;
 import tallestred.piglinproliferation.client.PPSounds;
 import tallestred.piglinproliferation.common.blocks.PPBlocks;
 import tallestred.piglinproliferation.common.enchantments.PPEnchantments;
+import tallestred.piglinproliferation.common.entities.PPEntityTypes;
+import tallestred.piglinproliferation.common.entities.PiglinTraveller;
 import tallestred.piglinproliferation.common.entities.ai.goals.DumbBowAttackGoal;
 import tallestred.piglinproliferation.common.entities.ai.goals.DumbCrossbowAttackGoal;
 import tallestred.piglinproliferation.common.entities.ai.goals.PiglinCallForHelpGoal;
@@ -271,6 +272,14 @@ public class PPEvents {
     public static void finalizeSpawn(MobSpawnEvent.FinalizeSpawn event) {
         MobSpawnType spawnType = event.getSpawnType();
         RandomSource rSource = event.getLevel().getRandom();
+        if (event.getEntity() instanceof Strider strider && rSource.nextInt(60) == 0 && !strider.isBaby()) {
+            event.setCanceled(true);
+            PiglinTraveller traveller = PPEntityTypes.PIGLIN_TRAVELLER.get().create(strider.level());
+            traveller.copyPosition(strider);
+            traveller.startRiding(strider);
+            strider.equipSaddle(null);
+            traveller.setItemSlot(EquipmentSlot.MAINHAND, new ItemStack(Items.WARPED_FUNGUS_ON_A_STICK));
+        }
         if (event.getEntity() instanceof PiglinBrute piglinBrute) {
             if (!PPConfig.COMMON.BruteBuckler.get()) return;
             piglinBrute.setItemSlot(EquipmentSlot.OFFHAND, new ItemStack(PPItems.BUCKLER.get()));
@@ -315,9 +324,12 @@ public class PPEvents {
                     } else if (rSource.nextFloat() < PPConfig.COMMON.crossbowChance.get().floatValue()) {
                         event.setCanceled(true);
                         zombifiedPiglin.setItemSlot(EquipmentSlot.MAINHAND, new ItemStack(Items.CROSSBOW));
-                    } else if (zombifiedPiglin.getControlledVehicle() instanceof Strider) {
-                        tSource.setTransformationSource("piglin_traveller");
                     }
+                }
+                if (spawnType == MobSpawnType.JOCKEY) {
+                    event.setCanceled(true);
+                    tSource.setTransformationSource("piglin_traveller");
+                    zombifiedPiglin.setItemSlot(EquipmentSlot.MAINHAND, new ItemStack(Items.WARPED_FUNGUS_ON_A_STICK));
                 }
             }
         }
@@ -350,20 +362,30 @@ public class PPEvents {
     public static void onLootDropEntity(LivingDropsEvent event) {
         if (event.getSource().getEntity() instanceof Creeper creeper) {
             if (creeper.canDropMobsSkull()) {
-                if (event.getEntity().getType() == EntityType.ZOMBIFIED_PIGLIN) {
+                EntityType<?> type = event.getEntity().getType();
+                if (type == EntityType.ZOMBIFIED_PIGLIN)
                     event.getEntity().spawnAtLocation(PPItems.ZOMBIFIED_PIGLIN_HEAD_ITEM.get());
-                } else if (event.getEntity().getType() == EntityType.PIGLIN_BRUTE) {
+                else if (type == EntityType.PIGLIN_BRUTE)
                     event.getEntity().spawnAtLocation(PPItems.PIGLIN_BRUTE_HEAD_ITEM.get());
-                }
+                else if (type == PPEntityTypes.PIGLIN_ALCHEMIST.get())
+                    event.getEntity().spawnAtLocation(PPItems.PIGLIN_ALCHEMIST_HEAD_ITEM.get());
+                else if (type == PPEntityTypes.PIGLIN_TRAVELLER.get())
+                    event.getEntity().spawnAtLocation(PPItems.PIGLIN_TRAVELLER_HEAD_ITEM.get());
                 creeper.increaseDroppedSkulls();
             }
         }
         if (event.getSource().getDirectEntity() instanceof Fireball fireBall && fireBall.getOwner() instanceof Ghast) {
-            if (event.getEntity().getType() == EntityType.PIGLIN) {
+            EntityType<?> type = event.getEntity().getType();
+            if (event.getEntity().getType() == EntityType.PIGLIN)
                 event.getEntity().spawnAtLocation(Items.PIGLIN_HEAD);
-            } else if (event.getEntity().getType() == EntityType.PIGLIN_BRUTE) {
+            else if (type == EntityType.ZOMBIFIED_PIGLIN)
+                event.getEntity().spawnAtLocation(PPItems.ZOMBIFIED_PIGLIN_HEAD_ITEM.get());
+            else if (event.getEntity().getType() == EntityType.PIGLIN_BRUTE)
                 event.getEntity().spawnAtLocation(PPItems.PIGLIN_BRUTE_HEAD_ITEM.get());
-            }
+            else if (type == PPEntityTypes.PIGLIN_ALCHEMIST.get())
+                event.getEntity().spawnAtLocation(PPItems.PIGLIN_ALCHEMIST_HEAD_ITEM.get());
+            else if (type == PPEntityTypes.PIGLIN_TRAVELLER.get())
+                event.getEntity().spawnAtLocation(PPItems.PIGLIN_TRAVELLER_HEAD_ITEM.get());
         }
         if (event.getEntity() instanceof PiglinBrute brute) {
             ItemStack itemstack = brute.getOffhandItem();
@@ -395,6 +417,10 @@ public class PPEvents {
         if (stateAbove.is(PPBlocks.PIGLIN_BRUTE_HEAD.get())) {
             event.setCanceled(true);
             event.getLevel().playSound(null, event.getPos(), SoundEvents.PIGLIN_BRUTE_ANGRY, SoundSource.RECORDS);
+        }
+        if (stateAbove.is(PPBlocks.PIGLIN_TRAVELLER_HEAD.get())) {
+            event.setCanceled(true);
+            event.getLevel().playSound(null, event.getPos(), PPSounds.TRAVELLER_ANGRY.get(), SoundSource.RECORDS);
         }
     }
 

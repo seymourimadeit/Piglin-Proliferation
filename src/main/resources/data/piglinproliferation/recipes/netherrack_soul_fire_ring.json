@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "S": {
+      "item": "minecraft:stick"
+    },
+    "C": {
+      "tag": "minecraft:soul_fire_base_blocks"
+    },
+    "B": {
+      "item": "minecraft:netherrack"
+    }
+  },
+  "pattern": [
+    " S ",
+    "SCS",
+    "BBB"
+  ],
+  "result": {
+    "item": "piglinproliferation:netherrack_soul_fire_ring"
+  },
+  "show_notification": true
+}

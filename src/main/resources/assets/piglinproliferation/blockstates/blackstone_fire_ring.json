@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "lit=true": {
+      "model": "piglinproliferation:block/blackstone_fire_ring"
+    },
+    "lit=false": {
+      "model": "piglinproliferation:block/blackstone_fire_ring_off"
+    }
+  }
+}

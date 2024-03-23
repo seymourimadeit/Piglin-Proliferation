@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "lit=true": {
+      "model": "piglinproliferation:block/netherrack_soul_fire_ring"
+    },
+    "lit=false": {
+      "model": "piglinproliferation:block/netherrack_fire_ring_off"
+    }
+  }
+}

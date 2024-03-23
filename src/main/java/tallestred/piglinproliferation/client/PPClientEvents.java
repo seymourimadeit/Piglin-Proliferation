@@ -25,6 +25,7 @@ import tallestred.piglinproliferation.client.models.ModelGoldenBuckler;
 import tallestred.piglinproliferation.client.models.PiglinAlchemistModel;
 import tallestred.piglinproliferation.client.models.PiglinHeadEntityModel;
 import tallestred.piglinproliferation.client.models.PiglinTravellerModel;
+import tallestred.piglinproliferation.client.renderers.FireRingRenderer;
 import tallestred.piglinproliferation.client.renderers.PiglinAlchemistRenderer;
 import tallestred.piglinproliferation.client.renderers.PiglinTravellerRenderer;
 import tallestred.piglinproliferation.client.renderers.layers.PiglinClothingRenderLayer;
@@ -54,6 +55,7 @@ public class PPClientEvents {
             "buckler");
     public static final ModelLayerLocation TRAVELLER_ARMOR_OUTER_LAYER = new ModelLayerLocation(
             new ResourceLocation(PiglinProliferation.MODID + "traveller_outer_armor"), "traveller_outer_armor");
+
     public static final ModelLayerLocation ALCHEMIST_ARMOR_OUTER_LAYER = new ModelLayerLocation(
             new ResourceLocation(PiglinProliferation.MODID + "alchemist_outer_armor"), "alchemist_outer_armor");
     public static final Material BUCKLER_TEXTURE = new Material(TextureAtlas.LOCATION_BLOCKS, new ResourceLocation(PiglinProliferation.MODID, "entity/buckler/golden_buckler"));
@@ -75,6 +77,7 @@ public class PPClientEvents {
     @SubscribeEvent
     public static void entityRenderers(EntityRenderersEvent.RegisterRenderers event) {
         event.registerBlockEntityRenderer(PPBlockEntities.PIGLIN_SKULL.get(), SkullBlockRenderer::new);
+        event.registerBlockEntityRenderer(PPBlockEntities.FIRE_RING.get(), FireRingRenderer::new);
         event.registerEntityRenderer(PPEntityTypes.PIGLIN_ALCHEMIST.get(), PiglinAlchemistRenderer::new);
         event.registerEntityRenderer(PPEntityTypes.PIGLIN_TRAVELLER.get(), PiglinTravellerRenderer::new);
     }
