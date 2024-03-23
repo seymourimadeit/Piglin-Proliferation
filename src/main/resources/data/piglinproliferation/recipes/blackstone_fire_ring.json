@@ -2,6 +2,9 @@
   "type": "minecraft:crafting_shaped",
   "category": "misc",
   "key": {
+    "S": {
+      "item": "minecraft:stick"
+    },
     "C": {
       "tag": "minecraft:coals"
     },
@@ -10,7 +13,8 @@
     }
   },
   "pattern": [
-    " C ",
+    " S ",
+    "SCS",
     "BBB"
   ],
   "result": {

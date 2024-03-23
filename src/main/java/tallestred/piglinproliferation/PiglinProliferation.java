@@ -61,8 +61,8 @@ public class PiglinProliferation {
         PPEntityTypes.ENTITIES.register(bus);
         PPMemoryModules.MEMORY_MODULE_TYPE.register(bus);
         PPActivities.ACTIVITIES.register(bus);
-        PPBlockEntities.BLOCK_ENTITIES.register(bus);
         PPBlocks.BLOCKS.register(bus);
+        PPBlockEntities.BLOCK_ENTITIES.register(bus);
         PPEnchantments.ENCHANTMENTS.register(bus);
         PPWorldgen.STRUCTURE_TYPES.register(bus);
         PPLoot.GLM.register(bus);
@@ -83,23 +83,40 @@ public class PiglinProliferation {
     private void addCreativeTabs(final BuildCreativeModeTabContentsEvent event) {
         MutableHashedLinkedMap<ItemStack, CreativeModeTab.TabVisibility> creativeTab = event.getEntries();
         if (event.getTabKey() == CreativeModeTabs.SPAWN_EGGS) {
-            addToCreativeTabAfter(Items.PIGLIN_SPAWN_EGG, PPItems.PIGLIN_ALCHEMIST_SPAWN_EGG.get(), creativeTab);
-            addToCreativeTabAfter(Items.PIGLIN_BRUTE_SPAWN_EGG, PPItems.PIGLIN_TRAVELLER_SPAWN_EGG.get(), creativeTab);
+            addToCreativeTabAfter(creativeTab, Items.PIGLIN_SPAWN_EGG, PPItems.PIGLIN_ALCHEMIST_SPAWN_EGG.get());
+            addToCreativeTabAfter(creativeTab, Items.PIGLIN_BRUTE_SPAWN_EGG, PPItems.PIGLIN_TRAVELLER_SPAWN_EGG.get());
         }
         if (event.getTabKey() == CreativeModeTabs.FUNCTIONAL_BLOCKS) {
-            addToCreativeTabAfter(Items.PIGLIN_HEAD, PPItems.PIGLIN_ALCHEMIST_HEAD_ITEM.get(), creativeTab);
-            addToCreativeTabAfter(PPItems.PIGLIN_ALCHEMIST_HEAD_ITEM.get(), PPItems.PIGLIN_TRAVELLER_HEAD_ITEM.get(), creativeTab);
-            addToCreativeTabAfter(PPItems.PIGLIN_TRAVELLER_HEAD_ITEM.get(), PPItems.PIGLIN_BRUTE_HEAD_ITEM.get(), creativeTab);
-            addToCreativeTabAfter(PPItems.PIGLIN_BRUTE_HEAD_ITEM.get(), PPItems.ZOMBIFIED_PIGLIN_HEAD_ITEM.get(), creativeTab);
-            addToCreativeTabAfter(Items.SOUL_CAMPFIRE, PPItems.BLACKSTONE_FIRE_RING_ITEM.get(), creativeTab);
-            addToCreativeTabAfter(PPItems.BLACKSTONE_FIRE_RING_ITEM.get(), PPItems.BLACKSTONE_SOUL_FIRE_RING_ITEM.get(), creativeTab);
+            addToCreativeTabAfter(creativeTab, Items.PIGLIN_HEAD,
+                    PPItems.PIGLIN_ALCHEMIST_HEAD_ITEM.get(),
+                    PPItems.PIGLIN_TRAVELLER_HEAD_ITEM.get(),
+                    PPItems.PIGLIN_BRUTE_HEAD_ITEM.get(),
+                    PPItems.ZOMBIFIED_PIGLIN_HEAD_ITEM.get()
+            );
+            addToCreativeTabAfter(creativeTab, Items.SOUL_CAMPFIRE,
+                    PPItems.STONE_FIRE_RING_ITEM.get(),
+                    PPItems.STONE_SOUL_FIRE_RING_ITEM.get(),
+                    PPItems.DEEPSLATE_FIRE_RING_ITEM.get(),
+                    PPItems.DEEPSLATE_SOUL_FIRE_RING_ITEM.get(),
+                    PPItems.NETHERRACK_FIRE_RING_ITEM.get(),
+                    PPItems.NETHERRACK_SOUL_FIRE_RING_ITEM.get(),
+                    PPItems.BLACKSTONE_FIRE_RING_ITEM.get(),
+                    PPItems.BLACKSTONE_SOUL_FIRE_RING_ITEM.get(),
+                    PPItems.END_STONE_FIRE_RING_ITEM.get(),
+                    PPItems.END_STONE_SOUL_FIRE_RING_ITEM.get()
+            );
         }
         if (event.getTabKey() == CreativeModeTabs.COMBAT)
-            addToCreativeTabAfter(Items.SHIELD, PPItems.BUCKLER.get(), creativeTab);
+            addToCreativeTabAfter(creativeTab, Items.SHIELD, PPItems.BUCKLER.get());
     }
 
-    private void addToCreativeTabAfter(Item after, Item toAdd, MutableHashedLinkedMap<ItemStack, CreativeModeTab.TabVisibility> creativeTab) {
-        creativeTab.putAfter(new ItemStack(after), new ItemStack(toAdd), CreativeModeTab.TabVisibility.PARENT_AND_SEARCH_TABS);
+    private void addToCreativeTabAfter(MutableHashedLinkedMap<ItemStack, CreativeModeTab.TabVisibility> creativeTab, Item after, Item... toAdd) {
+        if (toAdd.length > 0) {
+            creativeTab.putAfter(new ItemStack(after), new ItemStack(toAdd[0]), CreativeModeTab.TabVisibility.PARENT_AND_SEARCH_TABS);
+            if (toAdd.length > 1)
+                for (int i=1; i < toAdd.length; i++)
+                    creativeTab.putAfter(new ItemStack(toAdd[i-1]), new ItemStack(toAdd[i]), CreativeModeTab.TabVisibility.PARENT_AND_SEARCH_TABS);
+        }
     }
 
     private void addSpawn(final SpawnPlacementRegisterEvent event) {

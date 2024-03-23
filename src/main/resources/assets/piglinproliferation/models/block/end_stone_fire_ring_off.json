@@ -1,0 +1,9 @@
+{
+  "parent": "piglinproliferation:block/template_fire_ring_off",
+  "textures": {
+    "up": "piglinproliferation:block/end_stone_fire_ring",
+    "down": "piglinproliferation:block/end_stone_fire_ring_bottom",
+    "side": "piglinproliferation:block/end_stone_fire_ring_side",
+    "particle": "piglinproliferation:block/end_stone_fire_ring_side"
+  }
+}

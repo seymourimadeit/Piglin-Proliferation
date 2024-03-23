@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "piglinproliferation:item/deepslate_soul_fire_ring"
+  }
+}

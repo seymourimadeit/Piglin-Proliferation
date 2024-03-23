@@ -121,12 +121,12 @@ public class FireRingBlockEntity extends CampfireBlockEntity {
             blockEntity.potionColor = blockEntity.effects.isEmpty() ? -1 : PotionUtils.getColor(blockEntity.effects);
             level.sendBlockUpdated(pos, state, state, Block.UPDATE_CLIENTS);
             blockEntity.setChanged();
-            double radius = (blockEntity.getLightLevel() / 1.3);
+            double radius = blockEntity.getLightLevel();
             int x = pos.getX();
             int y = pos.getY();
             int z = pos.getZ();
             for (LivingEntity entity : level.getEntitiesOfClass(LivingEntity.class, new AABB(x - radius, y - radius, z - radius, x + radius, y + radius, z + radius)))
-                blockEntity.effects.forEach(effect -> entity.addEffect(new MobEffectInstance(effect.getEffect(), 100, effect.getAmplifier())));
+                blockEntity.effects.forEach(effect -> entity.addEffect(new MobEffectInstance(effect.getEffect(), 110, effect.getAmplifier())));
         }
     }
 

@@ -1,0 +1,9 @@
+{
+  "parent": "piglinproliferation:block/template_fire_ring_off",
+  "textures": {
+    "up": "piglinproliferation:block/netherrack_fire_ring",
+    "down": "piglinproliferation:block/netherrack_fire_ring_bottom",
+    "side": "piglinproliferation:block/netherrack_fire_ring_side",
+    "particle": "piglinproliferation:block/netherrack_fire_ring_side"
+  }
+}
