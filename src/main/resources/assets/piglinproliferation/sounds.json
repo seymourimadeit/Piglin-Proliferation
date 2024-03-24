@@ -253,6 +253,14 @@
       {
         "name": "piglinproliferation:mob/piglin/traveller/hurt2",
         "volume": 0.9
+      },
+      {
+        "name": "piglinproliferation:mob/piglin/traveller/hurt3",
+        "volume": 0.9
+      },
+      {
+        "name": "piglinproliferation:mob/piglin/traveller/hurt4",
+        "volume": 0.9
       }
     ],
     "subtitle": "subtitles.entity.piglin_traveller.hurt"
