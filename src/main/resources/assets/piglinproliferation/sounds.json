@@ -236,6 +236,10 @@
       {
         "name": "piglinproliferation:mob/piglin/traveller/idle4",
         "volume": 0.9
+      },
+      {
+        "name": "piglinproliferation:mob/piglin/traveller/idle5",
+        "volume": 0.9
       }
     ],
     "subtitle": "subtitles.entity.piglin_traveller.idle"
@@ -248,6 +252,14 @@
       },
       {
         "name": "piglinproliferation:mob/piglin/traveller/hurt2",
+        "volume": 0.9
+      },
+      {
+        "name": "piglinproliferation:mob/piglin/traveller/hurt3",
+        "volume": 0.9
+      },
+      {
+        "name": "piglinproliferation:mob/piglin/traveller/hurt4",
         "volume": 0.9
       }
     ],
@@ -271,6 +283,10 @@
       {
         "name": "piglinproliferation:mob/piglin/traveller/celebrate1",
         "volume": 0.9
+      },
+      {
+        "name": "piglinproliferation:mob/piglin/traveller/celebrate2",
+        "volume": 0.9
       }
     ],
     "subtitle": "subtitles.entity.piglin_traveller.celebrate"
@@ -283,6 +299,10 @@
       },
       {
         "name": "piglinproliferation:mob/piglin/traveller/retreat2",
+        "volume": 0.9
+      },
+      {
+        "name": "piglinproliferation:mob/piglin/traveller/retreat3",
         "volume": 0.9
       }
     ],
