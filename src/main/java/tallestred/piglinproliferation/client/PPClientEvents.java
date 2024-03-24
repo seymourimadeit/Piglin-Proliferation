@@ -89,7 +89,6 @@ public class PPClientEvents {
 
     @SubscribeEvent
     public static void berRenderers(EntityRenderersEvent.CreateSkullModels event) {
-        event.registerSkullModel(PiglinSkullBlock.Types.PIGLIN, new PiglinHeadEntityModel(event.getEntityModelSet().bakeLayer(PPClientEvents.PIGLIN_SKULL)));
         event.registerSkullModel(PiglinSkullBlock.Types.PIGLIN_BRUTE, new PiglinHeadEntityModel(event.getEntityModelSet().bakeLayer(PPClientEvents.PIGLIN_SKULL)));
         event.registerSkullModel(PiglinSkullBlock.Types.ZOMBIFIED_PIGLIN, new PiglinHeadEntityModel(event.getEntityModelSet().bakeLayer(PPClientEvents.PIGLIN_SKULL)));
         event.registerSkullModel(PiglinSkullBlock.Types.PIGLIN_ALCHEMIST, new PiglinHeadEntityModel(event.getEntityModelSet().bakeLayer(PPClientEvents.PIGLIN_ALCHEMIST_SKULL)));
@@ -98,7 +97,6 @@ public class PPClientEvents {
 
     @SubscribeEvent
     public static void clientSetupEvent(FMLClientSetupEvent event) {
-        event.enqueueWork(() -> SkullBlockRenderer.SKIN_BY_TYPE.put(PiglinSkullBlock.Types.PIGLIN, new ResourceLocation("textures/entity/piglin/piglin.png")));
         event.enqueueWork(() -> SkullBlockRenderer.SKIN_BY_TYPE.put(PiglinSkullBlock.Types.PIGLIN_BRUTE, new ResourceLocation("textures/entity/piglin/piglin_brute.png")));
         event.enqueueWork(() -> SkullBlockRenderer.SKIN_BY_TYPE.put(PiglinSkullBlock.Types.ZOMBIFIED_PIGLIN, new ResourceLocation("textures/entity/piglin/zombified_piglin.png")));
         event.enqueueWork(() -> SkullBlockRenderer.SKIN_BY_TYPE.put(PiglinSkullBlock.Types.PIGLIN_ALCHEMIST, new ResourceLocation(PiglinProliferation.MODID, "textures/entity/piglin/alchemist/alchemist.png")));

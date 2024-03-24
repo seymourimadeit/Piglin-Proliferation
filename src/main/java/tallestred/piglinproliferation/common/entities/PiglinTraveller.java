@@ -172,7 +172,7 @@ public class PiglinTraveller extends Piglin {
 
     @Override
     protected void playConvertedSound() {
-        this.playSound(PPSounds.TRAVELLER_CONVERTED.get(), this.getSoundVolume(), this.getVoicePitch() / 0.10F);
+        this.playSound(PPSounds.TRAVELLER_CONVERTED.get(), this.getSoundVolume(), this.getVoicePitch() * 0.35F);
     }
 
     @Override
