@@ -82,11 +82,10 @@ public class PiglinProliferation {
 
     private void addCreativeTabs(final BuildCreativeModeTabContentsEvent event) {
         MutableHashedLinkedMap<ItemStack, CreativeModeTab.TabVisibility> creativeTab = event.getEntries();
-        if (event.getTabKey() == CreativeModeTabs.SPAWN_EGGS) {
+        if (CreativeModeTabs.SPAWN_EGGS.equals(event.getTabKey())) {
             addToCreativeTabAfter(creativeTab, Items.PIGLIN_SPAWN_EGG, PPItems.PIGLIN_ALCHEMIST_SPAWN_EGG.get());
             addToCreativeTabAfter(creativeTab, Items.PIGLIN_BRUTE_SPAWN_EGG, PPItems.PIGLIN_TRAVELLER_SPAWN_EGG.get());
-        }
-        if (event.getTabKey() == CreativeModeTabs.FUNCTIONAL_BLOCKS) {
+        } else if (CreativeModeTabs.FUNCTIONAL_BLOCKS.equals(event.getTabKey())) {
             addToCreativeTabAfter(creativeTab, Items.PIGLIN_HEAD,
                     PPItems.PIGLIN_ALCHEMIST_HEAD_ITEM.get(),
                     PPItems.PIGLIN_TRAVELLER_HEAD_ITEM.get(),
@@ -105,8 +104,7 @@ public class PiglinProliferation {
                     PPItems.END_STONE_FIRE_RING_ITEM.get(),
                     PPItems.END_STONE_SOUL_FIRE_RING_ITEM.get()
             );
-        }
-        if (event.getTabKey() == CreativeModeTabs.COMBAT)
+        } else if (CreativeModeTabs.COMBAT.equals(event.getTabKey()))
             addToCreativeTabAfter(creativeTab, Items.SHIELD, PPItems.BUCKLER.get());
     }
 
