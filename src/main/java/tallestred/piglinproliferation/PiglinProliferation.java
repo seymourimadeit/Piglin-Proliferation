@@ -81,28 +81,30 @@ public class PiglinProliferation {
 
     private void addCreativeTabs(final BuildCreativeModeTabContentsEvent event) {
         MutableHashedLinkedMap<ItemStack, CreativeModeTab.TabVisibility> creativeTab = event.getEntries();
-        if (event.getTabKey() == CreativeModeTabs.SPAWN_EGGS) {
+        if (CreativeModeTabs.SPAWN_EGGS.equals(event.getTabKey())) {
             addToCreativeTabAfter(creativeTab, Items.PIGLIN_SPAWN_EGG, PPItems.PIGLIN_ALCHEMIST_SPAWN_EGG.get());
             addToCreativeTabAfter(creativeTab, Items.PIGLIN_BRUTE_SPAWN_EGG, PPItems.PIGLIN_TRAVELLER_SPAWN_EGG.get());
-        }
-        addToCreativeTabAfter(creativeTab, Items.PIGLIN_HEAD,
-                PPItems.PIGLIN_ALCHEMIST_HEAD_ITEM.get(),
-                PPItems.PIGLIN_TRAVELLER_HEAD_ITEM.get(),
-                PPItems.PIGLIN_BRUTE_HEAD_ITEM.get(),
-                PPItems.ZOMBIFIED_PIGLIN_HEAD_ITEM.get()
-        );
-        addToCreativeTabAfter(creativeTab, Items.SOUL_CAMPFIRE,
-                PPItems.STONE_FIRE_RING_ITEM.get(),
-                PPItems.STONE_SOUL_FIRE_RING_ITEM.get(),
-                PPItems.DEEPSLATE_FIRE_RING_ITEM.get(),
-                PPItems.DEEPSLATE_SOUL_FIRE_RING_ITEM.get(),
-                PPItems.NETHERRACK_FIRE_RING_ITEM.get(),
-                PPItems.NETHERRACK_SOUL_FIRE_RING_ITEM.get(),
-                PPItems.BLACKSTONE_FIRE_RING_ITEM.get(),
-                PPItems.BLACKSTONE_SOUL_FIRE_RING_ITEM.get(),
-                PPItems.END_STONE_FIRE_RING_ITEM.get(),
-                PPItems.END_STONE_SOUL_FIRE_RING_ITEM.get()
-        );
+        } else if(CreativeModeTabs.FUNCTIONAL_BLOCKS.equals(event.getTabKey())) {
+            addToCreativeTabAfter(creativeTab, Items.PIGLIN_HEAD,
+                    PPItems.PIGLIN_ALCHEMIST_HEAD_ITEM.get(),
+                    PPItems.PIGLIN_TRAVELLER_HEAD_ITEM.get(),
+                    PPItems.PIGLIN_BRUTE_HEAD_ITEM.get(),
+                    PPItems.ZOMBIFIED_PIGLIN_HEAD_ITEM.get()
+            );
+            addToCreativeTabAfter(creativeTab, Items.SOUL_CAMPFIRE,
+                    PPItems.STONE_FIRE_RING_ITEM.get(),
+                    PPItems.STONE_SOUL_FIRE_RING_ITEM.get(),
+                    PPItems.DEEPSLATE_FIRE_RING_ITEM.get(),
+                    PPItems.DEEPSLATE_SOUL_FIRE_RING_ITEM.get(),
+                    PPItems.NETHERRACK_FIRE_RING_ITEM.get(),
+                    PPItems.NETHERRACK_SOUL_FIRE_RING_ITEM.get(),
+                    PPItems.BLACKSTONE_FIRE_RING_ITEM.get(),
+                    PPItems.BLACKSTONE_SOUL_FIRE_RING_ITEM.get(),
+                    PPItems.END_STONE_FIRE_RING_ITEM.get(),
+                    PPItems.END_STONE_SOUL_FIRE_RING_ITEM.get()
+            );
+        } else if(CreativeModeTabs.COMBAT.equals(event.getTabKey()))
+            addToCreativeTabAfter(creativeTab, Items.SHIELD, PPItems.BUCKLER.get());
     }
 
     private void addToCreativeTabAfter(MutableHashedLinkedMap<ItemStack, CreativeModeTab.TabVisibility> creativeTab, Item after, Item... toAdd) {
