@@ -16,6 +16,8 @@ public class PPTags {
     public static final TagKey<Structure> TRAVELLERS_COMPASS_STRUCTURE_WHITELIST = TagKey.create(Registries.STRUCTURE, new ResourceLocation(PiglinProliferation.MODID, "travellers_compass_whitelist"));
     public static final TagKey<Structure> TRAVELLERS_COMPASS_STRUCTURE_BLACKLIST = TagKey.create(Registries.STRUCTURE, new ResourceLocation(PiglinProliferation.MODID, "travellers_compass_blacklist"));
 
+    public static final TagKey<Structure> TRAVELLER_BASES = TagKey.create(Registries.STRUCTURE, new ResourceLocation(PiglinProliferation.MODID, "traveller_bases"));
+
     public static final TagKey<StructureSet> TRAVELLERS_COMPASS_STRUCTURE_SET_WHITELIST = TagKey.create(Registries.STRUCTURE_SET, new ResourceLocation(PiglinProliferation.MODID, "travellers_compass_whitelist"));
     public static final TagKey<StructureSet> TRAVELLERS_COMPASS_STRUCTURE_SET_BLACKLIST = TagKey.create(Registries.STRUCTURE_SET, new ResourceLocation(PiglinProliferation.MODID, "travellers_compass_blacklist"));
 
