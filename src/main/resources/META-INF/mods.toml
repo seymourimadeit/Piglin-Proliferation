@@ -22,18 +22,18 @@ version="${mod_version}" #mandatory
 displayName="${mod_name}" #mandatory
 authors="${mod_authors}"
 updateJSONURL="https://raw.githubusercontent.com/seymourimadeit/Piglin-Proliferation/main/update.json" #optional
-# logoFile="piglinproliferation.png" #optional
-credits="TallestEgg, Edmord for the non-buckler art, Vivi for buckler art" #optional
+logoFile="piglinproliferation.png"
+credits="Buckler Art by Vivi" #optional
 description='''
 Piglins expanded in new ways!
 '''
-[[dependencies.${mod_id}]]
+[['dependencies.${mod_id}']]
     modId="neoforge" #mandatory
     mandatory=true #mandatory
     versionRange="${neo_version_range}" #mandatory
     ordering="NONE"
     side="BOTH"
-[[dependencies.${mod_id}]]
+[['dependencies.${mod_id}']]
     modId="minecraft"
     mandatory=true
     versionRange="${minecraft_version_range}"

@@ -49,12 +49,7 @@ public class PiglinTravellerAi extends PiglinAi {
     private static final UniformInt RIDE_DURATION = TimeUtil.rangeOfSeconds(10, 30);
     private static final UniformInt AVOID_ZOMBIFIED_DURATION = TimeUtil.rangeOfSeconds(5, 7);
     private static final UniformInt BABY_AVOID_NEMESIS_DURATION = TimeUtil.rangeOfSeconds(5, 7);
-    private static final Method hoglinRiding = ObfuscationReflectionHelper.findMethod(PiglinAi.class, "m_34973_", Brain.class);
-    private static final Method retreatActivity = ObfuscationReflectionHelper.findMethod(PiglinAi.class, "m_34958_", Brain.class);
-    private static final Method celebrateActivity = ObfuscationReflectionHelper.findMethod(PiglinAi.class, "m_34920_", Brain.class);
-    private static final Method admireItem = ObfuscationReflectionHelper.findMethod(PiglinAi.class, "m_34940_", Brain.class);
-    // This has to be done because I don't feel like copying and pasting every method from PiglinAi
-
+    //TODO REPLACE THESE REFLECTIONS WITH ATS THEY COMPLETELY BROKE
     public PiglinTravellerAi() {
 
     }
