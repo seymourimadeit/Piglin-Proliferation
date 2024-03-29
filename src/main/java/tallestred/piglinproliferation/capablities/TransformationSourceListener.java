@@ -1,7 +1,7 @@
 package tallestred.piglinproliferation.capablities;
 
 import net.minecraft.nbt.CompoundTag;
-import net.minecraftforge.common.util.INBTSerializable;
+import net.neoforged.neoforge.common.util.INBTSerializable;
 
 public interface TransformationSourceListener extends INBTSerializable<CompoundTag> {
     String getTransformationSource();

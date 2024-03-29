@@ -1,28 +1,25 @@
 package tallestred.piglinproliferation.configuration;
 
 import com.google.common.collect.ImmutableList;
-import net.minecraftforge.common.ForgeConfigSpec;
-import net.minecraftforge.fml.common.Mod;
+import net.neoforged.neoforge.common.ModConfigSpec;
 import org.apache.commons.lang3.tuple.Pair;
-import tallestred.piglinproliferation.PiglinProliferation;
 
 import java.util.List;
 
-@Mod.EventBusSubscriber(modid = PiglinProliferation.MODID, bus = Mod.EventBusSubscriber.Bus.MOD)
 public class PPConfig {
-    public static final ForgeConfigSpec COMMON_SPEC;
+    public static final ModConfigSpec COMMON_SPEC;
     public static final CommonConfig COMMON;
-    public static final ForgeConfigSpec CLIENT_SPEC;
+    public static final ModConfigSpec CLIENT_SPEC;
     public static final ClientConfig CLIENT;
 
     static {
         {
-            final Pair<CommonConfig, ForgeConfigSpec> specPair = new ForgeConfigSpec.Builder().configure(CommonConfig::new);
+            final Pair<CommonConfig, ModConfigSpec> specPair = new ModConfigSpec.Builder().configure(CommonConfig::new);
             COMMON = specPair.getLeft();
             COMMON_SPEC = specPair.getRight();
         }
         {
-            final Pair<ClientConfig, ForgeConfigSpec> specPair1 = new ForgeConfigSpec.Builder().configure(ClientConfig::new);
+            final Pair<ClientConfig, ModConfigSpec> specPair1 = new ModConfigSpec.Builder().configure(ClientConfig::new);
             CLIENT = specPair1.getLeft();
             CLIENT_SPEC = specPair1.getRight();
         }
@@ -30,29 +27,29 @@ public class PPConfig {
 
 
     public static class CommonConfig {
-        public final ForgeConfigSpec.BooleanValue healingArrowDamage;
-        public final ForgeConfigSpec.BooleanValue BruteBuckler;
-        public final ForgeConfigSpec.BooleanValue BangBlockDestruction;
-        public final ForgeConfigSpec.IntValue alchemistWeightInBastions;
-        public final ForgeConfigSpec.DoubleValue healingArrowChances;
-        public final ForgeConfigSpec.DoubleValue piglinVariantChances;
-        public final ForgeConfigSpec.DoubleValue zombifiedPiglinDefaultChance;
-        public final ForgeConfigSpec.DoubleValue zombifiedBruteChance;
-        public final ForgeConfigSpec.DoubleValue zombifiedAlchemistChance;
-        public final ForgeConfigSpec.DoubleValue alchemistPotionChance;
-        public final ForgeConfigSpec.DoubleValue bucklerChance;
-        public final ForgeConfigSpec.DoubleValue crossbowChance;
-        public final ForgeConfigSpec.IntValue healingArrowMinStackSize;
-        public final ForgeConfigSpec.IntValue healingArrowMaxStackSize;
-        public final ForgeConfigSpec.IntValue BucklerCooldown;
-        public final ForgeConfigSpec.IntValue BucklerRunTime;
-        public final ForgeConfigSpec.IntValue BucklerTurningRunTime;
-        public final ForgeConfigSpec.ConfigValue<List<? extends String>> zombifiedPiglinTypeList;
-        public final ForgeConfigSpec.BooleanValue travellersCompassBiomeWhitelist;
-        public final ForgeConfigSpec.BooleanValue travellersCompassStructureWhitelist;
+        public final ModConfigSpec.BooleanValue healingArrowDamage;
+        public final ModConfigSpec.BooleanValue BruteBuckler;
+        public final ModConfigSpec.BooleanValue BangBlockDestruction;
+        public final ModConfigSpec.IntValue alchemistWeightInBastions;
+        public final ModConfigSpec.DoubleValue healingArrowChances;
+        public final ModConfigSpec.DoubleValue piglinVariantChances;
+        public final ModConfigSpec.DoubleValue zombifiedPiglinDefaultChance;
+        public final ModConfigSpec.DoubleValue zombifiedBruteChance;
+        public final ModConfigSpec.DoubleValue zombifiedAlchemistChance;
+        public final ModConfigSpec.DoubleValue alchemistPotionChance;
+        public final ModConfigSpec.DoubleValue bucklerChance;
+        public final ModConfigSpec.DoubleValue crossbowChance;
+        public final ModConfigSpec.IntValue healingArrowMinStackSize;
+        public final ModConfigSpec.IntValue healingArrowMaxStackSize;
+        public final ModConfigSpec.IntValue BucklerCooldown;
+        public final ModConfigSpec.IntValue BucklerRunTime;
+        public final ModConfigSpec.IntValue BucklerTurningRunTime;
+        public final ModConfigSpec.ConfigValue<List<? extends String>> zombifiedPiglinTypeList;
+        public final ModConfigSpec.BooleanValue travellersCompassBiomeWhitelist;
+        public final ModConfigSpec.BooleanValue travellersCompassStructureWhitelist;
 
 
-        public CommonConfig(ForgeConfigSpec.Builder builder) {
+        public CommonConfig(ModConfigSpec.Builder builder) {
             builder.push("Vanilla Changes");
             healingArrowDamage = builder.define("Allow healing and Regeneration arrows to not do damage?", true);
             alchemistWeightInBastions = builder.comment("""
@@ -98,11 +95,11 @@ public class PPConfig {
     }
 
     public static class ClientConfig {
-        public final ForgeConfigSpec.BooleanValue ziglinTextures;
-        public final ForgeConfigSpec.BooleanValue RenderAfterImage;
-        public final ForgeConfigSpec.BooleanValue RenderEntityLayersDuringAfterImage;
+        public final ModConfigSpec.BooleanValue ziglinTextures;
+        public final ModConfigSpec.BooleanValue RenderAfterImage;
+        public final ModConfigSpec.BooleanValue RenderEntityLayersDuringAfterImage;
 
-        public ClientConfig(ForgeConfigSpec.Builder builder) {
+        public ClientConfig(ModConfigSpec.Builder builder) {
             builder.push("vanilla changes");
             ziglinTextures = builder.define("Allow Zombified Piglins to render consistent clothing?", true);
             builder.pop();

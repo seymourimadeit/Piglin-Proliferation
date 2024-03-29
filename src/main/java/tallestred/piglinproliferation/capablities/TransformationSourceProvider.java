@@ -3,20 +3,14 @@ package tallestred.piglinproliferation.capablities;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.monster.ZombifiedPiglin;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.ICapabilityProvider;
-import net.minecraftforge.common.util.INBTSerializable;
-import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.event.AttachCapabilitiesEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
+import net.neoforged.neoforge.common.capabilities.Capability;
+import net.neoforged.neoforge.common.capabilities.ICapabilityProvider;
+import net.neoforged.neoforge.common.util.INBTSerializable;
+import net.neoforged.neoforge.common.util.LazyOptional;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import tallestred.piglinproliferation.PiglinProliferation;
 
-@Mod.EventBusSubscriber(modid = PiglinProliferation.MODID)
 public class TransformationSourceProvider implements ICapabilityProvider, INBTSerializable<CompoundTag> {
     public static final ResourceLocation IDENTIFIER = new ResourceLocation(PiglinProliferation.MODID, "transformation_source");
     private final TransformationSourceListener.TransformationSource backend = new TransformationSourceListener.TransformationSource();

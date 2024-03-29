@@ -10,21 +10,20 @@ import net.minecraft.world.item.*;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.level.levelgen.structure.pools.StructureTemplatePool;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureProcessorList;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.common.util.MutableHashedLinkedMap;
-import net.minecraftforge.event.BuildCreativeModeTabContentsEvent;
-import net.minecraftforge.event.entity.EntityAttributeCreationEvent;
-import net.minecraftforge.event.entity.SpawnPlacementRegisterEvent;
-import net.minecraftforge.event.server.ServerAboutToStartEvent;
-import net.minecraftforge.eventbus.api.IEventBus;
-import net.minecraftforge.fml.ModLoadingContext;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.config.ModConfig;
-import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
-import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
-import net.minecraftforge.fml.event.lifecycle.InterModEnqueueEvent;
-import net.minecraftforge.fml.event.lifecycle.InterModProcessEvent;
-import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.neoforged.bus.api.IEventBus;
+import net.neoforged.fml.ModLoadingContext;
+import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.config.ModConfig;
+import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
+import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
+import net.neoforged.fml.event.lifecycle.InterModEnqueueEvent;
+import net.neoforged.fml.event.lifecycle.InterModProcessEvent;
+import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.common.util.MutableHashedLinkedMap;
+import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
+import net.neoforged.neoforge.event.entity.EntityAttributeCreationEvent;
+import net.neoforged.neoforge.event.entity.SpawnPlacementRegisterEvent;
+import net.neoforged.neoforge.event.server.ServerAboutToStartEvent;
 import tallestred.piglinproliferation.client.PPSounds;
 import tallestred.piglinproliferation.common.enchantments.PPEnchantments;
 import tallestred.piglinproliferation.common.entities.PiglinTraveller;
@@ -45,30 +44,28 @@ import tallestred.piglinproliferation.networking.PPNetworking;
 public class PiglinProliferation {
     public static final String MODID = "piglinproliferation";
 
-    public PiglinProliferation() {
-        IEventBus bus = FMLJavaModLoadingContext.get().getModEventBus();
-        bus.addListener(this::setup);
-        bus.addListener(this::enqueueIMC);
-        bus.addListener(this::processIMC);
-        bus.addListener(this::addAttributes);
-        bus.addListener(this::addSpawn);
-        bus.addListener(this::addCreativeTabs);
-        bus.addListener(this::doClientStuff);
-        MinecraftForge.EVENT_BUS.register(this);
-        MinecraftForge.EVENT_BUS.addListener(this::serverStart);
-        PPSounds.SOUNDS.register(bus);
-        PPItems.ITEMS.register(bus);
-        PPEntityTypes.ENTITIES.register(bus);
-        PPMemoryModules.MEMORY_MODULE_TYPE.register(bus);
-        PPActivities.ACTIVITIES.register(bus);
-        PPBlocks.BLOCKS.register(bus);
-        PPBlockEntities.BLOCK_ENTITIES.register(bus);
-        PPEnchantments.ENCHANTMENTS.register(bus);
-        PPWorldgen.STRUCTURE_TYPES.register(bus);
-        PPLoot.GLM.register(bus);
-        PPLoot.LOOT_ITEM_FUNCTION_TYPES.register(bus);
-        PPLoot.LOOT_ITEM_CONDITION_TYPES.register(bus);
-        PPRecipeSerializers.RECIPE_SERIALIZERS.register(bus);
+    public PiglinProliferation(IEventBus modEventBus) {
+        modEventBus.addListener(this::setup);
+        modEventBus.addListener(this::enqueueIMC);
+        modEventBus.addListener(this::processIMC);
+        modEventBus.addListener(this::addAttributes);
+        modEventBus.addListener(this::addSpawn);
+        modEventBus.addListener(this::addCreativeTabs);
+        modEventBus.addListener(this::doClientStuff);
+        NeoForge.EVENT_BUS.addListener(this::serverStart);
+        PPSounds.SOUNDS.register(modEventBus);
+        PPItems.ITEMS.register(modEventBus);
+        PPEntityTypes.ENTITIES.register(modEventBus);
+        PPMemoryModules.MEMORY_MODULE_TYPE.register(modEventBus);
+        PPActivities.ACTIVITIES.register(modEventBus);
+        PPBlocks.BLOCKS.register(modEventBus);
+        PPBlockEntities.BLOCK_ENTITIES.register(modEventBus);
+        PPEnchantments.ENCHANTMENTS.register(modEventBus);
+        PPWorldgen.STRUCTURE_TYPES.register(modEventBus);
+        PPLoot.GLM.register(modEventBus);
+        PPLoot.LOOT_ITEM_FUNCTION_TYPES.register(modEventBus);
+        PPLoot.LOOT_ITEM_CONDITION_TYPES.register(modEventBus);
+        PPRecipeSerializers.RECIPE_SERIALIZERS.register(modEventBus);
         ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, PPConfig.COMMON_SPEC);
         ModLoadingContext.get().registerConfig(ModConfig.Type.CLIENT, PPConfig.CLIENT_SPEC);
         PPNetworking.registerPackets();
@@ -132,20 +129,14 @@ public class PiglinProliferation {
     }
 
     private void doClientStuff(final FMLClientSetupEvent event) {
-        MinecraftForge.EVENT_BUS.register(new ItemModelHandler());
-    }
-
-    public static class ItemModelHandler {
-        public ItemModelHandler() {
-            ItemProperties.register(PPItems.BUCKLER.get(), new ResourceLocation("blocking"),
-                    (stack, clientWorld, livingEntity, useTime) -> {
-                        boolean active = livingEntity != null && livingEntity.isUsingItem()
-                                && livingEntity.getUseItem() == stack
-                                || livingEntity != null && BucklerItem.isReady(stack);
-                        return livingEntity != null && active ? 1.0F : 0.0F;
-                    });
-            ItemProperties.register(PPItems.TRAVELLERS_COMPASS.get(), new ResourceLocation("angle"), new CompassItemPropertyFunction((level, itemStack, player) -> TravellersCompassItem.getPosition(itemStack.getOrCreateTag())));
-        }
+        ItemProperties.register(PPItems.BUCKLER.get(), new ResourceLocation("blocking"),
+                (stack, clientWorld, livingEntity, useTime) -> {
+                    boolean active = livingEntity != null && livingEntity.isUsingItem()
+                            && livingEntity.getUseItem() == stack
+                            || livingEntity != null && BucklerItem.isReady(stack);
+                    return livingEntity != null && active ? 1.0F : 0.0F;
+                });
+        ItemProperties.register(PPItems.TRAVELLERS_COMPASS.get(), new ResourceLocation("angle"), new CompassItemPropertyFunction((level, itemStack, player) -> TravellersCompassItem.getPosition(itemStack.getOrCreateTag())));
     }
 
     private void serverStart(final ServerAboutToStartEvent event) {

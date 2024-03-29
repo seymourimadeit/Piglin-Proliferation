@@ -25,7 +25,7 @@ public class UseBucklerGoal<T extends PathfinderMob> extends Goal {
 
     @Override
     public boolean canUse() {
-        return (owner.level().getGameTime() - nextOkStartTime > (long) PPConfig.COMMON.BucklerCooldown.get())&& owner.getOffhandItem().getItem() instanceof BucklerItem && owner.getTarget() != null && owner.hasLineOfSight(owner.getTarget()) && owner.getTarget().distanceTo(owner) >= 4.0D
+        return (owner.level().getGameTime() - nextOkStartTime > (long) PPConfig.COMMON.BucklerCooldown.get()) && owner.getOffhandItem().getItem() instanceof BucklerItem && owner.getTarget() != null && owner.hasLineOfSight(owner.getTarget()) && owner.getTarget().distanceTo(owner) >= 4.0D
                 && !owner.isInWaterRainOrBubble();
     }
 
@@ -78,6 +78,6 @@ public class UseBucklerGoal<T extends PathfinderMob> extends Goal {
     }
 
     public enum ChargePhases {
-        NONE, STRAFE, CHARGE, CHARGING, FINISH;
+        NONE, STRAFE, CHARGE, CHARGING, FINISH
     }
 }

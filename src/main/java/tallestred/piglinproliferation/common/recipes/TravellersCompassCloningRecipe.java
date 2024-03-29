@@ -64,7 +64,7 @@ public class TravellersCompassCloningRecipe extends CustomRecipe {
     }
 
     @Override
-    public RecipeSerializer<?> getSerializer() {
+    public RecipeSerializer<TravellersCompassCloningRecipe> getSerializer() {
         return PPRecipeSerializers.CRAFTING_SPECIAL_COMPASS_CLONING.get();
     }
 }

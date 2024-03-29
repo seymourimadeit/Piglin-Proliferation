@@ -44,7 +44,8 @@ import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.pathfinder.BlockPathTypes;
-import net.minecraftforge.network.PacketDistributor;
+import net.neoforged.neoforge.event.EventHooks;
+import net.neoforged.neoforge.network.PacketDistributor;
 import org.jetbrains.annotations.NotNull;
 import tallestred.piglinproliferation.PPMemoryModules;
 import tallestred.piglinproliferation.client.PPSounds;
@@ -156,7 +157,7 @@ public class PiglinAlchemist extends Piglin {
         } else {
             this.timeInOverworld = 0;
         }
-        if (this.timeInOverworld > 300 && net.minecraftforge.event.ForgeEventFactory.canLivingConvert(this, EntityType.ZOMBIFIED_PIGLIN, (timer) -> this.timeInOverworld = timer)) {
+        if (this.timeInOverworld > 300 && EventHooks.canLivingConvert(this, EntityType.ZOMBIFIED_PIGLIN, (timer) -> this.timeInOverworld = timer)) {
             this.playConvertedSound();
             this.finishConversion((ServerLevel) this.level());
         }
@@ -346,7 +347,7 @@ public class PiglinAlchemist extends Piglin {
     public void syncBeltToClient() {
         if (!this.level().isClientSide) {
             for (int i = 0; i < this.beltInventory.size(); i++) {
-                PPNetworking.INSTANCE.send(new AlchemistBeltSyncPacket(this.getId(), i, this.beltInventory.get(i)), PacketDistributor.TRACKING_ENTITY.with(this));
+                PPNetworking.INSTANCE.send(PacketDistributor.TRACKING_ENTITY.with(() -> this), new AlchemistBeltSyncPacket(this.getId(), i, this.beltInventory.get(i)));
             }
         }
     }

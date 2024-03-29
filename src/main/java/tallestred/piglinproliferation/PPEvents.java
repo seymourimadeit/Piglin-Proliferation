@@ -1,6 +1,13 @@
 package tallestred.piglinproliferation;
 
+import com.mojang.blaze3d.platform.InputConstants;
+import net.minecraft.ChatFormatting;
+import net.minecraft.client.Minecraft;
+import net.minecraft.core.Registry;
 import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
@@ -29,21 +36,20 @@ import net.minecraft.world.item.alchemy.PotionUtils;
 import net.minecraft.world.item.alchemy.Potions;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
-import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.pathfinder.BlockPathTypes;
-import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.event.AttachCapabilitiesEvent;
-import net.minecraftforge.event.entity.EntityJoinLevelEvent;
-import net.minecraftforge.event.entity.living.*;
-import net.minecraftforge.event.entity.player.CriticalHitEvent;
-import net.minecraftforge.event.entity.player.PlayerEvent;
-import net.minecraftforge.event.level.NoteBlockEvent;
-import net.minecraftforge.eventbus.api.Event;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.network.PacketDistributor;
-import net.minecraftforge.registries.ForgeRegistries;
+import net.neoforged.bus.api.Event;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.Mod;
+import net.neoforged.neoforge.common.util.LazyOptional;
+import net.neoforged.neoforge.event.AttachCapabilitiesEvent;
+import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
+import net.neoforged.neoforge.event.entity.living.*;
+import net.neoforged.neoforge.event.entity.player.CriticalHitEvent;
+import net.neoforged.neoforge.event.entity.player.ItemTooltipEvent;
+import net.neoforged.neoforge.event.entity.player.PlayerEvent;
+import net.neoforged.neoforge.event.level.NoteBlockEvent;
+import net.neoforged.neoforge.network.PacketDistributor;
 import tallestred.piglinproliferation.capablities.*;
 import tallestred.piglinproliferation.client.PPSounds;
 import tallestred.piglinproliferation.common.blocks.PPBlocks;
@@ -61,9 +67,7 @@ import tallestred.piglinproliferation.networking.CriticalCapabilityPacket;
 import tallestred.piglinproliferation.networking.PPNetworking;
 import tallestred.piglinproliferation.networking.ZiglinCapablitySyncPacket;
 
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 @Mod.EventBusSubscriber(modid = PiglinProliferation.MODID)
 public class PPEvents {
@@ -98,7 +102,7 @@ public class PPEvents {
             if (!event.getEntity().level().isClientSide) {
                 TransformationSourceListener transformationSource = getTransformationSourceListener(ziglin);
                 if (transformationSource != null)
-                    PPNetworking.INSTANCE.send(new ZiglinCapablitySyncPacket(ziglin.getId(), transformationSource.getTransformationSource()), PacketDistributor.TRACKING_ENTITY.with(ziglin));
+                    PPNetworking.INSTANCE.send(PacketDistributor.TRACKING_ENTITY.with(() -> ziglin), new ZiglinCapablitySyncPacket(ziglin.getId(), transformationSource.getTransformationSource()));
             }
             ziglin.goalSelector.addGoal(2, new DumbBowAttackGoal(ziglin, 0.5D, 20, 15.0F));
             ziglin.goalSelector.addGoal(2, new DumbCrossbowAttackGoal(ziglin, 1.0D, 8.0F));
@@ -118,7 +122,7 @@ public class PPEvents {
             if (!event.getTarget().level().isClientSide) {
                 TransformationSourceListener transformationSource = getTransformationSourceListener(ziglin);
                 if (transformationSource != null)
-                    PPNetworking.INSTANCE.send(new ZiglinCapablitySyncPacket(ziglin.getId(), transformationSource.getTransformationSource()), PacketDistributor.TRACKING_ENTITY.with((ziglin)));
+                    PPNetworking.INSTANCE.send(PacketDistributor.TRACKING_ENTITY.with(() -> ziglin), new ZiglinCapablitySyncPacket(ziglin.getId(), transformationSource.getTransformationSource()));
             }
         }
     }
@@ -171,14 +175,13 @@ public class PPEvents {
                 }
             }
             if (event.getEntity() instanceof ServerPlayer player)
-                PPNetworking.INSTANCE.send(new CriticalCapabilityPacket(player.getId(), criticalAfterCharge.isCritical()), PacketDistributor.PLAYER.with(player));
+                PPNetworking.INSTANCE.send(PacketDistributor.PLAYER.with(() -> player), new CriticalCapabilityPacket(player.getId(), criticalAfterCharge.isCritical()));
         }
     }
 
     @SubscribeEvent
     public static void onEffectApplied(MobEffectEvent.Added event) {
-        if (event.getEffectInstance() == null)
-            return;
+        event.getEffectInstance();
         MobEffect mobEffect = event.getEffectInstance().getEffect();
         if (event.getEntity() instanceof AbstractPiglin piglin) {
             if (mobEffect == MobEffects.FIRE_RESISTANCE) {
@@ -351,10 +354,17 @@ public class PPEvents {
             if (piglin.level().isClientSide)
                 return;
             ZombifiedPiglin ziglin = (ZombifiedPiglin) event.getOutcome();
-            TransformationSourceListener transformationSource = getTransformationSourceListener(ziglin);
-            String piglinName = ForgeRegistries.ENTITY_TYPES.getKey(piglin.getType()).getPath();
-            transformationSource.setTransformationSource(piglinName);
-            PPNetworking.INSTANCE.send(new ZiglinCapablitySyncPacket(ziglin.getId(), piglinName), PacketDistributor.TRACKING_ENTITY.with(ziglin));
+            Optional<Registry<EntityType<?>>> registryOptional = piglin.level().registryAccess().registry(Registries.ENTITY_TYPE);
+            if (registryOptional.isPresent()) {
+                ResourceLocation location = registryOptional.get().getKey(piglin.getType());
+                if (location != null) {
+                    String piglinName = location.getPath();
+                    TransformationSourceListener transformationSource = getTransformationSourceListener(ziglin);
+                    if (transformationSource != null)
+                        transformationSource.setTransformationSource(piglinName);
+                    PPNetworking.INSTANCE.send(PacketDistributor.TRACKING_ENTITY.with(() -> ziglin), new ZiglinCapablitySyncPacket(ziglin.getId(), piglinName));
+                }
+            }
         }
     }
 
@@ -424,10 +434,51 @@ public class PPEvents {
         }
     }
 
+    @SubscribeEvent
+    public static void modifyItemTooltip(ItemTooltipEvent event) {
+        ItemStack stack = event.getItemStack();
+        if (stack.getItem() == PPItems.BUCKLER.get()) {
+            boolean hasBang = stack.getEnchantmentLevel(PPEnchantments.BANG.get()) > 0;
+            boolean hasTurning = stack.getEnchantmentLevel(PPEnchantments.TURNING.get()) > 0;
+            List<Component> toAdd = new ArrayList<>();
+            toAdd.add(Component.empty());
+            toAdd.add(Component.translatable("item.piglinproliferation.buckler.desc.on_use").withStyle(ChatFormatting.GRAY));
+            toAdd.add(Component.translatable("item.piglinproliferation.buckler.desc.charge_ability" + (hasTurning ? "_turning" : "")).withStyle(ChatFormatting.DARK_GREEN));
+            if (!isSneakKeyDown())
+                toAdd.add(Component.translatable("item.piglinproliferation.buckler.desc.details").withStyle(ChatFormatting.GREEN));
+            else {
+                toAdd.add(Component.translatable("item.piglinproliferation.buckler.desc.while_charging").withStyle(ChatFormatting.GREEN));
+                toAdd.add(Component.translatable("item.piglinproliferation.buckler.desc.speed").withStyle(ChatFormatting.BLUE));
+                toAdd.add(Component.translatable("item.piglinproliferation.buckler.desc.knockback").withStyle(ChatFormatting.BLUE));
+                if (!hasTurning)
+                    toAdd.add(Component.translatable("item.piglinproliferation.buckler.desc.shield_bash").withStyle(ChatFormatting.BLUE));
+                toAdd.add(Component.translatable("item.piglinproliferation.buckler.desc.cannot_jump").withStyle(ChatFormatting.RED));
+                if (!hasTurning)
+                    toAdd.add(Component.translatable("item.piglinproliferation.buckler.desc.turn_speed").withStyle(ChatFormatting.RED));
+                toAdd.add(Component.translatable("item.piglinproliferation.buckler.desc.water").withStyle(ChatFormatting.RED));
+                if (!hasTurning) {
+                    toAdd.add(Component.translatable("item.piglinproliferation.buckler.desc.on_shield_bash").withStyle(ChatFormatting.GRAY));
+                    toAdd.add(Component.translatable("item.piglinproliferation.buckler.desc." + (hasBang ? "explosion" : "attack_damage")).withStyle(ChatFormatting.DARK_GREEN));
+                    if (!hasBang) {
+                        toAdd.add(Component.translatable("item.piglinproliferation.buckler.desc.critical_charge").withStyle(ChatFormatting.DARK_GREEN));
+                        toAdd.add(Component.translatable("item.piglinproliferation.buckler.desc.critical_charge_expires").withStyle(ChatFormatting.RED));
+                    }
+                }
+            }
+            event.getToolTip().addAll(toAdd);
+        }
+    }
+
     public static TransformationSourceListener getTransformationSourceListener(LivingEntity entity) {
         LazyOptional<TransformationSourceListener> listener = entity.getCapability(PPCapablities.TRANSFORMATION_SOURCE_TRACKER);
         if (listener.isPresent())
             return listener.orElseThrow(() -> new IllegalStateException("Capability not found! Report this to the piglin proliferation github!"));
         return null;
+    }
+
+    //TODO this could be a more general method with a mapped key enum
+    public static boolean isSneakKeyDown() {
+        Minecraft minecraft = Minecraft.getInstance();
+        return InputConstants.isKeyDown(minecraft.getWindow().getWindow(), minecraft.options.keyShift.getKey().getValue());
     }
 }

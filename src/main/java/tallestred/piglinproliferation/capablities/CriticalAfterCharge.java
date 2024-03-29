@@ -1,7 +1,7 @@
 package tallestred.piglinproliferation.capablities;
 
 import net.minecraft.nbt.CompoundTag;
-import net.minecraftforge.common.util.INBTSerializable;
+import net.neoforged.neoforge.common.util.INBTSerializable;
 
 public interface CriticalAfterCharge extends INBTSerializable<CompoundTag> {
         boolean isCritical();
