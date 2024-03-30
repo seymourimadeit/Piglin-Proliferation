@@ -1,6 +1,10 @@
 package tallestred.piglinproliferation;
 
+import com.mojang.blaze3d.platform.InputConstants;
+import net.minecraft.ChatFormatting;
+import net.minecraft.client.Minecraft;
 import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
@@ -37,6 +41,7 @@ import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.entity.EntityJoinLevelEvent;
 import net.minecraftforge.event.entity.living.*;
 import net.minecraftforge.event.entity.player.CriticalHitEvent;
+import net.minecraftforge.event.entity.player.ItemTooltipEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.level.NoteBlockEvent;
 import net.minecraftforge.eventbus.api.Event;
@@ -61,6 +66,7 @@ import tallestred.piglinproliferation.networking.CriticalCapabilityPacket;
 import tallestred.piglinproliferation.networking.PPNetworking;
 import tallestred.piglinproliferation.networking.ZiglinCapablitySyncPacket;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -359,6 +365,40 @@ public class PPEvents {
     }
 
     @SubscribeEvent
+    public static void modifyItemTooltip(ItemTooltipEvent event) {
+        ItemStack stack = event.getItemStack();
+        if (stack.getItem() == PPItems.BUCKLER.get()) {
+            boolean hasBang = stack.getEnchantmentLevel(PPEnchantments.BANG.get()) > 0;
+            boolean hasTurning = stack.getEnchantmentLevel(PPEnchantments.TURNING.get()) > 0;
+            List<Component> toAdd = new ArrayList<>();
+            toAdd.add(Component.empty());
+            toAdd.add(Component.translatable("item.piglinproliferation.buckler.desc.on_use").withStyle(ChatFormatting.GRAY));
+            toAdd.add(Component.translatable("item.piglinproliferation.buckler.desc.charge_ability" + (hasTurning ? "_turning" : "")).withStyle(ChatFormatting.DARK_GREEN));
+            if (!isSneakKeyDown())
+                toAdd.add(Component.translatable("item.piglinproliferation.buckler.desc.details").withStyle(ChatFormatting.GREEN));
+            else {
+                toAdd.add(Component.translatable("item.piglinproliferation.buckler.desc.while_charging").withStyle(ChatFormatting.GREEN));
+                toAdd.add(Component.translatable("item.piglinproliferation.buckler.desc.speed").withStyle(ChatFormatting.BLUE));
+                toAdd.add(Component.translatable("item.piglinproliferation.buckler.desc.knockback").withStyle(ChatFormatting.BLUE));
+                if (!hasTurning)
+                    toAdd.add(Component.translatable("item.piglinproliferation.buckler.desc.shield_bash").withStyle(ChatFormatting.BLUE));
+                toAdd.add(Component.translatable("item.piglinproliferation.buckler.desc.cannot_jump").withStyle(ChatFormatting.RED));
+                if (!hasTurning)
+                    toAdd.add(Component.translatable("item.piglinproliferation.buckler.desc.turn_speed").withStyle(ChatFormatting.RED));
+                toAdd.add(Component.translatable("item.piglinproliferation.buckler.desc.water").withStyle(ChatFormatting.RED));
+                if (!hasTurning) {
+                    toAdd.add(Component.translatable("item.piglinproliferation.buckler.desc.on_shield_bash").withStyle(ChatFormatting.GRAY));
+                    toAdd.add(Component.translatable("item.piglinproliferation.buckler.desc." + (hasBang ? "explosion" : "attack_damage")).withStyle(ChatFormatting.DARK_GREEN));
+                    if (!hasBang) {
+                        toAdd.add(Component.translatable("item.piglinproliferation.buckler.desc.critical_charge").withStyle(ChatFormatting.DARK_GREEN));
+                        toAdd.add(Component.translatable("item.piglinproliferation.buckler.desc.critical_charge_expires").withStyle(ChatFormatting.RED));
+                    }
+                }
+            }
+            event.getToolTip().addAll(toAdd);
+        }
+    }
+    @SubscribeEvent
     public static void onLootDropEntity(LivingDropsEvent event) {
         if (event.getSource().getEntity() instanceof Creeper creeper) {
             if (creeper.canDropMobsSkull()) {
@@ -429,5 +469,11 @@ public class PPEvents {
         if (listener.isPresent())
             return listener.orElseThrow(() -> new IllegalStateException("Capability not found! Report this to the piglin proliferation github!"));
         return null;
+    }
+
+    //TODO this could be a more general method with a mapped key enum
+    public static boolean isSneakKeyDown() {
+        Minecraft minecraft = Minecraft.getInstance();
+        return InputConstants.isKeyDown(minecraft.getWindow().getWindow(), minecraft.options.keyShift.getKey().getValue());
     }
 }

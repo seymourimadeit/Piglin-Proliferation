@@ -35,6 +35,8 @@ import tallestred.piglinproliferation.common.loot.CompassLocationMap;
 import java.util.*;
 
 public class PiglinTraveller extends Piglin {
+    protected static final EntityDataAccessor<Integer> KICK_TICKS = SynchedEntityData.defineId(PiglinTraveller.class, EntityDataSerializers.INT);
+    protected static final EntityDataAccessor<Integer> KICK_COOLDOWN = SynchedEntityData.defineId(PiglinTraveller.class, EntityDataSerializers.INT);
     protected static final EntityDataAccessor<Boolean> SITTING = SynchedEntityData.defineId(PiglinTraveller.class, EntityDataSerializers.BOOLEAN);
     public CompassLocationMap alreadyLocatedObjects = new CompassLocationMap();
     public Map.Entry<CompassLocationMap.SearchObject, BlockPos> currentlyLocatedObject;
@@ -83,6 +85,15 @@ public class PiglinTraveller extends Piglin {
     public void playSoundEvent(SoundEvent pSoundEvent) {
         this.playSound(pSoundEvent, this.getSoundVolume(), this.getVoicePitch());
     }
+    @Override
+    public void tick() {
+        if (this.getKickCoolDown() > 0)
+            this.setKickCoolDown(this.getKickCoolDown() - 1);
+        if (this.getKickTicks() > 0)
+            this.setKickTicks(this.getKickTicks() - 1);
+        super.tick();
+    }
+
 
     protected Brain.Provider<PiglinTraveller> travellerBrainProvider() {
         List<MemoryModuleType<?>> TRAVELLER_MEMORY_TYPES = new ArrayList<>(Piglin.MEMORY_TYPES);
@@ -145,6 +156,8 @@ public class PiglinTraveller extends Piglin {
     protected void defineSynchedData() {
         super.defineSynchedData();
         this.entityData.define(SITTING, false);
+        this.entityData.define(KICK_COOLDOWN, 0);
+        this.entityData.define(KICK_TICKS, 0);
     }
 
     public boolean isSitting() {
@@ -186,4 +199,21 @@ public class PiglinTraveller extends Piglin {
         super.addAdditionalSaveData(pCompound);
         pCompound.put("AlreadyLocatedObjects", this.alreadyLocatedObjects.toNBT());
     }
+
+    public int getKickTicks() {
+        return this.entityData.get(KICK_TICKS);
+    }
+
+    public void setKickTicks(int kickTicks) {
+        this.entityData.set(KICK_TICKS, kickTicks);
+    }
+
+    public int getKickCoolDown() {
+        return this.entityData.get(KICK_COOLDOWN);
+    }
+
+    public void setKickCoolDown(int kickCoolDown) {
+        this.entityData.set(KICK_COOLDOWN, kickCoolDown);
+    }
+
 }

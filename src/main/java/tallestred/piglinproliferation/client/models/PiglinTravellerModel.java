@@ -5,6 +5,7 @@ import net.minecraft.client.model.PiglinModel;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.model.geom.PartPose;
 import net.minecraft.client.model.geom.builders.*;
+import net.minecraft.util.Mth;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import tallestred.piglinproliferation.common.entities.PiglinTraveller;
@@ -22,7 +23,7 @@ public class PiglinTravellerModel<T extends PiglinTraveller> extends PiglinModel
     public static LayerDefinition createBodyLayer() {
         MeshDefinition meshdefinition = PiglinModel.createMesh(CubeDeformation.NONE);
         PartDefinition partdefinition = meshdefinition.getRoot();
-        PartDefinition body = partdefinition.addOrReplaceChild("body", CubeListBuilder.create().texOffs(16, 16).addBox(-4.0F, 0.0F, -2.0F, 8.0F, 12.0F, 4.0F, new CubeDeformation(0.0F)), PartPose.offset(0.0F, -24.0F, 0.0F));
+        PartDefinition body = partdefinition.addOrReplaceChild("body", CubeListBuilder.create().texOffs(16, 16).addBox(-4.0F, 0.0F, -2.0F, 8.0F, 24.0F, 4.0F, new CubeDeformation(0.0F)), PartPose.offset(0.0F, -24.0F, 0.0F));
         body.addOrReplaceChild("jacket", CubeListBuilder.create().texOffs(56, 16).addBox(-4.0F, 0.0F, -2.0F, 8.0F, 12.0F, 4.0F, new CubeDeformation(0.25F)), PartPose.offset(0.0F, 0.0F, 0.0F));
         PartDefinition head = partdefinition.addOrReplaceChild("head", CubeListBuilder.create().texOffs(62, 0).addBox(-5.0F, -8.0F, -4.0F, 10.0F, 8.0F, 8.0F, new CubeDeformation(0.25F)), PartPose.offset(0.0F, -24.0F, 0.0F));
         head.addOrReplaceChild("hat_brim", CubeListBuilder.create().texOffs(80, 19).addBox(-8.0F, -5.0F, -8.0F, 16.0F, 1.0F, 16.0F, new CubeDeformation(0.1F)), PartPose.offset(0.0F, 0.0F, 0.0F));
@@ -48,9 +49,11 @@ public class PiglinTravellerModel<T extends PiglinTraveller> extends PiglinModel
             this.leftLeg.zRot = -0.07853982F;
         }
         this.hat_brim.visible = entity.getItemBySlot(EquipmentSlot.HEAD).isEmpty();
-        this.leftPants.copyFrom(this.leftLeg);
-        this.rightPants.copyFrom(this.rightLeg);
         this.leftSleeve.copyFrom(this.leftArm);
         this.rightSleeve.copyFrom(this.rightArm);
+        if (entity.getKickTicks() > 0) {
+            float f1 = 1.0F - (float) Mth.abs(10 - 2 * entity.getKickTicks()) / 10.0F;
+            this.rightLeg.xRot = Mth.lerp(f1, this.rightLeg.xRot, -1.40F);
+        }
     }
 }

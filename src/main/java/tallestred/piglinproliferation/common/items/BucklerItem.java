@@ -157,29 +157,6 @@ public class BucklerItem extends ShieldItem {
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, @Nullable Level worldIn, List<Component> list, TooltipFlag tooltip) {
-        list.add((Component.translatable("item.piglinproliferation.buckler.desc.charge")).withStyle(ChatFormatting.BLUE));
-        list.add((Component.translatable("item.piglinproliferation.buckler.desc.while")).withStyle(ChatFormatting.GRAY));
-        list.add((Component.translatable("item.piglinproliferation.buckler.desc.forward")).withStyle(ChatFormatting.BLUE));
-        list.add((Component.translatable("item.piglinproliferation.buckler.desc.speed")).withStyle(ChatFormatting.BLUE));
-        if (stack.getEnchantmentLevel(PPEnchantments.BANG.get()) == 0
-                && stack.getEnchantmentLevel(PPEnchantments.TURNING.get()) == 0)
-            list.add((Component.translatable("item.piglinproliferation.buckler.desc.bash")).withStyle(ChatFormatting.BLUE));
-        if (stack.getEnchantmentLevel(PPEnchantments.BANG.get()) > 0)
-            list.add(
-                    (Component.translatable("item.piglinproliferation.buckler.desc.explosion")).withStyle(ChatFormatting.BLUE));
-        list.add((Component.translatable("item.piglinproliferation.buckler.desc.knockback")).withStyle(ChatFormatting.BLUE));
-        if (stack.getEnchantmentLevel(PPEnchantments.BANG.get()) == 0
-                && stack.getEnchantmentLevel(PPEnchantments.TURNING.get()) == 0) {
-            list.add((Component.translatable("item.piglinproliferation.buckler.desc.critical")).withStyle(ChatFormatting.BLUE));
-            list.add((Component.translatable("item.piglinproliferation.buckler.desc.critSwing")).withStyle(ChatFormatting.RED));
-            list.add((Component.translatable("item.piglinproliferation.buckler.desc.turnSpeed")).withStyle(ChatFormatting.RED));
-        }
-        list.add((Component.translatable("item.piglinproliferation.buckler.desc.noJumping")).withStyle(ChatFormatting.RED));
-        list.add((Component.translatable("item.piglinproliferation.buckler.desc.water")).withStyle(ChatFormatting.RED));
-    }
-
-    @Override
     public void initializeClient(Consumer<IClientItemExtensions> consumer) {
         consumer.accept(new IClientItemExtensions() {
             @Override
