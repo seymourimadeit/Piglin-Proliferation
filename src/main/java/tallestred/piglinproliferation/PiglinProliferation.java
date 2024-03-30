@@ -10,6 +10,8 @@ import net.minecraft.world.item.*;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.level.levelgen.structure.pools.StructureTemplatePool;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureProcessorList;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModLoadingContext;
 import net.neoforged.fml.common.Mod;
@@ -44,14 +46,15 @@ import tallestred.piglinproliferation.networking.PPNetworking;
 public class PiglinProliferation {
     public static final String MODID = "piglinproliferation";
 
-    public PiglinProliferation(IEventBus modEventBus) {
+    public PiglinProliferation(IEventBus modEventBus, Dist dist) {
         modEventBus.addListener(this::setup);
         modEventBus.addListener(this::enqueueIMC);
         modEventBus.addListener(this::processIMC);
         modEventBus.addListener(this::addAttributes);
         modEventBus.addListener(this::addSpawn);
         modEventBus.addListener(this::addCreativeTabs);
-        modEventBus.addListener(this::doClientStuff);
+        if (dist == Dist.CLIENT)
+            modEventBus.addListener(this::doClientStuff);
         NeoForge.EVENT_BUS.addListener(this::serverStart);
         PPSounds.SOUNDS.register(modEventBus);
         PPItems.ITEMS.register(modEventBus);
@@ -109,8 +112,8 @@ public class PiglinProliferation {
         if (toAdd.length > 0) {
             creativeTab.putAfter(new ItemStack(after), new ItemStack(toAdd[0]), CreativeModeTab.TabVisibility.PARENT_AND_SEARCH_TABS);
             if (toAdd.length > 1)
-                for (int i=1; i < toAdd.length; i++)
-                    creativeTab.putAfter(new ItemStack(toAdd[i-1]), new ItemStack(toAdd[i]), CreativeModeTab.TabVisibility.PARENT_AND_SEARCH_TABS);
+                for (int i = 1; i < toAdd.length; i++)
+                    creativeTab.putAfter(new ItemStack(toAdd[i - 1]), new ItemStack(toAdd[i]), CreativeModeTab.TabVisibility.PARENT_AND_SEARCH_TABS);
         }
     }
 
@@ -128,15 +131,18 @@ public class PiglinProliferation {
     private void processIMC(final InterModProcessEvent event) {
     }
 
+    @OnlyIn(Dist.CLIENT)
     private void doClientStuff(final FMLClientSetupEvent event) {
-        ItemProperties.register(PPItems.BUCKLER.get(), new ResourceLocation("blocking"),
-                (stack, clientWorld, livingEntity, useTime) -> {
-                    boolean active = livingEntity != null && livingEntity.isUsingItem()
-                            && livingEntity.getUseItem() == stack
-                            || livingEntity != null && BucklerItem.isReady(stack);
-                    return livingEntity != null && active ? 1.0F : 0.0F;
-                });
-        ItemProperties.register(PPItems.TRAVELLERS_COMPASS.get(), new ResourceLocation("angle"), new CompassItemPropertyFunction((level, itemStack, player) -> TravellersCompassItem.getPosition(itemStack.getOrCreateTag())));
+        event.enqueueWork(() -> {
+            ItemProperties.register(PPItems.BUCKLER.get(), new ResourceLocation("blocking"),
+                    (stack, clientWorld, livingEntity, useTime) -> {
+                        boolean active = livingEntity != null && livingEntity.isUsingItem()
+                                && livingEntity.getUseItem() == stack
+                                || livingEntity != null && BucklerItem.isReady(stack);
+                        return livingEntity != null && active ? 1.0F : 0.0F;
+                    });
+            ItemProperties.register(PPItems.TRAVELLERS_COMPASS.get(), new ResourceLocation("angle"), new CompassItemPropertyFunction((level, itemStack, player) -> TravellersCompassItem.getPosition(itemStack.getOrCreateTag())));
+        });
     }
 
     private void serverStart(final ServerAboutToStartEvent event) {
