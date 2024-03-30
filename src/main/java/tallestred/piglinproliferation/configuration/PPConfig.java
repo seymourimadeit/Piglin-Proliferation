@@ -39,6 +39,7 @@ public class PPConfig {
         public final ModConfigSpec.DoubleValue alchemistPotionChance;
         public final ModConfigSpec.DoubleValue bucklerChance;
         public final ModConfigSpec.DoubleValue crossbowChance;
+        public final ModConfigSpec.DoubleValue crossbowChanceTraveller;
         public final ModConfigSpec.IntValue healingArrowMinStackSize;
         public final ModConfigSpec.IntValue healingArrowMaxStackSize;
         public final ModConfigSpec.IntValue BucklerCooldown;
@@ -90,6 +91,7 @@ public class PPConfig {
                     This config option determines which structures the Traveller's Compass can point to.
                     If enabled, it will only point to biomes in the "piglinproliferation:travellers_compass_whitelist" structure and structure_set tags.
                     If disabled, it will point to all biomes except those in the "piglinproliferation_travellers_compass_blacklist" structure and structure_set tag.""").define("Should the Traveller's Compass only search for structures in the whitelist?", true);
+            crossbowChanceTraveller = builder.defineInRange("Chance of travellers equipping crossbows", 0.20F, 0.0F, 9000.0F);
             builder.pop();
         }
     }

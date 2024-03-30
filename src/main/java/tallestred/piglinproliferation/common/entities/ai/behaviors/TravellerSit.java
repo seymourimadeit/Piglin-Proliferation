@@ -14,7 +14,7 @@ public class TravellerSit<T extends PiglinTraveller> extends Behavior<T> {
 
     @Override
     protected boolean checkExtraStartConditions(ServerLevel worldIn, T owner) {
-        return owner.getNoActionTime() >= 120;
+        return true;
     }
 
     @Override

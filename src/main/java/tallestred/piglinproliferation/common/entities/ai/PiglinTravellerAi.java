@@ -32,10 +32,7 @@ import net.neoforged.fml.util.ObfuscationReflectionHelper;
 import tallestred.piglinproliferation.PPActivities;
 import tallestred.piglinproliferation.client.PPSounds;
 import tallestred.piglinproliferation.common.entities.PiglinTraveller;
-import tallestred.piglinproliferation.common.entities.ai.behaviors.MoveAroundPiglins;
-import tallestred.piglinproliferation.common.entities.ai.behaviors.StopHoldingItemAfterAdmiring;
-import tallestred.piglinproliferation.common.entities.ai.behaviors.SwimOnlyOutOfLava;
-import tallestred.piglinproliferation.common.entities.ai.behaviors.TravellerSit;
+import tallestred.piglinproliferation.common.entities.ai.behaviors.*;
 import tallestred.piglinproliferation.common.loot.PPLoot;
 
 import java.lang.reflect.InvocationTargetException;
@@ -78,7 +75,7 @@ public class PiglinTravellerAi extends PiglinAi {
     private static void initFightActivity(PiglinTraveller piglin, Brain<PiglinTraveller> brain) {
         brain.addActivityAndRemoveMemoryWhenStopped(Activity.FIGHT, 10, ImmutableList.<net.minecraft.world.entity.ai.behavior.BehaviorControl<? super Piglin>>of(StopAttackingIfTargetInvalid.create((p_34981_) -> {
             return !isNearestValidAttackTarget(piglin, p_34981_);
-        }), BehaviorBuilder.triggerIf(PiglinTravellerAi::hasCrossbow, BackUpIfTooClose.create(5, 0.75F)), SetWalkTargetFromAttackTargetIfTargetOutOfReach.create(1.0F), MeleeAttack.create(20), new CrossbowAttack(), RememberIfHoglinWasKilled.create(), EraseMemoryIf.create(PiglinTravellerAi::isNearZombified, MemoryModuleType.ATTACK_TARGET)), MemoryModuleType.ATTACK_TARGET);
+        }), BehaviorBuilder.triggerIf(PiglinTravellerAi::hasCrossbow, KickWhenClose.create(2)), SetWalkTargetFromAttackTargetIfTargetOutOfReach.create(1.0F), MeleeAttack.create(20), new CrossbowAttack(), RememberIfHoglinWasKilled.create(), EraseMemoryIf.create(PiglinTravellerAi::isNearZombified, MemoryModuleType.ATTACK_TARGET)), MemoryModuleType.ATTACK_TARGET);
     }
 
     private static void initCoreActivity(Brain<PiglinTraveller> brain, PiglinTraveller traveller) {
