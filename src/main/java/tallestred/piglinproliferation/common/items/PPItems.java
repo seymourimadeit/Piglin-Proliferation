@@ -22,7 +22,7 @@ public class PPItems {
     public static final DeferredHolder<Item, DeferredSpawnEggItem> PIGLIN_TRAVELLER_SPAWN_EGG = ITEMS.register("piglin_traveller_spawn_egg", () -> new DeferredSpawnEggItem(PPEntityTypes.PIGLIN_TRAVELLER, 3848107, 16380836, (new Item.Properties())));
 
     public static final DeferredHolder<Item, Item> PIGLIN_BRUTE_HEAD_ITEM = ITEMS.register("piglin_brute_head", () -> new StandingAndWallBlockItem(PPBlocks.PIGLIN_BRUTE_HEAD.get(), PPBlocks.PIGLIN_BRUTE_HEAD_WALL.get(), new Item.Properties().rarity(Rarity.UNCOMMON), Direction.DOWN));
-    public static final DeferredHolder<Item, Item>ZOMBIFIED_PIGLIN_HEAD_ITEM = ITEMS.register("zombified_piglin_head", () -> new StandingAndWallBlockItem(PPBlocks.ZOMBIFIED_PIGLIN_HEAD.get(), PPBlocks.ZOMBIFIED_PIGLIN_HEAD_WALL.get(), new Item.Properties().rarity(Rarity.UNCOMMON), Direction.DOWN));
+    public static final DeferredHolder<Item, Item> ZOMBIFIED_PIGLIN_HEAD_ITEM = ITEMS.register("zombified_piglin_head", () -> new StandingAndWallBlockItem(PPBlocks.ZOMBIFIED_PIGLIN_HEAD.get(), PPBlocks.ZOMBIFIED_PIGLIN_HEAD_WALL.get(), new Item.Properties().rarity(Rarity.UNCOMMON), Direction.DOWN));
     public static final DeferredHolder<Item, Item> PIGLIN_ALCHEMIST_HEAD_ITEM = ITEMS.register("piglin_alchemist_head", () -> new StandingAndWallBlockItem(PPBlocks.PIGLIN_ALCHEMIST_HEAD.get(), PPBlocks.PIGLIN_ALCHEMIST_HEAD_WALL.get(), new Item.Properties().rarity(Rarity.UNCOMMON), Direction.DOWN));
     public static final DeferredHolder<Item, Item> PIGLIN_TRAVELLER_HEAD_ITEM = ITEMS.register("piglin_traveller_head", () -> new StandingAndWallBlockItem(PPBlocks.PIGLIN_TRAVELLER_HEAD.get(), PPBlocks.PIGLIN_TRAVELLER_HEAD_WALL.get(), new Item.Properties().rarity(Rarity.UNCOMMON), Direction.DOWN));
 

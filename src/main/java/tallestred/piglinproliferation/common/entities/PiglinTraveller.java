@@ -12,6 +12,7 @@ import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
+import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.DifficultyInstance;
@@ -20,9 +21,14 @@ import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.Brain;
 import net.minecraft.world.entity.ai.memory.MemoryModuleType;
+import net.minecraft.world.entity.monster.Creeper;
+import net.minecraft.world.entity.monster.Ghast;
 import net.minecraft.world.entity.monster.piglin.Piglin;
+import net.minecraft.world.entity.projectile.Fireball;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.PotionItem;
+import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.ServerLevelAccessor;
@@ -32,6 +38,7 @@ import net.neoforged.neoforge.event.EventHooks;
 import org.jetbrains.annotations.Nullable;
 import tallestred.piglinproliferation.client.PPSounds;
 import tallestred.piglinproliferation.common.entities.ai.PiglinTravellerAi;
+import tallestred.piglinproliferation.common.items.PPItems;
 import tallestred.piglinproliferation.common.loot.CompassLocationMap;
 import tallestred.piglinproliferation.configuration.PPConfig;
 
@@ -53,6 +60,21 @@ public class PiglinTraveller extends Piglin {
         EquipmentSlot equipmentslot = Mob.getEquipmentSlotForItem(pCandidate);
         ItemStack itemstack = this.getItemBySlot(equipmentslot);
         return this.canReplaceCurrentItem(pCandidate, itemstack);
+    }
+
+    @Override
+    protected void dropCustomDeathLoot(DamageSource pSource, int pLooting, boolean pRecentlyHit) {
+        Entity entity = pSource.getEntity();
+        if (entity instanceof Creeper creeper) {
+            if (creeper.canDropMobsSkull()) {
+                creeper.increaseDroppedSkulls();
+                this.spawnAtLocation(PPItems.PIGLIN_TRAVELLER_HEAD_ITEM.get());
+            }
+        }
+        if (pSource.getDirectEntity() instanceof Fireball fireball && fireball.getOwner() instanceof Ghast) {
+            this.spawnAtLocation(PPItems.PIGLIN_TRAVELLER_HEAD_ITEM.get());
+        }
+        super.dropCustomDeathLoot(pSource, pLooting, pRecentlyHit);
     }
 
     @Override

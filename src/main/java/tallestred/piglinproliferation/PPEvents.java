@@ -20,6 +20,7 @@ import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
 import net.minecraft.world.entity.ai.memory.MemoryModuleType;
 import net.minecraft.world.entity.monster.Creeper;
 import net.minecraft.world.entity.monster.Ghast;
@@ -377,10 +378,6 @@ public class PPEvents {
                     event.getEntity().spawnAtLocation(PPItems.ZOMBIFIED_PIGLIN_HEAD_ITEM.get());
                 else if (type == EntityType.PIGLIN_BRUTE)
                     event.getEntity().spawnAtLocation(PPItems.PIGLIN_BRUTE_HEAD_ITEM.get());
-                else if (type == PPEntityTypes.PIGLIN_ALCHEMIST.get())
-                    event.getEntity().spawnAtLocation(PPItems.PIGLIN_ALCHEMIST_HEAD_ITEM.get());
-                else if (type == PPEntityTypes.PIGLIN_TRAVELLER.get())
-                    event.getEntity().spawnAtLocation(PPItems.PIGLIN_TRAVELLER_HEAD_ITEM.get());
                 creeper.increaseDroppedSkulls();
             }
         }
@@ -392,10 +389,6 @@ public class PPEvents {
                 event.getEntity().spawnAtLocation(PPItems.ZOMBIFIED_PIGLIN_HEAD_ITEM.get());
             else if (event.getEntity().getType() == EntityType.PIGLIN_BRUTE)
                 event.getEntity().spawnAtLocation(PPItems.PIGLIN_BRUTE_HEAD_ITEM.get());
-            else if (type == PPEntityTypes.PIGLIN_ALCHEMIST.get())
-                event.getEntity().spawnAtLocation(PPItems.PIGLIN_ALCHEMIST_HEAD_ITEM.get());
-            else if (type == PPEntityTypes.PIGLIN_TRAVELLER.get())
-                event.getEntity().spawnAtLocation(PPItems.PIGLIN_TRAVELLER_HEAD_ITEM.get());
         }
         if (event.getEntity() instanceof PiglinBrute brute) {
             ItemStack itemstack = brute.getOffhandItem();
