@@ -49,7 +49,10 @@ public class PiglinTravellerAi extends PiglinAi {
     private static final UniformInt RIDE_DURATION = TimeUtil.rangeOfSeconds(10, 30);
     private static final UniformInt AVOID_ZOMBIFIED_DURATION = TimeUtil.rangeOfSeconds(5, 7);
     private static final UniformInt BABY_AVOID_NEMESIS_DURATION = TimeUtil.rangeOfSeconds(5, 7);
-    //TODO REPLACE THESE REFLECTIONS WITH ATS THEY COMPLETELY BROKE
+    private static final Method hoglinRiding = ObfuscationReflectionHelper.findMethod(PiglinAi.class, "initRideHoglinActivity", Brain.class);
+    private static final Method retreatActivity = ObfuscationReflectionHelper.findMethod(PiglinAi.class, "initRetreatActivity", Brain.class);
+    private static final Method celebrateActivity = ObfuscationReflectionHelper.findMethod(PiglinAi.class, "initCelebrateActivity", Brain.class);
+    private static final Method admireItem = ObfuscationReflectionHelper.findMethod(PiglinAi.class, "initAdmireItemActivity", Brain.class);
     public PiglinTravellerAi() {
 
     }
