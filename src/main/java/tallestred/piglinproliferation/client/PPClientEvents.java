@@ -70,7 +70,7 @@ public class PPClientEvents {
         event.registerLayerDefinition(PIGLIN_TRAVELLER, PiglinTravellerModel::createBodyLayer);
         event.registerLayerDefinition(TRAVELLER_ARMOR_OUTER_LAYER, () -> LayerDefinition.create(HumanoidArmorModel.createBodyLayer(new CubeDeformation(1.3F)), 64, 32));
         event.registerLayerDefinition(ALCHEMIST_ARMOR_OUTER_LAYER, () -> LayerDefinition.create(HumanoidArmorModel.createBodyLayer(new CubeDeformation(1.3F)), 64, 32));
-        event.registerLayerDefinition(PIGLIN_ALCHEMIST_BELT_SLOTS, () -> LayerDefinition.create(PiglinAlchemistModel.createBodyLayer(new CubeDeformation(0.40F), new CubeDeformation(1.0F), new CubeDeformation(1.20F)), 120, 64));
+        event.registerLayerDefinition(PIGLIN_ALCHEMIST_BELT_SLOTS, () -> LayerDefinition.create(PiglinAlchemistModel.createBodyLayer(new CubeDeformation(0.40F), new CubeDeformation(1.0F), new CubeDeformation(1.40F)), 120, 64));
         event.registerLayerDefinition(BUCKLER, ModelGoldenBuckler::createLayer);
     }
 

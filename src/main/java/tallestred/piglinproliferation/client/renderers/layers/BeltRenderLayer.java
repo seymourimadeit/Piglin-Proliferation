@@ -68,7 +68,7 @@ public class BeltRenderLayer<T extends PiglinAlchemist, M extends EntityModel<T>
             poseStack.scale(0.8F, 0.8F, 0.8F);
             if (inventorySlot > 2 || inventorySlot != 5) {
                 double d = -0.24 + inventorySlot * 0.44;
-                double inflation = entity.hasItemInSlot(EquipmentSlot.LEGS) && !entity.hasItemInSlot(EquipmentSlot.CHEST) ? 0.215D : entity.hasItemInSlot(EquipmentSlot.CHEST) ? 0.225D : 0.165D;
+                double inflation = entity.hasItemInSlot(EquipmentSlot.LEGS) && !entity.hasItemInSlot(EquipmentSlot.CHEST) ? 0.215D : entity.hasItemInSlot(EquipmentSlot.CHEST) ? 0.245D : 0.165D;
                 poseStack.translate((inventorySlot > 2 && inventorySlot != 5) ? -d + 1.25 : d, 0.8D, (inventorySlot > 2 && inventorySlot != 5) ? inflation : -inflation);
             }
             if (inventorySlot == 2 || inventorySlot == 5) {

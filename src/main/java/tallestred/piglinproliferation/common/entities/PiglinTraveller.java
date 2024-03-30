@@ -19,7 +19,10 @@ import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.Brain;
 import net.minecraft.world.entity.ai.memory.MemoryModuleType;
+import net.minecraft.world.entity.monster.Creeper;
+import net.minecraft.world.entity.monster.Ghast;
 import net.minecraft.world.entity.monster.piglin.Piglin;
+import net.minecraft.world.entity.projectile.Fireball;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
@@ -30,6 +33,7 @@ import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
 import tallestred.piglinproliferation.client.PPSounds;
 import tallestred.piglinproliferation.common.entities.ai.PiglinTravellerAi;
+import tallestred.piglinproliferation.common.items.PPItems;
 import tallestred.piglinproliferation.common.loot.CompassLocationMap;
 
 import java.util.*;
@@ -163,6 +167,23 @@ public class PiglinTraveller extends Piglin {
     public boolean isSitting() {
         return this.entityData.get(SITTING);
     }
+
+
+    @Override
+    protected void dropCustomDeathLoot(DamageSource pSource, int pLooting, boolean pRecentlyHit) {
+        Entity entity = pSource.getEntity();
+        if (entity instanceof Creeper creeper) {
+            if (creeper.canDropMobsSkull()) {
+                creeper.increaseDroppedSkulls();
+                this.spawnAtLocation(PPItems.PIGLIN_TRAVELLER_HEAD_ITEM.get());
+            }
+        }
+        if (pSource.getDirectEntity() instanceof Fireball fireball && fireball.getOwner() instanceof Ghast) {
+            this.spawnAtLocation(PPItems.PIGLIN_TRAVELLER_HEAD_ITEM.get());
+        }
+        super.dropCustomDeathLoot(pSource, pLooting, pRecentlyHit);
+    }
+
 
     public void sit(boolean sit) {
         this.entityData.set(SITTING, sit);
