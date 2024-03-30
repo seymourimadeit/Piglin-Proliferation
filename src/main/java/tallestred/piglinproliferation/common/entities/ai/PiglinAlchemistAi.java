@@ -31,7 +31,6 @@ import net.minecraft.world.level.storage.loot.LootTable;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.fml.util.ObfuscationReflectionHelper;
 import tallestred.piglinproliferation.PPActivities;
 import tallestred.piglinproliferation.PPMemoryModules;
 import tallestred.piglinproliferation.client.PPSounds;
@@ -41,8 +40,6 @@ import tallestred.piglinproliferation.common.entities.ai.behaviors.*;
 import tallestred.piglinproliferation.common.items.TravellersCompassItem;
 import tallestred.piglinproliferation.common.loot.PPLoot;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -52,28 +49,23 @@ public class PiglinAlchemistAi extends PiglinAi {
     private static final UniformInt RIDE_DURATION = TimeUtil.rangeOfSeconds(10, 30);
     private static final UniformInt AVOID_ZOMBIFIED_DURATION = TimeUtil.rangeOfSeconds(5, 7);
     private static final UniformInt BABY_AVOID_NEMESIS_DURATION = TimeUtil.rangeOfSeconds(5, 7);
-    private static final Method hoglinRiding = ObfuscationReflectionHelper.findMethod(PiglinAi.class, "initRideHoglinActivity", Brain.class);
-    private static final Method retreatActivity = ObfuscationReflectionHelper.findMethod(PiglinAi.class, "initRetreatActivity", Brain.class);
-    private static final Method celebrateActivity = ObfuscationReflectionHelper.findMethod(PiglinAi.class, "initCelebrateActivity", Brain.class);
-    private static final Method admireItem = ObfuscationReflectionHelper.findMethod(PiglinAi.class, "initAdmireItemActivity", Brain.class);
-    // This has to be done because I don't feel like copying and pasting every method from PiglinAi
 
     public PiglinAlchemistAi() {
-
     }
 
     public static Brain<?> makeBrain(PiglinAlchemist piglin, Brain<PiglinAlchemist> brain) {
         try {
-            PiglinAlchemistAi.initIdleActivity(brain);
-            PiglinAlchemistAi.initCoreActivity(brain, piglin);
-            PiglinAlchemistAi.admireItem.invoke(PiglinAi.class, brain);
-            PiglinAlchemistAi.initFightActivity(piglin, brain);
-            PiglinAlchemistAi.celebrateActivity.invoke(PiglinAi.class, brain);
-            PiglinAlchemistAi.retreatActivity.invoke(PiglinAi.class, brain);
-            PiglinAlchemistAi.hoglinRiding.invoke(PiglinAi.class, brain);
-            PiglinAlchemistAi.initThrowPotionActivity(brain, piglin);
-        } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
-            new RuntimeException("Reflection failed, please report to the Piglin-Proliferation github");
+            Brain<Piglin> piglinBrain = (Brain<Piglin>) (Object) brain;
+            initIdleActivity(brain);
+            initCoreActivity(brain, piglin);
+            PiglinAi.initAdmireItemActivity(piglinBrain);
+            initFightActivity(piglin, brain);
+            PiglinAi.initCelebrateActivity(piglinBrain);
+            PiglinAi.initRetreatActivity(piglinBrain);
+            PiglinAi.initRideHoglinActivity(piglinBrain);
+            initThrowPotionActivity(brain, piglin);
+        } catch (ClassCastException e) {
+            throw new RuntimeException("Cast from Brain<PiglinAlchemist> to Brain<Piglin> failed, please report to the Piglin Proliferation github");
         }
         brain.setCoreActivities(ImmutableSet.of(Activity.CORE));
         brain.setDefaultActivity(Activity.IDLE);

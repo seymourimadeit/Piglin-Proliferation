@@ -28,15 +28,12 @@ import net.minecraft.world.level.storage.loot.LootTable;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.fml.util.ObfuscationReflectionHelper;
 import tallestred.piglinproliferation.PPActivities;
 import tallestred.piglinproliferation.client.PPSounds;
 import tallestred.piglinproliferation.common.entities.PiglinTraveller;
 import tallestred.piglinproliferation.common.entities.ai.behaviors.*;
 import tallestred.piglinproliferation.common.loot.PPLoot;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -46,25 +43,23 @@ public class PiglinTravellerAi extends PiglinAi {
     private static final UniformInt RIDE_DURATION = TimeUtil.rangeOfSeconds(10, 30);
     private static final UniformInt AVOID_ZOMBIFIED_DURATION = TimeUtil.rangeOfSeconds(5, 7);
     private static final UniformInt BABY_AVOID_NEMESIS_DURATION = TimeUtil.rangeOfSeconds(5, 7);
-    private static final Method hoglinRiding = ObfuscationReflectionHelper.findMethod(PiglinAi.class, "initRideHoglinActivity", Brain.class);
-    private static final Method retreatActivity = ObfuscationReflectionHelper.findMethod(PiglinAi.class, "initRetreatActivity", Brain.class);
-    private static final Method celebrateActivity = ObfuscationReflectionHelper.findMethod(PiglinAi.class, "initCelebrateActivity", Brain.class);
-    private static final Method admireItem = ObfuscationReflectionHelper.findMethod(PiglinAi.class, "initAdmireItemActivity", Brain.class);
+
     public PiglinTravellerAi() {
 
     }
 
     public static Brain<?> makeBrain(PiglinTraveller piglin, Brain<PiglinTraveller> brain) {
         try {
+            Brain<Piglin> piglinBrain = (Brain<Piglin>) (Object) brain;
             initIdleActivity(brain);
             initCoreActivity(brain, piglin);
-            admireItem.invoke(PiglinAi.class, brain);
+            PiglinAi.initAdmireItemActivity(piglinBrain);
             initFightActivity(piglin, brain);
-            celebrateActivity.invoke(PiglinAi.class, brain);
-            retreatActivity.invoke(PiglinAi.class, brain);
-            hoglinRiding.invoke(PiglinAi.class, brain);
-        } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
-            new RuntimeException("Reflection failed, please report to the Piglin-Proliferation github");
+            PiglinAi.initCelebrateActivity(piglinBrain);
+            PiglinAi.initRetreatActivity(piglinBrain);
+            PiglinAi.initRideHoglinActivity(piglinBrain);
+        } catch (ClassCastException e) {
+            throw new RuntimeException("Cast from Brain<PiglinTraveller> to Brain<Piglin> failed, please report to the Piglin Proliferation github");
         }
         brain.setCoreActivities(ImmutableSet.of(Activity.CORE));
         brain.setDefaultActivity(Activity.IDLE);
