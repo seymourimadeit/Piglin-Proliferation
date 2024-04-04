@@ -1,31 +1,42 @@
 package tallestred.piglinproliferation.networking;
 
 import net.minecraft.network.FriendlyByteBuf;
-import net.neoforged.neoforge.network.NetworkEvent;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.resources.ResourceLocation;
+import net.neoforged.neoforge.network.handling.PlayPayloadContext;
+import tallestred.piglinproliferation.PiglinProliferation;
 
-public class CriticalCapabilityPacket {
+public class CriticalCapabilityPacket implements CustomPacketPayload {
     private final int entityId;
     private final boolean crit;
+    public static final ResourceLocation ID = new ResourceLocation(PiglinProliferation.MODID, "crit_sync");
 
     public CriticalCapabilityPacket(int entityId, boolean crit) {
         this.entityId = entityId;
         this.crit = crit;
     }
 
-    public static CriticalCapabilityPacket decode(FriendlyByteBuf buf) {
-        return new CriticalCapabilityPacket(buf.readInt(), buf.readBoolean());
+    public CriticalCapabilityPacket(FriendlyByteBuf buf) {
+        this.crit = buf.readBoolean();
+        this.entityId = buf.readInt();
     }
 
-    public static void encode(CriticalCapabilityPacket msg, FriendlyByteBuf buf) {
-        buf.writeInt(msg.entityId);
-        buf.writeBoolean(msg.crit);
-    }
 
-    public void handle(NetworkEvent.ServerCustomPayloadEvent.Context context) {
-        context.enqueueWork(() -> {
+    public void handle(PlayPayloadContext context) {
+        context.workHandler().execute(() -> {
             ServerToClientPacketStuff.syncCritical(this);
         });
-        context.setPacketHandled(true);
+    }
+
+    @Override
+    public void write(FriendlyByteBuf buf) {
+        buf.writeInt(this.entityId);
+        buf.writeBoolean(this.crit);
+    }
+
+    @Override
+    public ResourceLocation id() {
+        return ID;
     }
 
     public int getEntityId() {

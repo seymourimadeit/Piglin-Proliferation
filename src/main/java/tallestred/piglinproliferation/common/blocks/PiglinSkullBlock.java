@@ -40,9 +40,22 @@ public class PiglinSkullBlock extends SkullBlock {
     }
 
     public enum Types implements SkullBlock.Type {
-        PIGLIN_BRUTE,
-        PIGLIN_ALCHEMIST,
-        ZOMBIFIED_PIGLIN,
-        PIGLIN_TRAVELLER
+
+        PIGLIN_BRUTE("piglin_brute"),
+        PIGLIN_ALCHEMIST("piglin_alchemist"),
+        ZOMBIFIED_PIGLIN("zombified_piglin"),
+        PIGLIN_TRAVELLER("piglin_traveler");
+
+        private final String name;
+
+        Types(String name) {
+            this.name = name;
+            TYPES.put(name, this);
+        }
+
+        @Override
+        public String getSerializedName() {
+            return name;
+        }
     }
 }

@@ -108,7 +108,7 @@ public class DumbBowAttackGoal<T extends Mob> extends Goal {
                         this.mob.stopUsingItem();
                         ItemStack itemstack = this.mob.getProjectile(this.mob.getItemInHand(ProjectileUtil.getWeaponHoldingHand(this.mob, item -> item instanceof BowItem)));
                         AbstractArrow abstractarrowentity = ProjectileUtil.getMobArrow(this.mob, itemstack, BowItem.getPowerForTime(i));
-                        abstractarrowentity = ((net.minecraft.world.item.BowItem) this.mob.getMainHandItem().getItem()).customArrow(abstractarrowentity);
+                        abstractarrowentity = ((net.minecraft.world.item.BowItem) this.mob.getMainHandItem().getItem()).customArrow(abstractarrowentity, itemstack);
                         int powerLevel = itemstack.getEnchantmentLevel(Enchantments.POWER_ARROWS);
                         if (powerLevel > 0)
                             abstractarrowentity

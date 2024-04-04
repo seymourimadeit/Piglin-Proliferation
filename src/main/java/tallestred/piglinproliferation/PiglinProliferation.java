@@ -26,6 +26,9 @@ import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
 import net.neoforged.neoforge.event.entity.EntityAttributeCreationEvent;
 import net.neoforged.neoforge.event.entity.SpawnPlacementRegisterEvent;
 import net.neoforged.neoforge.event.server.ServerAboutToStartEvent;
+import net.neoforged.neoforge.network.event.RegisterPayloadHandlerEvent;
+import net.neoforged.neoforge.network.registration.IPayloadRegistrar;
+import tallestred.piglinproliferation.capablities.PPCapablities;
 import tallestred.piglinproliferation.client.PPSounds;
 import tallestred.piglinproliferation.common.enchantments.PPEnchantments;
 import tallestred.piglinproliferation.common.entities.PiglinTraveller;
@@ -40,7 +43,9 @@ import tallestred.piglinproliferation.common.loot.PPLoot;
 import tallestred.piglinproliferation.common.recipes.PPRecipeSerializers;
 import tallestred.piglinproliferation.common.worldgen.PPWorldgen;
 import tallestred.piglinproliferation.configuration.PPConfig;
-import tallestred.piglinproliferation.networking.PPNetworking;
+import tallestred.piglinproliferation.networking.AlchemistBeltSyncPacket;
+import tallestred.piglinproliferation.networking.CriticalCapabilityPacket;
+import tallestred.piglinproliferation.networking.ZiglinCapablitySyncPacket;
 
 @Mod(PiglinProliferation.MODID)
 public class PiglinProliferation {
@@ -53,6 +58,7 @@ public class PiglinProliferation {
         modEventBus.addListener(this::addAttributes);
         modEventBus.addListener(this::addSpawn);
         modEventBus.addListener(this::addCreativeTabs);
+        modEventBus.addListener(this::register);
         if (dist == Dist.CLIENT)
             modEventBus.addListener(this::doClientStuff);
         NeoForge.EVENT_BUS.addListener(this::serverStart);
@@ -69,9 +75,9 @@ public class PiglinProliferation {
         PPLoot.LOOT_ITEM_FUNCTION_TYPES.register(modEventBus);
         PPLoot.LOOT_ITEM_CONDITION_TYPES.register(modEventBus);
         PPRecipeSerializers.RECIPE_SERIALIZERS.register(modEventBus);
+        PPCapablities.ATTACHMENT_TYPES.register(modEventBus);
         ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, PPConfig.COMMON_SPEC);
         ModLoadingContext.get().registerConfig(ModConfig.Type.CLIENT, PPConfig.CLIENT_SPEC);
-        PPNetworking.registerPackets();
     }
 
 
@@ -151,5 +157,12 @@ public class PiglinProliferation {
         PPWorldgen.addBuildingToPool(templatePoolRegistry, processorListRegistry,
                 new ResourceLocation("minecraft:bastion/mobs/piglin"),
                 "piglinproliferation:bastion/alchemist_piglin", PPConfig.COMMON.alchemistWeightInBastions.get());
+    }
+
+    private void register(final RegisterPayloadHandlerEvent event) {
+        final IPayloadRegistrar reg = event.registrar(MODID).versioned("2.0.0");
+        reg.play(AlchemistBeltSyncPacket.ID, AlchemistBeltSyncPacket::new, payload -> payload.client(AlchemistBeltSyncPacket::handle));
+        reg.play(CriticalCapabilityPacket.ID, CriticalCapabilityPacket::new, payload -> payload.client(CriticalCapabilityPacket::handle));
+        reg.play(ZiglinCapablitySyncPacket.ID, ZiglinCapablitySyncPacket::new, payload -> payload.client(ZiglinCapablitySyncPacket::handle));
     }
 }
