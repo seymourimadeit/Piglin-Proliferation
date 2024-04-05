@@ -14,17 +14,17 @@ import tallestred.piglinproliferation.PiglinProliferation;
 public class PPCapablities {
     public static final Capability<TransformationSourceListener> TRANSFORMATION_SOURCE_TRACKER = CapabilityManager.get(new CapabilityToken<>() {
     });
-    public static final Capability<CriticalAura> GUARANTEED_CRIT_TRACKER = CapabilityManager.get(new CapabilityToken<>() {
+    public static final Capability<CriticalAfterCharge> GUARANTEED_CRIT_TRACKER = CapabilityManager.get(new CapabilityToken<>() {
     });
 
     @SubscribeEvent
     public static void register(RegisterCapabilitiesEvent event) {
         event.register(TransformationSourceListener.class);
-        event.register(CriticalAura.class);
+        event.register(CriticalAfterCharge.class);
     }
 
-    public static CriticalAura getGuaranteedCritical(LivingEntity entity) {
-        LazyOptional<CriticalAura> listener = entity.getCapability(GUARANTEED_CRIT_TRACKER);
+    public static CriticalAfterCharge getGuaranteedCritical(LivingEntity entity) {
+        LazyOptional<CriticalAfterCharge> listener = entity.getCapability(GUARANTEED_CRIT_TRACKER);
         if (listener.isPresent())
             return listener.orElseThrow(() -> new IllegalStateException("Capability not found! Report this to the Piglin Proliferation github!"));
         return null;

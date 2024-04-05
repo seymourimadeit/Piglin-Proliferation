@@ -13,8 +13,8 @@ import tallestred.piglinproliferation.PiglinProliferation;
 
 public class GuranteedCritProvider implements ICapabilityProvider, INBTSerializable<CompoundTag> {
     public static final ResourceLocation IDENTIFIER = new ResourceLocation(PiglinProliferation.MODID, "guaranteed_crit");
-    private final CriticalAura.GuaranteedCriticalHit backend = new CriticalAura.GuaranteedCriticalHit();
-    private final LazyOptional<CriticalAura> optionalData = LazyOptional.of(() -> backend);
+    private final CriticalAfterCharge.GuaranteedCriticalHit backend = new CriticalAfterCharge.GuaranteedCriticalHit();
+    private final LazyOptional<CriticalAfterCharge> optionalData = LazyOptional.of(() -> backend);
 
     public GuranteedCritProvider() {
     }
