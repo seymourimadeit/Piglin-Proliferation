@@ -427,8 +427,8 @@ public class PPEvents {
                     toAdd.add(Component.translatable("item.piglinproliferation.buckler.desc.on_shield_bash").withStyle(ChatFormatting.GRAY));
                     toAdd.add(Component.translatable("item.piglinproliferation.buckler.desc." + (hasBang ? "explosion" : "attack_damage")).withStyle(ChatFormatting.DARK_GREEN));
                     if (!hasBang) {
-                        toAdd.add(Component.translatable("item.piglinproliferation.buckler.desc.critical_charge").withStyle(ChatFormatting.DARK_GREEN));
-                        toAdd.add(Component.translatable("item.piglinproliferation.buckler.desc.critical_charge_expires").withStyle(ChatFormatting.RED));
+                        toAdd.add(Component.translatable("item.piglinproliferation.buckler.desc.critical_aura").withStyle(ChatFormatting.DARK_GREEN));
+                        toAdd.add(Component.translatable("item.piglinproliferation.buckler.desc.critical_aura_expires").withStyle(ChatFormatting.RED));
                     }
                 }
             }
