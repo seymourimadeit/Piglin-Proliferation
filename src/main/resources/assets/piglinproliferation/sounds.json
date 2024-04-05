@@ -201,17 +201,17 @@
     ],
     "subtitle": "subtitles.item.buckler.bash"
   },
-  "entity.criticalcharge.activate": {
+  "entity.critical_aura.activate": {
     "sounds": [
       "block/beacon/activate"
     ],
-    "subtitle": "subtitles.entity.criticalCharge.activate"
+    "subtitle": "subtitles.entity.critical_aura.activate"
   },
-  "entity.criticalcharge.deactivate": {
+  "entity.critical_aura.deactivate": {
     "sounds": [
       "block/beacon/deactivate"
     ],
-    "subtitle": "subtitles.entity.criticalCharge.deactivate"
+    "subtitle": "subtitles.entity.critical_aura.deactivate"
   },
   "entity.piglin_traveller.make_compass": {
     "sounds": [

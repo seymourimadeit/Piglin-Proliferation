@@ -33,7 +33,6 @@ import net.minecraft.world.item.alchemy.PotionUtils;
 import net.minecraft.world.item.alchemy.Potions;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
-import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.pathfinder.BlockPathTypes;
 import net.minecraftforge.common.util.LazyOptional;
@@ -165,19 +164,19 @@ public class PPEvents {
             BucklerItem.setChargeTicks(bucklerItemStack, 0);
             BucklerItem.setReady(bucklerItemStack, false);
         }
-        CriticalAfterCharge criticalAfterCharge = PPCapablities.getGuaranteedCritical(entity);
-        if (criticalAfterCharge != null) {
-            if (criticalAfterCharge.isCritical()) {
+        CriticalAura criticalAura = PPCapablities.getGuaranteedCritical(entity);
+        if (criticalAura != null) {
+            if (criticalAura.isCritical()) {
                 if (entity.swingTime > 0) {
                     entity.level().playSound(null, entity.getX(), entity.getY(), entity.getZ(), PPSounds.CRITICAL_DEACTIVATE.get(), entity.getSoundSource(), 1.0F, 0.8F + entity.getRandom().nextFloat() * 0.4F);
-                    criticalAfterCharge.setCritical(false);
+                    criticalAura.setCritical(false);
                 }
                 for (int i = 0; i < 2; ++i) {
                     entity.level().addParticle(ParticleTypes.CRIT, entity.getRandomX(0.5D), entity.getRandomY(), entity.getRandomZ(0.5D), 0.0D, 0.0D, 0.0D);
                 }
             }
             if (event.getEntity() instanceof ServerPlayer player)
-                PPNetworking.INSTANCE.send(PacketDistributor.PLAYER.with(() -> player), new CriticalCapabilityPacket(player.getId(), criticalAfterCharge.isCritical()));
+                PPNetworking.INSTANCE.send(PacketDistributor.PLAYER.with(() -> player), new CriticalCapabilityPacket(player.getId(), criticalAura.isCritical()));
         }
     }
 
@@ -259,12 +258,12 @@ public class PPEvents {
     @SubscribeEvent
     public static void onCriticalHit(CriticalHitEvent event) {
         Player player = event.getEntity();
-        CriticalAfterCharge criticalAfterCharge = PPCapablities.getGuaranteedCritical(player);
-        if (criticalAfterCharge.isCritical()) {
+        CriticalAura criticalAura = PPCapablities.getGuaranteedCritical(player);
+        if (criticalAura.isCritical()) {
             event.setResult(Event.Result.ALLOW);
             event.setDamageModifier(1.5F);
             event.getEntity().level().playSound(null, event.getEntity().getX(), event.getEntity().getY(), event.getEntity().getZ(), SoundEvents.PLAYER_ATTACK_CRIT, event.getEntity().getSoundSource(), 1.0F, 1.0F);
-            criticalAfterCharge.setCritical(false);
+            criticalAura.setCritical(false);
         }
     }
 
@@ -390,8 +389,8 @@ public class PPEvents {
                     toAdd.add(Component.translatable("item.piglinproliferation.buckler.desc.on_shield_bash").withStyle(ChatFormatting.GRAY));
                     toAdd.add(Component.translatable("item.piglinproliferation.buckler.desc." + (hasBang ? "explosion" : "attack_damage")).withStyle(ChatFormatting.DARK_GREEN));
                     if (!hasBang) {
-                        toAdd.add(Component.translatable("item.piglinproliferation.buckler.desc.critical_charge").withStyle(ChatFormatting.DARK_GREEN));
-                        toAdd.add(Component.translatable("item.piglinproliferation.buckler.desc.critical_charge_expires").withStyle(ChatFormatting.RED));
+                        toAdd.add(Component.translatable("item.piglinproliferation.buckler.desc.critical_aura").withStyle(ChatFormatting.DARK_GREEN));
+                        toAdd.add(Component.translatable("item.piglinproliferation.buckler.desc.critical_aura_expires").withStyle(ChatFormatting.RED));
                     }
                 }
             }

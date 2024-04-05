@@ -1,6 +1,5 @@
 package tallestred.piglinproliferation.common.items;
 
-import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
 import net.minecraft.core.BlockPos;
@@ -8,7 +7,6 @@ import net.minecraft.core.particles.BlockParticleOption;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.particles.SimpleParticleType;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
@@ -26,7 +24,6 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ArmorItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.ShieldItem;
-import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.DispenserBlock;
 import net.minecraft.world.level.block.RenderShape;
@@ -36,14 +33,13 @@ import net.minecraftforge.client.extensions.common.IClientItemExtensions;
 import net.minecraftforge.common.Tags;
 import net.minecraftforge.common.ToolActions;
 import net.minecraftforge.event.ForgeEventFactory;
-import tallestred.piglinproliferation.capablities.CriticalAfterCharge;
+import tallestred.piglinproliferation.capablities.CriticalAura;
 import tallestred.piglinproliferation.capablities.PPCapablities;
 import tallestred.piglinproliferation.client.PPSounds;
 import tallestred.piglinproliferation.client.renderers.BucklerRenderer;
 import tallestred.piglinproliferation.common.enchantments.PPEnchantments;
 import tallestred.piglinproliferation.configuration.PPConfig;
 
-import javax.annotation.Nullable;
 import java.util.List;
 import java.util.UUID;
 import java.util.function.Consumer;
@@ -136,9 +132,9 @@ public class BucklerItem extends ShieldItem {
             }
             entity.setLastHurtMob(entityHit);
             if (entity instanceof Player player && PPEnchantments.getBucklerEnchantsOnHands(PPEnchantments.BANG.get(), player) == 0) {
-                CriticalAfterCharge criticalAfterCharge = PPCapablities.getGuaranteedCritical(player);
+                CriticalAura criticalAura = PPCapablities.getGuaranteedCritical(player);
                 player.level().playSound(null, entity.getX(), entity.getY(), entity.getZ(), PPSounds.CRITICAL_ACTIVATE.get(), entity.getSoundSource(), 1.0F, 1.0F);
-                criticalAfterCharge.setCritical(true);
+                criticalAura.setCritical(true);
             }
         }
     }
