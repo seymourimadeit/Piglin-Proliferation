@@ -34,7 +34,6 @@ import net.neoforged.neoforge.common.Tags;
 import net.neoforged.neoforge.common.ToolAction;
 import net.neoforged.neoforge.common.ToolActions;
 import net.neoforged.neoforge.event.EventHooks;
-import tallestred.piglinproliferation.capablities.CriticalAfterCharge;
 import tallestred.piglinproliferation.capablities.PPCapablities;
 import tallestred.piglinproliferation.client.PPSounds;
 import tallestred.piglinproliferation.client.renderers.BucklerRenderer;
@@ -133,9 +132,8 @@ public class BucklerItem extends ShieldItem {
             }
             entity.setLastHurtMob(entityHit);
             if (entity instanceof Player player && PPEnchantments.getBucklerEnchantsOnHands(PPEnchantments.BANG.get(), player) == 0) {
-                CriticalAfterCharge criticalAfterCharge = PPCapablities.getGuaranteedCritical(player);
                 player.level().playSound(null, entity.getX(), entity.getY(), entity.getZ(), PPSounds.CRITICAL_ACTIVATE.get(), entity.getSoundSource(), 1.0F, 1.0F);
-                criticalAfterCharge.setCritical(true);
+                player.setData(PPCapablities.CRITICAL.get(), true);
             }
         }
     }

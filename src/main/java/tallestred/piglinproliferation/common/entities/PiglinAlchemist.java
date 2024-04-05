@@ -53,7 +53,6 @@ import tallestred.piglinproliferation.common.items.PPItems;
 import tallestred.piglinproliferation.common.entities.ai.PiglinAlchemistAi;
 import tallestred.piglinproliferation.configuration.PPConfig;
 import tallestred.piglinproliferation.networking.AlchemistBeltSyncPacket;
-import tallestred.piglinproliferation.networking.PPNetworking;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -272,7 +271,7 @@ public class PiglinAlchemist extends Piglin {
                 itemstack = this.getItemShownOnOffhand();
             AbstractArrow abstractarrowentity = ProjectileUtil.getMobArrow(this, itemstack, distanceFactor);
             if (this.getMainHandItem().getItem() instanceof net.minecraft.world.item.BowItem)
-                abstractarrowentity = ((net.minecraft.world.item.BowItem)this.getMainHandItem().getItem()).customArrow(abstractarrowentity);
+                abstractarrowentity = ((net.minecraft.world.item.BowItem)this.getMainHandItem().getItem()).customArrow(abstractarrowentity, itemstack);
             int powerLevel = itemstack.getEnchantmentLevel(Enchantments.POWER_ARROWS);
             if (powerLevel > 0)
                 abstractarrowentity
@@ -347,7 +346,7 @@ public class PiglinAlchemist extends Piglin {
     public void syncBeltToClient() {
         if (!this.level().isClientSide) {
             for (int i = 0; i < this.beltInventory.size(); i++) {
-                PPNetworking.INSTANCE.send(PacketDistributor.TRACKING_ENTITY.with(() -> this), new AlchemistBeltSyncPacket(this.getId(), i, this.beltInventory.get(i)));
+               PacketDistributor.TRACKING_ENTITY.with(this).send(new AlchemistBeltSyncPacket(this.getId(), i, this.beltInventory.get(i)));
             }
         }
     }

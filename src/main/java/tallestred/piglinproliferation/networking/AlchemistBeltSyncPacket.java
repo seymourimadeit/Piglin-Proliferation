@@ -1,13 +1,17 @@
 package tallestred.piglinproliferation.networking;
 
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.neoforge.network.NetworkEvent;
+import net.neoforged.neoforge.network.handling.PlayPayloadContext;
+import tallestred.piglinproliferation.PiglinProliferation;
 
-public class AlchemistBeltSyncPacket {
+public class AlchemistBeltSyncPacket implements CustomPacketPayload {
     final int slotId;
     final ItemStack stack;
     private final int entityId;
+    public static final ResourceLocation ID = new ResourceLocation(PiglinProliferation.MODID, "alchemist_belt_sync");
 
     public AlchemistBeltSyncPacket(int entityId, int slotID, ItemStack stack) {
         this.entityId = entityId;
@@ -15,24 +19,32 @@ public class AlchemistBeltSyncPacket {
         this.stack = stack;
     }
 
-    public static AlchemistBeltSyncPacket decode(FriendlyByteBuf buf) {
-        return new AlchemistBeltSyncPacket(buf.readInt(), buf.readInt(), buf.readItem());
+    public AlchemistBeltSyncPacket(FriendlyByteBuf buf) {
+        this.entityId = buf.readInt();
+        this.slotId = buf.readInt();
+        this.stack = buf.readItem();
     }
 
-    public static void encode(AlchemistBeltSyncPacket msg, FriendlyByteBuf buf) {
-        buf.writeInt(msg.entityId);
-        buf.writeInt(msg.slotId);
-        buf.writeItem(msg.stack);
-    }
 
-    public void handle(NetworkEvent.ServerCustomPayloadEvent.Context context) {
-        context.enqueueWork(() -> {
+    public void handle(PlayPayloadContext context) {
+        context.workHandler().execute(() -> {
             ServerToClientPacketStuff.syncBelt(this);
         });
-        context.setPacketHandled(true);
     }
 
     public int getEntityId() {
         return this.entityId;
+    }
+
+    @Override
+    public void write(FriendlyByteBuf buf) {
+        buf.writeInt(this.entityId);
+        buf.writeInt(this.slotId);
+        buf.writeItem(this.stack);
+    }
+
+    @Override
+    public ResourceLocation id() {
+        return ID;
     }
 }

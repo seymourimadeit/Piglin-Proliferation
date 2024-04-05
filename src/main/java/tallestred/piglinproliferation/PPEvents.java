@@ -20,7 +20,6 @@ import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
-import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
 import net.minecraft.world.entity.ai.memory.MemoryModuleType;
 import net.minecraft.world.entity.monster.Creeper;
 import net.minecraft.world.entity.monster.Ghast;
@@ -42,8 +41,6 @@ import net.minecraft.world.level.pathfinder.BlockPathTypes;
 import net.neoforged.bus.api.Event;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.Mod;
-import net.neoforged.neoforge.common.util.LazyOptional;
-import net.neoforged.neoforge.event.AttachCapabilitiesEvent;
 import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
 import net.neoforged.neoforge.event.entity.living.*;
 import net.neoforged.neoforge.event.entity.player.CriticalHitEvent;
@@ -51,7 +48,7 @@ import net.neoforged.neoforge.event.entity.player.ItemTooltipEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.level.NoteBlockEvent;
 import net.neoforged.neoforge.network.PacketDistributor;
-import tallestred.piglinproliferation.capablities.*;
+import tallestred.piglinproliferation.capablities.PPCapablities;
 import tallestred.piglinproliferation.client.PPSounds;
 import tallestred.piglinproliferation.common.blocks.PPBlocks;
 import tallestred.piglinproliferation.common.enchantments.PPEnchantments;
@@ -65,7 +62,6 @@ import tallestred.piglinproliferation.common.items.BucklerItem;
 import tallestred.piglinproliferation.common.items.PPItems;
 import tallestred.piglinproliferation.configuration.PPConfig;
 import tallestred.piglinproliferation.networking.CriticalCapabilityPacket;
-import tallestred.piglinproliferation.networking.PPNetworking;
 import tallestred.piglinproliferation.networking.ZiglinCapablitySyncPacket;
 
 import java.util.*;
@@ -78,19 +74,6 @@ public class PPEvents {
     private static final AttributeModifier KNOCKBACK_RESISTANCE = new AttributeModifier(KNOCKBACK_RESISTANCE_UUID, "Knockback reduction", 1.0D, AttributeModifier.Operation.ADDITION);
 
     @SubscribeEvent
-    public static void attach(AttachCapabilitiesEvent<Entity> event) {
-        final GuranteedCritProvider critProvider = new GuranteedCritProvider();
-        final TransformationSourceProvider provider = new TransformationSourceProvider();
-        if (event.getObject() instanceof ZombifiedPiglin) {
-            event.addCapability(TransformationSourceProvider.IDENTIFIER, provider);
-            event.addListener(provider::invalidate);
-        }
-        if (event.getObject() instanceof Player) {
-            event.addCapability(GuranteedCritProvider.IDENTIFIER, critProvider);
-        }
-    }
-
-    @SubscribeEvent
     public static void onJump(LivingEvent.LivingJumpEvent event) {
         if (BucklerItem.getChargeTicks(PPItems.checkEachHandForBuckler(event.getEntity())) > 0) {
             event.getEntity().setDeltaMovement(event.getEntity().getDeltaMovement().x(), 0.0D, event.getEntity().getDeltaMovement().z());
@@ -101,9 +84,7 @@ public class PPEvents {
     public static void entityJoin(EntityJoinLevelEvent event) {
         if (event.getEntity() instanceof ZombifiedPiglin ziglin) {
             if (!event.getEntity().level().isClientSide) {
-                TransformationSourceListener transformationSource = getTransformationSourceListener(ziglin);
-                if (transformationSource != null)
-                    PPNetworking.INSTANCE.send(PacketDistributor.TRACKING_ENTITY.with(() -> ziglin), new ZiglinCapablitySyncPacket(ziglin.getId(), transformationSource.getTransformationSource()));
+                PacketDistributor.TRACKING_ENTITY.with(ziglin).send(new ZiglinCapablitySyncPacket(ziglin.getId(), ziglin.getData(PPCapablities.TRANSFORMATION_TRACKER.get())));
             }
             ziglin.goalSelector.addGoal(2, new DumbBowAttackGoal(ziglin, 0.5D, 20, 15.0F));
             ziglin.goalSelector.addGoal(2, new DumbCrossbowAttackGoal(ziglin, 1.0D, 8.0F));
@@ -121,9 +102,7 @@ public class PPEvents {
     public static void startTracking(PlayerEvent.StartTracking event) {
         if (event.getTarget() instanceof ZombifiedPiglin ziglin) {
             if (!event.getTarget().level().isClientSide) {
-                TransformationSourceListener transformationSource = getTransformationSourceListener(ziglin);
-                if (transformationSource != null)
-                    PPNetworking.INSTANCE.send(PacketDistributor.TRACKING_ENTITY.with(() -> ziglin), new ZiglinCapablitySyncPacket(ziglin.getId(), transformationSource.getTransformationSource()));
+                PacketDistributor.TRACKING_ENTITY.with(ziglin).send(new ZiglinCapablitySyncPacket(ziglin.getId(), ziglin.getData(PPCapablities.TRANSFORMATION_TRACKER.get())));
             }
         }
     }
@@ -164,20 +143,18 @@ public class PPEvents {
             BucklerItem.setChargeTicks(bucklerItemStack, 0);
             BucklerItem.setReady(bucklerItemStack, false);
         }
-        CriticalAfterCharge criticalAfterCharge = PPCapablities.getGuaranteedCritical(entity);
-        if (criticalAfterCharge != null) {
-            if (criticalAfterCharge.isCritical()) {
-                if (entity.swingTime > 0) {
-                    entity.level().playSound(null, entity.getX(), entity.getY(), entity.getZ(), PPSounds.CRITICAL_DEACTIVATE.get(), entity.getSoundSource(), 1.0F, 0.8F + entity.getRandom().nextFloat() * 0.4F);
-                    criticalAfterCharge.setCritical(false);
-                }
-                for (int i = 0; i < 2; ++i) {
-                    entity.level().addParticle(ParticleTypes.CRIT, entity.getRandomX(0.5D), entity.getRandomY(), entity.getRandomZ(0.5D), 0.0D, 0.0D, 0.0D);
-                }
+        boolean criticalAfterCharge = entity.getData(PPCapablities.CRITICAL.get());
+        if (criticalAfterCharge) {
+            if (entity.swingTime > 0) {
+                entity.level().playSound(null, entity.getX(), entity.getY(), entity.getZ(), PPSounds.CRITICAL_DEACTIVATE.get(), entity.getSoundSource(), 1.0F, 0.8F + entity.getRandom().nextFloat() * 0.4F);
+                entity.setData(PPCapablities.CRITICAL.get(), false);
             }
-            if (event.getEntity() instanceof ServerPlayer player)
-                PPNetworking.INSTANCE.send(PacketDistributor.PLAYER.with(() -> player), new CriticalCapabilityPacket(player.getId(), criticalAfterCharge.isCritical()));
+            for (int i = 0; i < 2; ++i) {
+                entity.level().addParticle(ParticleTypes.CRIT, entity.getRandomX(0.5D), entity.getRandomY(), entity.getRandomZ(0.5D), 0.0D, 0.0D, 0.0D);
+            }
         }
+        if (event.getEntity() instanceof ServerPlayer player)
+            PacketDistributor.PLAYER.with(player).send(new CriticalCapabilityPacket(player.getId(), criticalAfterCharge));
     }
 
     @SubscribeEvent
@@ -257,12 +234,11 @@ public class PPEvents {
     @SubscribeEvent
     public static void onCriticalHit(CriticalHitEvent event) {
         Player player = event.getEntity();
-        CriticalAfterCharge criticalAfterCharge = PPCapablities.getGuaranteedCritical(player);
-        if (criticalAfterCharge.isCritical()) {
+        if (player.getData(PPCapablities.CRITICAL.get())) {
             event.setResult(Event.Result.ALLOW);
             event.setDamageModifier(1.5F);
             event.getEntity().level().playSound(null, event.getEntity().getX(), event.getEntity().getY(), event.getEntity().getZ(), SoundEvents.PLAYER_ATTACK_CRIT, event.getEntity().getSoundSource(), 1.0F, 1.0F);
-            criticalAfterCharge.setCritical(false);
+            player.setData(PPCapablities.CRITICAL.get(), false);
         }
     }
 
@@ -305,26 +281,25 @@ public class PPEvents {
         }
         if (event.getEntity().getType() == EntityType.ZOMBIFIED_PIGLIN) { // Some mods have entities that extend zombified piglins in order to make their own ziglins have custom textures
             ZombifiedPiglin zombifiedPiglin = (ZombifiedPiglin) event.getEntity();
-            TransformationSourceListener tSource = PPEvents.getTransformationSourceListener(zombifiedPiglin);
             if (spawnType != MobSpawnType.CONVERSION) {
                 if (rSource.nextFloat() < PPConfig.COMMON.zombifiedPiglinDefaultChance.get().floatValue())
-                    tSource.setTransformationSource("piglin");
+                    zombifiedPiglin.setData(PPCapablities.TRANSFORMATION_TRACKER.get(), "piglin");
                 if (rSource.nextFloat() < PPConfig.COMMON.piglinVariantChances.get().floatValue()) {
                     List<? extends String> piglinTypes = PPConfig.COMMON.zombifiedPiglinTypeList.get();
                     if (!piglinTypes.isEmpty())
-                        tSource.setTransformationSource(piglinTypes.get(rSource.nextInt(piglinTypes.size())));
+                        zombifiedPiglin.setData(PPCapablities.TRANSFORMATION_TRACKER.get(), piglinTypes.get(rSource.nextInt(piglinTypes.size())));
                 }
                 float bruteChance = PPConfig.COMMON.zombifiedBruteChance.get().floatValue();
-                if (tSource.getTransformationSource().equals("piglin")) {
+                if (zombifiedPiglin.getData(PPCapablities.TRANSFORMATION_TRACKER.get()).equalsIgnoreCase("piglin")) {
                     if (rSource.nextFloat() < bruteChance) {
                         event.setCanceled(true);
-                        tSource.setTransformationSource("piglin_brute");
+                        zombifiedPiglin.setData(PPCapablities.TRANSFORMATION_TRACKER.get(), "piglin_brute");
                         zombifiedPiglin.setItemSlot(EquipmentSlot.MAINHAND, new ItemStack(Items.GOLDEN_AXE));
                         zombifiedPiglin.setItemSlot(EquipmentSlot.OFFHAND, new ItemStack(PPItems.BUCKLER.get()));
                     } else if (rSource.nextFloat() < PPConfig.COMMON.zombifiedAlchemistChance.get().floatValue()) {
                         event.setCanceled(true);
                         zombifiedPiglin.setItemSlot(EquipmentSlot.MAINHAND, new ItemStack(Items.BOW));
-                        tSource.setTransformationSource("piglin_alchemist");
+                        zombifiedPiglin.setData(PPCapablities.TRANSFORMATION_TRACKER.get(), "piglin_alchemist");
                     } else if (rSource.nextFloat() < PPConfig.COMMON.crossbowChance.get().floatValue()) {
                         event.setCanceled(true);
                         zombifiedPiglin.setItemSlot(EquipmentSlot.MAINHAND, new ItemStack(Items.CROSSBOW));
@@ -332,7 +307,7 @@ public class PPEvents {
                 }
                 if (spawnType == MobSpawnType.JOCKEY) {
                     event.setCanceled(true);
-                    tSource.setTransformationSource("piglin_traveller");
+                    zombifiedPiglin.setData(PPCapablities.TRANSFORMATION_TRACKER.get(), "piglin_traveller");
                     zombifiedPiglin.setItemSlot(EquipmentSlot.MAINHAND, new ItemStack(Items.WARPED_FUNGUS_ON_A_STICK));
                 }
             }
@@ -360,10 +335,8 @@ public class PPEvents {
                 ResourceLocation location = registryOptional.get().getKey(piglin.getType());
                 if (location != null) {
                     String piglinName = location.getPath();
-                    TransformationSourceListener transformationSource = getTransformationSourceListener(ziglin);
-                    if (transformationSource != null)
-                        transformationSource.setTransformationSource(piglinName);
-                    PPNetworking.INSTANCE.send(PacketDistributor.TRACKING_ENTITY.with(() -> ziglin), new ZiglinCapablitySyncPacket(ziglin.getId(), piglinName));
+                    ziglin.setData(PPCapablities.TRANSFORMATION_TRACKER.get(), piglinName);
+                    PacketDistributor.TRACKING_ENTITY.with(ziglin).send(new ZiglinCapablitySyncPacket(ziglin.getId(), piglinName));
                 }
             }
         }
@@ -397,7 +370,8 @@ public class PPEvents {
                 boolean flag = f > 1.0F;
                 if (!itemstack.isEmpty() && !EnchantmentHelper.hasVanishingCurse(itemstack) && (event.isRecentlyHit() || flag) && Math.max(brute.getRandom().nextFloat() - (float) event.getLootingLevel() * 0.01F, 0.0F) < f) {
                     if (itemstack.isDamageableItem()) {
-                        itemstack.setDamageValue(brute.getRandom().nextInt(brute.getRandom().nextInt(itemstack.getMaxDamage() / 2)));
+                        int halvedMaxDurability = Math.abs(brute.getRandom().nextInt(Math.abs(itemstack.getMaxDamage() / 2)));
+                        itemstack.setDamageValue(Math.abs(brute.getRandom().nextInt(halvedMaxDurability)));
                     }
                     brute.spawnAtLocation(itemstack);
                     brute.setItemSlot(EquipmentSlot.OFFHAND, ItemStack.EMPTY);
@@ -460,13 +434,6 @@ public class PPEvents {
             }
             event.getToolTip().addAll(toAdd);
         }
-    }
-
-    public static TransformationSourceListener getTransformationSourceListener(LivingEntity entity) {
-        LazyOptional<TransformationSourceListener> listener = entity.getCapability(PPCapablities.TRANSFORMATION_SOURCE_TRACKER);
-        if (listener.isPresent())
-            return listener.orElseThrow(() -> new IllegalStateException("Capability not found! Report this to the piglin proliferation github!"));
-        return null;
     }
 
     //TODO this could be a more general method with a mapped key enum
