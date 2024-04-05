@@ -3,12 +3,12 @@ package tallestred.piglinproliferation.capablities;
 import net.minecraft.nbt.CompoundTag;
 import net.neoforged.neoforge.common.util.INBTSerializable;
 
-public interface CriticalAfterCharge extends INBTSerializable<CompoundTag> {
+public interface CriticalAura extends INBTSerializable<CompoundTag> {
         boolean isCritical();
 
         void setCritical(boolean critical);
 
-        class GuaranteedCriticalHit implements CriticalAfterCharge {
+        class GuaranteedCriticalHit implements CriticalAura {
             private boolean isCritical;
 
             @Override
