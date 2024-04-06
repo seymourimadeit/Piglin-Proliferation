@@ -239,7 +239,7 @@ public class PiglinTravellerAi extends PiglinAi {
             if (optional.isPresent() && Sensor.isEntityAttackableIgnoringLineOfSight(piglin, (LivingEntity) optional.get())) {
                 return optional;
             } else {
-                Optional optional3;
+                Optional<? extends LivingEntity> optional3;
                 if (brain.hasMemoryValue(MemoryModuleType.UNIVERSAL_ANGER)) {
                     optional3 = brain.getMemory(MemoryModuleType.NEAREST_VISIBLE_ATTACKABLE_PLAYER);
                     if (optional3.isPresent()) {
@@ -250,9 +250,6 @@ public class PiglinTravellerAi extends PiglinAi {
                 optional3 = brain.getMemory(MemoryModuleType.NEAREST_VISIBLE_NEMESIS);
                 if (optional3.isPresent()) {
                     return optional3;
-                } else if (!piglin.level().getBiome(piglin.getOnPos()).is(Biomes.WARPED_FOREST)) {
-                    Optional<Player> optional2 = brain.getMemory(MemoryModuleType.NEAREST_TARGETABLE_PLAYER_NOT_WEARING_GOLD);
-                    return optional2.isPresent() && Sensor.isEntityAttackable(piglin, (LivingEntity) optional2.get()) ? optional2 : Optional.empty();
                 }
             }
         }
