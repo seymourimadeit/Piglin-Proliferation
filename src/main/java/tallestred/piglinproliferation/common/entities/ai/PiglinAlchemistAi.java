@@ -261,7 +261,7 @@ public class PiglinAlchemistAi extends PiglinAi {
             for (ItemStack stack : itemstack) {
                 if (piglin instanceof PiglinTraveller traveller && stack.getItem() instanceof TravellersCompassItem) {
                     traveller.playBarteringAnimation();
-                    piglin.level().playSound(null, piglin.getX(), piglin.getY(), piglin.getZ(), PPSounds.MAKING_COMPASS.get(), piglin.getSoundSource(), 1.0F, 1.0F);
+                    piglin.level().playSound(null, piglin.getX(), piglin.getY(), piglin.getZ(), PPSounds.MAKE_COMPASS.get(), piglin.getSoundSource(), 1.0F, 1.0F);
                 }
                 BehaviorUtils.throwItem(piglin, stack, pos.add(0.0D, 1.0D, 0.0D));
             }

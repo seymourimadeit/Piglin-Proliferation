@@ -221,9 +221,9 @@
   },
   "entity.piglin_traveller.make_compass": {
     "sounds": [
-      "piglinproliferation:mob/piglin/traveller/traveller_making_compass"
+      "piglinproliferation:mob/piglin/traveller/make_compass"
     ],
-    "subtitle": "subtitles.entity.piglin_traveller.making_compass"
+    "subtitle": "subtitles.entity.piglin_traveller.make_compass"
   },
   "entity.piglin_traveller.idle": {
     "sounds": [
