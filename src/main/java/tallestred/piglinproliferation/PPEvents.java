@@ -435,7 +435,8 @@ public class PPEvents {
                 boolean flag = f > 1.0F;
                 if (!itemstack.isEmpty() && !EnchantmentHelper.hasVanishingCurse(itemstack) && (event.isRecentlyHit() || flag) && Math.max(brute.getRandom().nextFloat() - (float) event.getLootingLevel() * 0.01F, 0.0F) < f) {
                     if (itemstack.isDamageableItem()) {
-                        itemstack.setDamageValue(brute.getRandom().nextInt(brute.getRandom().nextInt(itemstack.getMaxDamage() / 2)));
+                        int halvedMaxDurability = Math.abs(brute.getRandom().nextInt(Math.abs(itemstack.getMaxDamage() / 2)));
+                        itemstack.setDamageValue(Math.abs(brute.getRandom().nextInt(halvedMaxDurability)));
                     }
                     brute.spawnAtLocation(itemstack);
                     brute.setItemSlot(EquipmentSlot.OFFHAND, ItemStack.EMPTY);
