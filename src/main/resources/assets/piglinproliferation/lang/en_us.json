@@ -53,7 +53,7 @@
    "item.piglinproliferation.buckler.desc.attack_damage": " 6-8 Attack Damage",
    "item.piglinproliferation.buckler.desc.explosion": " Creates explosion",
    "item.piglinproliferation.buckler.desc.critical_aura": " Gain Critical Aura (next hit will be critical)",
-   "item.piglinproliferation.buckler.desc.critical_aura_expires": " Critical Aura expires after one attack",
+   "item.piglinproliferation.buckler.desc.critical_aura_expires": " Critical Aura expires after one swing",
    "enchantment.piglinproliferation.turning": "Turning",
    "enchantment.piglinproliferation.bang": "Bang!",
    "enchantment.piglinproliferation.turning.desc": "Allows full turn control while charging, but the buckler has no shield bash ability.",
@@ -81,6 +81,7 @@
    "subtitles.entity.piglin_traveller.conversion": "Piglin Traveler converts to Zombified Piglin",
    "subtitles.entity.piglin_traveller.step": "Piglin Traveler steps",
    "subtitles.entity.critical_aura.activate": "Critical Aura activates",
+   "subtitles.entity.critical_aura.apply": "Critical Aura applies",
    "subtitles.entity.critical_aura.deactivate": "Critical Aura deactivates",
    "piglinproliferation.advancements.nether.obtain_travellers_compass.title": "Journey of a Thousand Blocks",
    "piglinproliferation.advancements.nether.obtain_travellers_compass.description": "Obtain a Traveler's Compass by bartering with a Piglin Traveler - it may help you find what you need..."

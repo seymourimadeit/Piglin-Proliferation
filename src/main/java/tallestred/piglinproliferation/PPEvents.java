@@ -262,7 +262,9 @@ public class PPEvents {
         if (criticalAura.isCritical()) {
             event.setResult(Event.Result.ALLOW);
             event.setDamageModifier(1.5F);
-            event.getEntity().level().playSound(null, event.getEntity().getX(), event.getEntity().getY(), event.getEntity().getZ(), SoundEvents.PLAYER_ATTACK_CRIT, event.getEntity().getSoundSource(), 1.0F, 1.0F);
+            Entity entity = event.getEntity();
+            entity.level().playSound(null, entity.getX(), entity.getY(), entity.getZ(), SoundEvents.PLAYER_ATTACK_CRIT, entity.getSoundSource(), 1.0F, 1.0F);
+            entity.level().playSound(null, entity.getX(), entity.getY(), entity.getZ(), PPSounds.CRITICAL_APPLY.get(), entity.getSoundSource(), 1.0F, 0.8F + entity.level().getRandom().nextFloat() * 0.4F);
             criticalAura.setCritical(false);
         }
     }

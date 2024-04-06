@@ -53,7 +53,7 @@
    "item.piglinproliferation.buckler.desc.attack_damage": " 6-8 Angriffsschaden",
    "item.piglinproliferation.buckler.desc.explosion": " Es kommt zur Explosion",
    "item.piglinproliferation.buckler.desc.critical_aura": " Erlange Kritisches Fluidum (nächster Treffer wird kritisch sein)",
-   "item.piglinproliferation.buckler.desc.critical_aura_expires": " Kritisches Fluidum verfällt nach einem Angriff",
+   "item.piglinproliferation.buckler.desc.critical_aura_expires": " Kritisches Fluidum verfällt nach einem Schwung",
    "enchantment.piglinproliferation.turning": "Drehung",
    "enchantment.piglinproliferation.bang": "Knall!",
    "enchantment.piglinproliferation.turning.desc": "Erlaubt volle Drehsteuerung beim Ansturm, doch der Buckler hat keine Schildschlag-Fähigkeit.",
@@ -81,6 +81,7 @@
    "subtitles.entity.piglin_traveller.conversion": "Piglin-Reisender wird zombifiziert",
    "subtitles.entity.piglin_traveller.step": "Piglin-Reisender läuft",
    "subtitles.entity.critical_aura.activate": "Kritisches Fluidum schaltet ein",
+   "subtitles.entity.critical_aura.apply": "Kritisches Fluidum verwendet",
    "subtitles.entity.critical_aura.deactivate": "Kritisches Fluidum entschärft",
    "piglinproliferation.advancements.nether.obtain_travellers_compass.title": "Reise der tausend Blöcke",
    "piglinproliferation.advancements.nether.obtain_travellers_compass.description": "Beziehe einen Kompass des Reisendens durch Tauschhandel mit einem Piglin-Reisenden - dadurch könntest du finden, was du brauchst..."
