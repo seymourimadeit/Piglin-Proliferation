@@ -1,7 +1,5 @@
 name: Build
 
-on: [push, pull_request]
-
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -23,7 +21,19 @@ jobs:
         with:
           arguments: build
           gradle-version: current
+
       - name: mc-publish
         uses: Kir-Antipov/mc-publish@v3.3.0
+        with:
+          modrinth-id: iRE67WIn
+          modrinth-token: ${{ secrets.MODRINTH_TOKEN }}
+          curseforge-id: 657831
+          curseforge-token: ${{ secrets.CURSEFORGE_TOKEN }}
+          files-primary: build/libs/!(*-@(javadoc|sources)).jar
+          version-type: release
+          loaders: neoforge
+          game-versions: 1.20.4
+          java: 17
+          name: ""
 
 
