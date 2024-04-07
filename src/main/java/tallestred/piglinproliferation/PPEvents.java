@@ -413,8 +413,9 @@ public class PPEvents {
             toAdd.add(Component.empty());
             toAdd.add(Component.translatable("item.piglinproliferation.buckler.desc.on_use").withStyle(ChatFormatting.GRAY));
             toAdd.add(Component.translatable("item.piglinproliferation.buckler.desc.charge_ability" + (hasTurning ? "_turning" : "")).withStyle(ChatFormatting.DARK_GREEN));
-            if (!isSneakKeyDown())
-                toAdd.add(Component.translatable("item.piglinproliferation.buckler.desc.details").withStyle(ChatFormatting.GREEN));
+            Minecraft minecraft = Minecraft.getInstance();
+            if (!InputConstants.isKeyDown(minecraft.getWindow().getWindow(), minecraft.options.keyShift.getKey().getValue()))
+                toAdd.add(Component.translatable("item.piglinproliferation.buckler.desc.details", minecraft.options.keyShift.getTranslatedKeyMessage()).withStyle(ChatFormatting.GREEN));
             else {
                 toAdd.add(Component.translatable("item.piglinproliferation.buckler.desc.while_charging").withStyle(ChatFormatting.GREEN));
                 toAdd.add(Component.translatable("item.piglinproliferation.buckler.desc.speed").withStyle(ChatFormatting.BLUE));
@@ -436,11 +437,5 @@ public class PPEvents {
             }
             event.getToolTip().addAll(toAdd);
         }
-    }
-
-    //TODO this could be a more general method with a mapped key enum
-    public static boolean isSneakKeyDown() {
-        Minecraft minecraft = Minecraft.getInstance();
-        return InputConstants.isKeyDown(minecraft.getWindow().getWindow(), minecraft.options.keyShift.getKey().getValue());
     }
 }

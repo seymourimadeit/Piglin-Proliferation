@@ -26,7 +26,6 @@ public class PPSounds {
     public static final DeferredHolder<SoundEvent, SoundEvent> SHIELD_BASH = createVariableRangeSound("item.buckler.bash");
     public static final DeferredHolder<SoundEvent, SoundEvent> CRITICAL_ACTIVATE = createVariableRangeSound("entity.critical_aura.activate");
     public static final DeferredHolder<SoundEvent, SoundEvent> CRITICAL_APPLY = createVariableRangeSound("entity.critical_aura.apply");
-
     public static final DeferredHolder<SoundEvent, SoundEvent> CRITICAL_DEACTIVATE = createVariableRangeSound("entity.critical_aura.deactivate");
     public static final DeferredHolder<SoundEvent, SoundEvent> MAKE_COMPASS = createVariableRangeSound("entity.piglin_traveller.make_compass");
     public static final DeferredHolder<SoundEvent, SoundEvent> TRAVELLER_IDLE = createVariableRangeSound("entity.piglin_traveller.idle");
