@@ -163,7 +163,7 @@ public class PiglinAlchemist extends Piglin {
         this.level().getProfiler().push("piglinBrain");
         this.getBrain().tick((ServerLevel) this.level(), this);
         this.level().getProfiler().pop();
-        PiglinAlchemistAi.updateActivity(this);
+        PiglinAlchemistAi.INSTANCE.updateBrainActivity(this);
     }
 
     @Override
@@ -242,8 +242,8 @@ public class PiglinAlchemist extends Piglin {
     }
 
     @Override
-    protected Brain<?> makeBrain(Dynamic<?> p_34723_) {
-        return PiglinAlchemistAi.makeBrain(this, this.alchemistBrainProvider().makeBrain(p_34723_));
+    protected Brain<?> makeBrain(Dynamic<?> dynamic) {
+        return PiglinAlchemistAi.INSTANCE.populateBrain(this, this.alchemistBrainProvider().makeBrain(dynamic));
     }
 
     @Override

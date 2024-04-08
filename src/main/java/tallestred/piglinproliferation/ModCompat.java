@@ -1,4 +1,4 @@
-/*
+/* THIS IS NOW OUTDATED! If sapience updates to 1.20.4, adapt from 1.20.1 branch
 package tallestred.piglinproliferation;
 
 import com.infamous.sapience.SapienceConfig;

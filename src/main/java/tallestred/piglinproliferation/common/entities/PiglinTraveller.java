@@ -155,7 +155,7 @@ public class PiglinTraveller extends Piglin {
         this.level().getProfiler().push("piglinBrain");
         this.getBrain().tick((ServerLevel) this.level(), this);
         this.level().getProfiler().pop();
-        PiglinTravellerAi.updateActivity(this);
+        PiglinTravellerAi.INSTANCE.updateBrainActivity(this);
         for (Map.Entry<CompassLocationMap.SearchObject, Integer> entry : new HashMap<>(this.alreadyLocatedObjects).entrySet()) {
             CompassLocationMap.SearchObject searchObject = entry.getKey();
             this.alreadyLocatedObjects.put(searchObject, entry.getValue() - 1);
@@ -170,8 +170,8 @@ public class PiglinTraveller extends Piglin {
     }
 
     @Override
-    protected Brain<?> makeBrain(Dynamic<?> p_34723_) {
-        return PiglinTravellerAi.makeBrain(this, this.travellerBrainProvider().makeBrain(p_34723_));
+    protected Brain<?> makeBrain(Dynamic<?> dynamic) {
+        return PiglinTravellerAi.INSTANCE.populateBrain(this, this.travellerBrainProvider().makeBrain(dynamic));
     }
 
     @Override
@@ -179,7 +179,7 @@ public class PiglinTraveller extends Piglin {
         return false;
     }
 
-    public static boolean checkTravellerSpawnRules(EntityType<PiglinTraveller> p_219198_, LevelAccessor p_219199_, MobSpawnType p_219200_, BlockPos p_219201_, RandomSource p_219202_) {
+    public static boolean checkTravellerSpawnRules(EntityType<PiglinTraveller> entityType, LevelAccessor p_219199_, MobSpawnType p_219200_, BlockPos p_219201_, RandomSource p_219202_) {
         return !p_219199_.getBlockState(p_219201_.below()).is(Blocks.NETHER_WART_BLOCK);
     }
 
