@@ -1,5 +1,8 @@
 package tallestred.piglinproliferation;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class CodeUtilities {
     public static String snakeCaseToEnglish(String raw) {
         String[] parts = raw.split("_");
@@ -10,5 +13,19 @@ public class CodeUtilities {
             output.append(" ");
         }
         return output.toString().trim();
+    }
+
+    /**
+     * Converts a list to a new, mutable list of a specified type. Throws an error if casting fails.
+     *
+     * @param list the list of unkown type to convert
+     * */
+    @SuppressWarnings("unchecked")
+    public static <T> List<T> convertToMutableListOrThrow(List<?> list) {
+        try {
+            return (List<T>) new ArrayList<>(list);
+        } catch (ClassCastException e) {
+            throw new IllegalArgumentException("Cannot cast the input list to the output type! If you are a player, report to the Piglin Proliferation github");
+        }
     }
 }
