@@ -4,8 +4,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class CodeUtilities {
+
     /**
-     * Converts
+     * <p>Converts a string formatted in snake case to its equivalent plaintext capitalised form.</p>
+     * <p>Example: {@code hello_world -> Hello World}</p>
+     *
+     * @param raw the snake case string to convert
      * */
     public static String snakeCaseToEnglish(String raw) {
         String[] parts = raw.split("_");
