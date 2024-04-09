@@ -50,7 +50,7 @@ public class CodeUtilities {
     }
 
     /**
-     * Converts a value of ticks into a double representing a decimal place value for seconds.
+     * Converts a number of ticks into a double representing a decimal value for seconds.
      * Rounds to 2dp in case of floating-point error.
      *
      * @param ticks the number of ticks to convert

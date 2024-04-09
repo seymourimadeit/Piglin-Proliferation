@@ -1,7 +1,5 @@
 package tallestred.piglinproliferation;
 
-import com.mojang.blaze3d.platform.InputConstants;
-import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.Registry;
 import net.minecraft.core.particles.ParticleTypes;
@@ -410,34 +408,9 @@ public class PPEvents {
     public static void modifyItemTooltip(ItemTooltipEvent event) {
         ItemStack stack = event.getItemStack();
         if (stack.getItem() == PPItems.BUCKLER.get()) {
-            boolean hasBang = stack.getEnchantmentLevel(PPEnchantments.BANG.get()) > 0;
-            boolean hasTurning = stack.getEnchantmentLevel(PPEnchantments.TURNING.get()) > 0;
             List<Component> toAdd = new ArrayList<>();
             toAdd.add(Component.empty());
-            toAdd.add(Component.translatable("item.piglinproliferation.buckler.desc.on_use").withStyle(ChatFormatting.GRAY));
-            toAdd.add(Component.translatable("item.piglinproliferation.buckler.desc.charge_ability", CodeUtilities.ticksToSeconds(BucklerItem.startingChargeTicks(stack))).withStyle(ChatFormatting.DARK_GREEN));
-            Minecraft minecraft = Minecraft.getInstance();
-            if (!InputConstants.isKeyDown(minecraft.getWindow().getWindow(), minecraft.options.keyShift.getKey().getValue()))
-                toAdd.add(Component.translatable("item.piglinproliferation.buckler.desc.details", minecraft.options.keyShift.getTranslatedKeyMessage()).withStyle(ChatFormatting.GREEN));
-            else {
-                toAdd.add(Component.translatable("item.piglinproliferation.buckler.desc.while_charging").withStyle(ChatFormatting.GREEN));
-                toAdd.add(Component.translatable("item.piglinproliferation.buckler.desc.speed").withStyle(ChatFormatting.BLUE));
-                toAdd.add(Component.translatable("item.piglinproliferation.buckler.desc.knockback").withStyle(ChatFormatting.BLUE));
-                if (!hasTurning)
-                    toAdd.add(Component.translatable("item.piglinproliferation.buckler.desc.shield_bash").withStyle(ChatFormatting.BLUE));
-                toAdd.add(Component.translatable("item.piglinproliferation.buckler.desc.cannot_jump").withStyle(ChatFormatting.RED));
-                if (!hasTurning)
-                    toAdd.add(Component.translatable("item.piglinproliferation.buckler.desc.turn_speed").withStyle(ChatFormatting.RED));
-                toAdd.add(Component.translatable("item.piglinproliferation.buckler.desc.water").withStyle(ChatFormatting.RED));
-                if (!hasTurning) {
-                    toAdd.add(Component.translatable("item.piglinproliferation.buckler.desc.on_shield_bash").withStyle(ChatFormatting.GRAY));
-                    toAdd.add(Component.translatable("item.piglinproliferation.buckler.desc." + (hasBang ? "explosion" : "attack_damage")).withStyle(ChatFormatting.DARK_GREEN));
-                    if (!hasBang) {
-                        toAdd.add(Component.translatable("item.piglinproliferation.buckler.desc.critical_aura").withStyle(ChatFormatting.DARK_GREEN));
-                        toAdd.add(Component.translatable("item.piglinproliferation.buckler.desc.critical_aura_expires").withStyle(ChatFormatting.RED));
-                    }
-                }
-            }
+            toAdd.addAll(BucklerItem.getDescription(Minecraft.getInstance(), stack));
             event.getToolTip().addAll(toAdd);
         }
     }
