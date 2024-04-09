@@ -1,5 +1,7 @@
 package tallestred.piglinproliferation.common.items;
 
+import com.mojang.blaze3d.platform.InputConstants;
+import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
 import net.minecraft.core.BlockPos;
@@ -7,6 +9,7 @@ import net.minecraft.core.particles.BlockParticleOption;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.particles.SimpleParticleType;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
@@ -33,22 +36,28 @@ import net.minecraftforge.client.extensions.common.IClientItemExtensions;
 import net.minecraftforge.common.Tags;
 import net.minecraftforge.common.ToolActions;
 import net.minecraftforge.event.ForgeEventFactory;
+import tallestred.piglinproliferation.CodeUtilities;
 import tallestred.piglinproliferation.capablities.CriticalAura;
 import tallestred.piglinproliferation.capablities.PPCapablities;
 import tallestred.piglinproliferation.client.PPSounds;
 import tallestred.piglinproliferation.client.renderers.BucklerRenderer;
+import tallestred.piglinproliferation.common.attribute.AttributeModifierHolder;
+import tallestred.piglinproliferation.common.attribute.RangedAttributeModifierHolder;
 import tallestred.piglinproliferation.common.enchantments.PPEnchantments;
 import tallestred.piglinproliferation.configuration.PPConfig;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.function.Consumer;
 
 public class BucklerItem extends ShieldItem {
-    private static final UUID CHARGE_SPEED_UUID = UUID.fromString("A2F995E8-B25A-4883-B9D0-93A676DC4045");
-    private static final UUID KNOCKBACK_RESISTANCE_UUID = UUID.fromString("93E74BB2-05A5-4AC0-8DF5-A55768208A95");
-    private static final AttributeModifier CHARGE_SPEED_BOOST = new AttributeModifier(CHARGE_SPEED_UUID, "Charge speed boost", 9.0D, AttributeModifier.Operation.MULTIPLY_BASE);
-    private static final AttributeModifier KNOCKBACK_RESISTANCE = new AttributeModifier(KNOCKBACK_RESISTANCE_UUID, "Knockback reduction", 1.0D, AttributeModifier.Operation.ADDITION);
+    public static final AttributeModifierHolder CHARGE_SPEED_BOOST = new AttributeModifierHolder(Attributes.MOVEMENT_SPEED, UUID.fromString("A2F995E8-B25A-4883-B9D0-93A676DC4045"), "Charge speed boost", 9.0D, AttributeModifier.Operation.MULTIPLY_BASE);
+    public static final AttributeModifierHolder KNOCKBACK_RESISTANCE = new AttributeModifierHolder(Attributes.KNOCKBACK_RESISTANCE, UUID.fromString("93E74BB2-05A5-4AC0-8DF5-A55768208A95"), "Knockback reduction", 1.0D, AttributeModifier.Operation.ADDITION);
+    public static final int MIN_DAMAGE = 6;
+    public static final int MAX_DAMAGE = 8;
+    public static final RangedAttributeModifierHolder ATTACK_DAMAGE = new RangedAttributeModifierHolder(Attributes.ATTACK_DAMAGE, UUID.fromString("1DDF2C1B-0279-440F-A919-D07479E60684"), "Attack damage", MIN_DAMAGE, MAX_DAMAGE, AttributeModifier.Operation.ADDITION);
+    //This is stored as a modifier for easy localisation, even though it's not actually modifying anything
 
     public BucklerItem(Properties p_i48470_1_) {
         super(p_i48470_1_);
@@ -75,12 +84,21 @@ public class BucklerItem extends ShieldItem {
         return compoundnbt != null && compoundnbt.getBoolean("Ready");
     }
 
+    public static int startingChargeTicks(ItemStack stack) {
+        boolean hasTurning = stack.getEnchantmentLevel(PPEnchantments.TURNING.get()) > 0;
+        return hasTurning ? PPConfig.COMMON.BucklerTurningRunTime.get() : PPConfig.COMMON.BucklerRunTime.get();
+    }
+
     public static int getChargeTicks(ItemStack stack) {
         CompoundTag compoundnbt = stack.getTag();
         if (compoundnbt != null)
             return compoundnbt.getInt("ChargeTicks");
         else
             return 0;
+    }
+
+    public static void setChargeTicks(ItemStack stack) {
+        setChargeTicks(stack, startingChargeTicks(stack));
     }
 
     public static void setChargeTicks(ItemStack stack, int chargeTicks) {
@@ -99,7 +117,7 @@ public class BucklerItem extends ShieldItem {
             LivingEntity entityHit = list.get(0);
             entityHit.push(entity);
             int bangLevel = PPEnchantments.getBucklerEnchantsOnHands(PPEnchantments.BANG.get(), entity);
-            float damage = 6.0F + ((float) entity.getRandom().nextInt(3));
+            float damage = entity.getRandom().nextIntBetweenInclusive(MIN_DAMAGE, MAX_DAMAGE);
             float knockbackStrength = 3.0F;
             for (int duration = 0; duration < 10; ++duration) {
                 double d0 = entity.getRandom().nextGaussian() * 0.02D;
@@ -111,7 +129,7 @@ public class BucklerItem extends ShieldItem {
             }
             if (bangLevel == 0) {
                 if (entityHit.hurt(entity.damageSources().mobAttack(entity), damage)) {
-                    entityHit.knockback(knockbackStrength, (double) Mth.sin(entity.getYRot() * ((float) Math.PI / 180F)), (double) (-Mth.cos(entity.getYRot() * ((float) Math.PI / 180F))));
+                    entityHit.knockback(knockbackStrength, Mth.sin(entity.getYRot() * ((float) Math.PI / 180F)), -Mth.cos(entity.getYRot() * ((float) Math.PI / 180F)));
                     entity.setDeltaMovement(entity.getDeltaMovement().multiply(0.6D, 1.0D, 0.6D));
                 }
                 if (!entity.isSilent())
@@ -165,16 +183,16 @@ public class BucklerItem extends ShieldItem {
     @Override
     public ItemStack finishUsingItem(ItemStack stack, Level worldIn, LivingEntity entityLiving) {
         ItemStack itemstack = super.finishUsingItem(stack, worldIn, entityLiving);
-        int turningLevel = PPEnchantments.getBucklerEnchantsOnHands(PPEnchantments.TURNING.get(), entityLiving);
-        int configValue = turningLevel == 0 ? PPConfig.COMMON.BucklerRunTime.get() : PPConfig.COMMON.BucklerTurningRunTime.get();
         BucklerItem.setReady(stack, true);
-        BucklerItem.setChargeTicks(stack, configValue);
-        AttributeInstance speed = entityLiving.getAttribute(Attributes.MOVEMENT_SPEED);
-        AttributeInstance knockback = entityLiving.getAttribute(Attributes.KNOCKBACK_RESISTANCE);
-        knockback.removeModifier(KNOCKBACK_RESISTANCE_UUID);
-        knockback.addTransientModifier(KNOCKBACK_RESISTANCE);
-        speed.removeModifier(CHARGE_SPEED_UUID);
-        speed.addTransientModifier(CHARGE_SPEED_BOOST);
+        BucklerItem.setChargeTicks(stack);
+        AttributeInstance speed = entityLiving.getAttribute(CHARGE_SPEED_BOOST.attribute());
+        AttributeInstance knockback = entityLiving.getAttribute(KNOCKBACK_RESISTANCE.attribute());
+        if (speed != null && knockback != null) {
+            speed.removeModifier(CHARGE_SPEED_BOOST.modifier().getId());
+            speed.addTransientModifier(CHARGE_SPEED_BOOST.modifier());
+            knockback.removeModifier(KNOCKBACK_RESISTANCE.modifier().getId());
+            knockback.addTransientModifier(KNOCKBACK_RESISTANCE.modifier());
+        }
         stack.hurtAndBreak(1, entityLiving, (entityLiving1) -> entityLiving1.broadcastBreakEvent(EquipmentSlot.OFFHAND));
         if (entityLiving instanceof Player)
             ((Player) entityLiving).getCooldowns().addCooldown(this, PPConfig.COMMON.BucklerCooldown.get());
@@ -211,5 +229,39 @@ public class BucklerItem extends ShieldItem {
     @Override
     public boolean canPerformAction(ItemStack stack, net.minecraftforge.common.ToolAction toolAction) {
         return net.minecraftforge.common.ToolActions.DEFAULT_SHIELD_ACTIONS.contains(toolAction);
+    }
+
+    public static List<Component> getDescription(Minecraft minecraft, ItemStack stack){
+        boolean isDetailed = InputConstants.isKeyDown(minecraft.getWindow().getWindow(), minecraft.options.keyShift.getKey().getValue());
+        boolean isTurning = stack.getEnchantmentLevel(PPEnchantments.TURNING.get()) > 0;
+        boolean isBang = stack.getEnchantmentLevel(PPEnchantments.BANG.get()) > 0;
+
+        ArrayList<Component> list = new ArrayList<>();
+        list.add(Component.translatable("item.piglinproliferation.buckler.desc.on_use").withStyle(ChatFormatting.GRAY));
+        list.add(Component.literal(" ").append(Component.translatable("item.piglinproliferation.buckler.desc.charge_ability", CodeUtilities.ticksToSeconds(BucklerItem.startingChargeTicks(stack))).withStyle(ChatFormatting.DARK_GREEN)));
+        if(!isDetailed)
+            list.add(Component.literal(" ").append(Component.translatable("item.piglinproliferation.buckler.desc.details", minecraft.options.keyShift.getTranslatedKeyMessage()).withStyle(ChatFormatting.GREEN)));
+        else {
+            list.add(Component.literal(" ").append(Component.translatable("item.piglinproliferation.buckler.desc.while_charging").withStyle(ChatFormatting.GREEN)));
+            list.add(Component.literal("  ").append(BucklerItem.CHARGE_SPEED_BOOST.translatable()));
+            list.add(Component.literal("  ").append(BucklerItem.KNOCKBACK_RESISTANCE.translatable()));
+            if (!isTurning)
+                list.add(Component.literal("  ").append(Component.translatable("item.piglinproliferation.buckler.desc.shield_bash").withStyle(ChatFormatting.BLUE)));
+            list.add(Component.literal("  ").append(Component.translatable("item.piglinproliferation.buckler.desc.cannot_jump").withStyle(ChatFormatting.RED)));
+            if (!isTurning)
+                list.add(Component.literal("  ").append(Component.translatable("item.piglinproliferation.buckler.desc.turn_speed").withStyle(ChatFormatting.RED)));
+            list.add(Component.literal("  ").append(Component.translatable("item.piglinproliferation.buckler.desc.water").withStyle(ChatFormatting.RED)));
+            if (!isTurning) {
+                list.add(Component.translatable("item.piglinproliferation.buckler.desc.on_shield_bash").withStyle(ChatFormatting.GRAY));
+                if (isBang)
+                    list.add(Component.literal(" ").append(Component.translatable("item.piglinproliferation.buckler.desc.explosion").withStyle(ChatFormatting.DARK_GREEN)));
+                else {
+                    list.add(Component.literal(" ").append(BucklerItem.ATTACK_DAMAGE.translatable(0)));
+                    list.add(Component.literal(" ").append(Component.translatable("item.piglinproliferation.buckler.desc.critical_aura").withStyle(ChatFormatting.DARK_GREEN)));
+                    list.add(Component.literal(" ").append(Component.translatable("item.piglinproliferation.buckler.desc.critical_aura_expires").withStyle(ChatFormatting.RED)));
+                }
+            }
+        }
+        return list;
     }
 }

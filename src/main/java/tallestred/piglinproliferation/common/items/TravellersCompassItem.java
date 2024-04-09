@@ -17,6 +17,7 @@ import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
 import org.slf4j.Logger;
 import tallestred.piglinproliferation.CodeUtilities;
+import tallestred.piglinproliferation.common.loot.CompassLocationMap;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -24,7 +25,6 @@ import java.util.Optional;
 
 public class TravellersCompassItem extends CompassItem {
     private static final Logger LOGGER = LogUtils.getLogger();
-    private static final String TRANSLATION_PREFIX = "item.piglinproliferation.travellers_compass.desc.";
 
     public TravellersCompassItem(Properties pProperties) {
         super(pProperties);
@@ -57,7 +57,7 @@ public class TravellersCompassItem extends CompassItem {
                 list.add((Component.translatable("item.piglinproliferation.travellers_compass.desc.locked")).withStyle(ChatFormatting.BLUE));
                 String raw = tag.getString("Destination");
                 boolean hasBiome = tag.getBoolean("HasBiome");
-                list.add(getTranslation(raw, hasBiome).withStyle(ChatFormatting.GRAY));
+                list.add(new CompassLocationMap.SearchObject(hasBiome, raw).translatable().withStyle(ChatFormatting.GRAY));
                 GlobalPos globalPos = getPosition(tag);
                 if (globalPos != null) {
                     BlockPos pos = globalPos.pos();
@@ -74,16 +74,5 @@ public class TravellersCompassItem extends CompassItem {
         Level.RESOURCE_KEY_CODEC.encodeStart(NbtOps.INSTANCE, pLodestoneDimension).resultOrPartial(LOGGER::error).ifPresent((p_40731_) -> {
             pCompoundTag.put("Dimension", p_40731_);
         });
-    }
-
-    public static MutableComponent getTranslation(String searchObjectLocation, boolean isBiome) {
-        MutableComponent returnComponent;
-        ResourceLocation location = new ResourceLocation(searchObjectLocation);
-        String namespace = location.getNamespace();
-        String path = location.getPath();
-        returnComponent = Component.translatable(TRANSLATION_PREFIX + namespace + '.' + path);
-        if(returnComponent.getString().contains(TRANSLATION_PREFIX))
-            returnComponent = Component.translatableWithFallback((isBiome? "biome." + namespace + "." : TRANSLATION_PREFIX + namespace + '.') + path, CodeUtilities.snakeCaseToEnglish(path));
-        return returnComponent;
     }
 }
