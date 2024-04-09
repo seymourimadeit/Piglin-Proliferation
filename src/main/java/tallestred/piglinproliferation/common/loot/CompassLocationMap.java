@@ -1,37 +1,39 @@
 package tallestred.piglinproliferation.common.loot;
 
 import com.mojang.datafixers.util.Pair;
-import net.minecraft.core.BlockPos;
-import net.minecraft.core.Holder;
-import net.minecraft.core.HolderSet;
-import net.minecraft.core.Registry;
+import net.minecraft.core.*;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.IntTag;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerChunkCache;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.levelgen.structure.Structure;
-import net.minecraft.world.level.levelgen.structure.StructureSet;
-import tallestred.piglinproliferation.common.PPTags;
-import tallestred.piglinproliferation.configuration.PPConfig;
+import tallestred.piglinproliferation.CodeUtilities;
+import tallestred.piglinproliferation.common.tags.PPTags;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.stream.Collectors;
 
 public class CompassLocationMap extends ConcurrentHashMap<CompassLocationMap.SearchObject, Integer> {
     public static final int DEFAULT_EXPIRY_TIME = 24000;
-    private static final List<CompassLocationMap.SearchObject> OBJECTS_TO_SEARCH = Collections.synchronizedList(new ArrayList<>());
+    private static final List<SearchObject> OBJECTS_TO_SEARCH = Collections.synchronizedList(new ArrayList<>());
 
     public static class SearchObject {
+        private static final String TRANSLATION_PREFIX = "item.piglinproliferation.travellers_compass.desc.";
         private final boolean isBiome;
         private final ResourceLocation location;
         public SearchObject(boolean isBiome, ResourceLocation location) {
             this.isBiome = isBiome;
             this.location = location;
+        }
+
+        public SearchObject(boolean isBiome, String location) {
+            this(isBiome, new ResourceLocation(location));
         }
 
         public SearchObject(String serialised) {
@@ -69,6 +71,17 @@ public class CompassLocationMap extends ConcurrentHashMap<CompassLocationMap.Sea
             return this.location;
         }
 
+        public MutableComponent translatable() {
+            MutableComponent returnComponent;
+            String objectKey = (isBiome ? "biome" : "structure") + "." + this.location.getNamespace() + "." + this.location.getPath();
+            String manualKey = TRANSLATION_PREFIX + objectKey;
+            returnComponent = Component.translatableWithFallback(manualKey, "");
+            if (returnComponent.getString().isEmpty())
+                returnComponent = Component.translatableWithFallback(objectKey, CodeUtilities.snakeCaseToEnglish(this.location.getPath()));
+                //Biomes almost certainly use the same format as the object key, but structures have to rely on the fallback.
+            return returnComponent;
+        }
+
         @Override
         public boolean equals(Object obj) {
             return obj instanceof SearchObject && this.toString().equals(obj.toString());
@@ -77,6 +90,11 @@ public class CompassLocationMap extends ConcurrentHashMap<CompassLocationMap.Sea
         @Override
         public String toString() {
             return (this.isBiome ? "B-" : "S-") + location.toString();
+        }
+
+        @Override
+        public int hashCode() {
+            return this.toString().hashCode();
         }
     }
 
@@ -96,27 +114,21 @@ public class CompassLocationMap extends ConcurrentHashMap<CompassLocationMap.Sea
 
     public static List<SearchObject> objectsToSearch(ServerLevel level) {
         if (OBJECTS_TO_SEARCH.isEmpty() && level.dimension() == ServerLevel.NETHER) {
-            Registry<Biome> biomeRegistry = level.registryAccess().registryOrThrow(Registries.BIOME);
-            Registry<Structure> structureRegistry = level.registryAccess().registryOrThrow(Registries.STRUCTURE);
-            Registry<StructureSet> structureSetRegistry = level.registryAccess().registryOrThrow(Registries.STRUCTURE_SET);
-            Set<Biome> possibleBiomes = PPConfig.COMMON.travellersCompassBiomeWhitelist.get()
-                    ? biomeRegistry.holders().filter(r -> r.is(PPTags.TRAVELLERS_COMPASS_BIOME_WHITELIST)).map(Holder.Reference::value).collect(Collectors.toSet())
-                    : level.getChunkSource().getGenerator().getBiomeSource().possibleBiomes().stream().filter(h -> !h.is(PPTags.TRAVELLERS_COMPASS_BIOME_BLACKLIST)).map(Holder::value).collect(Collectors.toSet());
-            Set<Structure> possibleStructures = new HashSet<>();
-            if (PPConfig.COMMON.travellersCompassStructureWhitelist.get()) {
-                structureRegistry.holders().filter(r -> r.is(PPTags.TRAVELLERS_COMPASS_STRUCTURE_WHITELIST)).forEach(h -> possibleStructures.add(h.value()));
-                structureSetRegistry.holders().filter(r -> r.is(PPTags.TRAVELLERS_COMPASS_STRUCTURE_SET_WHITELIST)).forEach(holder -> {
-                    holder.value().structures().forEach(s -> possibleStructures.add(s.structure().value()));
+            ServerChunkCache chunkSource = level.getChunkSource();
+            RegistryAccess registryAccess = level.registryAccess();
+            chunkSource.getGenerator().getBiomeSource().possibleBiomes().stream().filter(PPTags.TRAVELLERS_COMPASS_VALID_BIOMES::contains).forEach(h -> {
+                OBJECTS_TO_SEARCH.add(new SearchObject(true, registryAccess.registryOrThrow(Registries.BIOME).getKey(h.value())));
+            });
+            chunkSource.getGeneratorState().possibleStructureSets().forEach(s -> {
+                s.value().structures().stream().filter(h -> PPTags.TRAVELLERS_COMPASS_VALID_STRUCTURES.contains(h.structure(), registryAccess)).forEach(e -> {
+                    OBJECTS_TO_SEARCH.add(new SearchObject(false, registryAccess.registryOrThrow(Registries.STRUCTURE).getKey(e.structure().value())));
                 });
-            } else {
-                level.getChunkSource().getGeneratorState().possibleStructureSets().stream().filter(s -> !s.is(PPTags.TRAVELLERS_COMPASS_STRUCTURE_SET_BLACKLIST)).forEach(holder -> {
-                    holder.value().structures().stream().map(StructureSet.StructureSelectionEntry::structure).filter(s -> !s.is(PPTags.TRAVELLERS_COMPASS_STRUCTURE_BLACKLIST)).forEach(h -> possibleStructures.add(h.value()));
-                });
-            }
-            possibleStructures.removeIf(s -> s.biomes().stream().map(Holder::value).noneMatch(possibleBiomes::contains));
-            possibleBiomes.forEach(b -> OBJECTS_TO_SEARCH.add(new SearchObject(true, biomeRegistry.getKey(b))));
-            possibleStructures.forEach(s -> OBJECTS_TO_SEARCH.add(new SearchObject(false, structureRegistry.getKey(s))));
+            });
         }
         return OBJECTS_TO_SEARCH;
+    }
+
+    public static void clearCache() {
+        OBJECTS_TO_SEARCH.clear();
     }
 }

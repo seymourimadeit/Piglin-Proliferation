@@ -4,6 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class CodeUtilities {
+    /**
+     * Converts
+     * */
     public static String snakeCaseToEnglish(String raw) {
         String[] parts = raw.split("_");
         StringBuilder output = new StringBuilder();
@@ -18,7 +21,7 @@ public class CodeUtilities {
     /**
      * Converts a list to a new, mutable list of a specified type. Throws an error if casting fails.
      *
-     * @param list the list of unkown type to convert
+     * @param list the list of unknown type to convert
      * */
     @SuppressWarnings("unchecked")
     public static <T> List<T> convertToMutableListOrThrow(List<?> list) {

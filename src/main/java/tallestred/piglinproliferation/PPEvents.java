@@ -46,6 +46,7 @@ import net.neoforged.neoforge.event.entity.living.*;
 import net.neoforged.neoforge.event.entity.player.CriticalHitEvent;
 import net.neoforged.neoforge.event.entity.player.ItemTooltipEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
+import net.neoforged.neoforge.event.level.LevelEvent;
 import net.neoforged.neoforge.event.level.NoteBlockEvent;
 import net.neoforged.neoforge.network.PacketDistributor;
 import tallestred.piglinproliferation.capablities.PPCapablities;
@@ -60,6 +61,8 @@ import tallestred.piglinproliferation.common.entities.ai.goals.PiglinCallForHelp
 import tallestred.piglinproliferation.common.entities.ai.goals.PiglinSwimInLavaGoal;
 import tallestred.piglinproliferation.common.items.BucklerItem;
 import tallestred.piglinproliferation.common.items.PPItems;
+import tallestred.piglinproliferation.common.loot.CompassLocationMap;
+import tallestred.piglinproliferation.common.tags.PPTags;
 import tallestred.piglinproliferation.configuration.PPConfig;
 import tallestred.piglinproliferation.networking.CriticalCapabilityPacket;
 import tallestred.piglinproliferation.networking.ZiglinCapablitySyncPacket;
@@ -437,5 +440,11 @@ public class PPEvents {
             }
             event.getToolTip().addAll(toAdd);
         }
+    }
+
+    @SubscribeEvent
+    public static void onLevelUnload(LevelEvent.Unload event) {
+        CompassLocationMap.clearCache();
+        PPTags.TRAVELLERS_COMPASS_VALID_STRUCTURES.clearCache();
     }
 }
