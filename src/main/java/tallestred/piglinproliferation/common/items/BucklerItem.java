@@ -75,12 +75,21 @@ public class BucklerItem extends ShieldItem {
         return compoundnbt != null && compoundnbt.getBoolean("Ready");
     }
 
+    public static int startingChargeTicks(ItemStack stack) {
+        boolean hasTurning = stack.getEnchantmentLevel(PPEnchantments.TURNING.get()) > 0;
+        return hasTurning ? PPConfig.COMMON.BucklerTurningRunTime.get() : PPConfig.COMMON.BucklerRunTime.get();
+    }
+
     public static int getChargeTicks(ItemStack stack) {
         CompoundTag compoundnbt = stack.getTag();
         if (compoundnbt != null)
             return compoundnbt.getInt("ChargeTicks");
         else
             return 0;
+    }
+
+    public static void setChargeTicks(ItemStack stack) {
+        setChargeTicks(stack, startingChargeTicks(stack));
     }
 
     public static void setChargeTicks(ItemStack stack, int chargeTicks) {
@@ -164,10 +173,8 @@ public class BucklerItem extends ShieldItem {
     @Override
     public ItemStack finishUsingItem(ItemStack stack, Level worldIn, LivingEntity entityLiving) {
         ItemStack itemstack = super.finishUsingItem(stack, worldIn, entityLiving);
-        int turningLevel = PPEnchantments.getBucklerEnchantsOnHands(PPEnchantments.TURNING.get(), entityLiving);
-        int configValue = turningLevel == 0 ? PPConfig.COMMON.BucklerRunTime.get() : PPConfig.COMMON.BucklerTurningRunTime.get();
         BucklerItem.setReady(stack, true);
-        BucklerItem.setChargeTicks(stack, configValue);
+        BucklerItem.setChargeTicks(stack);
         AttributeInstance speed = entityLiving.getAttribute(Attributes.MOVEMENT_SPEED);
         AttributeInstance knockback = entityLiving.getAttribute(Attributes.KNOCKBACK_RESISTANCE);
         knockback.removeModifier(KNOCKBACK_RESISTANCE_UUID);

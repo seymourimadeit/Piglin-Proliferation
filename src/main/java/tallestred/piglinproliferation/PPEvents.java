@@ -415,7 +415,7 @@ public class PPEvents {
             List<Component> toAdd = new ArrayList<>();
             toAdd.add(Component.empty());
             toAdd.add(Component.translatable("item.piglinproliferation.buckler.desc.on_use").withStyle(ChatFormatting.GRAY));
-            toAdd.add(Component.translatable("item.piglinproliferation.buckler.desc.charge_ability" + (hasTurning ? "_turning" : "")).withStyle(ChatFormatting.DARK_GREEN));
+            toAdd.add(Component.translatable("item.piglinproliferation.buckler.desc.charge_ability", CodeUtilities.ticksToSeconds(BucklerItem.startingChargeTicks(stack))).withStyle(ChatFormatting.DARK_GREEN));
             Minecraft minecraft = Minecraft.getInstance();
             if (!InputConstants.isKeyDown(minecraft.getWindow().getWindow(), minecraft.options.keyShift.getKey().getValue()))
                 toAdd.add(Component.translatable("item.piglinproliferation.buckler.desc.details", minecraft.options.keyShift.getTranslatedKeyMessage()).withStyle(ChatFormatting.GREEN));
