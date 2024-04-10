@@ -35,6 +35,8 @@
   "block.piglinproliferation.blackstone_soul_fire_ring": "Anillo de fuego de almas y piedra negra",
   "block.piglinproliferation.end_stone_fire_ring": "Anillo de fuego piedra del End",
   "block.piglinproliferation.end_stone_soul_fire_ring": "Anillo de fuego de almas y piedra del End",
+  "piglinproliferation.advancements.nether.add_effect_to_fire_ring.title": "Aromaterapia",
+  "piglinproliferation.advancements.nether.add_effect_to_fire_ring.description": "Spread a potion or splash potion's effects into the air by using it on a Fire Ring",
   "item.piglinproliferation.buckler": "Broquel",
   "subtitles.entity.piglin_brute.charge": "Piglin bruto carga",
   "subtitles.item.buckler.bash": "El broquel golpea",

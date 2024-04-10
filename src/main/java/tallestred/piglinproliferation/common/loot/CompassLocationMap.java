@@ -13,11 +13,12 @@ import net.minecraft.server.level.ServerChunkCache;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.levelgen.structure.Structure;
-import tallestred.piglinproliferation.CodeUtilities;
 import tallestred.piglinproliferation.common.tags.PPTags;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+
+import static tallestred.piglinproliferation.CodeUtilities.snakeCaseToEnglish;
 
 public class CompassLocationMap extends ConcurrentHashMap<CompassLocationMap.SearchObject, Integer> {
     public static final int DEFAULT_EXPIRY_TIME = 24000;
@@ -77,7 +78,7 @@ public class CompassLocationMap extends ConcurrentHashMap<CompassLocationMap.Sea
             String manualKey = TRANSLATION_PREFIX + objectKey;
             returnComponent = Component.translatableWithFallback(manualKey, "");
             if (returnComponent.getString().isEmpty())
-                returnComponent = Component.translatableWithFallback(objectKey, CodeUtilities.snakeCaseToEnglish(this.location.getPath()));
+                returnComponent = Component.translatableWithFallback(objectKey, snakeCaseToEnglish(this.location.getPath()));
             //Biomes almost certainly use the same format as the object key, but structures have to rely on the fallback.
             return returnComponent;
         }

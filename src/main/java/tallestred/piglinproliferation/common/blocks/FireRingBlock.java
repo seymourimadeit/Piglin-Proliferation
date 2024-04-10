@@ -7,7 +7,6 @@ import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.entity.projectile.ThrownPotion;
-import net.minecraft.world.inventory.RecipeHolder;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.alchemy.PotionUtils;
@@ -28,6 +27,8 @@ import tallestred.piglinproliferation.common.blockentities.FireRingBlockEntity;
 import tallestred.piglinproliferation.common.blockentities.PPBlockEntities;
 
 import java.util.Optional;
+
+import static tallestred.piglinproliferation.CodeUtilities.castOrNull;
 
 public class FireRingBlock extends CampfireBlock {
     protected static final VoxelShape SHAPE = Block.box(0.0, 0.0, 0.0, 16.0, 5.0, 16.0);
@@ -80,6 +81,6 @@ public class FireRingBlock extends CampfireBlock {
     public void onProjectileHit(Level level, BlockState state, BlockHitResult hitResult, Projectile projectile) {
         super.onProjectileHit(level, state, hitResult, projectile);
         if (state.getValue(LIT) && level.getBlockEntity(hitResult.getBlockPos()) instanceof FireRingBlockEntity blockEntity && projectile instanceof ThrownPotion potion)
-            blockEntity.addEffects(null, null, null, PotionUtils.getMobEffects(potion.getItem()), this.potionTime);
+            blockEntity.addEffects(castOrNull(projectile.getOwner(), Player.class), null, null, PotionUtils.getMobEffects(potion.getItem()), this.potionTime);
     }
 }

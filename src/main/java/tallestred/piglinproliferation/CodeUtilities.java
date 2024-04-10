@@ -6,6 +6,31 @@ import java.util.List;
 public class CodeUtilities {
 
     /**
+     * Casts an object to given type if they are compatible, returns null if not.
+     *
+     * @param object the object to try casting
+     * @param castType the type to try casting to
+     * */
+    public static <T> T castOrNull(Object object, Class<T> castType) {
+        return castType.isInstance(object) ? castType.cast(object) : null;
+    }
+
+    /**
+     * Converts a list to a new, mutable list of a specified type. Throws an error if casting fails.
+     *
+     * @param list the list of unknown type to convert
+     * */
+    @SuppressWarnings("unchecked")
+    public static <T> List<T> mutableListOrThrow(List<?> list) {
+        try {
+            return (List<T>) new ArrayList<>(list);
+        } catch (ClassCastException e) {
+            throw new IllegalArgumentException("Cannot cast the input list to the output type! If you are a player, report to the Piglin Proliferation github");
+        }
+    }
+
+
+    /**
      * <p>Converts a string formatted in snake case to its equivalent plaintext capitalised form.</p>
      * <p>Example: {@code hello_world -> Hello World}</p>
      *
@@ -20,20 +45,6 @@ public class CodeUtilities {
             output.append(" ");
         }
         return output.toString().trim();
-    }
-
-    /**
-     * Converts a list to a new, mutable list of a specified type. Throws an error if casting fails.
-     *
-     * @param list the list of unknown type to convert
-     * */
-    @SuppressWarnings("unchecked")
-    public static <T> List<T> convertToMutableListOrThrow(List<?> list) {
-        try {
-            return (List<T>) new ArrayList<>(list);
-        } catch (ClassCastException e) {
-            throw new IllegalArgumentException("Cannot cast the input list to the output type! If you are a player, report to the Piglin Proliferation github");
-        }
     }
 
     /**

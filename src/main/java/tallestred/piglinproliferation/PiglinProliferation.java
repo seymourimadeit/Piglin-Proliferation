@@ -1,5 +1,6 @@
 package tallestred.piglinproliferation;
 
+import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.client.renderer.item.CompassItemPropertyFunction;
 import net.minecraft.client.renderer.item.ItemProperties;
 import net.minecraft.core.Registry;
@@ -26,6 +27,7 @@ import net.minecraftforge.fml.event.lifecycle.InterModEnqueueEvent;
 import net.minecraftforge.fml.event.lifecycle.InterModProcessEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import tallestred.piglinproliferation.client.PPSounds;
+import tallestred.piglinproliferation.common.advancement.PPCriteriaTriggers;
 import tallestred.piglinproliferation.common.enchantments.PPEnchantments;
 import tallestred.piglinproliferation.common.entities.PiglinTraveller;
 import tallestred.piglinproliferation.common.items.BucklerItem;
@@ -64,6 +66,7 @@ public class PiglinProliferation {
         PPBlocks.BLOCKS.register(bus);
         PPEnchantments.ENCHANTMENTS.register(bus);
         PPWorldgen.STRUCTURE_TYPES.register(bus);
+        CriteriaTriggers.register(PPCriteriaTriggers.ADD_EFFECT_TO_FIRE_RING);
         PPLoot.GLM.register(bus);
         PPLoot.LOOT_ITEM_FUNCTION_TYPES.register(bus);
         PPLoot.LOOT_ITEM_CONDITION_TYPES.register(bus);
