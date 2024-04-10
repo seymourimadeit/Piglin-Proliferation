@@ -25,7 +25,7 @@ public class PPItems {
     public static final RegistryObject<Item> BLACKSTONE_FIRE_RING_ITEM = ITEMS.register("blackstone_fire_ring", () -> new BlockItem(PPBlocks.BLACKSTONE_FIRE_RING.get(), new Item.Properties()));
     public static final RegistryObject<Item> BLACKSTONE_SOUL_FIRE_RING_ITEM = ITEMS.register("blackstone_soul_fire_ring", () -> new BlockItem(PPBlocks.BLACKSTONE_SOUL_FIRE_RING.get(), new Item.Properties()));
 
-    public static final RegistryObject<BucklerItem> BUCKLER = ITEMS.register("buckler", () -> new BucklerItem((new Item.Properties()).durability(64)));
+    public static final RegistryObject<BucklerItem> BUCKLER = ITEMS.register("buckler", () -> new BucklerItem((new Item.Properties()).durability(128)));
     public static final RegistryObject<TravellersCompassItem> TRAVELLERS_COMPASS = ITEMS.register("travellers_compass", () -> new TravellersCompassItem(new Item.Properties()));
     public static final RegistryObject<Item> STONE_FIRE_RING_ITEM = ITEMS.register("stone_fire_ring", () -> new BlockItem(PPBlocks.STONE_FIRE_RING.get(), new Item.Properties()));
     public static final RegistryObject<Item> STONE_SOUL_FIRE_RING_ITEM = ITEMS.register("stone_soul_fire_ring", () -> new BlockItem(PPBlocks.STONE_SOUL_FIRE_RING.get(), new Item.Properties()));
