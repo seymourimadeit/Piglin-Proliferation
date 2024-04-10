@@ -1,13 +1,11 @@
 package tallestred.piglinproliferation.client.models;
 
-import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.model.PiglinModel;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.model.geom.PartPose;
 import net.minecraft.client.model.geom.builders.*;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.EquipmentSlot;
-import net.minecraft.world.entity.LivingEntity;
 import tallestred.piglinproliferation.common.entities.PiglinTraveller;
 
 public class PiglinTravellerModel<T extends PiglinTraveller> extends PiglinModel<T> {
