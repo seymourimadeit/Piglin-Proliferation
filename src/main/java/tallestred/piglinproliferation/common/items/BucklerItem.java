@@ -37,7 +37,6 @@ import net.neoforged.neoforge.common.Tags;
 import net.neoforged.neoforge.common.ToolAction;
 import net.neoforged.neoforge.common.ToolActions;
 import net.neoforged.neoforge.event.EventHooks;
-import tallestred.piglinproliferation.CodeUtilities;
 import tallestred.piglinproliferation.capablities.PPCapablities;
 import tallestred.piglinproliferation.client.PPSounds;
 import tallestred.piglinproliferation.client.renderers.BucklerRenderer;
@@ -50,6 +49,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.function.Consumer;
+
+import static tallestred.piglinproliferation.CodeUtilities.ticksToSeconds;
 
 public class BucklerItem extends ShieldItem {
     public static final AttributeModifierHolder CHARGE_SPEED_BOOST = new AttributeModifierHolder(Attributes.MOVEMENT_SPEED, UUID.fromString("A2F995E8-B25A-4883-B9D0-93A676DC4045"), "Charge speed boost", 9.0D, AttributeModifier.Operation.MULTIPLY_BASE);
@@ -145,7 +146,7 @@ public class BucklerItem extends ShieldItem {
                         EventHooks.onPlayerDestroyItem((Player) entity, entity.getUseItem(), hand);
                 });
                 Level.ExplosionInteraction mode = PPConfig.COMMON.BangBlockDestruction.get()? Level.ExplosionInteraction.TNT : Level.ExplosionInteraction.NONE;
-                entity.level().explode(null, entity.getX(), entity.getY(), entity.getZ(), (float) bangLevel * 1.0F, mode);
+                entity.level().explode(null, entity.getX(), entity.getY(), entity.getZ(), (float) bangLevel, mode);
                 setChargeTicks(stack, 0);
             }
             entity.setLastHurtMob(entityHit);
@@ -208,6 +209,7 @@ public class BucklerItem extends ShieldItem {
         return 10;
     }
 
+    @SuppressWarnings("deprecation") //In Minecraft, deprecated methods can be overridden but not called.
     @Override
     public int getEnchantmentValue() {
         return 1;
@@ -237,7 +239,7 @@ public class BucklerItem extends ShieldItem {
 
         ArrayList<Component> list = new ArrayList<>();
         list.add(Component.translatable("item.piglinproliferation.buckler.desc.on_use").withStyle(ChatFormatting.GRAY));
-        list.add(Component.literal(" ").append(Component.translatable("item.piglinproliferation.buckler.desc.charge_ability", CodeUtilities.ticksToSeconds(BucklerItem.startingChargeTicks(stack))).withStyle(ChatFormatting.DARK_GREEN)));
+        list.add(Component.literal(" ").append(Component.translatable("item.piglinproliferation.buckler.desc.charge_ability", ticksToSeconds(startingChargeTicks(stack))).withStyle(ChatFormatting.DARK_GREEN)));
         if(!isDetailed)
             list.add(Component.literal(" ").append(Component.translatable("item.piglinproliferation.buckler.desc.details", minecraft.options.keyShift.getTranslatedKeyMessage()).withStyle(ChatFormatting.GREEN)));
         else {

@@ -1,0 +1,28 @@
+{
+  "parent": "minecraft:nether/brew_potion",
+  "display": {
+    "icon": {
+      "item": "piglinproliferation:blackstone_fire_ring"
+    },
+    "title": {
+      "translate": "piglinproliferation.advancements.nether.add_effect_to_fire_ring.title"
+    },
+    "description": {
+      "translate": "piglinproliferation.advancements.nether.add_effect_to_fire_ring.description"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "add_effect": {
+      "trigger": "piglinproliferation:add_effect_to_fire_ring"
+    }
+  },
+  "requirements": [
+    [
+      "add_effect"
+    ]
+  ]
+}

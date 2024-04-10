@@ -6,6 +6,7 @@ import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.Connection;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.RandomSource;
@@ -24,6 +25,7 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.entity.CampfireBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
+import tallestred.piglinproliferation.common.advancement.PPCriteriaTriggers;
 import tallestred.piglinproliferation.common.blocks.FireRingBlock;
 
 import javax.annotation.Nullable;
@@ -48,6 +50,8 @@ public class FireRingBlockEntity extends CampfireBlockEntity {
     }
 
     public boolean addEffects(@Nullable Player player, @Nullable InteractionHand hand, @Nullable ItemStack stack, List<MobEffectInstance> effectsToAdd, int maxDuration) {
+        if (player instanceof ServerPlayer serverPlayer)
+            PPCriteriaTriggers.ADD_EFFECT_TO_FIRE_RING.get().trigger(serverPlayer);
         if (this.effects.isEmpty() && !effectsToAdd.isEmpty()) {
             this.potionColor = PotionUtils.getColor(effectsToAdd);
             if (this.level != null && !this.level.isClientSide)

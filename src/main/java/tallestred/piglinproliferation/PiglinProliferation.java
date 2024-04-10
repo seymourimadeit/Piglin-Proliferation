@@ -30,6 +30,7 @@ import net.neoforged.neoforge.network.event.RegisterPayloadHandlerEvent;
 import net.neoforged.neoforge.network.registration.IPayloadRegistrar;
 import tallestred.piglinproliferation.capablities.PPCapablities;
 import tallestred.piglinproliferation.client.PPSounds;
+import tallestred.piglinproliferation.common.advancement.PPCriteriaTriggers;
 import tallestred.piglinproliferation.common.enchantments.PPEnchantments;
 import tallestred.piglinproliferation.common.entities.PiglinTraveller;
 import tallestred.piglinproliferation.common.items.BucklerItem;
@@ -71,6 +72,7 @@ public class PiglinProliferation {
         PPBlockEntities.BLOCK_ENTITIES.register(modEventBus);
         PPEnchantments.ENCHANTMENTS.register(modEventBus);
         PPWorldgen.STRUCTURE_TYPES.register(modEventBus);
+        PPCriteriaTriggers.CRITERIA_TRIGGERS.register(modEventBus);
         PPLoot.GLM.register(modEventBus);
         PPLoot.LOOT_ITEM_FUNCTION_TYPES.register(modEventBus);
         PPLoot.LOOT_ITEM_CONDITION_TYPES.register(modEventBus);

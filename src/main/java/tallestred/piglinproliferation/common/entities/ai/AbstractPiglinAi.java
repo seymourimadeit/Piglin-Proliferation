@@ -22,13 +22,14 @@ import net.minecraft.world.level.storage.loot.LootParams;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.minecraft.world.phys.Vec3;
-import tallestred.piglinproliferation.CodeUtilities;
 import tallestred.piglinproliferation.PPActivities;
 import tallestred.piglinproliferation.common.entities.ai.behaviors.SwimOnlyOutOfLava;
 
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+
+import static tallestred.piglinproliferation.CodeUtilities.mutableListOrThrow;
 
 public abstract class AbstractPiglinAi<P extends Piglin> extends PiglinAi {
     public Brain<?> populateBrain(P piglin, Brain<P> brain) {
@@ -69,7 +70,7 @@ public abstract class AbstractPiglinAi<P extends Piglin> extends PiglinAi {
     }
 
     protected List<BehaviorControl<? super P>> coreBehaviors(P piglin) {
-        return CodeUtilities.convertToMutableListOrThrow(List.of(
+        return mutableListOrThrow(List.of(
                 new LookAtTargetSink(45, 90),
                 new MoveToTargetSink(),
                 InteractWithDoor.create(),
@@ -87,7 +88,7 @@ public abstract class AbstractPiglinAi<P extends Piglin> extends PiglinAi {
     }
 
     protected List<BehaviorControl<? super P>> idleBehaviors(P piglin) {
-        return CodeUtilities.convertToMutableListOrThrow(List.of(
+        return mutableListOrThrow(List.of(
                 SetEntityLookTarget.create(PiglinAi::isPlayerHoldingLovedItem, 14.0F),
                 StartAttacking.create(AbstractPiglin::isAdult, this::nearestValidAttackTarget),
                 BehaviorBuilder.triggerIf(Piglin::canHunt, StartHuntingHoglin.create()),
@@ -100,7 +101,7 @@ public abstract class AbstractPiglinAi<P extends Piglin> extends PiglinAi {
     }
 
     protected List<BehaviorControl<? super P>> fightBehaviors(P piglin) {
-        return CodeUtilities.convertToMutableListOrThrow(List.of(
+        return mutableListOrThrow(List.of(
                 StopAttackingIfTargetInvalid.create((entity) -> {
                     return !isEntityValidForAttack(piglin, entity);
                 }),
