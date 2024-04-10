@@ -139,7 +139,7 @@ public class BucklerItem extends ShieldItem {
             } else {
                 InteractionHand hand = entity.getMainHandItem().getItem() instanceof BucklerItem ? InteractionHand.MAIN_HAND : InteractionHand.OFF_HAND;
                 ItemStack stack = entity.getItemInHand(hand);
-                stack.hurtAndBreak(5 * bangLevel, entity, (player1) -> {
+                stack.hurtAndBreak(2 * bangLevel, entity, (player1) -> {
                     player1.broadcastBreakEvent(hand);
                     if (entity instanceof Player)
                         ForgeEventFactory.onPlayerDestroyItem((Player) entity, entity.getUseItem(), hand);
