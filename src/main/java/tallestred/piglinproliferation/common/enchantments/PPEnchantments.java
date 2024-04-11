@@ -19,6 +19,15 @@ public class PPEnchantments {
 
     public static final EnchantmentCategory BUCKLER = EnchantmentCategory.create("buckler", (item) -> (item instanceof BucklerItem));
 
+    public static boolean hasBucklerEnchantsOnHands(LivingEntity player, Enchantment... enchantments) {
+        InteractionHand hand = player.getMainHandItem().getItem() instanceof BucklerItem ? InteractionHand.MAIN_HAND : InteractionHand.OFF_HAND;
+        ItemStack stack = player.getItemInHand(hand);
+        for (Enchantment enchantment : enchantments)
+            if (stack.getEnchantmentLevel(enchantment) > 0)
+                return true;
+        return false;
+    }
+
     public static int getBucklerEnchantsOnHands(Enchantment enchantment, LivingEntity player) {
         InteractionHand hand = player.getMainHandItem().getItem() instanceof BucklerItem ? InteractionHand.MAIN_HAND : InteractionHand.OFF_HAND;
         ItemStack stack = player.getItemInHand(hand);

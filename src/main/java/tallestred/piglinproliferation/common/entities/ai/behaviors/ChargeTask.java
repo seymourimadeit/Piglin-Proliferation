@@ -26,7 +26,7 @@ public class ChargeTask<T extends PiglinBrute> extends Behavior<T> {
     @Override
     protected boolean checkExtraStartConditions(ServerLevel worldIn, T owner) {
         LivingEntity livingentity = this.getAttackTarget(owner);
-        return (worldIn.getGameTime() - nextOkStartTime > (long) PPConfig.COMMON.BucklerCooldown.get()) && livingentity != null && livingentity.distanceTo(owner) >= 4.0D && BehaviorUtils.canSee(owner, livingentity) && owner.getOffhandItem().getItem() instanceof BucklerItem && !owner.isInWaterRainOrBubble();
+        return (worldIn.getGameTime() - nextOkStartTime > (long) PPConfig.COMMON.bucklerCooldown.get()) && livingentity != null && livingentity.distanceTo(owner) >= 4.0D && BehaviorUtils.canSee(owner, livingentity) && owner.getOffhandItem().getItem() instanceof BucklerItem && !owner.isInWaterRainOrBubble();
     }
 
     @Override
@@ -57,8 +57,10 @@ public class ChargeTask<T extends PiglinBrute> extends Behavior<T> {
             if (entityIn.getTicksUsingItem() >= entityIn.getUseItem().getUseDuration() && BucklerItem.getChargeTicks(PPItems.checkEachHandForBuckler(entityIn)) > 0)
                 chargePhase = ChargePhases.FINISH;
         }
-        if (BucklerItem.getChargeTicks(PPItems.checkEachHandForBuckler(entityIn)) > 0 && PPEnchantments.getBucklerEnchantsOnHands(PPEnchantments.TURNING.get(), entityIn) > 0 || BucklerItem.getChargeTicks(PPItems.checkEachHandForBuckler(entityIn)) <= 0)
-            entityIn.lookAt(livingEntity, 30.0F, 30.0F);
+        if (BucklerItem.getChargeTicks(PPItems.checkEachHandForBuckler(entityIn)) > 0 && PPEnchantments.getBucklerEnchantsOnHands(PPEnchantments.TURNING.get(), entityIn) > 0 || BucklerItem.getChargeTicks(PPItems.checkEachHandForBuckler(entityIn)) <= 0) {
+            float angle = /*(float) ((1 - (PPAttributes.turningValue(entityIn)/5)) * 30);*/ 30; //TODO look into this
+            entityIn.lookAt(livingEntity, angle, angle);
+        }
     }
 
     @Override

@@ -1,5 +1,8 @@
 package tallestred.piglinproliferation;
 
+import net.minecraft.util.RandomSource;
+import net.minecraft.world.entity.LivingEntity;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -49,7 +52,7 @@ public class CodeUtilities {
     /**
      * Rounds a double to a specified number of decimal places.
      *
-     * @author jpdymond from StackOverflow :)
+     * @author jpdymond from StackOverflow
      *
      * @param value the number to round
      * @param precision the number of decimal places to round to
@@ -60,6 +63,19 @@ public class CodeUtilities {
     }
 
     /**
+     * Caps an integer value within a given range
+     *
+     * @author Barry Staes from StackOverflow
+     * */
+    public static int capToRange(int value, int min, int max) {
+        return Math.min(Math.max(value, min), max);
+    }
+
+    public static double capToRange(double value, double min, double max) {
+        return Math.min(Math.max(value, min), max);
+    }
+
+    /**
      * Converts a number of ticks into a double representing a decimal value for seconds.
      * Rounds to 2dp in case of floating-point error.
      *
@@ -67,5 +83,9 @@ public class CodeUtilities {
      * */
     public static double ticksToSeconds(int ticks) {
         return round(ticks / 20f, 2);
+    }
+
+    public static String doubleToString(double value) {
+        return value % 1 == 0 ? Integer.toString((int) value) : Double.toString(value);
     }
 }

@@ -5,6 +5,8 @@ import net.minecraft.client.renderer.item.ItemProperties;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.SpawnPlacements;
 import net.minecraft.world.item.*;
 import net.minecraft.world.level.levelgen.Heightmap;
@@ -13,6 +15,7 @@ import net.minecraft.world.level.levelgen.structure.templatesystem.StructureProc
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.bus.api.IEventBus;
+import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.ModLoadingContext;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.config.ModConfig;
@@ -24,6 +27,7 @@ import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.common.util.MutableHashedLinkedMap;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
 import net.neoforged.neoforge.event.entity.EntityAttributeCreationEvent;
+import net.neoforged.neoforge.event.entity.EntityAttributeModificationEvent;
 import net.neoforged.neoforge.event.entity.SpawnPlacementRegisterEvent;
 import net.neoforged.neoforge.event.server.ServerAboutToStartEvent;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlerEvent;
@@ -31,6 +35,7 @@ import net.neoforged.neoforge.network.registration.IPayloadRegistrar;
 import tallestred.piglinproliferation.capablities.PPCapablities;
 import tallestred.piglinproliferation.client.PPSounds;
 import tallestred.piglinproliferation.common.advancement.PPCriteriaTriggers;
+import tallestred.piglinproliferation.common.attribute.PPAttributes;
 import tallestred.piglinproliferation.common.enchantments.PPEnchantments;
 import tallestred.piglinproliferation.common.entities.PiglinTraveller;
 import tallestred.piglinproliferation.common.items.BucklerItem;
@@ -57,6 +62,7 @@ public class PiglinProliferation {
         modEventBus.addListener(this::enqueueIMC);
         modEventBus.addListener(this::processIMC);
         modEventBus.addListener(this::addAttributes);
+        modEventBus.addListener(this::addCustomAttributes);
         modEventBus.addListener(this::addSpawn);
         modEventBus.addListener(this::addCreativeTabs);
         modEventBus.addListener(this::register);
@@ -64,6 +70,7 @@ public class PiglinProliferation {
             modEventBus.addListener(this::doClientStuff);
         NeoForge.EVENT_BUS.addListener(this::serverStart);
         PPSounds.SOUNDS.register(modEventBus);
+        PPAttributes.ATTRIBUTES.register(modEventBus);
         PPItems.ITEMS.register(modEventBus);
         PPEntityTypes.ENTITIES.register(modEventBus);
         PPMemoryModules.MEMORY_MODULE_TYPE.register(modEventBus);
@@ -86,6 +93,11 @@ public class PiglinProliferation {
     private void addAttributes(final EntityAttributeCreationEvent event) {
         event.put(PPEntityTypes.PIGLIN_TRAVELLER.get(), PiglinAlchemist.createAttributes().build());
         event.put(PPEntityTypes.PIGLIN_ALCHEMIST.get(), PiglinAlchemist.createAttributes().build());
+    }
+
+    private void addCustomAttributes(EntityAttributeModificationEvent event) {
+        for (EntityType<? extends LivingEntity> type : event.getTypes())
+            event.add(type, PPAttributes.TURNING_SPEED.get());
     }
 
     private void addCreativeTabs(final BuildCreativeModeTabContentsEvent event) {

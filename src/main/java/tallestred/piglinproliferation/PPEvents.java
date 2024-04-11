@@ -16,8 +16,6 @@ import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
-import net.minecraft.world.entity.ai.attributes.AttributeModifier;
-import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.memory.MemoryModuleType;
 import net.minecraft.world.entity.monster.Creeper;
 import net.minecraft.world.entity.monster.Ghast;
@@ -39,6 +37,7 @@ import net.minecraft.world.level.pathfinder.BlockPathTypes;
 import net.neoforged.bus.api.Event;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.Mod;
+import net.neoforged.neoforge.client.event.CalculatePlayerTurnEvent;
 import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
 import net.neoforged.neoforge.event.entity.living.*;
 import net.neoforged.neoforge.event.entity.player.CriticalHitEvent;
@@ -49,6 +48,7 @@ import net.neoforged.neoforge.event.level.NoteBlockEvent;
 import net.neoforged.neoforge.network.PacketDistributor;
 import tallestred.piglinproliferation.capablities.PPCapablities;
 import tallestred.piglinproliferation.client.PPSounds;
+import tallestred.piglinproliferation.common.attribute.PPAttributes;
 import tallestred.piglinproliferation.common.blocks.PPBlocks;
 import tallestred.piglinproliferation.common.enchantments.PPEnchantments;
 import tallestred.piglinproliferation.common.entities.PPEntityTypes;
@@ -69,11 +69,6 @@ import java.util.*;
 
 @Mod.EventBusSubscriber(modid = PiglinProliferation.MODID)
 public class PPEvents {
-    private static final UUID CHARGE_SPEED_UUID = UUID.fromString("A2F995E8-B25A-4883-B9D0-93A676DC4045");
-    private static final UUID KNOCKBACK_RESISTANCE_UUID = UUID.fromString("93E74BB2-05A5-4AC0-8DF5-A55768208A95");
-    private static final AttributeModifier CHARGE_SPEED_BOOST = new AttributeModifier(CHARGE_SPEED_UUID, "Charge speed boost", 9.0D, AttributeModifier.Operation.MULTIPLY_BASE);
-    private static final AttributeModifier KNOCKBACK_RESISTANCE = new AttributeModifier(KNOCKBACK_RESISTANCE_UUID, "Knockback reduction", 1.0D, AttributeModifier.Operation.ADDITION);
-
     @SubscribeEvent
     public static void onJump(LivingEvent.LivingJumpEvent event) {
         if (BucklerItem.getChargeTicks(PPItems.checkEachHandForBuckler(event.getEntity())) > 0) {
@@ -111,7 +106,6 @@ public class PPEvents {
     @SubscribeEvent
     public static void onLivingTick(LivingEvent.LivingTickEvent event) {
         LivingEntity entity = event.getEntity();
-        int turningLevel = PPEnchantments.getBucklerEnchantsOnHands(PPEnchantments.TURNING.get(), entity);
         ItemStack bucklerItemStack = PPItems.checkEachHandForBuckler(entity);
         boolean bucklerReadyToCharge = BucklerItem.isReady(bucklerItemStack);
         int bucklerChargeTicks = BucklerItem.getChargeTicks(bucklerItemStack);
@@ -120,18 +114,14 @@ public class PPEvents {
             if (bucklerChargeTicks > 0) {
                 BucklerItem.moveFowards(entity);
                 BucklerItem.spawnRunningEffectsWhileCharging(entity);
-                if (turningLevel == 0 && !entity.level().isClientSide()) BucklerItem.bucklerBash(entity);
+                if (!entity.level().isClientSide()) BucklerItem.bucklerBash(entity);
             }
         }
-        if (bucklerChargeTicks <= 0 && bucklerReadyToCharge || entity.getAttribute(Attributes.MOVEMENT_SPEED).hasModifier(CHARGE_SPEED_BOOST)
+        if (bucklerChargeTicks <= 0 && bucklerReadyToCharge || BucklerItem.CHARGE_SPEED_BOOST.hasModifier(entity)
                 && (!(bucklerItemStack.getItem() instanceof BucklerItem) || !bucklerReadyToCharge)) {
-            AttributeInstance speed = entity.getAttribute(Attributes.MOVEMENT_SPEED);
-            AttributeInstance knockback = entity.getAttribute(Attributes.KNOCKBACK_RESISTANCE);
-            if (speed == null || knockback == null) {
-                return;
-            }
-            knockback.removeModifier(KNOCKBACK_RESISTANCE_UUID);
-            speed.removeModifier(CHARGE_SPEED_UUID);
+            BucklerItem.INCREASED_KNOCKBACK_RESISTANCE.removeModifier(entity);
+            BucklerItem.CHARGE_SPEED_BOOST.removeModifier(entity);
+            BucklerItem.TURNING_SPEED_REDUCTION.removeModifier(entity);
             entity.stopUsingItem();
             if (entity instanceof Player player) {
                 for (int slot = 0; slot < player.getInventory().getContainerSize(); slot++) {
@@ -410,7 +400,7 @@ public class PPEvents {
         if (stack.getItem() == PPItems.BUCKLER.get()) {
             List<Component> toAdd = new ArrayList<>();
             toAdd.add(Component.empty());
-            toAdd.addAll(BucklerItem.getDescription(Minecraft.getInstance(), stack));
+            toAdd.addAll(PPItems.BUCKLER.get().getDescription(stack));
             event.getToolTip().addAll(toAdd);
         }
     }
@@ -419,5 +409,17 @@ public class PPEvents {
     public static void onLevelUnload(LevelEvent.Unload event) {
         CompassLocationMap.clearCache();
         PPTags.TRAVELLERS_COMPASS_VALID_STRUCTURES.clearCache();
+    }
+
+    @SubscribeEvent
+    public static void onPlayerTurnCalculation(CalculatePlayerTurnEvent event) {
+        double mouseSensitivity = event.getMouseSensitivity();
+        Player player = Minecraft.getInstance().player;
+        if (player != null) {
+            double turningValue = PPAttributes.turningValue(player);
+            if (turningValue != 1)
+                mouseSensitivity = (mouseSensitivity * turningValue) - 0.20000000298023224;
+        }
+        event.setMouseSensitivity(mouseSensitivity);
     }
 }

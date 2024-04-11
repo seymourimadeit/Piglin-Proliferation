@@ -1,72 +1,81 @@
 package tallestred.piglinproliferation.common.attribute;
 
-import net.minecraft.ChatFormatting;
-import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
-import net.minecraft.world.entity.ai.attributes.Attributes;
 
 import java.util.UUID;
 
-import static net.minecraft.world.item.ItemStack.ATTRIBUTE_MODIFIER_FORMAT;
+import static tallestred.piglinproliferation.CodeUtilities.capToRange;
 
-public class AttributeModifierHolder {
-    protected final Attribute attribute;
-    protected final AttributeModifier modifier;
+public class AttributeModifierHolder extends AbstractAttributeModifierHolder {
+    public final double defaultAmount;
+    public final AttributeModifier.Operation defaultOperation;
 
-    public AttributeModifierHolder(Attribute attribute, AttributeModifier modifier) {
-        this.attribute = attribute;
-        this.modifier = modifier;
+    protected final Instance defaultInstance;
+
+    public AttributeModifierHolder(Attribute attribute, UUID uuid, String name, double defaultAmount, AttributeModifier.Operation defaultOperation) {
+        super(attribute, uuid, name);
+        this.defaultAmount = defaultAmount;
+        this.defaultOperation = defaultOperation;
+        this.defaultInstance = new Instance(defaultAmount, defaultOperation);
     }
 
-    public AttributeModifierHolder(Attribute attribute, UUID uuid, String name, double amount, AttributeModifier.Operation operation) {
-        this(attribute, new AttributeModifier(uuid, name, amount, operation));
+    @Override
+    public Instance get() {
+        return defaultInstance;
     }
 
-    public Attribute attribute() {
-        return this.attribute;
+    @Override
+    public Instance getWithMultiplier(double multiplier) {
+        return new Instance(defaultAmount * multiplier, defaultOperation);
     }
 
-    public AttributeModifier modifier() {
-        return this.modifier;
+    @Override
+    public Instance getWithSummand(double summand) {
+        return new Instance(defaultAmount + summand, defaultOperation);
     }
 
-    public MutableComponent translatable() {
-        return translatableInternal(false,-1);
+    public Instance getWithNewAmount(double newAmount) {
+        return new Instance(newAmount, defaultOperation);
     }
 
-    public MutableComponent translatable(double baseValue) {
-        return translatableInternal(true,baseValue);
+    public Instance getWithNewAmountAndOperation(double newAmount, AttributeModifier.Operation operation) {
+        return new Instance(newAmount, operation);
     }
 
-    protected MutableComponent translatableInternal(boolean displaysBase, double base) {
-        double amount = formattedAmount(modifier, displaysBase, base);
-        String key = "attribute.modifier.equals.";
-        ChatFormatting style = ChatFormatting.DARK_GREEN;
-        if (!displaysBase) {
-            if (amount > 0) {
-                key = "attribute.modifier.plus.";
-                style = ChatFormatting.BLUE;
-            }
-            if (amount < 0) {
-                key = "attribute.modifier.take.";
-                style = ChatFormatting.RED;
-            }
+    public class Instance extends AbstractAttributeModifierHolder.Instance {
+        public AttributeModifier modifier;
+
+        protected Instance(double amount, AttributeModifier.Operation operation) {
+            this.modifier = new AttributeModifier(uuid, name, amount, operation);
         }
-        return Component.translatable(key + modifier.getOperation().toValue(), ATTRIBUTE_MODIFIER_FORMAT.format(amount), Component.translatable(attribute.getDescriptionId())).withStyle(style);
-    }
 
-    protected double formattedAmount(AttributeModifier modifier, boolean displaysBase, double base) {
-        double amount = modifier.getAmount();
-        if (displaysBase)
-            amount += base;
-        switch (modifier.getOperation()) {
-            case ADDITION -> amount *= attribute.equals(Attributes.KNOCKBACK_RESISTANCE) ? 10 : 1;
-            case MULTIPLY_BASE, MULTIPLY_TOTAL -> amount *= 100.0;
+        public void resetTransientModifier(LivingEntity entity) {
+            removeModifier(entity);
+            addTransientModifier(entity);
         }
-        if (amount < 0)
-            amount *= -1.0;
-        return amount;
+
+        public void resetPermanentModifier(LivingEntity entity) {
+            removeModifier(entity);
+            addPermanentModifier(entity);
+        }
+
+        public void addTransientModifier(LivingEntity entity) {
+            addTransientInternal(modifier, entity);
+        }
+
+        public void addPermanentModifier(LivingEntity entity) {
+            addPermanentInternal(modifier, entity);
+        }
+
+        public MutableComponent translatable() {
+            return translatableInternal(this.modifier.getAmount(), this.modifier.getOperation(), false,-1);
+        }
+
+        public MutableComponent translatable(double baseAmount) {
+            return translatableInternal(this.modifier.getAmount(), this.modifier.getOperation(), true, baseAmount);
+        }
     }
 }

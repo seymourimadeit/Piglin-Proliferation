@@ -42,9 +42,9 @@ public class PPConfig {
         public final ModConfigSpec.DoubleValue crossbowChanceTraveller;
         public final ModConfigSpec.IntValue healingArrowMinStackSize;
         public final ModConfigSpec.IntValue healingArrowMaxStackSize;
-        public final ModConfigSpec.IntValue BucklerCooldown;
-        public final ModConfigSpec.IntValue BucklerRunTime;
-        public final ModConfigSpec.IntValue BucklerTurningRunTime;
+        public final ModConfigSpec.IntValue bucklerCooldown;
+        public final ModConfigSpec.IntValue minBucklerChargeTime;
+        public final ModConfigSpec.IntValue maxBucklerChargeTime;
         public final ModConfigSpec.ConfigValue<List<? extends String>> zombifiedPiglinTypeList;
         public final ModConfigSpec.BooleanValue travellersCompassBiomeWhitelist;
         public final ModConfigSpec.BooleanValue travellersCompassStructureWhitelist;
@@ -69,9 +69,9 @@ public class PPConfig {
             builder.push("Buckler");
             BangBlockDestruction = builder.define("Have the explosion spawned while using the Bang! enchant destroy blocks?", false);
             BruteBuckler = builder.define("Have brutes spawn with bucklers?", true);
-            BucklerCooldown = builder.defineInRange("How long should the buckler's cooldown be in ticks?", 240, Integer.MIN_VALUE, Integer.MAX_VALUE);
-            BucklerRunTime = builder.defineInRange("How long should the buckler's charge move be in ticks?", 15, Integer.MIN_VALUE, Integer.MAX_VALUE); // Thinking of removing this in 1.17.
-            BucklerTurningRunTime = builder.defineInRange("How long should the buckler's charge move if you have the turning enchant be in ticks?", 30, Integer.MIN_VALUE, Integer.MAX_VALUE);
+            bucklerCooldown = builder.defineInRange("How long should the buckler's cooldown be in ticks?", 240, Integer.MIN_VALUE, Integer.MAX_VALUE);
+            minBucklerChargeTime = builder.defineInRange("How long should the buckler's charge move be in ticks?", 15, Integer.MIN_VALUE, Integer.MAX_VALUE); // Thinking of removing this in 1.17.
+            maxBucklerChargeTime = builder.defineInRange("How long should the buckler's charge move if you have the max level of turning enchant be in ticks?", 40, Integer.MIN_VALUE, Integer.MAX_VALUE);
             bucklerChance = builder.defineInRange("Chance of buckler appearing in bastion loot", 0.25F, 0.0F, 9999999.0F);
             builder.pop();
             builder.push("Piglin Alchemist");

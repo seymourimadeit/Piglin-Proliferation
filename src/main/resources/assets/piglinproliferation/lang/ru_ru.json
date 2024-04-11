@@ -1,5 +1,4 @@
 {
-   
    "entity.piglinproliferation.piglin_alchemist": "Пиглин-алхимик",
    "entity.piglinproliferation.piglin_traveller": "Странствующий пиглин",
    "item.piglinproliferation.piglin_alchemist_spawn_egg": "Яйцо призыва пиглина-алхимика",
@@ -47,12 +46,21 @@
    "item.piglinproliferation.buckler.desc.while_charging": "Во время рывка:",
    "item.piglinproliferation.buckler.desc.shield_bash": "Shield Bash on colliding with an entity",
    "item.piglinproliferation.buckler.desc.cannot_jump": "Нельзя прыгать",
-   "item.piglinproliferation.buckler.desc.turn_speed": "Снижена скорость поворота при рывке",
    "item.piglinproliferation.buckler.desc.water": "Нельзя использовать под водой",
    "item.piglinproliferation.buckler.desc.on_shield_bash": "On Shield Bash:",
    "item.piglinproliferation.buckler.desc.explosion": "Создаёт взрыв при столкновении, наносящий урон существу и использующему",
    "item.piglinproliferation.buckler.desc.critical_aura": "Критический удар при столкновении с сущностью",
    "item.piglinproliferation.buckler.desc.critical_aura_expires": "Теряет критический удар после первого взмаха",
+   "attribute.piglinproliferation.name.generic.turning_speed": "Скорость поворота",
+   "attribute.piglinproliferation.ranged_modifier.equals.0": "%3$s: %1$s-%2$s",
+   "attribute.piglinproliferation.ranged_modifier.equals.1": "%s-%s%% %s",
+   "attribute.piglinproliferation.ranged_modifier.equals.2": "%3$s: %1$s-%2$s%%",
+   "attribute.piglinproliferation.ranged_modifier.plus.0": "+%s-%s %s",
+   "attribute.piglinproliferation.ranged_modifier.plus.1": "+%s-%s%% %s",
+   "attribute.piglinproliferation.ranged_modifier.plus.2": "%3$s: +%1$s-%2$s%%",
+   "attribute.piglinproliferation.ranged_modifier.take.0": "-%s-%s %s",
+   "attribute.piglinproliferation.ranged_modifier.take.1": "-%s-%s%% %s",
+   "attribute.piglinproliferation.ranged_modifier.take.2": "%3$s: -%1$s-%2$s%%",
    "enchantment.piglinproliferation.turning": "Заворот",
    "enchantment.piglinproliferation.bang": "Бабах!",
    "enchantment.piglinproliferation.turning.desc": "Даёт полный контроль движения при рывке, ценой потери возможности врезаться в сущностей.",
@@ -78,16 +86,7 @@
    "subtitles.entity.critical_aura.apply": "Critical Aura applies",
    "subtitles.entity.critical_aura.deactivate": "Critical Aura deactivates",
    "piglinproliferation.advancements.nether.obtain_travellers_compass.title": "Journey of a Thousand Blocks",
-   "piglinproliferation.advancements.nether.obtain_travellers_compass.description": "Obtain a Traveler's Compass by bartering with a Piglin Traveler - it may help you find what you need...",
-   "attribute.piglinproliferation.ranged_modifier.equals.0": "%3$s: %1$s-%2$s",
-   "attribute.piglinproliferation.ranged_modifier.equals.1": "%s-%s%% %s",
-   "attribute.piglinproliferation.ranged_modifier.equals.2": "%3$s: %1$s-%2$s%%",
-   "attribute.piglinproliferation.ranged_modifier.plus.0": "+%s-%s %s",
-   "attribute.piglinproliferation.ranged_modifier.plus.1": "+%s-%s%% %s",
-   "attribute.piglinproliferation.ranged_modifier.plus.2": "%3$s: +%1$s-%2$s%%",
-   "attribute.piglinproliferation.ranged_modifier.take.0": "-%s-%s %s",
-   "attribute.piglinproliferation.ranged_modifier.take.1": "-%s-%s%% %s",
-   "attribute.piglinproliferation.ranged_modifier.take.2": "%3$s: -%1$s-%2$s%%"
+   "piglinproliferation.advancements.nether.obtain_travellers_compass.description": "Obtain a Traveler's Compass by bartering with a Piglin Traveler - it may help you find what you need..."
 }
 
 
