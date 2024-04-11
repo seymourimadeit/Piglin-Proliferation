@@ -15,7 +15,6 @@ import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.*;
-import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.memory.MemoryModuleType;
 import net.minecraft.world.entity.monster.Creeper;
 import net.minecraft.world.entity.monster.Ghast;
@@ -67,6 +66,7 @@ import tallestred.piglinproliferation.networking.ZiglinCapablitySyncPacket;
 
 import java.util.*;
 
+@SuppressWarnings("unused")
 @Mod.EventBusSubscriber(modid = PiglinProliferation.MODID)
 public class PPEvents {
     @SubscribeEvent
@@ -82,8 +82,8 @@ public class PPEvents {
             if (!event.getEntity().level().isClientSide) {
                 PacketDistributor.TRACKING_ENTITY.with(ziglin).send(new ZiglinCapablitySyncPacket(ziglin.getId(), ziglin.getData(PPCapablities.TRANSFORMATION_TRACKER.get())));
             }
-            ziglin.goalSelector.addGoal(2, new DumbBowAttackGoal(ziglin, 0.5D, 20, 15.0F));
-            ziglin.goalSelector.addGoal(2, new DumbCrossbowAttackGoal(ziglin, 1.0D, 8.0F));
+            ziglin.goalSelector.addGoal(2, new DumbBowAttackGoal<>(ziglin, 0.5D, 20, 15.0F));
+            ziglin.goalSelector.addGoal(2, new DumbCrossbowAttackGoal<>(ziglin, 1.0D, 8.0F));
         }
         if (event.getEntity() instanceof AbstractPiglin piglin) {
             piglin.goalSelector.addGoal(0, new PiglinCallForHelpGoal(piglin, (piglin1) -> piglin1.isOnFire() && !piglin1.hasEffect(MobEffects.FIRE_RESISTANCE), (alchemist -> alchemist.getItemShownOnOffhand() != null && PotionUtils.getPotion(alchemist.getItemShownOnOffhand()) == Potions.FIRE_RESISTANCE)));
@@ -150,13 +150,14 @@ public class PPEvents {
 
     @SubscribeEvent
     public static void onEffectApplied(MobEffectEvent.Added event) {
-        event.getEffectInstance();
-        MobEffect mobEffect = event.getEffectInstance().getEffect();
-        if (event.getEntity() instanceof AbstractPiglin piglin) {
-            if (mobEffect == MobEffects.FIRE_RESISTANCE) {
-                piglin.setPathfindingMalus(BlockPathTypes.DANGER_FIRE, 0.0F);
-                piglin.setPathfindingMalus(BlockPathTypes.DAMAGE_FIRE, 0.0F);
-                piglin.setPathfindingMalus(BlockPathTypes.LAVA, 0.0F);
+        if (event.getEffectInstance() != null) {
+            MobEffect mobEffect = event.getEffectInstance().getEffect();
+            if (event.getEntity() instanceof AbstractPiglin piglin) {
+                if (mobEffect == MobEffects.FIRE_RESISTANCE) {
+                    piglin.setPathfindingMalus(BlockPathTypes.DANGER_FIRE, 0.0F);
+                    piglin.setPathfindingMalus(BlockPathTypes.DAMAGE_FIRE, 0.0F);
+                    piglin.setPathfindingMalus(BlockPathTypes.LAVA, 0.0F);
+                }
             }
         }
     }
@@ -248,10 +249,12 @@ public class PPEvents {
         if (event.getEntity() instanceof Strider strider && rSource.nextInt(60) == 0 && !strider.isBaby()) {
             event.setCanceled(true);
             PiglinTraveller traveller = PPEntityTypes.PIGLIN_TRAVELLER.get().create(strider.level());
-            traveller.copyPosition(strider);
-            traveller.startRiding(strider);
-            strider.equipSaddle(null);
-            traveller.setItemSlot(EquipmentSlot.MAINHAND, new ItemStack(Items.WARPED_FUNGUS_ON_A_STICK));
+            if (traveller != null) {
+                traveller.copyPosition(strider);
+                traveller.startRiding(strider);
+                strider.equipSaddle(null);
+                traveller.setItemSlot(EquipmentSlot.MAINHAND, new ItemStack(Items.WARPED_FUNGUS_ON_A_STICK));
+            }
         }
         if (event.getEntity() instanceof PiglinBrute piglinBrute) {
             if (!PPConfig.COMMON.BruteBuckler.get()) return;
@@ -360,8 +363,7 @@ public class PPEvents {
             ItemStack itemstack = brute.getOffhandItem();
             if (itemstack.getItem() instanceof BucklerItem) {
                 float f = 0.10F;
-                boolean flag = f > 1.0F;
-                if (!itemstack.isEmpty() && !EnchantmentHelper.hasVanishingCurse(itemstack) && (event.isRecentlyHit() || flag) && Math.max(brute.getRandom().nextFloat() - (float) event.getLootingLevel() * 0.01F, 0.0F) < f) {
+                if (!itemstack.isEmpty() && !EnchantmentHelper.hasVanishingCurse(itemstack) && event.isRecentlyHit() && Math.max(brute.getRandom().nextFloat() - (float) event.getLootingLevel() * 0.01F, 0.0F) < f) {
                     if (itemstack.isDamageableItem()) {
                         int halvedMaxDurability = Math.abs(brute.getRandom().nextInt(Math.abs(itemstack.getMaxDamage() / 2)));
                         itemstack.setDamageValue(Math.abs(brute.getRandom().nextInt(halvedMaxDurability)));

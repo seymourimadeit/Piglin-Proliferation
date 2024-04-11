@@ -20,6 +20,6 @@ public class PPAttributes {
 
     public static boolean aiFailsTurningChance(LivingEntity entity) {
         double value = turningValue(entity);
-        return value != 1 && entity.getRandom().nextDouble() < value;
+        return value != 1 && entity.getRandom().nextDouble() > value;
     }
 }
