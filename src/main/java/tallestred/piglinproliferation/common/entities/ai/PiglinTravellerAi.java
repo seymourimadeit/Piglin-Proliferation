@@ -1,20 +1,24 @@
 package tallestred.piglinproliferation.common.entities.ai;
 
+import com.google.common.collect.ImmutableMap;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.Brain;
 import net.minecraft.world.entity.ai.behavior.*;
 import net.minecraft.world.entity.ai.memory.MemoryModuleType;
+import net.minecraft.world.entity.ai.memory.MemoryStatus;
 import net.minecraft.world.entity.ai.sensing.Sensor;
 import net.minecraft.world.entity.monster.piglin.*;
 import net.minecraft.world.entity.schedule.Activity;
 import net.minecraft.world.item.ItemStack;
 import tallestred.piglinproliferation.client.PPSounds;
+import tallestred.piglinproliferation.common.entities.PiglinAlchemist;
 import tallestred.piglinproliferation.common.entities.PiglinTraveller;
 import tallestred.piglinproliferation.common.entities.ai.behaviors.*;
 import tallestred.piglinproliferation.common.items.TravellersCompassItem;
 import tallestred.piglinproliferation.common.loot.PPLoot;
 
+import java.util.List;
 import java.util.Optional;
 
 public class PiglinTravellerAi extends AbstractPiglinAi<PiglinTraveller> {
@@ -23,10 +27,20 @@ public class PiglinTravellerAi extends AbstractPiglinAi<PiglinTraveller> {
     public PiglinTravellerAi() {
     }
 
+
+    @Override
+    protected List<BehaviorControl<? super PiglinTraveller>> fightBehaviors(PiglinTraveller piglin) {
+        var list = super.fightBehaviors(piglin);
+        list.add(KickWhenClose.create(2));
+        return list;
+    }
+
     @Override
     protected BehaviorControl<? extends Piglin> stopHoldingItemBehavior(PiglinTraveller piglin) {
         return StopHoldingItemAfterAdmiring.create(this, PPLoot.TRAVELLER_BARTER/*, PPLoot.TRAVELLER_BARTER_CHEAP, PPLoot.TRAVELLER_BARTER_EXPENSIVE*/);
     }
+
+
 
     @Override
     protected Optional<? extends LivingEntity> nearestValidAttackTarget(Piglin piglin) {

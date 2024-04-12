@@ -43,6 +43,11 @@ public class ChargeTask<T extends PiglinBrute> extends Behavior<T> {
     @Override
     protected void tick(ServerLevel worldIn, T entityIn, long gameTime) {
         LivingEntity livingEntity = this.getAttackTarget(entityIn);
+        if (chargePhase == ChargePhases.CHARGE) {
+            if (BucklerItem.getChargeTicks(PPItems.checkEachHandForBuckler(entityIn)) > 0 && PPEnchantments.getBucklerEnchantsOnHands(PPEnchantments.TURNING.get(), entityIn) > 0 || BucklerItem.getChargeTicks(PPItems.checkEachHandForBuckler(entityIn)) <= 0) {
+                entityIn.lookAt(livingEntity, 30.0F, 30.0F);
+            }
+        }
         if (chargePhase == ChargePhases.STRAFE && strafeTicks > 0 && entityIn.distanceTo(livingEntity) >= 4.0D && entityIn.distanceTo(livingEntity) <= 10.0D) {
             entityIn.getMoveControl().strafe(-2.0F, 0.0F);
             strafeTicks--;
@@ -51,15 +56,13 @@ public class ChargeTask<T extends PiglinBrute> extends Behavior<T> {
         } else if (chargePhase == ChargePhases.CHARGE) {
             if (!entityIn.isUsingItem() && BucklerItem.getChargeTicks(PPItems.checkEachHandForBuckler(entityIn)) <= 0) {
                 entityIn.startUsingItem(InteractionHand.OFF_HAND);
-                this.chargePhase = ChargePhases.CHARGING;
             }
+            if (entityIn.getTicksUsingItem() >= entityIn.getUseItem().getUseDuration())
+                this.chargePhase = ChargePhases.CHARGING;
+
         } else if (chargePhase == ChargePhases.CHARGING) {
-            if (entityIn.getTicksUsingItem() >= entityIn.getUseItem().getUseDuration() && BucklerItem.getChargeTicks(PPItems.checkEachHandForBuckler(entityIn)) > 0)
+            if (BucklerItem.getChargeTicks(PPItems.checkEachHandForBuckler(entityIn)) <= 0)
                 chargePhase = ChargePhases.FINISH;
-        }
-        if (BucklerItem.getChargeTicks(PPItems.checkEachHandForBuckler(entityIn)) > 0 && PPEnchantments.getBucklerEnchantsOnHands(PPEnchantments.TURNING.get(), entityIn) > 0 || BucklerItem.getChargeTicks(PPItems.checkEachHandForBuckler(entityIn)) <= 0) {
-            float angle = /*(float) ((1 - (PPAttributes.turningValue(entityIn)/5)) * 30);*/ 30; //TODO look into this
-            entityIn.lookAt(livingEntity, angle, angle);
         }
     }
 

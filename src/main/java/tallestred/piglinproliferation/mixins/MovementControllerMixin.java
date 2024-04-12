@@ -22,7 +22,6 @@ public abstract class MovementControllerMixin {
     @Inject(at = @At(value = "HEAD"), method = "tick", cancellable = true)
     public void tick(CallbackInfo info) {
         if (mob != null && BucklerItem.getChargeTicks(PPItems.checkEachHandForBuckler(mob)) > 0)
-            if (PPAttributes.aiFailsTurningChance(mob))
-                info.cancel();
+            info.cancel();
     }
 }

@@ -33,6 +33,7 @@ import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.pathfinder.BlockPathTypes;
+import net.minecraft.world.phys.Vec3;
 import net.neoforged.bus.api.Event;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.Mod;
@@ -119,9 +120,12 @@ public class PPEvents {
         }
         if (bucklerChargeTicks <= 0 && bucklerReadyToCharge || BucklerItem.CHARGE_SPEED_BOOST.hasModifier(entity)
                 && (!(bucklerItemStack.getItem() instanceof BucklerItem) || !bucklerReadyToCharge)) {
-            BucklerItem.INCREASED_KNOCKBACK_RESISTANCE.removeModifier(entity);
-            BucklerItem.CHARGE_SPEED_BOOST.removeModifier(entity);
+            entity.setDeltaMovement(Vec3.ZERO);
             BucklerItem.TURNING_SPEED_REDUCTION.removeModifier(entity);
+            BucklerItem.CHARGE_SPEED_BOOST.removeModifier(entity);
+            BucklerItem.INCREASED_KNOCKBACK_RESISTANCE.removeModifier(entity);
+            BucklerItem.setChargeTicks(bucklerItemStack, 0);
+            BucklerItem.setReady(bucklerItemStack, false);
             entity.stopUsingItem();
             if (entity instanceof Player player) {
                 for (int slot = 0; slot < player.getInventory().getContainerSize(); slot++) {
@@ -131,8 +135,6 @@ public class PPEvents {
                     }
                 }
             }
-            BucklerItem.setChargeTicks(bucklerItemStack, 0);
-            BucklerItem.setReady(bucklerItemStack, false);
         }
         boolean criticalAfterCharge = entity.getData(PPCapablities.CRITICAL.get());
         if (criticalAfterCharge) {
@@ -261,9 +263,9 @@ public class PPEvents {
             piglinBrute.setItemSlot(EquipmentSlot.OFFHAND, new ItemStack(PPItems.BUCKLER.get()));
             ItemStack itemstack = piglinBrute.getOffhandItem();
             if (itemstack.getItem() instanceof BucklerItem) {
-                if (rSource.nextInt(300) == 0) {
+                if (rSource.nextInt(1) == 0) {
                     Map<Enchantment, Integer> map = EnchantmentHelper.getEnchantments(itemstack);
-                    map.putIfAbsent(PPEnchantments.TURNING.get(), 1);
+                    map.putIfAbsent(PPEnchantments.TURNING.get(), 4);
                     EnchantmentHelper.setEnchantments(map, itemstack);
                     piglinBrute.setItemSlot(EquipmentSlot.OFFHAND, itemstack);
                 }
