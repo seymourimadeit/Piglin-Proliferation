@@ -117,48 +117,47 @@ public class BucklerItem extends ShieldItem {
         List<LivingEntity> list = entity.level().getNearbyEntities(LivingEntity.class, TargetingConditions.forCombat(), entity, entity.getBoundingBox().inflate(1.5D));
         if (!list.isEmpty()) {
             LivingEntity entityHit = list.get(0);
-            entityHit.push(entity);
-            int bangLevel = PPEnchantments.getBucklerEnchantsOnHands(PPEnchantments.BANG.get(), entity);
-            int turningLevel = PPEnchantments.getBucklerEnchantsOnHands(PPEnchantments.TURNING.get(), entity);
-            RangedRandomAttributeModifierHolder.Instance attackDamage = ATTACK_DAMAGE.getWithSummands(minDamageReduction(turningLevel), maxDamageReduction(turningLevel));
-            //for (int i=0; i<20; i++)
-            //    System.out.println("Random damage: " + attackDamage.randomIntAmount());
-            float damage = (float) attackDamage.randomIntAmount();/*entity.getRandom().nextIntBetweenInclusive(Math.round((float) attackDamage.minAmount), Math.round((float) attackDamage.maxAmount));*/
-            //System.out.println("Random damage: " + damage);
-            float knockbackStrength = 3.0F;
-            for (int duration = 0; duration < 10; ++duration) {
-                double d0 = entity.getRandom().nextGaussian() * 0.02D;
-                double d1 = entity.getRandom().nextGaussian() * 0.02D;
-                double d2 = entity.getRandom().nextGaussian() * 0.02D;
-                SimpleParticleType type = entityHit instanceof WitherBoss || entityHit instanceof WitherSkeleton ? ParticleTypes.SMOKE : ParticleTypes.CLOUD;
-                // Collision is done on the server side, so a server side method must be used.
-                ((ServerLevel) entity.level()).sendParticles(type, entity.getRandomX(1.0D), entity.getRandomY() + 1.0D, entity.getRandomZ(1.0D), 1, d0, d1, d2, 1.0D);
-            }
-            if (bangLevel == 0) {
-                if (entityHit.hurt(entity.damageSources().mobAttack(entity), damage)) {
-                    entityHit.knockback(knockbackStrength, Mth.sin(entity.getYRot() * ((float) Math.PI / 180F)), -Mth.cos(entity.getYRot() * ((float) Math.PI / 180F)));
-                    entity.setDeltaMovement(entity.getDeltaMovement().multiply(0.6D, 1.0D, 0.6D));
+            entityHit.push(entity); //TODO not sure if to keep the push before or after?
+            if (entityHit.invulnerableTime <= 0) {
+                int bangLevel = PPEnchantments.getBucklerEnchantsOnHands(PPEnchantments.BANG.get(), entity);
+                int turningLevel = PPEnchantments.getBucklerEnchantsOnHands(PPEnchantments.TURNING.get(), entity);
+                RangedRandomAttributeModifierHolder.Instance attackDamage = ATTACK_DAMAGE.getWithSummands(minDamageReduction(turningLevel), maxDamageReduction(turningLevel));
+                float damage = (float) attackDamage.randomIntAmount();
+                float knockbackStrength = 3.0F;
+                for (int duration = 0; duration < 10; ++duration) {
+                    double d0 = entity.getRandom().nextGaussian() * 0.02D;
+                    double d1 = entity.getRandom().nextGaussian() * 0.02D;
+                    double d2 = entity.getRandom().nextGaussian() * 0.02D;
+                    SimpleParticleType type = entityHit instanceof WitherBoss || entityHit instanceof WitherSkeleton ? ParticleTypes.SMOKE : ParticleTypes.CLOUD;
+                    // Collision is done on the server side, so a server side method must be used.
+                    ((ServerLevel) entity.level()).sendParticles(type, entity.getRandomX(1.0D), entity.getRandomY() + 1.0D, entity.getRandomZ(1.0D), 1, d0, d1, d2, 1.0D);
                 }
-                if (!entity.isSilent())
-                    entity.level().playSound(null, entity.getX(), entity.getY(), entity.getZ(), PPSounds.SHIELD_BASH.get(), entity.getSoundSource(), 0.5F, 0.8F + entity.getRandom().nextFloat() * 0.4F);
-                if (entityHit instanceof Player && entityHit.getUseItem().canPerformAction(ToolActions.SHIELD_BLOCK))
-                    ((Player) entityHit).disableShield(true);
-            } else {
-                InteractionHand hand = entity.getMainHandItem().getItem() instanceof BucklerItem ? InteractionHand.MAIN_HAND : InteractionHand.OFF_HAND;
-                ItemStack stack = entity.getItemInHand(hand);
-                stack.hurtAndBreak(2 * bangLevel, entity, (player1) -> {
-                    player1.broadcastBreakEvent(hand);
-                    if (entity instanceof Player)
-                        EventHooks.onPlayerDestroyItem((Player) entity, entity.getUseItem(), hand);
-                });
-                Level.ExplosionInteraction mode = PPConfig.COMMON.BangBlockDestruction.get()? Level.ExplosionInteraction.TNT : Level.ExplosionInteraction.NONE;
-                entity.level().explode(null, entity.getX(), entity.getY(), entity.getZ(), (float) bangLevel, mode);
-                setChargeTicks(stack, 0);
-            }
-            entity.setLastHurtMob(entityHit);
-            if (entity instanceof Player player && !PPEnchantments.hasBucklerEnchantsOnHands(player, PPEnchantments.BANG.get(), PPEnchantments.TURNING.get())) {
-                player.level().playSound(null, entity.getX(), entity.getY(), entity.getZ(), PPSounds.CRITICAL_ACTIVATE.get(), entity.getSoundSource(), 1.0F, 1.0F);
-                player.setData(PPCapablities.CRITICAL.get(), true);
+                if (bangLevel == 0) {
+                    if (entityHit.hurt(entity.damageSources().mobAttack(entity), damage)) {
+                        entityHit.knockback(knockbackStrength, Mth.sin(entity.getYRot() * ((float) Math.PI / 180F)), -Mth.cos(entity.getYRot() * ((float) Math.PI / 180F)));
+                        entity.setDeltaMovement(entity.getDeltaMovement().multiply(0.6D, 1.0D, 0.6D));
+                    }
+                    if (!entity.isSilent())
+                        entity.level().playSound(null, entity.getX(), entity.getY(), entity.getZ(), PPSounds.SHIELD_BASH.get(), entity.getSoundSource(), 0.5F, 0.8F + entity.getRandom().nextFloat() * 0.4F);
+                    if (entityHit instanceof Player && entityHit.getUseItem().canPerformAction(ToolActions.SHIELD_BLOCK))
+                        ((Player) entityHit).disableShield(true);
+                } else {
+                    InteractionHand hand = entity.getMainHandItem().getItem() instanceof BucklerItem ? InteractionHand.MAIN_HAND : InteractionHand.OFF_HAND;
+                    ItemStack stack = entity.getItemInHand(hand);
+                    stack.hurtAndBreak(2 * bangLevel, entity, (player1) -> {
+                        player1.broadcastBreakEvent(hand);
+                        if (entity instanceof Player)
+                            EventHooks.onPlayerDestroyItem((Player) entity, entity.getUseItem(), hand);
+                    });
+                    Level.ExplosionInteraction mode = PPConfig.COMMON.BangBlockDestruction.get() ? Level.ExplosionInteraction.TNT : Level.ExplosionInteraction.NONE;
+                    entity.level().explode(null, entity.getX(), entity.getY(), entity.getZ(), (float) bangLevel, mode);
+                    setChargeTicks(stack, 0);
+                }
+                entity.setLastHurtMob(entityHit);
+                if (entity instanceof Player player && !PPEnchantments.hasBucklerEnchantsOnHands(player, PPEnchantments.BANG.get(), PPEnchantments.TURNING.get())) {
+                    player.level().playSound(null, entity.getX(), entity.getY(), entity.getZ(), PPSounds.CRITICAL_ACTIVATE.get(), entity.getSoundSource(), 1.0F, 1.0F);
+                    player.setData(PPCapablities.CRITICAL.get(), true);
+                }
             }
         }
     }
@@ -195,8 +194,8 @@ public class BucklerItem extends ShieldItem {
         INCREASED_KNOCKBACK_RESISTANCE.get().resetTransientModifier(entityLiving);
         TURNING_SPEED_REDUCTION.getWithSummand(turningReduction(stack.getEnchantmentLevel(PPEnchantments.TURNING.get()))).resetTransientModifier(entityLiving);
         stack.hurtAndBreak(1, entityLiving, (entityLiving1) -> entityLiving1.broadcastBreakEvent(EquipmentSlot.OFFHAND));
-        //if (entityLiving instanceof Player)
-        //    ((Player) entityLiving).getCooldowns().addCooldown(this, PPConfig.COMMON.bucklerCooldown.get()); TODO REMOVE
+        if (entityLiving instanceof Player)
+            ((Player) entityLiving).getCooldowns().addCooldown(this, PPConfig.COMMON.bucklerCooldown.get());
         entityLiving.stopUsingItem();
         if (entityLiving instanceof AbstractPiglin)
             entityLiving.playSound(PPSounds.PIGLIN_BRUTE_CHARGE.get(), 2.0F, entityLiving.isBaby()
