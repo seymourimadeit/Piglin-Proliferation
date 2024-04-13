@@ -15,7 +15,6 @@ import net.minecraft.world.level.levelgen.structure.templatesystem.StructureProc
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.bus.api.IEventBus;
-import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.ModLoadingContext;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.config.ModConfig;
@@ -32,7 +31,7 @@ import net.neoforged.neoforge.event.entity.SpawnPlacementRegisterEvent;
 import net.neoforged.neoforge.event.server.ServerAboutToStartEvent;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlerEvent;
 import net.neoforged.neoforge.network.registration.IPayloadRegistrar;
-import tallestred.piglinproliferation.capablities.PPCapablities;
+import tallestred.piglinproliferation.capablities.PPCapabilities;
 import tallestred.piglinproliferation.client.PPSounds;
 import tallestred.piglinproliferation.common.advancement.PPCriteriaTriggers;
 import tallestred.piglinproliferation.common.attribute.PPAttributes;
@@ -84,7 +83,7 @@ public class PiglinProliferation {
         PPLoot.LOOT_ITEM_FUNCTION_TYPES.register(modEventBus);
         PPLoot.LOOT_ITEM_CONDITION_TYPES.register(modEventBus);
         PPRecipeSerializers.RECIPE_SERIALIZERS.register(modEventBus);
-        PPCapablities.ATTACHMENT_TYPES.register(modEventBus);
+        PPCapabilities.ATTACHMENT_TYPES.register(modEventBus);
         ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, PPConfig.COMMON_SPEC);
         ModLoadingContext.get().registerConfig(ModConfig.Type.CLIENT, PPConfig.CLIENT_SPEC);
     }

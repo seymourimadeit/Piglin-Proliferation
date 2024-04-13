@@ -46,7 +46,7 @@ import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.level.LevelEvent;
 import net.neoforged.neoforge.event.level.NoteBlockEvent;
 import net.neoforged.neoforge.network.PacketDistributor;
-import tallestred.piglinproliferation.capablities.PPCapablities;
+import tallestred.piglinproliferation.capablities.PPCapabilities;
 import tallestred.piglinproliferation.client.PPSounds;
 import tallestred.piglinproliferation.common.attribute.PPAttributes;
 import tallestred.piglinproliferation.common.blocks.PPBlocks;
@@ -81,7 +81,7 @@ public class PPEvents {
     public static void entityJoin(EntityJoinLevelEvent event) {
         if (event.getEntity() instanceof ZombifiedPiglin ziglin) {
             if (!event.getEntity().level().isClientSide) {
-                PacketDistributor.TRACKING_ENTITY.with(ziglin).send(new ZiglinCapablitySyncPacket(ziglin.getId(), ziglin.getData(PPCapablities.TRANSFORMATION_TRACKER.get())));
+                PacketDistributor.TRACKING_ENTITY.with(ziglin).send(new ZiglinCapablitySyncPacket(ziglin.getId(), ziglin.getData(PPCapabilities.TRANSFORMATION_TRACKER.get())));
             }
             ziglin.goalSelector.addGoal(2, new DumbBowAttackGoal<>(ziglin, 0.5D, 20, 15.0F));
             ziglin.goalSelector.addGoal(2, new DumbCrossbowAttackGoal<>(ziglin, 1.0D, 8.0F));
@@ -99,7 +99,7 @@ public class PPEvents {
     public static void startTracking(PlayerEvent.StartTracking event) {
         if (event.getTarget() instanceof ZombifiedPiglin ziglin) {
             if (!event.getTarget().level().isClientSide) {
-                PacketDistributor.TRACKING_ENTITY.with(ziglin).send(new ZiglinCapablitySyncPacket(ziglin.getId(), ziglin.getData(PPCapablities.TRANSFORMATION_TRACKER.get())));
+                PacketDistributor.TRACKING_ENTITY.with(ziglin).send(new ZiglinCapablitySyncPacket(ziglin.getId(), ziglin.getData(PPCapabilities.TRANSFORMATION_TRACKER.get())));
             }
         }
     }
@@ -139,11 +139,11 @@ public class PPEvents {
                 }
             }
         }
-        boolean criticalAfterCharge = entity.getData(PPCapablities.CRITICAL.get());
+        boolean criticalAfterCharge = entity.getData(PPCapabilities.CRITICAL.get());
         if (criticalAfterCharge) {
             if (entity.swingTime > 0) {
                 entity.level().playSound(null, entity.getX(), entity.getY(), entity.getZ(), PPSounds.CRITICAL_DEACTIVATE.get(), entity.getSoundSource(), 1.0F, 0.8F + entity.getRandom().nextFloat() * 0.4F);
-                entity.setData(PPCapablities.CRITICAL.get(), false);
+                entity.setData(PPCapabilities.CRITICAL.get(), false);
             }
             for (int i = 0; i < 2; ++i) {
                 entity.level().addParticle(ParticleTypes.CRIT, entity.getRandomX(0.5D), entity.getRandomY(), entity.getRandomZ(0.5D), 0.0D, 0.0D, 0.0D);
@@ -231,13 +231,13 @@ public class PPEvents {
     @SubscribeEvent
     public static void onCriticalHit(CriticalHitEvent event) {
         Player player = event.getEntity();
-        if (player.getData(PPCapablities.CRITICAL.get())) {
+        if (player.getData(PPCapabilities.CRITICAL.get())) {
             event.setResult(Event.Result.ALLOW);
             event.setDamageModifier(1.5F);
             Entity entity = event.getEntity();
             entity.level().playSound(null, entity.getX(), entity.getY(), entity.getZ(), SoundEvents.PLAYER_ATTACK_CRIT, entity.getSoundSource(), 1.0F, 1.0F);
             entity.level().playSound(null, entity.getX(), entity.getY(), entity.getZ(), PPSounds.CRITICAL_APPLY.get(), entity.getSoundSource(), 1.0F, 0.8F + entity.level().getRandom().nextFloat() * 0.4F);
-            player.setData(PPCapablities.CRITICAL.get(), false);
+            player.setData(PPCapabilities.CRITICAL.get(), false);
         }
     }
 
@@ -284,23 +284,23 @@ public class PPEvents {
             ZombifiedPiglin zombifiedPiglin = (ZombifiedPiglin) event.getEntity();
             if (spawnType != MobSpawnType.CONVERSION) {
                 if (rSource.nextFloat() < PPConfig.COMMON.zombifiedPiglinDefaultChance.get().floatValue())
-                    zombifiedPiglin.setData(PPCapablities.TRANSFORMATION_TRACKER.get(), "piglin");
+                    zombifiedPiglin.setData(PPCapabilities.TRANSFORMATION_TRACKER.get(), "piglin");
                 if (rSource.nextFloat() < PPConfig.COMMON.piglinVariantChances.get().floatValue()) {
                     List<? extends String> piglinTypes = PPConfig.COMMON.zombifiedPiglinTypeList.get();
                     if (!piglinTypes.isEmpty())
-                        zombifiedPiglin.setData(PPCapablities.TRANSFORMATION_TRACKER.get(), piglinTypes.get(rSource.nextInt(piglinTypes.size())));
+                        zombifiedPiglin.setData(PPCapabilities.TRANSFORMATION_TRACKER.get(), piglinTypes.get(rSource.nextInt(piglinTypes.size())));
                 }
                 float bruteChance = PPConfig.COMMON.zombifiedBruteChance.get().floatValue();
-                if (zombifiedPiglin.getData(PPCapablities.TRANSFORMATION_TRACKER.get()).equalsIgnoreCase("piglin")) {
+                if (zombifiedPiglin.getData(PPCapabilities.TRANSFORMATION_TRACKER.get()).equalsIgnoreCase("piglin")) {
                     if (rSource.nextFloat() < bruteChance) {
                         event.setCanceled(true);
-                        zombifiedPiglin.setData(PPCapablities.TRANSFORMATION_TRACKER.get(), "piglin_brute");
+                        zombifiedPiglin.setData(PPCapabilities.TRANSFORMATION_TRACKER.get(), "piglin_brute");
                         zombifiedPiglin.setItemSlot(EquipmentSlot.MAINHAND, new ItemStack(Items.GOLDEN_AXE));
                         zombifiedPiglin.setItemSlot(EquipmentSlot.OFFHAND, new ItemStack(PPItems.BUCKLER.get()));
                     } else if (rSource.nextFloat() < PPConfig.COMMON.zombifiedAlchemistChance.get().floatValue()) {
                         event.setCanceled(true);
                         zombifiedPiglin.setItemSlot(EquipmentSlot.MAINHAND, new ItemStack(Items.BOW));
-                        zombifiedPiglin.setData(PPCapablities.TRANSFORMATION_TRACKER.get(), "piglin_alchemist");
+                        zombifiedPiglin.setData(PPCapabilities.TRANSFORMATION_TRACKER.get(), "piglin_alchemist");
                     } else if (rSource.nextFloat() < PPConfig.COMMON.crossbowChance.get().floatValue()) {
                         event.setCanceled(true);
                         zombifiedPiglin.setItemSlot(EquipmentSlot.MAINHAND, new ItemStack(Items.CROSSBOW));
@@ -308,7 +308,7 @@ public class PPEvents {
                 }
                 if (spawnType == MobSpawnType.JOCKEY) {
                     event.setCanceled(true);
-                    zombifiedPiglin.setData(PPCapablities.TRANSFORMATION_TRACKER.get(), "piglin_traveller");
+                    zombifiedPiglin.setData(PPCapabilities.TRANSFORMATION_TRACKER.get(), "piglin_traveller");
                     zombifiedPiglin.setItemSlot(EquipmentSlot.MAINHAND, new ItemStack(Items.WARPED_FUNGUS_ON_A_STICK));
                 }
             }
@@ -336,7 +336,7 @@ public class PPEvents {
                 ResourceLocation location = registryOptional.get().getKey(piglin.getType());
                 if (location != null) {
                     String piglinName = location.getPath();
-                    ziglin.setData(PPCapablities.TRANSFORMATION_TRACKER.get(), piglinName);
+                    ziglin.setData(PPCapabilities.TRANSFORMATION_TRACKER.get(), piglinName);
                     PacketDistributor.TRACKING_ENTITY.with(ziglin).send(new ZiglinCapablitySyncPacket(ziglin.getId(), piglinName));
                 }
             }

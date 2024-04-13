@@ -12,15 +12,15 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import tallestred.piglinproliferation.client.PPClientEvents;
-import tallestred.piglinproliferation.client.models.ModelGoldenBuckler;
+import tallestred.piglinproliferation.client.models.BucklerModel;
 import tallestred.piglinproliferation.common.items.PPItems;
 
 public class BucklerRenderer extends BlockEntityWithoutLevelRenderer {
-    public final ModelGoldenBuckler bucklerModel;
+    public final BucklerModel bucklerModel;
 
     public BucklerRenderer(BlockEntityRenderDispatcher berd, EntityModelSet set) {
         super(berd, set);
-        this.bucklerModel = new ModelGoldenBuckler(set.bakeLayer(PPClientEvents.BUCKLER));
+        this.bucklerModel = new BucklerModel(set.bakeLayer(PPClientEvents.BUCKLER));
     }
 
     @Override

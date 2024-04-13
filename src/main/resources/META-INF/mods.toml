@@ -23,7 +23,7 @@ displayName="${mod_name}" #mandatory
 authors="${mod_authors}"
 updateJSONURL="https://raw.githubusercontent.com/seymourimadeit/Piglin-Proliferation/main/update.json" #optional
 logoFile="piglinproliferation.png"
-credits="Buckler Art by Vivi" #optional
+credits="Vivi for Buckler art, flowerfugue's friends Leo and Paula for translation help" #optional
 description='''
 Piglins expanded in new ways!
 '''

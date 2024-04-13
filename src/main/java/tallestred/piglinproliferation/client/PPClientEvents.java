@@ -20,7 +20,7 @@ import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 import net.neoforged.neoforge.client.event.EntityRenderersEvent;
 import net.neoforged.neoforge.common.util.Lazy;
 import tallestred.piglinproliferation.PiglinProliferation;
-import tallestred.piglinproliferation.client.models.ModelGoldenBuckler;
+import tallestred.piglinproliferation.client.models.BucklerModel;
 import tallestred.piglinproliferation.client.models.PiglinAlchemistModel;
 import tallestred.piglinproliferation.client.models.PiglinHeadEntityModel;
 import tallestred.piglinproliferation.client.models.PiglinTravellerModel;
@@ -34,6 +34,7 @@ import tallestred.piglinproliferation.common.entities.PPEntityTypes;
 
 import java.util.function.Function;
 
+@SuppressWarnings("unused")
 @Mod.EventBusSubscriber(modid = PiglinProliferation.MODID, bus = Mod.EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
 public class PPClientEvents {
     public static final ModelLayerLocation ZIGLIN_CLOTHING = new ModelLayerLocation(
@@ -57,6 +58,7 @@ public class PPClientEvents {
 
     public static final ModelLayerLocation ALCHEMIST_ARMOR_OUTER_LAYER = new ModelLayerLocation(
             new ResourceLocation(PiglinProliferation.MODID + "alchemist_outer_armor"), "alchemist_outer_armor");
+    @SuppressWarnings("deprecation") //It is necessary :(
     public static final Material BUCKLER_TEXTURE = new Material(TextureAtlas.LOCATION_BLOCKS, new ResourceLocation(PiglinProliferation.MODID, "entity/buckler/golden_buckler"));
 
     @SubscribeEvent
@@ -70,7 +72,7 @@ public class PPClientEvents {
         event.registerLayerDefinition(TRAVELLER_ARMOR_OUTER_LAYER, () -> LayerDefinition.create(HumanoidArmorModel.createBodyLayer(new CubeDeformation(1.3F)), 64, 32));
         event.registerLayerDefinition(ALCHEMIST_ARMOR_OUTER_LAYER, () -> LayerDefinition.create(HumanoidArmorModel.createBodyLayer(new CubeDeformation(1.3F)), 64, 32));
         event.registerLayerDefinition(PIGLIN_ALCHEMIST_BELT_SLOTS, () -> LayerDefinition.create(PiglinAlchemistModel.createBodyLayer(new CubeDeformation(0.40F), new CubeDeformation(1.0F), new CubeDeformation(1.40F)), 120, 64));
-        event.registerLayerDefinition(BUCKLER, ModelGoldenBuckler::createLayer);
+        event.registerLayerDefinition(BUCKLER, BucklerModel::createLayer);
     }
 
     @SubscribeEvent
@@ -102,6 +104,7 @@ public class PPClientEvents {
         event.enqueueWork(() -> SkullBlockRenderer.SKIN_BY_TYPE.put(PiglinSkullBlock.Types.PIGLIN_TRAVELLER, new ResourceLocation(PiglinProliferation.MODID, "textures/entity/piglin/traveller/traveller.png")));
     }
 
+    @SuppressWarnings("SameParameterValue") //Entity type parameter will be useful in future
     private static <T extends Mob, R extends LivingEntityRenderer<T, M>, M extends PiglinModel<T>> void addLayerToRenderer(EntityRenderersEvent.AddLayers event, EntityType<T> entityType, Function<R, ? extends RenderLayer<T, M>> factory) {
         R renderer = event.getRenderer(entityType);
         if (renderer != null) renderer.addLayer(factory.apply(renderer));

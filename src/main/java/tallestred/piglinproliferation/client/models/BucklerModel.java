@@ -12,14 +12,16 @@ import net.minecraft.client.model.geom.builders.PartDefinition;
 import net.minecraft.client.renderer.RenderType;
 
 /**
- * ModelGoldenBuckler - MCVinnyq Created using Tabula 8.0.0
+ * Created using Tabula 8.0.0
+ *
+ * @author Vivi
  */
-public class ModelGoldenBuckler extends Model {
+public class BucklerModel extends Model {
     public final ModelPart root;
     public final ModelPart base;
     public final ModelPart handle;
 
-    public ModelGoldenBuckler(ModelPart part) {
+    public BucklerModel(ModelPart part) {
         super(RenderType::entitySolid);
         this.root = part;
         this.base = part.getChild("base");
@@ -37,14 +39,5 @@ public class ModelGoldenBuckler extends Model {
     @Override
     public void renderToBuffer(PoseStack matrixStackIn, VertexConsumer bufferIn, int packedLightIn, int packedOverlayIn, float red, float green, float blue, float alpha) {
         this.root.render(matrixStackIn, bufferIn, packedLightIn, packedOverlayIn);
-    }
-
-    /**
-     * This is a helper function from Tabula to set the rotation of model parts
-     */
-    public void setRotateAngle(ModelPart modelRenderer, float x, float y, float z) {
-        modelRenderer.xRot = x;
-        modelRenderer.yRot = y;
-        modelRenderer.zRot = z;
     }
 }

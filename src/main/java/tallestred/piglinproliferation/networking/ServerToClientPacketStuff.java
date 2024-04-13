@@ -4,28 +4,34 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.monster.ZombifiedPiglin;
-import tallestred.piglinproliferation.capablities.PPCapablities;
+import net.minecraft.world.level.Level;
+import tallestred.piglinproliferation.capablities.PPCapabilities;
 import tallestred.piglinproliferation.common.entities.PiglinAlchemist;
+
+import javax.annotation.Nullable;
 
 public class ServerToClientPacketStuff {
     public static void syncBelt(AlchemistBeltSyncPacket msg) {
-        Entity entity = Minecraft.getInstance().level.getEntity(msg.getEntityId());
-        if (entity != null && entity instanceof PiglinAlchemist alchemist) {
+        if (getEntity(msg.getEntityId()) instanceof PiglinAlchemist alchemist) {
             alchemist.setBeltInventorySlot(msg.slotId, msg.stack);
         }
     }
 
     public static void syncZiglinClothes(ZiglinCapablitySyncPacket msg) {
-        Entity entity = Minecraft.getInstance().level.getEntity(msg.getEntityId());
-        if (entity != null && entity instanceof ZombifiedPiglin ziglin) {
-            ziglin.setData(PPCapablities.TRANSFORMATION_TRACKER.get(), msg.getTransformedFromId());
+        if (getEntity(msg.getEntityId()) instanceof ZombifiedPiglin ziglin) {
+            ziglin.setData(PPCapabilities.TRANSFORMATION_TRACKER.get(), msg.getTransformedFromId());
         }
     }
 
     public static void syncCritical(CriticalCapabilityPacket msg) {
-        Entity entity = Minecraft.getInstance().level.getEntity(msg.getEntityId());
-        if (entity != null && entity instanceof LivingEntity living) {
-            entity.setData(PPCapablities.CRITICAL.get(), msg.getCrit());
+        if (getEntity(msg.getEntityId()) instanceof LivingEntity living) {
+            living.setData(PPCapabilities.CRITICAL.get(), msg.getCrit());
         }
+    }
+
+    @Nullable
+    public static Entity getEntity(int entityID) {
+        Level level = Minecraft.getInstance().level;
+        return level != null ? level.getEntity(entityID) : null;
     }
 }

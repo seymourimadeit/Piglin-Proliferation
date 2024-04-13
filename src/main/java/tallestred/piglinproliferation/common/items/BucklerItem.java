@@ -36,7 +36,7 @@ import net.neoforged.neoforge.common.Tags;
 import net.neoforged.neoforge.common.ToolAction;
 import net.neoforged.neoforge.common.ToolActions;
 import net.neoforged.neoforge.event.EventHooks;
-import tallestred.piglinproliferation.capablities.PPCapablities;
+import tallestred.piglinproliferation.capablities.PPCapabilities;
 import tallestred.piglinproliferation.client.PPSounds;
 import tallestred.piglinproliferation.client.renderers.BucklerRenderer;
 import tallestred.piglinproliferation.common.attribute.AttributeModifierHolder;
@@ -156,7 +156,7 @@ public class BucklerItem extends ShieldItem {
                 entity.setLastHurtMob(entityHit);
                 if (entity instanceof Player player && !PPEnchantments.hasBucklerEnchantsOnHands(player, PPEnchantments.BANG.get(), PPEnchantments.TURNING.get())) {
                     player.level().playSound(null, entity.getX(), entity.getY(), entity.getZ(), PPSounds.CRITICAL_ACTIVATE.get(), entity.getSoundSource(), 1.0F, 1.0F);
-                    player.setData(PPCapablities.CRITICAL.get(), true);
+                    player.setData(PPCapabilities.CRITICAL.get(), true);
                 }
             }
         }
