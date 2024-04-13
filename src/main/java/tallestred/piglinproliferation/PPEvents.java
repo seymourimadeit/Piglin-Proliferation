@@ -113,6 +113,9 @@ public class PPEvents {
         if (bucklerReadyToCharge) {
             BucklerItem.setChargeTicks(bucklerItemStack, bucklerChargeTicks - 1);
             if (bucklerChargeTicks > 0) {
+                if (entity.horizontalCollision && PPEnchantments.hasBucklerEnchantsOnHands(entity, PPEnchantments.TURNING.get())) {
+                    entity.setDeltaMovement(entity.getDeltaMovement().x, PPConfig.COMMON.bucklerTrimpValue.get() * (EnchantmentHelper.getEnchantmentLevel(PPEnchantments.TURNING.get(), entity)), entity.getDeltaMovement().z);
+                }
                 BucklerItem.moveFowards(entity);
                 BucklerItem.spawnRunningEffectsWhileCharging(entity);
                 if (!entity.level().isClientSide()) BucklerItem.bucklerBash(entity);
@@ -263,9 +266,9 @@ public class PPEvents {
             piglinBrute.setItemSlot(EquipmentSlot.OFFHAND, new ItemStack(PPItems.BUCKLER.get()));
             ItemStack itemstack = piglinBrute.getOffhandItem();
             if (itemstack.getItem() instanceof BucklerItem) {
-                if (rSource.nextInt(1) == 0) {
+                if (rSource.nextInt(300) == 0) {
                     Map<Enchantment, Integer> map = EnchantmentHelper.getEnchantments(itemstack);
-                    map.putIfAbsent(PPEnchantments.TURNING.get(), 4);
+                    map.putIfAbsent(PPEnchantments.TURNING.get(), 5);
                     EnchantmentHelper.setEnchantments(map, itemstack);
                     piglinBrute.setItemSlot(EquipmentSlot.OFFHAND, itemstack);
                 }

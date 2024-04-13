@@ -45,6 +45,7 @@ public class PPConfig {
         public final ModConfigSpec.IntValue bucklerCooldown;
         public final ModConfigSpec.IntValue minBucklerChargeTime;
         public final ModConfigSpec.IntValue maxBucklerChargeTime;
+        public final ModConfigSpec.DoubleValue bucklerTrimpValue;
         public final ModConfigSpec.ConfigValue<List<? extends String>> zombifiedPiglinTypeList;
         public final ModConfigSpec.BooleanValue travellersCompassBiomeWhitelist;
         public final ModConfigSpec.BooleanValue travellersCompassStructureWhitelist;
@@ -73,6 +74,7 @@ public class PPConfig {
             minBucklerChargeTime = builder.defineInRange("How long should the buckler's charge move be in ticks?", 15, Integer.MIN_VALUE, Integer.MAX_VALUE); // Thinking of removing this in 1.17.
             maxBucklerChargeTime = builder.defineInRange("How long should the buckler's charge move if you have the max level of turning enchant be in ticks?", 40, Integer.MIN_VALUE, Integer.MAX_VALUE);
             bucklerChance = builder.defineInRange("Chance of buckler appearing in bastion loot", 0.25F, 0.0F, 9999999.0F);
+            bucklerTrimpValue = builder.comment("Experimental: Turning bucklers will allow the player to 'trimp' when colliding with a block, default value for this is 0.0, but if you want to test this feature out try 0.15").defineInRange("Trimp value", 0.0D, 0.0D, 999999.0D);
             builder.pop();
             builder.push("Piglin Alchemist");
             alchemistPotionChance = builder.defineInRange("Chance of alchemist potions not getting broken when killed", 0.20F, 0.0F, 9000.0F);
