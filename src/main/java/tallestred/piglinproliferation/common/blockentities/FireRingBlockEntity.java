@@ -44,7 +44,8 @@ public class FireRingBlockEntity extends CampfireBlockEntity {
         if (this.unsafeLightLevel < 0) {
             BlockState state = this.getBlockState();
             BlockPos pos = this.getBlockPos();
-            this.unsafeLightLevel = state.getBlock().getLightEmission(state, this.level, pos);
+            if (this.level != null)
+                this.unsafeLightLevel = state.getBlock().getLightEmission(state, this.level, pos);
         }
         return this.unsafeLightLevel;
     }
@@ -117,20 +118,38 @@ public class FireRingBlockEntity extends CampfireBlockEntity {
         if (!blockEntity.effects.isEmpty()) {
             if (!state.getValue(FireRingBlock.LIT))
                 blockEntity.effects.clear();
-            else for (MobEffectInstance effectInstance : new ArrayList<>(blockEntity.effects)) {
-                effectInstance.tickDownDuration();
-                if (!effectInstance.isInfiniteDuration() && effectInstance.getDuration() <= 0)
-                    blockEntity.effects.remove(effectInstance);
+            else {
+                List<MobEffectInstance> toRemove = new ArrayList<>();
+                for (MobEffectInstance effectInstance : blockEntity.effects) {
+                    if (!effectInstance.isInfiniteDuration()) {
+                        effectInstance.tickDownDuration();
+                        if (effectInstance.getDuration() <= 0)
+                            toRemove.add(effectInstance);
+                    }
+                }
+                if (!toRemove.isEmpty()) {
+                    blockEntity.effects.removeAll(toRemove);
+                    blockEntity.updateColor(level, pos, state);
+                }
+                if (!blockEntity.effects.isEmpty()) {
+                    double radius = blockEntity.getLightLevel();
+                    int x = pos.getX();
+                    int y = pos.getY();
+                    int z = pos.getZ();
+                    for (LivingEntity entity : level.getEntitiesOfClass(LivingEntity.class, new AABB(x - radius, y - radius, z - radius, x + radius, y + radius, z + radius)))
+                        blockEntity.effects.forEach(effect -> entity.addEffect(new MobEffectInstance(effect.getEffect(), 210, effect.getAmplifier())));
+                }
+
             }
-            blockEntity.potionColor = blockEntity.effects.isEmpty() ? -1 : PotionUtils.getColor(blockEntity.effects);
+        }
+    }
+
+    public void updateColor(Level level, BlockPos pos, BlockState state) {
+        int newColor = effects.isEmpty() ? -1 : PotionUtils.getColor(effects);
+        if (potionColor != newColor) {
+            potionColor = newColor;
             level.sendBlockUpdated(pos, state, state, Block.UPDATE_CLIENTS);
-            blockEntity.setChanged();
-            double radius = blockEntity.getLightLevel();
-            int x = pos.getX();
-            int y = pos.getY();
-            int z = pos.getZ();
-            for (LivingEntity entity : level.getEntitiesOfClass(LivingEntity.class, new AABB(x - radius, y - radius, z - radius, x + radius, y + radius, z + radius)))
-                blockEntity.effects.forEach(effect -> entity.addEffect(new MobEffectInstance(effect.getEffect(), 110, effect.getAmplifier())));
+            this.setChanged();
         }
     }
 
