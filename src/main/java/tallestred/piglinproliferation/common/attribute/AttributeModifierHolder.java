@@ -52,16 +52,6 @@ public class AttributeModifierHolder extends AbstractAttributeModifierHolder {
             this.modifier = new AttributeModifier(uuid, name, amount, operation);
         }
 
-        public void resetTransientModifier(LivingEntity entity) {
-            removeModifier(entity);
-            addTransientModifier(entity);
-        }
-
-        public void resetPermanentModifier(LivingEntity entity) {
-            removeModifier(entity);
-            addPermanentModifier(entity);
-        }
-
         public void addTransientModifier(LivingEntity entity) {
             addTransientInternal(modifier, entity);
         }

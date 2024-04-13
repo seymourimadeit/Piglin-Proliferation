@@ -41,6 +41,21 @@ public abstract class AbstractAttributeModifierHolder {
     }
 
     public abstract class Instance {
+
+        public void resetTransientModifier(LivingEntity entity) {
+            removeModifier(entity);
+            addTransientModifier(entity);
+        }
+
+        public void resetPermanentModifier(LivingEntity entity) {
+            removeModifier(entity);
+            addPermanentModifier(entity);
+        }
+
+        public abstract void addTransientModifier(LivingEntity entity);
+
+        public abstract void addPermanentModifier(LivingEntity entity);
+
         protected void addTransientInternal(AttributeModifier modifier, LivingEntity entity) {
             AttributeInstance instance = entity.getAttribute(attribute);
             if (instance != null)

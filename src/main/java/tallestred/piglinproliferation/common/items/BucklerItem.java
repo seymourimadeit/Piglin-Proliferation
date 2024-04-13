@@ -41,7 +41,7 @@ import tallestred.piglinproliferation.client.PPSounds;
 import tallestred.piglinproliferation.client.renderers.BucklerRenderer;
 import tallestred.piglinproliferation.common.attribute.AttributeModifierHolder;
 import tallestred.piglinproliferation.common.attribute.PPAttributes;
-import tallestred.piglinproliferation.common.attribute.RangedAttributeModifierHolder;
+import tallestred.piglinproliferation.common.attribute.RangedRandomAttributeModifierHolder;
 import tallestred.piglinproliferation.common.enchantments.PPEnchantments;
 import tallestred.piglinproliferation.configuration.PPConfig;
 
@@ -57,7 +57,7 @@ public class BucklerItem extends ShieldItem {
     public static final AttributeModifierHolder CHARGE_SPEED_BOOST = new AttributeModifierHolder(Attributes.MOVEMENT_SPEED, UUID.fromString("A2F995E8-B25A-4883-B9D0-93A676DC4045"), "Charge speed boost", 9, AttributeModifier.Operation.MULTIPLY_BASE);
     public static final AttributeModifierHolder INCREASED_KNOCKBACK_RESISTANCE = new AttributeModifierHolder(Attributes.KNOCKBACK_RESISTANCE, UUID.fromString("93E74BB2-05A5-4AC0-8DF5-A55768208A95"), "Increased knockback resistance", 1, AttributeModifier.Operation.ADDITION);
     public static final AttributeModifierHolder TURNING_SPEED_REDUCTION = new AttributeModifierHolder(PPAttributes.TURNING_SPEED.get(), UUID.fromString("25329357-86FD-48DC-BD51-8705EA0CC36E"), "Turning speed reduction", -1, AttributeModifier.Operation.MULTIPLY_TOTAL);
-    public static final RangedAttributeModifierHolder ATTACK_DAMAGE = new RangedAttributeModifierHolder(Attributes.ATTACK_DAMAGE, UUID.fromString("1DDF2C1B-0279-440F-A919-D07479E60684"), "Attack damage", 6, 8, AttributeModifier.Operation.ADDITION);
+    public static final RangedRandomAttributeModifierHolder ATTACK_DAMAGE = new RangedRandomAttributeModifierHolder(Attributes.ATTACK_DAMAGE, UUID.fromString("1DDF2C1B-0279-440F-A919-D07479E60684"), "Attack damage", 6, 8, AttributeModifier.Operation.ADDITION);
     //This is stored as a modifier for easy localisation, even though it's not actually modifying anything
 
     public BucklerItem(Properties p_i48470_1_) {
@@ -120,8 +120,11 @@ public class BucklerItem extends ShieldItem {
             entityHit.push(entity);
             int bangLevel = PPEnchantments.getBucklerEnchantsOnHands(PPEnchantments.BANG.get(), entity);
             int turningLevel = PPEnchantments.getBucklerEnchantsOnHands(PPEnchantments.TURNING.get(), entity);
-            RangedAttributeModifierHolder.Instance attackDamage = ATTACK_DAMAGE.getWithSummands(minDamageReduction(turningLevel), maxDamageReduction(turningLevel));
-            float damage = (float) Math.round(attackDamage.randomAmount(entity.getRandom()));
+            RangedRandomAttributeModifierHolder.Instance attackDamage = ATTACK_DAMAGE.getWithSummands(minDamageReduction(turningLevel), maxDamageReduction(turningLevel));
+            //for (int i=0; i<20; i++)
+            //    System.out.println("Random damage: " + attackDamage.randomIntAmount());
+            float damage = (float) attackDamage.randomIntAmount();/*entity.getRandom().nextIntBetweenInclusive(Math.round((float) attackDamage.minAmount), Math.round((float) attackDamage.maxAmount));*/
+            //System.out.println("Random damage: " + damage);
             float knockbackStrength = 3.0F;
             for (int duration = 0; duration < 10; ++duration) {
                 double d0 = entity.getRandom().nextGaussian() * 0.02D;
@@ -192,8 +195,8 @@ public class BucklerItem extends ShieldItem {
         INCREASED_KNOCKBACK_RESISTANCE.get().resetTransientModifier(entityLiving);
         TURNING_SPEED_REDUCTION.getWithSummand(turningReduction(stack.getEnchantmentLevel(PPEnchantments.TURNING.get()))).resetTransientModifier(entityLiving);
         stack.hurtAndBreak(1, entityLiving, (entityLiving1) -> entityLiving1.broadcastBreakEvent(EquipmentSlot.OFFHAND));
-        if (entityLiving instanceof Player)
-            ((Player) entityLiving).getCooldowns().addCooldown(this, PPConfig.COMMON.bucklerCooldown.get());
+        //if (entityLiving instanceof Player)
+        //    ((Player) entityLiving).getCooldowns().addCooldown(this, PPConfig.COMMON.bucklerCooldown.get()); TODO REMOVE
         entityLiving.stopUsingItem();
         if (entityLiving instanceof AbstractPiglin)
             entityLiving.playSound(PPSounds.PIGLIN_BRUTE_CHARGE.get(), 2.0F, entityLiving.isBaby()

@@ -3,22 +3,23 @@ package tallestred.piglinproliferation.common.attribute;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.contents.TranslatableContents;
-import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 
 import java.util.UUID;
+import java.util.random.RandomGenerator;
 
 import static net.minecraft.world.item.ItemStack.ATTRIBUTE_MODIFIER_FORMAT;
+import static tallestred.piglinproliferation.CodeUtilities.capToRange;
 
-public class RangedAttributeModifierHolder extends AbstractAttributeModifierHolder {
+public class RangedRandomAttributeModifierHolder extends AbstractAttributeModifierHolder {
     public final double defaultMinAmount;
     public final double defaultMaxAmount;
     public final AttributeModifier.Operation defaultOperation;
     protected final Instance defaultInstance;
 
-    public RangedAttributeModifierHolder(Attribute attribute, UUID uuid, String name, double defaultMinAmount, double defaultMaxAmount, AttributeModifier.Operation defaultOperation) {
+    public RangedRandomAttributeModifierHolder(Attribute attribute, UUID uuid, String name, double defaultMinAmount, double defaultMaxAmount, AttributeModifier.Operation defaultOperation) {
         super(attribute, uuid, name);
         this.defaultMinAmount = defaultMinAmount;
         this.defaultMaxAmount = defaultMaxAmount;
@@ -58,6 +59,8 @@ public class RangedAttributeModifierHolder extends AbstractAttributeModifierHold
         public final double minAmount;
         public final double maxAmount;
         public final AttributeModifier.Operation operation;
+        protected RandomGenerator random;
+
 
         protected Instance(double minAmount, double maxAmount, AttributeModifier.Operation operation) {
             this.minAmount = minAmount;
@@ -65,31 +68,20 @@ public class RangedAttributeModifierHolder extends AbstractAttributeModifierHold
             this.operation = operation;
         }
 
-        public void resetTransientModifierRandom(RandomSource random, LivingEntity entity) {
-            resetTransientModifier(randomAmount(random), entity);
+        public AttributeModifier modifier() {
+            return modifier(randomAmount());
         }
 
-        public void resetTransientModifier(double amount, LivingEntity entity) {
-            removeModifier(entity);
-            addTransientModifier(amount, entity);
+        public AttributeModifier modifier(double amount) {
+            return new AttributeModifier(uuid, name, capToRange(amount, minAmount, maxAmount), operation);
         }
 
-        public void resetPermanentModifierRandom(RandomSource random, LivingEntity entity) {
-            resetPermanentModifier(randomAmount(random), entity);
+        public void addTransientModifier(LivingEntity entity) {
+            addTransientInternal(modifier(), entity);
         }
 
-        public void resetPermanentModifier(double amount, LivingEntity entity) {
-            removeModifier(entity);
-            addPermanentModifier(amount, entity);
-        }
-
-
-        public void addTransientModifier(double amount, LivingEntity entity) {
-            addTransientInternal(createModifier(amount), entity);
-        }
-
-        public void addPermanentModifier(double amount, LivingEntity entity) {
-            addPermanentInternal(createModifier(amount), entity);
+        public void addPermanentModifier(LivingEntity entity) {
+            addPermanentInternal(modifier(), entity);
         }
 
         public MutableComponent translatable() {
@@ -114,12 +106,18 @@ public class RangedAttributeModifierHolder extends AbstractAttributeModifierHold
             return result;
         }
 
-        protected AttributeModifier createModifier(double amount) {
-            return new AttributeModifier(uuid, name, amount, operation);
+        public double randomAmount() {
+            return random().nextDouble(minAmount, maxAmount);
         }
 
-        public double randomAmount(RandomSource source) {
-            return minAmount + ((maxAmount-minAmount) * source.nextDouble());
+        public int randomIntAmount() {
+            return random().nextInt(Math.round((float) minAmount), Math.round((float) maxAmount) + 1);
+        }
+
+        protected RandomGenerator random() {
+           if (random == null)
+               random = RandomGenerator.getDefault();
+           return random;
         }
     }
 }
