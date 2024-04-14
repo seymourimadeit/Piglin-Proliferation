@@ -3,10 +3,12 @@ package tallestred.piglinproliferation;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.Registry;
 import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.RandomSource;
@@ -50,6 +52,7 @@ import tallestred.piglinproliferation.capablities.PPCapabilities;
 import tallestred.piglinproliferation.client.PPSounds;
 import tallestred.piglinproliferation.common.attribute.PPAttributes;
 import tallestred.piglinproliferation.common.blocks.PPBlocks;
+import tallestred.piglinproliferation.common.blocks.PiglinSkullBlock;
 import tallestred.piglinproliferation.common.enchantments.PPEnchantments;
 import tallestred.piglinproliferation.common.entities.PPEntityTypes;
 import tallestred.piglinproliferation.common.entities.PiglinTraveller;
@@ -200,7 +203,7 @@ public class PPEvents {
 
     @SubscribeEvent
     public static void attackEntity(LivingAttackEvent event) {
-        // Testing bygone nether compatibility lead me to discover that alchemists healing piglin hunters leads to them attacking each other since the
+        // Testing bygone nether compatibility led me to discover that alchemists healing piglin hunters leads to them attacking each other since the
         // horses they're riding on are considered undead, this should work as a quick fix for that, but further discussions with the mod creator is needed.
         if (event.getEntity() instanceof Mob mob) {
             for (Entity rider : mob.getPassengers()) {
@@ -383,21 +386,13 @@ public class PPEvents {
     @SubscribeEvent
     public static void noteBlockPlay(NoteBlockEvent.Play event) {
         BlockState stateAbove = event.getLevel().getBlockState(event.getPos().above());
-        if (stateAbove.is(PPBlocks.PIGLIN_ALCHEMIST_HEAD.get())) {
+        if (stateAbove.getBlock() instanceof PiglinSkullBlock) {
             event.setCanceled(true);
-            event.getLevel().playSound(null, event.getPos(), PPSounds.ALCHEMIST_ANGRY.get(), SoundSource.RECORDS);
-        }
-        if (stateAbove.is(PPBlocks.ZOMBIFIED_PIGLIN_HEAD.get())) {
-            event.setCanceled(true);
-            event.getLevel().playSound(null, event.getPos(), SoundEvents.ZOMBIFIED_PIGLIN_ANGRY, SoundSource.RECORDS);
-        }
-        if (stateAbove.is(PPBlocks.PIGLIN_BRUTE_HEAD.get())) {
-            event.setCanceled(true);
-            event.getLevel().playSound(null, event.getPos(), SoundEvents.PIGLIN_BRUTE_ANGRY, SoundSource.RECORDS);
-        }
-        if (stateAbove.is(PPBlocks.PIGLIN_TRAVELLER_HEAD.get())) {
-            event.setCanceled(true);
-            event.getLevel().playSound(null, event.getPos(), PPSounds.TRAVELLER_ANGRY.get(), SoundSource.RECORDS);
+            ResourceLocation soundLocation = new ResourceLocation("", stateAbove.getBlock().getDescriptionId().replace("block.piglinproliferation.", "entity.").replace("_head", "") + ".angry");
+            SoundEvent sound = BuiltInRegistries.SOUND_EVENT.stream().filter(soundEvent -> soundEvent.getLocation().toString().contains(soundLocation.toString())).findFirst().orElseGet(() -> SoundEvent.createVariableRangeEvent(soundLocation));
+            if (sound == null)
+                return;
+            event.getLevel().playSound(null, event.getPos(), sound, SoundSource.RECORDS);
         }
     }
 
