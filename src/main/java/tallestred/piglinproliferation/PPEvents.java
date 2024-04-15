@@ -3,12 +3,10 @@ package tallestred.piglinproliferation;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.Registry;
 import net.minecraft.core.particles.ParticleTypes;
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.RandomSource;
@@ -386,13 +384,9 @@ public class PPEvents {
     @SubscribeEvent
     public static void noteBlockPlay(NoteBlockEvent.Play event) {
         BlockState stateAbove = event.getLevel().getBlockState(event.getPos().above());
-        if (stateAbove.getBlock() instanceof PiglinSkullBlock) {
+        if (stateAbove.getBlock() instanceof PiglinSkullBlock skull) {
             event.setCanceled(true);
-            ResourceLocation soundLocation = new ResourceLocation("", stateAbove.getBlock().getDescriptionId().replace("block.piglinproliferation.", "entity.").replace("_head", "") + ".angry");
-            SoundEvent sound = BuiltInRegistries.SOUND_EVENT.stream().filter(soundEvent -> soundEvent.getLocation().toString().contains(soundLocation.toString())).findFirst().orElseGet(() -> SoundEvent.createVariableRangeEvent(soundLocation));
-            if (sound == null)
-                return;
-            event.getLevel().playSound(null, event.getPos(), sound, SoundSource.RECORDS);
+            event.getLevel().playSound(null, event.getPos(), skull.noteBlockSound, SoundSource.RECORDS);
         }
     }
 

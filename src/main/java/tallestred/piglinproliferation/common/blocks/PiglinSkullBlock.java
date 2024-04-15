@@ -1,6 +1,9 @@
 package tallestred.piglinproliferation.common.blocks;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
@@ -19,9 +22,12 @@ import javax.annotation.Nullable;
 
 public class PiglinSkullBlock extends SkullBlock {
     protected static final VoxelShape PIGLIN_SHAPE = Block.box(3.0, 0.0, 3.0, 13.0, 8.0, 13.0);
+    public final SoundEvent noteBlockSound;
 
     public PiglinSkullBlock(Type pType, Properties pProperties) {
         super(pType, pProperties);
+        ResourceLocation soundLocation = new ResourceLocation("", "entity." + pType.getSerializedName() + ".angry");
+        this.noteBlockSound = BuiltInRegistries.SOUND_EVENT.stream().filter(soundEvent -> soundEvent.getLocation().toString().contains(soundLocation.toString())).findFirst().orElseGet(() -> SoundEvent.createVariableRangeEvent(soundLocation));
     }
 
     public VoxelShape getShape(BlockState pState, BlockGetter pLevel, BlockPos pPos, CollisionContext pContext) {
@@ -44,7 +50,7 @@ public class PiglinSkullBlock extends SkullBlock {
         PIGLIN_BRUTE("piglin_brute"),
         PIGLIN_ALCHEMIST("piglin_alchemist"),
         ZOMBIFIED_PIGLIN("zombified_piglin"),
-        PIGLIN_TRAVELLER("piglin_traveler");
+        PIGLIN_TRAVELLER("piglin_traveller");
 
         private final String name;
 

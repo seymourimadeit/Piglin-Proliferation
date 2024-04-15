@@ -1,0 +1,9 @@
+{
+  "replace": false,
+  "values": [
+    "piglinproliferation:piglin_alchemist_head",
+    "piglinproliferation:piglin_traveller_head",
+    "piglinproliferation:piglin_brute_head",
+    "piglinproliferation:zombified_piglin_head"
+  ]
+}
