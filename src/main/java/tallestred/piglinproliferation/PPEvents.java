@@ -16,14 +16,12 @@ import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.memory.MemoryModuleType;
-import net.minecraft.world.entity.animal.IronGolem;
 import net.minecraft.world.entity.monster.Creeper;
 import net.minecraft.world.entity.monster.Ghast;
 import net.minecraft.world.entity.monster.Strider;
 import net.minecraft.world.entity.monster.ZombifiedPiglin;
 import net.minecraft.world.entity.monster.piglin.AbstractPiglin;
 import net.minecraft.world.entity.monster.piglin.PiglinBrute;
-import net.minecraft.world.entity.npc.Villager;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.Arrow;
 import net.minecraft.world.entity.projectile.Fireball;
@@ -51,6 +49,7 @@ import net.neoforged.neoforge.network.PacketDistributor;
 import tallestred.piglinproliferation.capablities.PPCapabilities;
 import tallestred.piglinproliferation.client.PPSounds;
 import tallestred.piglinproliferation.common.attribute.PPAttributes;
+import tallestred.piglinproliferation.common.blocks.PPBlocks;
 import tallestred.piglinproliferation.common.blocks.PiglinSkullBlock;
 import tallestred.piglinproliferation.common.enchantments.PPEnchantments;
 import tallestred.piglinproliferation.common.entities.PPEntityTypes;
@@ -218,18 +217,16 @@ public class PPEvents {
 
     @SubscribeEvent
     public static void targetMob(LivingChangeTargetEvent event) {
-        if (event.getEntity() instanceof AbstractPiglin)
-            if (event.getOriginalTarget() instanceof AbstractPiglin)
+        if (event.getEntity() instanceof AbstractPiglin) {
+            if (event.getOriginalTarget() instanceof AbstractPiglin) {
                 event.setCanceled(true);
-        if (event.getEntity() instanceof ZombifiedPiglin)
-            if (event.getOriginalTarget() instanceof ZombifiedPiglin)
-                event.setCanceled(true);
-        if (event.getEntity() instanceof IronGolem golem)
-            if (event.getNewTarget() instanceof PiglinTraveller traveller) {
-                LivingEntity target = traveller.getTarget();
-                if (!(golem.equals(target) || target instanceof Player || target instanceof Villager))
-                    event.setCanceled(true);
             }
+        }
+        if (event.getEntity() instanceof ZombifiedPiglin) {
+            if (event.getOriginalTarget() instanceof ZombifiedPiglin) {
+                event.setCanceled(true);
+            }
+        }
     }
 
     @SubscribeEvent
