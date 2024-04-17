@@ -1,0 +1,8 @@
+{
+  "replace": "false",
+  "values": [
+    "minecraft:basalt_deltas",
+    "#piglinproliferation:can_spawn_traveller_camp_gathering",
+    "#piglinproliferation:can_spawn_traveller_soul_camp"
+  ]
+}

@@ -36,7 +36,7 @@
   "block.piglinproliferation.end_stone_fire_ring": "Anneau de feu en pierre de l'End",
   "block.piglinproliferation.end_stone_soul_fire_ring": "Anneau de feu des âmes de l'End",
   "piglinproliferation.advancements.nether.add_effect_to_fire_ring.title": "Aromathérapie",
-  "piglinproliferation.advancements.nether.add_effect_to_fire_ring.description": "Dispersez les effects d'une potion ou d'une potion jetable dans l'air en l'utilise on a Fire Ring",
+  "piglinproliferation.advancements.nether.add_effect_to_fire_ring.description": "Dispersez les effets d'une potion ou d'une potion jetable dans l'air en utilisant un anneau de feu",
   "item.piglinproliferation.buckler": "Broquel",
   "subtitles.entity.piglin_brute.charge": "Piglin barbare qui charge",
   "subtitles.item.buckler.bash": "Coup du broquel",

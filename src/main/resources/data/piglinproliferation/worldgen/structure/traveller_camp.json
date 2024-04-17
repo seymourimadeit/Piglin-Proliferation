@@ -6,13 +6,7 @@
       "#piglinproliferation:can_spawn_traveller_camp",
       {
         "type": "neoforge:not",
-        "value": {
-          "type": "neoforge:or",
-          "values": [
-            "#piglinproliferation:can_spawn_traveller_camp_gathering",
-            "#piglinproliferation:can_spawn_traveller_soul_camp"
-          ]
-        }
+        "value": "#piglinproliferation:cannot_spawn_traveller_camp"
       }
     ]
   },
