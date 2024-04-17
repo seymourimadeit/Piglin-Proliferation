@@ -45,7 +45,7 @@
   "item.piglinproliferation.buckler.desc.details": "[Drücke %s für Details]",
   "item.piglinproliferation.buckler.desc.while_charging": "Beim Ansturm:",
   "item.piglinproliferation.buckler.desc.shield_bash": "Schildschlag beim Zusammenstoß mit einem Objekt",
-  "item.piglinproliferation.buckler.desc.launch": "Launch into the air on colliding with a block",
+  "item.piglinproliferation.buckler.desc.launch": "Starte in die Luft beim Zusammenstoß mit einem Objekt",
   "item.piglinproliferation.buckler.desc.cannot_jump": "Springen ist unmöglich",
   "item.piglinproliferation.buckler.desc.water": "Anstürmen ist im Wasser ünmoglich",
   "item.piglinproliferation.buckler.desc.on_shield_bash": "Beim Schildschlag:",
