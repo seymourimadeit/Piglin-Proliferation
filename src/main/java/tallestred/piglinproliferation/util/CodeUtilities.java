@@ -1,9 +1,7 @@
-package tallestred.piglinproliferation;
-
-import net.minecraft.util.RandomSource;
-import net.minecraft.world.entity.LivingEntity;
+package tallestred.piglinproliferation.util;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class CodeUtilities {
@@ -36,14 +34,18 @@ public class CodeUtilities {
     }
 
     /**
-     * Converts a list to a new, mutable list of a specified type. Throws an error if casting fails.
+     * Converts an array of elements to a list of arbitrary type.
+     * Only intended for use in cases where you'd be casting even though you know the elements are valid, and fails
+     * at runtime if they're not; be careful!
      *
-     * @param list the list of unknown type to convert
+     * @param elements the objects to convert - must be of valid type for the output or this method will fail
      * */
-    @SuppressWarnings("unchecked")
-    public static <T> List<T> mutableListOrThrow(List<?> list) {
+    @SuppressWarnings("unchecked") //Properly handled
+    public static <T> List<T> castElementsToList(Object... elements) {
         try {
-            return (List<T>) new ArrayList<>(list);
+            List<Object> list = new ArrayList<>();
+            Collections.addAll(list, elements);
+            return (List<T>) list;
         } catch (ClassCastException e) {
             throw new IllegalArgumentException("Cannot cast the input list to the output type! If you are a player, report to the Piglin Proliferation github");
         }

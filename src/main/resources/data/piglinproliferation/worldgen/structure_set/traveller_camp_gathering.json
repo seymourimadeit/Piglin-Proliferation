@@ -1,12 +1,12 @@
 {
   "structures": [
     {
-      "structure": "piglinproliferation:traveller_standalone",
+      "structure": "piglinproliferation:traveller_camp_gathering",
       "weight": 1
     }
   ],
   "placement": {
-    "salt": 121545697,
+    "salt": 121541697,
     "spacing": 12,
     "separation": 6,
     "type": "minecraft:random_spread"

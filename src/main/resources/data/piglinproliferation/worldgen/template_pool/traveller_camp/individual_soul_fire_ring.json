@@ -1,13 +1,13 @@
 {
-  "name": "piglinproliferation:log_pool",
+  "name": "piglinproliferation:traveller_camp/individual_soul_fire_ring",
   "fallback": "minecraft:empty",
   "elements": [
-	{	
+    {
       "weight": 1,
       "element": {
-        "location": "piglinproliferation:traveller_hangout/traveler_logs_0",
+        "location": "piglinproliferation:traveller_camp/individual_soul_fire_ring",
         "processors": "minecraft:empty",
-		"projection": "rigid",
+        "projection": "rigid",
         "element_type": "minecraft:single_pool_element"
       }
     }

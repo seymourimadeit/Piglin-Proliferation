@@ -7,8 +7,6 @@ import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 
 import java.util.UUID;
 
-import static tallestred.piglinproliferation.CodeUtilities.capToRange;
-
 public class AttributeModifierHolder extends AbstractAttributeModifierHolder {
     public final double defaultAmount;
     public final AttributeModifier.Operation defaultOperation;

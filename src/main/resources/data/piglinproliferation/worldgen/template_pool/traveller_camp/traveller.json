@@ -1,0 +1,14 @@
+{
+  "name": "piglinproliferation:traveller_camp/traveller",
+  "fallback": "minecraft:empty",
+  "elements": [
+    {
+      "weight": 1,
+      "element": {
+        "feature": "piglinproliferation:piglin_traveller",
+        "projection": "rigid",
+        "element_type": "minecraft:feature_pool_element"
+      }
+    }
+  ]
+}

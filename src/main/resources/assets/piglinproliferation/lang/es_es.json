@@ -45,6 +45,7 @@
   "item.piglinproliferation.buckler.desc.details": "[Pulsa %s por los detalles]",
   "item.piglinproliferation.buckler.desc.while_charging": "Cuando se corre:",
   "item.piglinproliferation.buckler.desc.shield_bash": "Golpea fuerte alguien ",
+  "item.piglinproliferation.buckler.desc.launch": "Launch into the air on colliding with a block",
   "item.piglinproliferation.buckler.desc.cannot_jump": "No se brinca",
   "item.piglinproliferation.buckler.desc.water": "No se corre hacia delante cuando en la agua",
   "item.piglinproliferation.buckler.desc.on_shield_bash": "Cuando alguien se golpea con un broquel:",

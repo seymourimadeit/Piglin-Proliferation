@@ -11,7 +11,7 @@ import java.util.UUID;
 import java.util.random.RandomGenerator;
 
 import static net.minecraft.world.item.ItemStack.ATTRIBUTE_MODIFIER_FORMAT;
-import static tallestred.piglinproliferation.CodeUtilities.capToRange;
+import static tallestred.piglinproliferation.util.CodeUtilities.capToRange;
 
 public class RangedRandomAttributeModifierHolder extends AbstractAttributeModifierHolder {
     public final double defaultMinAmount;

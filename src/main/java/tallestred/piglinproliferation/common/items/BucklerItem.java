@@ -50,8 +50,8 @@ import java.util.List;
 import java.util.UUID;
 import java.util.function.Consumer;
 
-import static tallestred.piglinproliferation.CodeUtilities.doubleToString;
-import static tallestred.piglinproliferation.CodeUtilities.ticksToSeconds;
+import static tallestred.piglinproliferation.util.CodeUtilities.doubleToString;
+import static tallestred.piglinproliferation.util.CodeUtilities.ticksToSeconds;
 
 public class BucklerItem extends ShieldItem {
     public static final AttributeModifierHolder CHARGE_SPEED_BOOST = new AttributeModifierHolder(Attributes.MOVEMENT_SPEED, UUID.fromString("A2F995E8-B25A-4883-B9D0-93A676DC4045"), "Charge speed boost", 9, AttributeModifier.Operation.MULTIPLY_BASE);
@@ -117,7 +117,7 @@ public class BucklerItem extends ShieldItem {
         List<LivingEntity> list = entity.level().getNearbyEntities(LivingEntity.class, TargetingConditions.forCombat(), entity, entity.getBoundingBox().inflate(1.5D));
         if (!list.isEmpty()) {
             LivingEntity entityHit = list.get(0);
-            entityHit.push(entity); //TODO not sure if to keep the push before or after?
+            entityHit.push(entity);
             if (entityHit.invulnerableTime <= 0) {
                 int bangLevel = PPEnchantments.getBucklerEnchantsOnHands(PPEnchantments.BANG.get(), entity);
                 int turningLevel = PPEnchantments.getBucklerEnchantsOnHands(PPEnchantments.TURNING.get(), entity);
@@ -247,6 +247,8 @@ public class BucklerItem extends ShieldItem {
             list.add(Component.literal("  ").append(CHARGE_SPEED_BOOST.get().translatable()));
             list.add(Component.literal("  ").append(INCREASED_KNOCKBACK_RESISTANCE.get().translatable()));
             list.add(Component.literal("  ").append(Component.translatable("item.piglinproliferation.buckler.desc.shield_bash").withStyle(ChatFormatting.BLUE)));
+            if (PPConfig.COMMON.turningBucklerLaunchStrength.get() > 0 && turningLevel > 0)
+                list.add(Component.literal("  ").append(Component.translatable("item.piglinproliferation.buckler.desc.launch").withStyle(ChatFormatting.BLUE)));
             if (turningLevel != 5)
                 list.add(Component.literal("  ").append(TURNING_SPEED_REDUCTION.getWithSummand(turningReduction(turningLevel)).translatable()));
             list.add(Component.literal("  ").append(Component.translatable("item.piglinproliferation.buckler.desc.cannot_jump").withStyle(ChatFormatting.RED)));

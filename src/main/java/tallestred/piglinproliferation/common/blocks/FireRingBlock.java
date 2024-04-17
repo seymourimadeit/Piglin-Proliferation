@@ -29,7 +29,7 @@ import tallestred.piglinproliferation.common.blockentities.PPBlockEntities;
 
 import java.util.Optional;
 
-import static tallestred.piglinproliferation.CodeUtilities.castOrNull;
+import static tallestred.piglinproliferation.util.CodeUtilities.castOrNull;
 
 public class FireRingBlock extends CampfireBlock {
     protected static final VoxelShape SHAPE = Block.box(0.0, 0.0, 0.0, 16.0, 5.0, 16.0);

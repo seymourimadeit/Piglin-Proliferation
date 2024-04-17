@@ -28,6 +28,8 @@ import tallestred.piglinproliferation.common.loot.PPLoot;
 import java.util.List;
 import java.util.Optional;
 
+import static tallestred.piglinproliferation.util.CodeUtilities.castElementsToList;
+
 public class PiglinAlchemistAi extends AbstractPiglinAi<PiglinAlchemist> {
     public static PiglinAlchemistAi INSTANCE = new PiglinAlchemistAi();
 
@@ -42,15 +44,19 @@ public class PiglinAlchemistAi extends AbstractPiglinAi<PiglinAlchemist> {
 
     @Override
     protected List<BehaviorControl<? super PiglinAlchemist>> coreBehaviors(PiglinAlchemist piglin) {
-        var list = super.coreBehaviors(piglin);
-        list.add(generatePotionAi(piglin));
-        list.add(new ShootTippedArrow(1.5F, 15.0F, 20, PotionUtils.setPotion(new ItemStack(Items.TIPPED_ARROW), Potions.STRONG_HEALING), (p -> p.isAlive() && p.getHealth() < p.getMaxHealth())));
-        return list;
-    }
-
-    @Override
-    protected BehaviorControl<? extends Piglin> stopHoldingItemBehavior(PiglinAlchemist piglin) {
-        return StopHoldingItemAfterAdmiring.create(this, PPLoot.ALCHEMIST_BARTER/*, PPLoot.ALCHEMIST_BARTER_CHEAP, PPLoot.ALCHEMIST_BARTER_EXPENSIVE*/);
+        return castElementsToList(
+                new LookAtTargetSink(45, 90),
+                new MoveToTargetSink(),
+                InteractWithDoor.create(),
+                new SwimOnlyOutOfLava(0.8F),
+                PiglinAi.avoidZombified(),
+                StopHoldingItemAfterAdmiring.create(this, PPLoot.ALCHEMIST_BARTER/*, PPLoot.ALCHEMIST_BARTER_CHEAP, PPLoot.ALCHEMIST_BARTER_EXPENSIVE*/),
+                StartAdmiringItemIfSeen.create(120),
+                StartCelebratingIfTargetDead.create(300, PiglinAi::wantsToDance),
+                StopBeingAngryIfTargetDead.create(),
+                generatePotionAi(piglin),
+                new ShootTippedArrow(1.5F, 15.0F, 20, PotionUtils.setPotion(new ItemStack(Items.TIPPED_ARROW), Potions.STRONG_HEALING), (p -> p.isAlive() && p.getHealth() < p.getMaxHealth()))
+        );
     }
 
     @Override

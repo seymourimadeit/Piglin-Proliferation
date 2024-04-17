@@ -18,7 +18,7 @@ import tallestred.piglinproliferation.common.tags.PPTags;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
-import static tallestred.piglinproliferation.CodeUtilities.snakeCaseToEnglish;
+import static tallestred.piglinproliferation.util.CodeUtilities.snakeCaseToEnglish;
 
 
 public class CompassLocationMap extends ConcurrentHashMap<CompassLocationMap.SearchObject, Integer> {

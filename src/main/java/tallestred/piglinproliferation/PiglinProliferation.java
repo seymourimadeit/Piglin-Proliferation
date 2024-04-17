@@ -52,6 +52,8 @@ import tallestred.piglinproliferation.networking.AlchemistBeltSyncPacket;
 import tallestred.piglinproliferation.networking.CriticalCapabilityPacket;
 import tallestred.piglinproliferation.networking.ZiglinCapablitySyncPacket;
 
+import static tallestred.piglinproliferation.util.RegistryUtilities.addToCreativeTabAfter;
+
 @Mod(PiglinProliferation.MODID)
 public class PiglinProliferation {
     public static final String MODID = "piglinproliferation";
@@ -77,6 +79,7 @@ public class PiglinProliferation {
         PPBlocks.BLOCKS.register(modEventBus);
         PPBlockEntities.BLOCK_ENTITIES.register(modEventBus);
         PPEnchantments.ENCHANTMENTS.register(modEventBus);
+        PPWorldgen.FEATURES.register(modEventBus);
         PPWorldgen.STRUCTURE_TYPES.register(modEventBus);
         PPCriteriaTriggers.CRITERIA_TRIGGERS.register(modEventBus);
         PPLoot.GLM.register(modEventBus);
@@ -125,15 +128,6 @@ public class PiglinProliferation {
             );
         } else if (CreativeModeTabs.COMBAT.equals(event.getTabKey()))
             addToCreativeTabAfter(creativeTab, Items.SHIELD, PPItems.BUCKLER.get());
-    }
-
-    private void addToCreativeTabAfter(MutableHashedLinkedMap<ItemStack, CreativeModeTab.TabVisibility> creativeTab, Item after, Item... toAdd) {
-        if (toAdd.length > 0) {
-            creativeTab.putAfter(new ItemStack(after), new ItemStack(toAdd[0]), CreativeModeTab.TabVisibility.PARENT_AND_SEARCH_TABS);
-            if (toAdd.length > 1)
-                for (int i = 1; i < toAdd.length; i++)
-                    creativeTab.putAfter(new ItemStack(toAdd[i - 1]), new ItemStack(toAdd[i]), CreativeModeTab.TabVisibility.PARENT_AND_SEARCH_TABS);
-        }
     }
 
     private void addSpawn(final SpawnPlacementRegisterEvent event) {

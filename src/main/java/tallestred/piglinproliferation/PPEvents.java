@@ -49,7 +49,6 @@ import net.neoforged.neoforge.network.PacketDistributor;
 import tallestred.piglinproliferation.capablities.PPCapabilities;
 import tallestred.piglinproliferation.client.PPSounds;
 import tallestred.piglinproliferation.common.attribute.PPAttributes;
-import tallestred.piglinproliferation.common.blocks.PPBlocks;
 import tallestred.piglinproliferation.common.blocks.PiglinSkullBlock;
 import tallestred.piglinproliferation.common.enchantments.PPEnchantments;
 import tallestred.piglinproliferation.common.entities.PPEntityTypes;
@@ -115,7 +114,7 @@ public class PPEvents {
             BucklerItem.setChargeTicks(bucklerItemStack, bucklerChargeTicks - 1);
             if (bucklerChargeTicks > 0) {
                 if (entity.horizontalCollision && PPEnchantments.hasBucklerEnchantsOnHands(entity, PPEnchantments.TURNING.get())) {
-                    entity.setDeltaMovement(entity.getDeltaMovement().x, PPConfig.COMMON.bucklerTrimpValue.get() * (EnchantmentHelper.getEnchantmentLevel(PPEnchantments.TURNING.get(), entity)), entity.getDeltaMovement().z);
+                    entity.setDeltaMovement(entity.getDeltaMovement().x, PPConfig.COMMON.turningBucklerLaunchStrength.get() * (EnchantmentHelper.getEnchantmentLevel(PPEnchantments.TURNING.get(), entity)), entity.getDeltaMovement().z);
                 }
                 BucklerItem.moveFowards(entity);
                 BucklerItem.spawnRunningEffectsWhileCharging(entity);

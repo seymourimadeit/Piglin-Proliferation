@@ -2,18 +2,23 @@ package tallestred.piglinproliferation.common.worldgen;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
+import net.minecraft.core.RegistryCodecs;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.ExtraCodecs;
+import net.minecraft.util.StringRepresentable;
+import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.level.ChunkPos;
+import net.minecraft.world.level.biome.Biome;
+import net.minecraft.world.level.levelgen.GenerationStep;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.level.levelgen.WorldGenerationContext;
 import net.minecraft.world.level.levelgen.heightproviders.HeightProvider;
-import net.minecraft.world.level.levelgen.structure.BoundingBox;
-import net.minecraft.world.level.levelgen.structure.Structure;
-import net.minecraft.world.level.levelgen.structure.StructureType;
+import net.minecraft.world.level.levelgen.structure.*;
 import net.minecraft.world.level.levelgen.structure.pools.JigsawPlacement;
 import net.minecraft.world.level.levelgen.structure.pools.StructureTemplatePool;
 import net.minecraft.world.level.levelgen.structure.pools.alias.PoolAliasBinding;
@@ -26,8 +31,21 @@ import java.util.Optional;
  * Copied from vanilla {@link net.minecraft.world.level.levelgen.structure.structures.JigsawStructure}
  */
 public class CustomJigsawStructure extends Structure {
+    private static final MapCodec<StructureSettings> CUSTOM_SETTINGS_CODEC = RecordCodecBuilder.mapCodec(
+            p_259014_ -> p_259014_.group(
+                            Biome.LIST_CODEC.fieldOf("biomes").forGetter(Structure.StructureSettings::biomes),
+                            Codec.simpleMap(MobCategory.CODEC, StructureSpawnOverride.CODEC, StringRepresentable.keys(MobCategory.values()))
+                                    .fieldOf("spawn_overrides")
+                                    .forGetter(Structure.StructureSettings::spawnOverrides),
+                            GenerationStep.Decoration.CODEC.fieldOf("step").forGetter(Structure.StructureSettings::step),
+                            TerrainAdjustment.CODEC
+                                    .optionalFieldOf("terrain_adaptation", TerrainAdjustment.NONE)
+                                    .forGetter(Structure.StructureSettings::terrainAdaptation)
+                    )
+                    .apply(p_259014_, Structure.StructureSettings::new)
+    );
     public static final Codec<CustomJigsawStructure> CODEC = ExtraCodecs.validate(RecordCodecBuilder.mapCodec((kind) -> {
-        return kind.group(settingsCodec(kind), StructureTemplatePool.CODEC.fieldOf("start_pool").forGetter((structure) -> {
+        return kind.group(customSettingsCodec(), StructureTemplatePool.CODEC.fieldOf("start_pool").forGetter((structure) -> {
             return structure.startPool;
         }), ResourceLocation.CODEC.optionalFieldOf("start_jigsaw_name").forGetter((structure) -> {
             return structure.startJigsawName;
@@ -90,8 +108,11 @@ public class CustomJigsawStructure extends Structure {
         return JigsawPlacement.addPieces(context, this.startPool, this.startJigsawName, this.maxDepth, blockPos, this.useExpansionHack, this.projectStartToHeightmap, this.maxDistanceFromCenter, PoolAliasLookup.create(this.poolAliases, blockPos, context.seed()));
     }
 
-
     public StructureType<?> type() {
         return PPWorldgen.CUSTOM_JIGSAW.get();
+    }
+
+    public static <S extends Structure> RecordCodecBuilder<S, Structure.StructureSettings> customSettingsCodec() {
+        return CUSTOM_SETTINGS_CODEC.forGetter(settings -> settings.modifiableStructureInfo().getOriginalStructureInfo().structureSettings());
     }
 }

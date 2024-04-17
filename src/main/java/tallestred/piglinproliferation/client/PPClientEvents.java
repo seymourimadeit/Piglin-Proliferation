@@ -34,6 +34,8 @@ import tallestred.piglinproliferation.common.entities.PPEntityTypes;
 
 import java.util.function.Function;
 
+import static tallestred.piglinproliferation.util.RegistryUtilities.addLayerToRenderer;
+
 @SuppressWarnings("unused")
 @Mod.EventBusSubscriber(modid = PiglinProliferation.MODID, bus = Mod.EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
 public class PPClientEvents {
@@ -102,11 +104,5 @@ public class PPClientEvents {
         event.enqueueWork(() -> SkullBlockRenderer.SKIN_BY_TYPE.put(PiglinSkullBlock.Types.ZOMBIFIED_PIGLIN, new ResourceLocation("textures/entity/piglin/zombified_piglin.png")));
         event.enqueueWork(() -> SkullBlockRenderer.SKIN_BY_TYPE.put(PiglinSkullBlock.Types.PIGLIN_ALCHEMIST, new ResourceLocation(PiglinProliferation.MODID, "textures/entity/piglin/alchemist/alchemist.png")));
         event.enqueueWork(() -> SkullBlockRenderer.SKIN_BY_TYPE.put(PiglinSkullBlock.Types.PIGLIN_TRAVELLER, new ResourceLocation(PiglinProliferation.MODID, "textures/entity/piglin/traveller/traveller.png")));
-    }
-
-    @SuppressWarnings("SameParameterValue") //Entity type parameter will be useful in future
-    private static <T extends Mob, R extends LivingEntityRenderer<T, M>, M extends PiglinModel<T>> void addLayerToRenderer(EntityRenderersEvent.AddLayers event, EntityType<T> entityType, Function<R, ? extends RenderLayer<T, M>> factory) {
-        R renderer = event.getRenderer(entityType);
-        if (renderer != null) renderer.addLayer(factory.apply(renderer));
     }
 }

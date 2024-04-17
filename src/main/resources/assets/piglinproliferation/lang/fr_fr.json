@@ -45,6 +45,7 @@
   "item.piglinproliferation.buckler.desc.details": "[Appuyez sur %s pour plus de détails]",
   "item.piglinproliferation.buckler.desc.while_charging": "En chargeant:",
   "item.piglinproliferation.buckler.desc.shield_bash": "Coup du broquel lorsqu'il entre en collision avec une entité",
+  "item.piglinproliferation.buckler.desc.launch": "Launch into the air on colliding with a block",
   "item.piglinproliferation.buckler.desc.cannot_jump": "Impossible de sauter",
   "item.piglinproliferation.buckler.desc.water": "Impossible de charger dans l'eau",
   "item.piglinproliferation.buckler.desc.on_shield_bash": "En coup du broquel:",

@@ -5,14 +5,17 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Holder;
 import net.minecraft.core.Registry;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.LevelHeightAccessor;
 import net.minecraft.world.level.NoiseColumn;
+import net.minecraft.world.level.block.Rotation;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.chunk.ChunkGenerator;
 import net.minecraft.world.level.levelgen.RandomState;
+import net.minecraft.world.level.levelgen.feature.Feature;
 import net.minecraft.world.level.levelgen.structure.BoundingBox;
 import net.minecraft.world.level.levelgen.structure.StructureType;
 import net.minecraft.world.level.levelgen.structure.pools.SinglePoolElement;
@@ -31,6 +34,9 @@ public class PPWorldgen {
             Registries.PROCESSOR_LIST, new ResourceLocation("minecraft", "empty"));
     public static DeferredRegister<StructureType<?>> STRUCTURE_TYPES = DeferredRegister.create(Registries.STRUCTURE_TYPE, PiglinProliferation.MODID);
     public static DeferredHolder<StructureType<?>, StructureType<CustomJigsawStructure>> CUSTOM_JIGSAW = STRUCTURE_TYPES.register("custom_jigsaw", () -> () -> CustomJigsawStructure.CODEC);
+
+    public static DeferredRegister<Feature<?>> FEATURES = DeferredRegister.create(BuiltInRegistries.FEATURE, PiglinProliferation.MODID);
+    public static DeferredHolder<Feature<?>, PiglinTravellerFeature> PIGLIN_TRAVELLER_FEATURE = FEATURES.register("piglin_traveller", PiglinTravellerFeature::new);
 
     /**
      * Adds the building to the targeted pool.
@@ -85,12 +91,25 @@ public class PPWorldgen {
             if (!currentBlockstate.canOcclude()) {
                 mutable.move(Direction.DOWN);
                 continue;
-            } else if (blockView.getBlock(mutable.getY() + 3).isAir() && currentBlockstate.getFluidState().isEmpty() && currentBlockstate.getFluidState().isEmpty() && currentBlockstate.canOcclude()) {
-                return mutable;
+            } else if (blockView.getBlock(mutable.getY() + 3).isAir() && currentBlockstate.getFluidState().isEmpty()) {
+                int oldX = mutable.getX();
+                int oldZ = mutable.getZ();
+                Direction direction = Direction.NORTH;
+                boolean hasSolidNeighbours = true;
+                for (int i = 0; i < 5; i++) {
+                    mutable.move(direction, i < 2 ? 1 : 2);
+                    direction = direction.getClockWise();
+                    BlockState tempBlockState = chunkGenerator.getBaseColumn(mutable.getX(), mutable.getZ(), heightLimitView, randomState).getBlock(mutable.getY());
+                    if (!(tempBlockState.canOcclude() && tempBlockState.getFluidState().isEmpty()))
+                        hasSolidNeighbours = false;
+                }
+                mutable.setX(oldX);
+                mutable.setZ(oldZ);
+                if (hasSolidNeighbours)
+                    return mutable;
             }
             mutable.move(Direction.DOWN);
         }
         return null;
     }
-
 }
