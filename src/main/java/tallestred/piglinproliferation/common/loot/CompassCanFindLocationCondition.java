@@ -13,6 +13,7 @@ import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
 import net.minecraft.world.level.storage.loot.predicates.LootItemConditionType;
 import tallestred.piglinproliferation.common.entities.PiglinTraveller;
 import tallestred.piglinproliferation.common.items.PPItems;
+import tallestred.piglinproliferation.common.tags.EitherTag;
 import tallestred.piglinproliferation.common.tags.PPTags;
 
 import java.util.Collections;
@@ -34,11 +35,14 @@ public class CompassCanFindLocationCondition implements LootItemCondition {
             List<Either<Holder<Biome>, Holder<Structure>>> objectsToSearch = PPTags.TRAVELLERS_COMPASS_SEARCH.combinedValues(level.registryAccess());
             Collections.shuffle(objectsToSearch);
             for (Either<Holder<Biome>, Holder<Structure>> searchObject : objectsToSearch) {
-                if (!traveller.alreadyLocatedObjects.containsKey(searchObject) && !PPItems.TRAVELLERS_COMPASS.get().entityAtSearchObject(searchObject, traveller)) {
-                    BlockPos pos = PPItems.TRAVELLERS_COMPASS.get().search(searchObject, traveller.getOnPos(), level);
-                    if (pos != null) {
-                        traveller.currentlyLocatedObject = Map.entry(searchObject, pos);
-                        return true;
+                EitherTag.Location searchObjectLocation = EitherTag.elementLocation(searchObject);
+                if (searchObjectLocation != null) {
+                    if (!traveller.alreadyLocatedObjects.containsKey(searchObjectLocation) && !PPItems.TRAVELLERS_COMPASS.get().entityAtSearchObject(searchObject, traveller)) {
+                        BlockPos pos = PPItems.TRAVELLERS_COMPASS.get().search(searchObject, traveller.getOnPos(), level);
+                        if (pos != null) {
+                            traveller.currentlyLocatedObject = Map.entry(searchObjectLocation, pos);
+                            return true;
+                        }
                     }
                 }
             }

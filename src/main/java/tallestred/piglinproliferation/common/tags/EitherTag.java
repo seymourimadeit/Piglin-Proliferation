@@ -10,7 +10,7 @@ import net.minecraft.tags.TagKey;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicReference;
+import java.util.Optional;
 
 public class EitherTag<L, R> {
     public final TagKey<L> leftTag;
@@ -42,22 +42,27 @@ public class EitherTag<L, R> {
         return list;
     }
 
-    public static <L, R> ResourceLocation elementLocation(Either<Holder<L>, Holder<R>> element) {
-        AtomicReference<ResourceLocation> returnValue = new AtomicReference<>();
-        element.ifLeft(e -> e.unwrapKey().ifPresent(r -> returnValue.set(r.location())));
-        element.ifRight(e -> e.unwrapKey().ifPresent(r -> returnValue.set(r.location())));
-        return returnValue.get();
+    public static <L, R> Location elementLocation(Either<Holder<L>, Holder<R>> element) {
+        if (element.left().isPresent()) {
+            Optional<ResourceKey<L>> optional = element.left().get().unwrapKey();
+            if (optional.isPresent())
+                return new Location(optional.get().location(), true);
+        } else if(element.right().isPresent()) {
+            Optional<ResourceKey<R>> optional = element.right().get().unwrapKey();
+            if (optional.isPresent())
+                return new Location(optional.get().location(), false);
+        }
+        return null;
     }
 
-    public static <L, R> String serialisedElement(Either<Holder<L>, Holder<R>> element) {
-        return (element.left().isPresent() ? "L-" : "R-") + elementLocation(element);
-    }
+    public record Location(ResourceLocation location, boolean isLeft) {
+        public String serialise() {
+            return (isLeft ? "L-" : "R-") + this.location;
+        }
 
-    public Either<Holder<L>, Holder<R>> deserialisedElement(String serialisedElement, RegistryAccess registryAccess) {
-        String[] parts = serialisedElement.split("-");
-        ResourceLocation location = new ResourceLocation(parts[1]);
-        if ("L".equals(parts[0]))
-            return Either.left(Holder.direct(registryAccess.registryOrThrow(leftRegistry).getOptional(location).orElseThrow()));
-        else return Either.right(Holder.direct(registryAccess.registryOrThrow(rightRegistry).getOptional(location).orElseThrow()));
+        public static Location deserialise(String serialisedElement) {
+            String[] parts = serialisedElement.split("-");
+            return new Location(new ResourceLocation(parts[1]), "L".equals(parts[0]));
+        }
     }
 }

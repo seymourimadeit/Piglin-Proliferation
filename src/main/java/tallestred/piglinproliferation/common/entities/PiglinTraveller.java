@@ -1,11 +1,9 @@
 package tallestred.piglinproliferation.common.entities;
 
 import com.google.common.collect.ImmutableList;
-import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.Dynamic;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.GlobalPos;
-import net.minecraft.core.Holder;
 import net.minecraft.core.particles.ItemParticleOption;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.*;
@@ -30,9 +28,7 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.ServerLevelAccessor;
-import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.levelgen.structure.Structure;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.event.EventHooks;
 import org.jetbrains.annotations.Nullable;
@@ -40,7 +36,6 @@ import tallestred.piglinproliferation.client.PPSounds;
 import tallestred.piglinproliferation.common.entities.ai.PiglinTravellerAi;
 import tallestred.piglinproliferation.common.items.PPItems;
 import tallestred.piglinproliferation.common.tags.EitherTag;
-import tallestred.piglinproliferation.common.tags.PPTags;
 import tallestred.piglinproliferation.configuration.PPConfig;
 
 import java.util.*;
@@ -50,8 +45,8 @@ public class PiglinTraveller extends Piglin {
     protected static final EntityDataAccessor<Integer> KICK_TICKS = SynchedEntityData.defineId(PiglinTraveller.class, EntityDataSerializers.INT);
     protected static final EntityDataAccessor<Integer> KICK_COOLDOWN = SynchedEntityData.defineId(PiglinTraveller.class, EntityDataSerializers.INT);
     public static final int DEFAULT_EXPIRY_TIME = 24000;
-    public Map<Either<Holder<Biome>, Holder<Structure>>, Integer> alreadyLocatedObjects = new HashMap<>();
-    public Map.Entry<Either<Holder<Biome>, Holder<Structure>>, BlockPos> currentlyLocatedObject;
+    public Map<EitherTag.Location, Integer> alreadyLocatedObjects = new HashMap<>();
+    public Map.Entry<EitherTag.Location, BlockPos> currentlyLocatedObject;
 
     public PiglinTraveller(EntityType<? extends PiglinTraveller> pEntityType, Level pLevel) {
         super(pEntityType, pLevel);
@@ -94,7 +89,7 @@ public class PiglinTraveller extends Piglin {
     public SpawnGroupData finalizeSpawn(ServerLevelAccessor pLevel, DifficultyInstance pDifficulty, MobSpawnType pReason, @Nullable SpawnGroupData pSpawnData, @Nullable CompoundTag pDataTag) {
         GlobalPos globalpos = GlobalPos.of(this.level().dimension(), this.blockPosition());
         this.getBrain().setMemory(MemoryModuleType.HOME, globalpos);
-        this.setItemSlot(EquipmentSlot.MAINHAND, (double) this.random.nextFloat() < PPConfig.COMMON.crossbowChanceTraveller.get().doubleValue() ? new ItemStack(Items.CROSSBOW) : new ItemStack(Items.GOLDEN_SWORD));
+        this.setItemSlot(EquipmentSlot.MAINHAND, (double) this.random.nextFloat() < PPConfig.COMMON.crossbowChanceTraveller.get() ? new ItemStack(Items.CROSSBOW) : new ItemStack(Items.GOLDEN_SWORD));
         return super.finalizeSpawn(pLevel, pDifficulty, pReason, pSpawnData, pDataTag);
     }
 
@@ -224,14 +219,14 @@ public class PiglinTraveller extends Piglin {
         this.alreadyLocatedObjects = new HashMap<>();
         CompoundTag map = pCompound.getCompound("AlreadyLocatedObjects");
         for (String key : map.getAllKeys())
-            this.alreadyLocatedObjects.put(PPTags.TRAVELLERS_COMPASS_SEARCH.deserialisedElement(key, level().registryAccess()), map.getInt(key));
+            this.alreadyLocatedObjects.put(EitherTag.Location.deserialise(key), map.getInt(key));
     }
 
     @Override
     public void addAdditionalSaveData(CompoundTag pCompound) {
         super.addAdditionalSaveData(pCompound);
         CompoundTag map = new CompoundTag();
-        this.alreadyLocatedObjects.forEach((key, value) -> map.put(EitherTag.serialisedElement(key), IntTag.valueOf(value)));
+        this.alreadyLocatedObjects.forEach((key, value) -> map.put(key.serialise(), IntTag.valueOf(value)));
         pCompound.put("AlreadyLocatedObjects", map);
     }
 

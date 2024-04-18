@@ -1,13 +1,8 @@
 package tallestred.piglinproliferation.common.loot;
 
-import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import net.minecraft.core.BlockPos;
-import net.minecraft.core.Holder;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.biome.Biome;
-import net.minecraft.world.level.levelgen.structure.Structure;
 import net.minecraft.world.level.storage.loot.LootContext;
 import net.minecraft.world.level.storage.loot.functions.LootItemConditionalFunction;
 import net.minecraft.world.level.storage.loot.functions.LootItemFunctionType;
@@ -31,11 +26,10 @@ public class AddLocationToCompassFunction extends LootItemConditionalFunction {
     protected ItemStack run(ItemStack itemStack, LootContext lootContext) {
         if (itemStack.getItem() instanceof TravellersCompassItem compass) {
             if (lootContext.getParamOrNull(LootContextParams.THIS_ENTITY) instanceof PiglinTraveller traveller) {
-                Either<Holder<Biome>, Holder<Structure>> either = traveller.currentlyLocatedObject.getKey();
-                BlockPos pos = traveller.currentlyLocatedObject.getValue();
-                traveller.alreadyLocatedObjects.put(either, PiglinTraveller.DEFAULT_EXPIRY_TIME);
+                EitherTag.Location searchObjectLocation = traveller.currentlyLocatedObject.getKey();
+                traveller.alreadyLocatedObjects.put(searchObjectLocation, PiglinTraveller.DEFAULT_EXPIRY_TIME);
+                compass.addTags(lootContext.getLevel().dimension(), traveller.currentlyLocatedObject.getValue(), itemStack.getOrCreateTag(), searchObjectLocation.location(), searchObjectLocation.isLeft());
                 traveller.currentlyLocatedObject = null;
-                compass.addTags(lootContext.getLevel().dimension(), pos, itemStack.getOrCreateTag(), EitherTag.elementLocation(either), either.left().isPresent());
             }
         }
         return itemStack;
