@@ -172,6 +172,4 @@ public class PiglinProliferation {
         reg.play(CriticalCapabilityPacket.ID, CriticalCapabilityPacket::new, payload -> payload.client(CriticalCapabilityPacket::handle));
         reg.play(ZiglinCapablitySyncPacket.ID, ZiglinCapablitySyncPacket::new, payload -> payload.client(ZiglinCapablitySyncPacket::handle));
     }
-
-
 }

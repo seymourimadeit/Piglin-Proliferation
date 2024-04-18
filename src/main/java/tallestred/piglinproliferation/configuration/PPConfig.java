@@ -47,9 +47,6 @@ public class PPConfig {
         public final ModConfigSpec.IntValue maxBucklerChargeTime;
         public final ModConfigSpec.DoubleValue turningBucklerLaunchStrength;
         public final ModConfigSpec.ConfigValue<List<? extends String>> zombifiedPiglinTypeList;
-        public final ModConfigSpec.BooleanValue travellersCompassBiomeWhitelist;
-        public final ModConfigSpec.BooleanValue travellersCompassStructureWhitelist;
-
 
         public CommonConfig(ModConfigSpec.Builder builder) {
             builder.push("Vanilla Changes");
@@ -85,14 +82,6 @@ public class PPConfig {
             builder.pop();
             builder.pop();
             builder.push("Piglin Traveller");
-            travellersCompassBiomeWhitelist = builder.comment("""
-                    This config option determines which biomes the Traveller's Compass can point to.
-                    If enabled, it will only point to biomes in the "piglinproliferation:travellers_compass_whitelist" biome tag.
-                    If disabled, it will point to all biomes except those in the "piglinproliferation_travellers_compass_blacklist" biome tag.""").define("Should the Traveller's Compass only search for biomes in the whitelist?", false);
-            travellersCompassStructureWhitelist = builder.comment("""
-                    This config option determines which structures the Traveller's Compass can point to.
-                    If enabled, it will only point to biomes in the "piglinproliferation:travellers_compass_whitelist" structure and structure_set tags.
-                    If disabled, it will point to all biomes except those in the "piglinproliferation_travellers_compass_blacklist" structure and structure_set tag.""").define("Should the Traveller's Compass only search for structures in the whitelist?", true);
             crossbowChanceTraveller = builder.defineInRange("Chance of travellers equipping crossbows", 0.20F, 0.0F, 9000.0F);
             builder.pop();
         }

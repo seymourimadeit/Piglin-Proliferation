@@ -16,11 +16,11 @@ public class PiglinTravellerFeature extends Feature<NoneFeatureConfiguration> {
     }
 
     /**
-     * This exists because I didn't want to hardcode the armour and weapons of the travellers in the camp
+     * This exists because I didn't want to hardcode the armour and weapons of the travellers in the camp.
+     * Based on a method by telepathicgrunt
      */
     @Override
     public boolean place(FeaturePlaceContext<NoneFeatureConfiguration> context) {
-        // move down to spawn at the jigsaw block calling this
         BlockPos position = context.origin();
         WorldGenLevel level = context.level();
         PiglinTraveller traveller = PPEntityTypes.PIGLIN_TRAVELLER.get().create(level.getLevel());

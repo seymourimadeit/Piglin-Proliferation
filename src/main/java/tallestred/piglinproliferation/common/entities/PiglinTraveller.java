@@ -1,19 +1,19 @@
 package tallestred.piglinproliferation.common.entities;
 
 import com.google.common.collect.ImmutableList;
+import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.Dynamic;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.GlobalPos;
+import net.minecraft.core.Holder;
 import net.minecraft.core.particles.ItemParticleOption;
 import net.minecraft.core.particles.ParticleTypes;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.*;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
-import net.minecraft.sounds.SoundEvents;
-import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.DifficultyInstance;
 import net.minecraft.world.InteractionHand;
@@ -27,19 +27,20 @@ import net.minecraft.world.entity.monster.piglin.Piglin;
 import net.minecraft.world.entity.projectile.Fireball;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.item.PotionItem;
-import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.ServerLevelAccessor;
+import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.levelgen.structure.Structure;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.event.EventHooks;
 import org.jetbrains.annotations.Nullable;
 import tallestred.piglinproliferation.client.PPSounds;
 import tallestred.piglinproliferation.common.entities.ai.PiglinTravellerAi;
 import tallestred.piglinproliferation.common.items.PPItems;
-import tallestred.piglinproliferation.common.loot.CompassLocationMap;
+import tallestred.piglinproliferation.common.tags.EitherTag;
+import tallestred.piglinproliferation.common.tags.PPTags;
 import tallestred.piglinproliferation.configuration.PPConfig;
 
 import java.util.*;
@@ -48,8 +49,9 @@ public class PiglinTraveller extends Piglin {
     protected static final EntityDataAccessor<Boolean> SITTING = SynchedEntityData.defineId(PiglinTraveller.class, EntityDataSerializers.BOOLEAN);
     protected static final EntityDataAccessor<Integer> KICK_TICKS = SynchedEntityData.defineId(PiglinTraveller.class, EntityDataSerializers.INT);
     protected static final EntityDataAccessor<Integer> KICK_COOLDOWN = SynchedEntityData.defineId(PiglinTraveller.class, EntityDataSerializers.INT);
-    public CompassLocationMap alreadyLocatedObjects = new CompassLocationMap();
-    public Map.Entry<CompassLocationMap.SearchObject, BlockPos> currentlyLocatedObject;
+    public static final int DEFAULT_EXPIRY_TIME = 24000;
+    public Map<Either<Holder<Biome>, Holder<Structure>>, Integer> alreadyLocatedObjects = new HashMap<>();
+    public Map.Entry<Either<Holder<Biome>, Holder<Structure>>, BlockPos> currentlyLocatedObject;
 
     public PiglinTraveller(EntityType<? extends PiglinTraveller> pEntityType, Level pLevel) {
         super(pEntityType, pLevel);
@@ -156,12 +158,8 @@ public class PiglinTraveller extends Piglin {
         this.getBrain().tick((ServerLevel) this.level(), this);
         this.level().getProfiler().pop();
         PiglinTravellerAi.INSTANCE.updateBrainActivity(this);
-        for (Map.Entry<CompassLocationMap.SearchObject, Integer> entry : new HashMap<>(this.alreadyLocatedObjects).entrySet()) {
-            CompassLocationMap.SearchObject searchObject = entry.getKey();
-            this.alreadyLocatedObjects.put(searchObject, entry.getValue() - 1);
-            if (this.alreadyLocatedObjects.get(searchObject) <= 0)
-                this.alreadyLocatedObjects.remove(searchObject);
-        }
+        this.alreadyLocatedObjects.replaceAll((key, value) -> value-1);
+        this.alreadyLocatedObjects.entrySet().removeIf(e -> e.getValue() <= 0);
     }
 
     @Override
@@ -223,13 +221,18 @@ public class PiglinTraveller extends Piglin {
     @Override
     public void readAdditionalSaveData(CompoundTag pCompound) {
         super.readAdditionalSaveData(pCompound);
-        this.alreadyLocatedObjects = new CompassLocationMap(pCompound.getCompound("AlreadyLocatedObjects"));
+        this.alreadyLocatedObjects = new HashMap<>();
+        CompoundTag map = pCompound.getCompound("AlreadyLocatedObjects");
+        for (String key : map.getAllKeys())
+            this.alreadyLocatedObjects.put(PPTags.TRAVELLERS_COMPASS_SEARCH.deserialisedElement(key, level().registryAccess()), map.getInt(key));
     }
 
     @Override
     public void addAdditionalSaveData(CompoundTag pCompound) {
         super.addAdditionalSaveData(pCompound);
-        pCompound.put("AlreadyLocatedObjects", this.alreadyLocatedObjects.toNBT());
+        CompoundTag map = new CompoundTag();
+        this.alreadyLocatedObjects.forEach((key, value) -> map.put(EitherTag.serialisedElement(key), IntTag.valueOf(value)));
+        pCompound.put("AlreadyLocatedObjects", map);
     }
 
     public int getKickTicks() {

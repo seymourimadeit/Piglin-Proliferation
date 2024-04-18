@@ -10,6 +10,5 @@ import tallestred.piglinproliferation.configuration.PPConfig;
 
 public class PPTags {
     public static final TagKey<Structure> TRAVELLER_BASES = TagKey.create(Registries.STRUCTURE, new ResourceLocation(PiglinProliferation.MODID, "traveller_bases"));
-    public static final WhitelistOrBlacklistTag<Biome> TRAVELLERS_COMPASS_VALID_BIOMES = new WhitelistOrBlacklistTag<>(PPConfig.COMMON.travellersCompassBiomeWhitelist, Registries.BIOME, PiglinProliferation.MODID, "travellers_compass");
-    public static final StructureWhitelistTagsHolder TRAVELLERS_COMPASS_VALID_STRUCTURES = new StructureWhitelistTagsHolder(PPConfig.COMMON.travellersCompassStructureWhitelist, PiglinProliferation.MODID, "travellers_compass");
+    public static final EitherTag<Biome, Structure> TRAVELLERS_COMPASS_SEARCH = new EitherTag<>(Registries.BIOME, Registries.STRUCTURE, new ResourceLocation(PiglinProliferation.MODID, "travellers_compass_search"));
 }
