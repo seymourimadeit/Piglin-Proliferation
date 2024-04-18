@@ -10,7 +10,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.monster.ZombifiedPiglin;
 import tallestred.piglinproliferation.PiglinProliferation;
 import tallestred.piglinproliferation.capablities.PPCapabilities;
-import tallestred.piglinproliferation.client.PPClientEvents;
+import tallestred.piglinproliferation.client.renderers.PPRenderSetupEvents;
 import tallestred.piglinproliferation.configuration.PPConfig;
 
 public class PiglinClothingRenderLayer<T extends ZombifiedPiglin, M extends PiglinModel<T>> extends RenderLayer<T, M> {
@@ -18,7 +18,7 @@ public class PiglinClothingRenderLayer<T extends ZombifiedPiglin, M extends Pigl
 
     public PiglinClothingRenderLayer(RenderLayerParent<T, M> renderLayerParent) {
         super(renderLayerParent);
-        this.layerModel = new PiglinModel<>(Minecraft.getInstance().getEntityModels().bakeLayer(PPClientEvents.ZIGLIN_CLOTHING));
+        this.layerModel = new PiglinModel<>(Minecraft.getInstance().getEntityModels().bakeLayer(PPRenderSetupEvents.ZIGLIN_CLOTHING));
         this.layerModel.rightEar.visible = false;
     }
 

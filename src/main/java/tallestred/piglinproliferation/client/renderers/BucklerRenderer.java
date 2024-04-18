@@ -11,7 +11,6 @@ import net.minecraft.client.resources.model.Material;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
-import tallestred.piglinproliferation.client.PPClientEvents;
 import tallestred.piglinproliferation.client.models.BucklerModel;
 import tallestred.piglinproliferation.common.items.PPItems;
 
@@ -20,7 +19,7 @@ public class BucklerRenderer extends BlockEntityWithoutLevelRenderer {
 
     public BucklerRenderer(BlockEntityRenderDispatcher berd, EntityModelSet set) {
         super(berd, set);
-        this.bucklerModel = new BucklerModel(set.bakeLayer(PPClientEvents.BUCKLER));
+        this.bucklerModel = new BucklerModel(set.bakeLayer(PPRenderSetupEvents.BUCKLER));
     }
 
     @Override
@@ -30,7 +29,7 @@ public class BucklerRenderer extends BlockEntityWithoutLevelRenderer {
         if (item == PPItems.BUCKLER.get()) {
             matrixStack.pushPose();
             matrixStack.scale(1.0F, -1.0F, -1.0F);
-            Material rendermaterial = PPClientEvents.BUCKLER_TEXTURE;
+            Material rendermaterial = PPRenderSetupEvents.BUCKLER_TEXTURE;
             VertexConsumer ivertexbuilder = rendermaterial.sprite().wrap(ItemRenderer.getFoilBufferDirect(buffer,
                     this.bucklerModel.renderType(rendermaterial.atlasLocation()), true, stack.hasFoil()));
             this.bucklerModel.root.render(matrixStack, ivertexbuilder, combinedLight, combinedOverlay, 1.0F, 1.0F, 1.0F,

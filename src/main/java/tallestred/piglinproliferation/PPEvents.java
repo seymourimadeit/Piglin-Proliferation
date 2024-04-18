@@ -1,10 +1,8 @@
 package tallestred.piglinproliferation;
 
-import net.minecraft.client.Minecraft;
 import net.minecraft.core.Registry;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
@@ -37,17 +35,15 @@ import net.minecraft.world.phys.Vec3;
 import net.neoforged.bus.api.Event;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.Mod;
-import net.neoforged.neoforge.client.event.CalculatePlayerTurnEvent;
 import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
 import net.neoforged.neoforge.event.entity.living.*;
 import net.neoforged.neoforge.event.entity.player.CriticalHitEvent;
-import net.neoforged.neoforge.event.entity.player.ItemTooltipEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.level.NoteBlockEvent;
 import net.neoforged.neoforge.network.PacketDistributor;
 import tallestred.piglinproliferation.capablities.PPCapabilities;
 import tallestred.piglinproliferation.client.PPSounds;
-import tallestred.piglinproliferation.common.attribute.PPAttributes;
+import tallestred.piglinproliferation.common.blocks.PPBlocks;
 import tallestred.piglinproliferation.common.blocks.PiglinSkullBlock;
 import tallestred.piglinproliferation.common.enchantments.PPEnchantments;
 import tallestred.piglinproliferation.common.entities.PPEntityTypes;
@@ -316,7 +312,7 @@ public class PPEvents {
     public static void visionPercent(LivingEvent.LivingVisibilityEvent event) {
         if (event.getLookingEntity() != null) {
             ItemStack itemstack = event.getEntity().getItemBySlot(EquipmentSlot.HEAD);
-            if (event.getLookingEntity() instanceof AbstractPiglin && (itemstack.is(PPItems.PIGLIN_ALCHEMIST_HEAD_ITEM.get()) || itemstack.is(PPItems.PIGLIN_BRUTE_HEAD_ITEM.get())) || itemstack.is(PPItems.ZOMBIFIED_PIGLIN_HEAD_ITEM.get()) || itemstack.is(PPItems.PIGLIN_TRAVELLER_HEAD_ITEM.get())) {
+            if (event.getLookingEntity() instanceof AbstractPiglin && PPBlocks.PIGLIN_HEADS.stream().anyMatch(h -> itemstack.getItem() == h.get().asItem())) {
                 event.modifyVisibility(0.5D);
             }
         }
@@ -384,28 +380,5 @@ public class PPEvents {
             event.setCanceled(true);
             event.getLevel().playSound(null, event.getPos(), skull.noteBlockSound, SoundSource.RECORDS);
         }
-    }
-
-    @SubscribeEvent
-    public static void modifyItemTooltip(ItemTooltipEvent event) {
-        ItemStack stack = event.getItemStack();
-        if (stack.getItem() == PPItems.BUCKLER.get()) {
-            List<Component> toAdd = new ArrayList<>();
-            toAdd.add(Component.empty());
-            toAdd.addAll(PPItems.BUCKLER.get().getDescription(stack));
-            event.getToolTip().addAll(toAdd);
-        }
-    }
-
-    @SubscribeEvent
-    public static void onPlayerTurnCalculation(CalculatePlayerTurnEvent event) {
-        double mouseSensitivity = event.getMouseSensitivity();
-        Player player = Minecraft.getInstance().player;
-        if (player != null) {
-            double turningValue = PPAttributes.turningValue(player);
-            if (turningValue != 1)
-                mouseSensitivity = (mouseSensitivity * turningValue) - 0.20000000298023224;
-        }
-        event.setMouseSensitivity(mouseSensitivity);
     }
 }

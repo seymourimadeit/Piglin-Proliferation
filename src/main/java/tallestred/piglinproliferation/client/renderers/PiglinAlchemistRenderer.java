@@ -15,15 +15,14 @@ import net.minecraft.world.item.CrossbowItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.UseAnim;
 import tallestred.piglinproliferation.PiglinProliferation;
-import tallestred.piglinproliferation.client.PPClientEvents;
 import tallestred.piglinproliferation.client.renderers.layers.BeltRenderLayer;
 import tallestred.piglinproliferation.client.models.PiglinAlchemistModel;
 import tallestred.piglinproliferation.common.entities.PiglinAlchemist;
 
 public class PiglinAlchemistRenderer extends PiglinRenderer {
     public PiglinAlchemistRenderer(EntityRendererProvider.Context context) {
-        super(context, PPClientEvents.PIGLIN_ALCHEMIST, ModelLayers.PIGLIN_INNER_ARMOR, PPClientEvents.ALCHEMIST_ARMOR_OUTER_LAYER, false);
-        this.model = new PiglinAlchemistModel(context.bakeLayer(PPClientEvents.PIGLIN_ALCHEMIST));
+        super(context, PPRenderSetupEvents.PIGLIN_ALCHEMIST, ModelLayers.PIGLIN_INNER_ARMOR, PPRenderSetupEvents.ALCHEMIST_ARMOR_OUTER_LAYER, false);
+        this.model = new PiglinAlchemistModel(context.bakeLayer(PPRenderSetupEvents.PIGLIN_ALCHEMIST));
         this.addLayer(new BeltRenderLayer(this, context.getItemInHandRenderer()));
     }
 

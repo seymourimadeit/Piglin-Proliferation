@@ -64,7 +64,7 @@
   "attribute.piglinproliferation.ranged_modifier.take.2": "-%s-%s%% %s",
   "enchantment.piglinproliferation.turning": "Turning",
   "enchantment.piglinproliferation.bang": "Bang!",
-  "enchantment.piglinproliferation.turning.desc": "Allows full turn control while charging, but the buckler has no shield bash ability.",
+  "enchantment.piglinproliferation.turning.desc": "Increases turning speed while charging, but also reduces buckler bash attack damage.",
   "enchantment.piglinproliferation.bang.desc": "Shield bashing creates a large explosion, which deals damage to the user and surrounding mobs.",
   "piglinproliferation.advancements.nether.obtain_buckler.title": "Chargin' Targe",
   "piglinproliferation.advancements.nether.obtain_buckler.description": "Obtain a buckler from a bastion chest or by killing a piglin brute.",
