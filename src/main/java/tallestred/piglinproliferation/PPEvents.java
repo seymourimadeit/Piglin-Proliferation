@@ -14,15 +14,12 @@ import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.memory.MemoryModuleType;
-import net.minecraft.world.entity.monster.Creeper;
-import net.minecraft.world.entity.monster.Ghast;
 import net.minecraft.world.entity.monster.Strider;
 import net.minecraft.world.entity.monster.ZombifiedPiglin;
 import net.minecraft.world.entity.monster.piglin.AbstractPiglin;
 import net.minecraft.world.entity.monster.piglin.PiglinBrute;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.Arrow;
-import net.minecraft.world.entity.projectile.Fireball;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.alchemy.PotionUtils;
@@ -43,7 +40,6 @@ import net.neoforged.neoforge.event.level.NoteBlockEvent;
 import net.neoforged.neoforge.network.PacketDistributor;
 import tallestred.piglinproliferation.capablities.PPCapabilities;
 import tallestred.piglinproliferation.client.PPSounds;
-import tallestred.piglinproliferation.common.blocks.PPBlocks;
 import tallestred.piglinproliferation.common.blocks.PiglinSkullBlock;
 import tallestred.piglinproliferation.common.enchantments.PPEnchantments;
 import tallestred.piglinproliferation.common.entities.PPEntityTypes;
@@ -312,9 +308,8 @@ public class PPEvents {
     public static void visionPercent(LivingEvent.LivingVisibilityEvent event) {
         if (event.getLookingEntity() != null) {
             ItemStack itemstack = event.getEntity().getItemBySlot(EquipmentSlot.HEAD);
-            if (event.getLookingEntity() instanceof AbstractPiglin && PPBlocks.PIGLIN_HEADS.stream().anyMatch(h -> itemstack.getItem() == h.get().asItem())) {
+            if (event.getLookingEntity() instanceof AbstractPiglin && PPItems.PIGLIN_HEADS.keySet().stream().anyMatch(h -> h.get() == itemstack.getItem()))
                 event.modifyVisibility(0.5D);
-            }
         }
     }
 
@@ -338,25 +333,7 @@ public class PPEvents {
 
     @SubscribeEvent
     public static void onLootDropEntity(LivingDropsEvent event) {
-        if (event.getSource().getEntity() instanceof Creeper creeper) {
-            if (creeper.canDropMobsSkull()) {
-                EntityType<?> type = event.getEntity().getType();
-                if (type == EntityType.ZOMBIFIED_PIGLIN)
-                    event.getEntity().spawnAtLocation(PPItems.ZOMBIFIED_PIGLIN_HEAD_ITEM.get());
-                else if (type == EntityType.PIGLIN_BRUTE)
-                    event.getEntity().spawnAtLocation(PPItems.PIGLIN_BRUTE_HEAD_ITEM.get());
-                creeper.increaseDroppedSkulls();
-            }
-        }
-        if (event.getSource().getDirectEntity() instanceof Fireball fireBall && fireBall.getOwner() instanceof Ghast) {
-            EntityType<?> type = event.getEntity().getType();
-            if (event.getEntity().getType() == EntityType.PIGLIN)
-                event.getEntity().spawnAtLocation(Items.PIGLIN_HEAD);
-            else if (type == EntityType.ZOMBIFIED_PIGLIN)
-                event.getEntity().spawnAtLocation(PPItems.ZOMBIFIED_PIGLIN_HEAD_ITEM.get());
-            else if (event.getEntity().getType() == EntityType.PIGLIN_BRUTE)
-                event.getEntity().spawnAtLocation(PPItems.PIGLIN_BRUTE_HEAD_ITEM.get());
-        }
+        PiglinSkullBlock.spawnSkullIfValidKill(event.getSource(), event.getEntity(), e -> e.getType() == EntityType.PIGLIN ? Items.PIGLIN_HEAD : PPItems.headItem(e.getType()));
         if (event.getEntity() instanceof PiglinBrute brute) {
             ItemStack itemstack = brute.getOffhandItem();
             if (itemstack.getItem() instanceof BucklerItem) {
@@ -378,7 +355,7 @@ public class PPEvents {
         BlockState stateAbove = event.getLevel().getBlockState(event.getPos().above());
         if (stateAbove.getBlock() instanceof PiglinSkullBlock skull) {
             event.setCanceled(true);
-            event.getLevel().playSound(null, event.getPos(), skull.noteBlockSound, SoundSource.RECORDS);
+            event.getLevel().playSound(null, event.getPos(), skull.getType().getSoundEvent(), SoundSource.RECORDS);
         }
     }
 }

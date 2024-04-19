@@ -81,11 +81,14 @@
   "subtitles.entity.piglin_traveller.death": "Piglin voyageur qui meurt",
   "subtitles.entity.piglin_traveller.celebrate": "Piglin voyageur qui célèbre",
   "subtitles.entity.piglin_traveller.angry": "Grouinement furieux de Piglin voyageur",
-  "subtitles.entity.piglin_traveller.conversion": "Piglin voyageur converti en Piglin zombifi",
+  "subtitles.entity.piglin_traveller.conversion": "Piglin voyageur converti en Piglin zombifié",
   "subtitles.entity.piglin_traveller.step": "Piglin voyageur qui marche",
   "subtitles.entity.critical_aura.activate": "Activation de l'aura critique",
   "subtitles.entity.critical_aura.apply": "Application de l'aura critique",
   "subtitles.entity.critical_aura.deactivate": "Désactivation de l'aura critique",
+  "subtitles.entity.parrot.imitate.piglin_alchemist": "Perroquet qui imite le Piglin alchimiste",
+  "subtitles.entity.parrot.imitate.piglin_traveller": "Perroquet qui imite le Piglin voyageur",
+  "subtitles.entity.parrot.imitate.zombified_piglin": "Perroquet qui imite le Piglin zombifié",
   "piglinproliferation.advancements.nether.obtain_travellers_compass.title": "Voyage d'un millier de blocs",
   "piglinproliferation.advancements.nether.obtain_travellers_compass.description": "Obtenez une boussole du voyageur en troquant avec un Piglin voyageur - il peut vous aider à trouver ce que vous cherchez..."
 }

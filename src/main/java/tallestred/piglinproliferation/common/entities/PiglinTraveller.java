@@ -19,10 +19,7 @@ import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.Brain;
 import net.minecraft.world.entity.ai.memory.MemoryModuleType;
-import net.minecraft.world.entity.monster.Creeper;
-import net.minecraft.world.entity.monster.Ghast;
 import net.minecraft.world.entity.monster.piglin.Piglin;
-import net.minecraft.world.entity.projectile.Fireball;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
@@ -33,6 +30,7 @@ import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.event.EventHooks;
 import org.jetbrains.annotations.Nullable;
 import tallestred.piglinproliferation.client.PPSounds;
+import tallestred.piglinproliferation.common.blocks.PiglinSkullBlock;
 import tallestred.piglinproliferation.common.entities.ai.PiglinTravellerAi;
 import tallestred.piglinproliferation.common.items.PPItems;
 import tallestred.piglinproliferation.common.tags.EitherTag;
@@ -61,16 +59,7 @@ public class PiglinTraveller extends Piglin {
 
     @Override
     protected void dropCustomDeathLoot(DamageSource pSource, int pLooting, boolean pRecentlyHit) {
-        Entity entity = pSource.getEntity();
-        if (entity instanceof Creeper creeper) {
-            if (creeper.canDropMobsSkull()) {
-                creeper.increaseDroppedSkulls();
-                this.spawnAtLocation(PPItems.PIGLIN_TRAVELLER_HEAD_ITEM.get());
-            }
-        }
-        if (pSource.getDirectEntity() instanceof Fireball fireball && fireball.getOwner() instanceof Ghast) {
-            this.spawnAtLocation(PPItems.PIGLIN_TRAVELLER_HEAD_ITEM.get());
-        }
+        PiglinSkullBlock.spawnSkullIfValidKill(pSource, this, e -> PPItems.PIGLIN_TRAVELLER_HEAD_ITEM.get());
         super.dropCustomDeathLoot(pSource, pLooting, pRecentlyHit);
     }
 
@@ -101,11 +90,6 @@ public class PiglinTraveller extends Piglin {
     @Override
     public boolean canHunt() {
         return super.canHunt();
-    }
-
-    @Override
-    public void playSoundEvent(SoundEvent pSoundEvent) {
-        this.playSound(pSoundEvent, this.getSoundVolume(), this.getVoicePitch());
     }
 
     protected Brain.Provider<PiglinTraveller> travellerBrainProvider() {
@@ -172,8 +156,9 @@ public class PiglinTraveller extends Piglin {
         return false;
     }
 
-    public static boolean checkTravellerSpawnRules(EntityType<PiglinTraveller> entityType, LevelAccessor p_219199_, MobSpawnType p_219200_, BlockPos p_219201_, RandomSource p_219202_) {
-        return !p_219199_.getBlockState(p_219201_.below()).is(Blocks.NETHER_WART_BLOCK);
+    @SuppressWarnings("unused") //Needed for where it's called
+    public static boolean checkTravellerSpawnRules(EntityType<PiglinTraveller> entityType, LevelAccessor levelAccessor, MobSpawnType mobSpawnType, BlockPos blockPos, RandomSource randomSource) {
+        return !levelAccessor.getBlockState(blockPos.below()).is(Blocks.NETHER_WART_BLOCK);
     }
 
     @Override

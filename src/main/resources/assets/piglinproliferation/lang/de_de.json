@@ -86,6 +86,9 @@
   "subtitles.entity.critical_aura.activate": "Kritische Aura schaltet ein",
   "subtitles.entity.critical_aura.apply": "Kritische Aura verwendet",
   "subtitles.entity.critical_aura.deactivate": "Kritische Aura entschärft",
+  "subtitles.entity.parrot.imitate.piglin_alchemist": "Papagei grunzt",
+  "subtitles.entity.parrot.imitate.piglin_traveller": "Papagei grunzt",
+  "subtitles.entity.parrot.imitate.zombified_piglin": "Papagei grunzt",
   "piglinproliferation.advancements.nether.obtain_travellers_compass.title": "Reise der tausend Blöcke",
   "piglinproliferation.advancements.nether.obtain_travellers_compass.description": "Beziehe einen Kompass des Reisendens durch Tauschhandel mit einem Piglin-Reisenden - dadurch könntest du finden, was du brauchst..."
 }

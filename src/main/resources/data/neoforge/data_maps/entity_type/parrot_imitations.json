@@ -1,0 +1,13 @@
+{
+  "values": {
+    "piglinproliferation:piglin_alchemist": {
+      "sound": "piglinproliferation:entity.parrot.imitate.piglin_alchemist"
+    },
+    "piglinproliferation:piglin_traveller": {
+      "sound": "piglinproliferation:entity.parrot.imitate.piglin_traveller"
+    },
+    "minecraft:zombified_piglin": {
+      "sound": "piglinproliferation:entity.parrot.imitate.zombified_piglin"
+    }
+  }
+}

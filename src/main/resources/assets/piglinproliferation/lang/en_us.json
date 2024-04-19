@@ -86,6 +86,9 @@
   "subtitles.entity.critical_aura.activate": "Critical Aura activates",
   "subtitles.entity.critical_aura.apply": "Critical Aura applies",
   "subtitles.entity.critical_aura.deactivate": "Critical Aura deactivates",
+  "subtitles.entity.parrot.imitate.piglin_alchemist": "Parrot grunts",
+  "subtitles.entity.parrot.imitate.piglin_traveller": "Parrot grunts",
+  "subtitles.entity.parrot.imitate.zombified_piglin": "Parrot grunts",
   "piglinproliferation.advancements.nether.obtain_travellers_compass.title": "Journey of a Thousand Blocks",
   "piglinproliferation.advancements.nether.obtain_travellers_compass.description": "Obtain a Traveler's Compass by bartering with a Piglin Traveler - it may help you find what you need..."
 }

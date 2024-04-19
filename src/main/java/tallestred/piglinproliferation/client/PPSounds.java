@@ -7,6 +7,7 @@ import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import tallestred.piglinproliferation.PiglinProliferation;
 
+@SuppressWarnings("unused") //Sounds need to be registered even if they're not directly referenced in code
 public class PPSounds {
     public static final DeferredRegister<SoundEvent> SOUNDS = DeferredRegister.create(Registries.SOUND_EVENT, PiglinProliferation.MODID);
     public static final DeferredHolder<SoundEvent, SoundEvent> ALCHEMIST_ABOUT_TO_THROW_POTION = createVariableRangeSound("entity.piglin_alchemist.throw_alert");
@@ -37,6 +38,13 @@ public class PPSounds {
     public static final DeferredHolder<SoundEvent, SoundEvent> TRAVELLER_ANGRY = createVariableRangeSound("entity.piglin_traveller.angry");
     public static final DeferredHolder<SoundEvent, SoundEvent> TRAVELLER_CELEBRATE = createVariableRangeSound("entity.piglin_traveller.celebrate");
     public static final DeferredHolder<SoundEvent, SoundEvent> TRAVELLER_CONVERTED = createVariableRangeSound("entity.piglin_traveller.conversion");
+    public static final DeferredHolder<SoundEvent, SoundEvent> NOTE_BLOCK_IMITATE_PIGLIN_BRUTE = createVariableRangeSound("block.note_block.imitate.piglin_brute");
+    public static final DeferredHolder<SoundEvent, SoundEvent> NOTE_BLOCK_IMITATE_PIGLIN_ALCHEMIST = createVariableRangeSound("block.note_block.imitate.piglin_alchemist");
+    public static final DeferredHolder<SoundEvent, SoundEvent> NOTE_BLOCK_IMITATE_PIGLIN_TRAVELLER = createVariableRangeSound("block.note_block.imitate.piglin_traveller");
+    public static final DeferredHolder<SoundEvent, SoundEvent> NOTE_BLOCK_IMITATE_ZOMBIFIED_PIGLIN = createVariableRangeSound("block.note_block.imitate.zombified_piglin");
+    public static final DeferredHolder<SoundEvent, SoundEvent> PARROT_IMITATE_PIGLIN_ALCHEMIST = createVariableRangeSound("entity.parrot.imitate.piglin_alchemist");
+    public static final DeferredHolder<SoundEvent, SoundEvent> PARROT_IMITATE_PIGLIN_TRAVELLER = createVariableRangeSound("entity.parrot.imitate.piglin_traveller");
+    public static final DeferredHolder<SoundEvent, SoundEvent> PARROT_IMITATE_ZOMBIFIED_PIGLIN = createVariableRangeSound("entity.parrot.imitate.zombified_piglin");
 
     public static DeferredHolder<SoundEvent, SoundEvent> createVariableRangeSound(String path) {
         return SOUNDS.register(path, () -> SoundEvent.createVariableRangeEvent(new ResourceLocation(PiglinProliferation.MODID, path)));

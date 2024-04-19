@@ -86,6 +86,9 @@
   "subtitles.entity.critical_aura.activate": "Aura crítica activa",
   "subtitles.entity.critical_aura.apply": "Aura crítica aplica",
   "subtitles.entity.critical_aura.deactivate": "Aura crítica desactiva",
+  "subtitles.entity.parrot.imitate.piglin_alchemist": "Loro imita a un piglin",
+  "subtitles.entity.parrot.imitate.piglin_traveller": "Loro imita a un piglin",
+  "subtitles.entity.parrot.imitate.zombified_piglin": "Loro imita a un piglin",
   "piglinproliferation.advancements.nether.obtain_travellers_compass.title": "El viaje de mil bloques",
   "piglinproliferation.advancements.nether.obtain_travellers_compass.description": "Negocia con un piglin nómada y obtener una brújula  - lo deja guiar al algún lugar..."
 }

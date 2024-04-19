@@ -72,8 +72,8 @@ public class PiglinProliferation {
         NeoForge.EVENT_BUS.addListener(this::serverStart);
         PPSounds.SOUNDS.register(modEventBus);
         PPAttributes.ATTRIBUTES.register(modEventBus);
-        PPItems.ITEMS.register(modEventBus);
         PPEntityTypes.ENTITIES.register(modEventBus);
+        PPItems.ITEMS.register(modEventBus);
         PPMemoryModules.MEMORY_MODULE_TYPE.register(modEventBus);
         PPActivities.ACTIVITIES.register(modEventBus);
         PPBlocks.BLOCKS.register(modEventBus);

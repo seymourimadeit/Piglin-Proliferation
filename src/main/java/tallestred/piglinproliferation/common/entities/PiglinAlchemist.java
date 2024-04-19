@@ -25,12 +25,8 @@ import net.minecraft.world.entity.ai.Brain;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.memory.MemoryModuleType;
-import net.minecraft.world.entity.monster.Creeper;
-import net.minecraft.world.entity.monster.Ghast;
 import net.minecraft.world.entity.monster.piglin.Piglin;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.AbstractArrow;
-import net.minecraft.world.entity.projectile.Fireball;
 import net.minecraft.world.entity.projectile.ProjectileUtil;
 import net.minecraft.world.entity.projectile.ThrownPotion;
 import net.minecraft.world.item.*;
@@ -49,6 +45,7 @@ import net.neoforged.neoforge.network.PacketDistributor;
 import org.jetbrains.annotations.NotNull;
 import tallestred.piglinproliferation.PPMemoryModules;
 import tallestred.piglinproliferation.client.PPSounds;
+import tallestred.piglinproliferation.common.blocks.PiglinSkullBlock;
 import tallestred.piglinproliferation.common.items.PPItems;
 import tallestred.piglinproliferation.common.entities.ai.PiglinAlchemistAi;
 import tallestred.piglinproliferation.configuration.PPConfig;
@@ -73,8 +70,9 @@ public class PiglinAlchemist extends Piglin {
         return Piglin.createAttributes().add(Attributes.MAX_HEALTH, 20.0D).add(Attributes.FOLLOW_RANGE, 24.0D);
     }
 
-    public static boolean checkChemistSpawnRules(EntityType<PiglinAlchemist> p_219198_, LevelAccessor p_219199_, MobSpawnType p_219200_, BlockPos p_219201_, RandomSource p_219202_) {
-        return !p_219199_.getBlockState(p_219201_.below()).is(Blocks.NETHER_WART_BLOCK);
+    @SuppressWarnings("unused") //Needed for where it's called
+    public static boolean checkChemistSpawnRules(EntityType<PiglinAlchemist> entityType, LevelAccessor levelAccessor, MobSpawnType mobSpawnType, BlockPos blockPos, RandomSource randomSource) {
+        return !levelAccessor.getBlockState(blockPos.below()).is(Blocks.NETHER_WART_BLOCK);
     }
 
     @Override
@@ -113,7 +111,7 @@ public class PiglinAlchemist extends Piglin {
 
     @Override
     protected void playStepSound(BlockPos p_32159_, BlockState p_32160_) {
-        if (this.getRandom().nextInt(20) == 0 && this.beltInventory.stream().filter(itemStack -> itemStack.getItem() instanceof PotionItem).findAny().isPresent())
+        if (this.getRandom().nextInt(20) == 0 && this.beltInventory.stream().anyMatch(itemStack -> itemStack.getItem() instanceof PotionItem))
             this.playSound(PPSounds.ALCHEMIST_WALK.get(), 0.5F * (this.beltInventory.stream().filter(itemStack -> itemStack.getItem() instanceof PotionItem).count() * 0.5F), 1.0F);
         this.playSound(PPSounds.ALCHEMIST_STEP.get(), 0.15F, 1.0F);
     }
@@ -172,11 +170,6 @@ public class PiglinAlchemist extends Piglin {
     }
 
     @Override
-    public void playSoundEvent(SoundEvent sound) {
-        this.playSound(sound, this.getSoundVolume(), this.getVoicePitch());
-    }
-
-    @Override
     public boolean canHunt() {
         return super.canHunt();
     }
@@ -203,23 +196,14 @@ public class PiglinAlchemist extends Piglin {
                     if (itemStack.getItem() instanceof PotionItem) {
                         for (int i = 0; i < 5; ++i) {
                             BlockPos blockpos = this.blockPosition();
-                            ((ServerLevel) this.level()).sendParticles((new ItemParticleOption(ParticleTypes.ITEM, itemStack)), (double) blockpos.getX() + level().random.nextDouble(), (double) (blockpos.getY() + 1), (double) blockpos.getZ() + level().random.nextDouble(), 0, 0.0D, 0.0D, 0.0D, 0.0D);
+                            ((ServerLevel) this.level()).sendParticles((new ItemParticleOption(ParticleTypes.ITEM, itemStack)), (double) blockpos.getX() + level().random.nextDouble(), blockpos.getY() + 1, (double) blockpos.getZ() + level().random.nextDouble(), 0, 0.0D, 0.0D, 0.0D, 0.0D);
                         }
                         this.playSound(SoundEvents.SPLASH_POTION_BREAK, 0.5F, 1.0F);
                     }
                 }
             }
         }
-        Entity entity = pSource.getEntity();
-        if (entity instanceof Creeper creeper) {
-            if (creeper.canDropMobsSkull()) {
-                creeper.increaseDroppedSkulls();
-                this.spawnAtLocation(PPItems.PIGLIN_ALCHEMIST_HEAD_ITEM.get());
-            }
-        }
-        if (pSource.getDirectEntity() instanceof Fireball fireball && fireball.getOwner() instanceof Ghast) {
-            this.spawnAtLocation(PPItems.PIGLIN_ALCHEMIST_HEAD_ITEM.get());
-        }
+        PiglinSkullBlock.spawnSkullIfValidKill(pSource, this, e -> PPItems.PIGLIN_ALCHEMIST_HEAD_ITEM.get());
         this.beltInventory.clear();
         super.dropCustomDeathLoot(pSource, pLooting, pRecentlyHit);
     }
@@ -229,7 +213,7 @@ public class PiglinAlchemist extends Piglin {
         thrownpotion.setItem(thrownPotion);
         thrownpotion.shootFromRotation(this, xRot, yRot, -20.0F, 0.5F, 1.0F);
         if (!this.isSilent())
-            this.level().playSound((Player) null, this.getX(), this.getY(), this.getZ(), SoundEvents.SPLASH_POTION_THROW, this.getSoundSource(), 1.0F, 0.8F + this.getRandom().nextFloat() * 0.4F);
+            this.level().playSound(null, this.getX(), this.getY(), this.getZ(), SoundEvents.SPLASH_POTION_THROW, this.getSoundSource(), 1.0F, 0.8F + this.getRandom().nextFloat() * 0.4F);
         this.level().addFreshEntity(thrownpotion);
         this.willThrowPotion(false);
         thrownPotion.shrink(1);
@@ -261,7 +245,7 @@ public class PiglinAlchemist extends Piglin {
             for (int slot = 0; slot < this.beltInventory.size() && !(this.getItemShownOnOffhand().getItem() instanceof TippedArrowItem); slot++) {
                 if (beltInventory.get(slot).getItem() instanceof TippedArrowItem) {
                     List<MobEffectInstance> effectInstanceList = PotionUtils.getPotion(beltInventory.get(slot)).getEffects();
-                    if (this.getTarget() != null && target == this.getTarget() && effectInstanceList.stream().filter(mobEffectInstance -> !mobEffectInstance.getEffect().isBeneficial()).findAny().isPresent() || target != this.getTarget() || this.getTarget() != null && this.getTarget().isInvertedHealAndHarm() && effectInstanceList.stream().filter(mobEffectInstance -> mobEffectInstance.getEffect() == MobEffects.HEAL).findAny().isPresent()) {
+                    if (this.getTarget() != null && target == this.getTarget() && effectInstanceList.stream().anyMatch(mobEffectInstance -> !mobEffectInstance.getEffect().isBeneficial()) || target != this.getTarget() || this.getTarget() != null && this.getTarget().isInvertedHealAndHarm() && effectInstanceList.stream().anyMatch(mobEffectInstance -> mobEffectInstance.getEffect() == MobEffects.HEAL)) {
                         this.setItemShownOnOffhand(beltInventory.get(slot).copy());
                         this.beltInventory.set(slot, ItemStack.EMPTY);
                     }
