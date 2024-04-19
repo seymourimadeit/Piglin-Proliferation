@@ -4,7 +4,6 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.core.Holder;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
@@ -29,7 +28,6 @@ public class PiglinWallSkullBlock extends WallSkullBlock {
     public PiglinWallSkullBlock(SkullBlock.Type pType, Properties pProperties) {
         super(pType, pProperties);
         this.registerDefaultState(this.stateDefinition.any().setValue(FACING, Direction.NORTH));
-        PiglinSkullBlock.PIGLIN_HEADS.add(Holder.direct(this));
     }
 
     @Override

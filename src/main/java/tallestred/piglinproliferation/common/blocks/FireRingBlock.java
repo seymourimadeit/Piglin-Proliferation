@@ -1,7 +1,6 @@
 package tallestred.piglinproliferation.common.blocks;
 
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Holder;
 import net.minecraft.stats.Stats;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
@@ -27,21 +26,18 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 import org.jetbrains.annotations.Nullable;
 import tallestred.piglinproliferation.common.blockentities.FireRingBlockEntity;
 import tallestred.piglinproliferation.common.blockentities.PPBlockEntities;
-import tallestred.piglinproliferation.util.LazyLoadedArray;
 
 import java.util.Optional;
 
 import static tallestred.piglinproliferation.util.CodeUtilities.castOrNull;
 
 public class FireRingBlock extends CampfireBlock {
-    public static LazyLoadedArray<FireRingBlock> FIRE_RINGS = new LazyLoadedArray<>(10);
     protected static final VoxelShape SHAPE = Block.box(0.0, 0.0, 0.0, 16.0, 5.0, 16.0);
     protected final int potionTime;
 
     public FireRingBlock(boolean spawnParticles, int fireDamage, int potionTime, Properties properties) {
         super(spawnParticles, fireDamage, properties);
         this.potionTime = potionTime;
-        FIRE_RINGS.add(Holder.direct(this));
     }
 
     @Override
