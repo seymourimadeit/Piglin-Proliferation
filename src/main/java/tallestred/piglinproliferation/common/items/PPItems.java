@@ -25,44 +25,12 @@ public class PPItems {
     public static final DeferredHolder<Item, BucklerItem> BUCKLER = ITEMS.register("buckler", () -> new BucklerItem((new Item.Properties()).durability(128)));
     public static final DeferredHolder<Item, TravellersCompassItem> TRAVELLERS_COMPASS = ITEMS.register("travellers_compass", () -> new TravellersCompassItem(new Item.Properties()));
 
+    //TODO this can be automated in the future
     public static final DeferredHolder<Item, DeferredSpawnEggItem> PIGLIN_ALCHEMIST_SPAWN_EGG = ITEMS.register("piglin_alchemist_spawn_egg", () -> new DeferredSpawnEggItem(PPEntityTypes.PIGLIN_ALCHEMIST, 10944611, 16380836, (new Item.Properties())));
     public static final DeferredHolder<Item, DeferredSpawnEggItem> PIGLIN_TRAVELLER_SPAWN_EGG = ITEMS.register("piglin_traveller_spawn_egg", () -> new DeferredSpawnEggItem(PPEntityTypes.PIGLIN_TRAVELLER, 3848107, 16380836, (new Item.Properties())));
-
-    public static final Map<DeferredHolder<Item, Item>, DeferredHolder<Block, PiglinSkullBlock>> PIGLIN_HEADS = new HashMap<>();
-
-    public static final DeferredHolder<Item, Item> PIGLIN_BRUTE_HEAD_ITEM = registerHead(PPBlocks.PIGLIN_BRUTE_HEAD, PPBlocks.PIGLIN_BRUTE_HEAD_WALL);
-    public static final DeferredHolder<Item, Item> ZOMBIFIED_PIGLIN_HEAD_ITEM = registerHead(PPBlocks.ZOMBIFIED_PIGLIN_HEAD, PPBlocks.ZOMBIFIED_PIGLIN_HEAD_WALL);
-    public static final DeferredHolder<Item, Item> PIGLIN_ALCHEMIST_HEAD_ITEM = registerHead(PPBlocks.PIGLIN_ALCHEMIST_HEAD, PPBlocks.PIGLIN_ALCHEMIST_HEAD_WALL);
-    public static final DeferredHolder<Item, Item> PIGLIN_TRAVELLER_HEAD_ITEM = registerHead(PPBlocks.PIGLIN_TRAVELLER_HEAD, PPBlocks.PIGLIN_TRAVELLER_HEAD_WALL);
-
-    public static final DeferredHolder<Item, Item> STONE_FIRE_RING_ITEM = ITEMS.register("stone_fire_ring", () -> new BlockItem(PPBlocks.STONE_FIRE_RING.get(), new Item.Properties()));
-    public static final DeferredHolder<Item, Item> STONE_SOUL_FIRE_RING_ITEM = ITEMS.register("stone_soul_fire_ring", () -> new BlockItem(PPBlocks.STONE_SOUL_FIRE_RING.get(), new Item.Properties()));
-    public static final DeferredHolder<Item, Item> DEEPSLATE_FIRE_RING_ITEM = ITEMS.register("deepslate_fire_ring", () -> new BlockItem(PPBlocks.DEEPSLATE_FIRE_RING.get(), new Item.Properties()));
-    public static final DeferredHolder<Item, Item> DEEPSLATE_SOUL_FIRE_RING_ITEM = ITEMS.register("deepslate_soul_fire_ring", () -> new BlockItem(PPBlocks.DEEPSLATE_SOUL_FIRE_RING.get(), new Item.Properties()));
-    public static final DeferredHolder<Item, Item> NETHERRACK_FIRE_RING_ITEM = ITEMS.register("netherrack_fire_ring", () -> new BlockItem(PPBlocks.NETHERRACK_FIRE_RING.get(), new Item.Properties()));
-    public static final DeferredHolder<Item, Item> NETHERRACK_SOUL_FIRE_RING_ITEM = ITEMS.register("netherrack_soul_fire_ring", () -> new BlockItem(PPBlocks.NETHERRACK_SOUL_FIRE_RING.get(), new Item.Properties()));
-    public static final DeferredHolder<Item, Item> BLACKSTONE_FIRE_RING_ITEM = ITEMS.register("blackstone_fire_ring", () -> new BlockItem(PPBlocks.BLACKSTONE_FIRE_RING.get(), new Item.Properties()));
-    public static final DeferredHolder<Item, Item> BLACKSTONE_SOUL_FIRE_RING_ITEM = ITEMS.register("blackstone_soul_fire_ring", () -> new BlockItem(PPBlocks.BLACKSTONE_SOUL_FIRE_RING.get(), new Item.Properties()));
-    public static final DeferredHolder<Item, Item> END_STONE_FIRE_RING_ITEM = ITEMS.register("end_stone_fire_ring", () -> new BlockItem(PPBlocks.END_STONE_FIRE_RING.get(), new Item.Properties()));
-    public static final DeferredHolder<Item, Item> END_STONE_SOUL_FIRE_RING_ITEM = ITEMS.register("end_stone_soul_fire_ring", () -> new BlockItem(PPBlocks.END_STONE_SOUL_FIRE_RING.get(), new Item.Properties()));
 
     public static ItemStack checkEachHandForBuckler(LivingEntity entity) {
         InteractionHand hand = entity.getMainHandItem().getItem() instanceof BucklerItem ? InteractionHand.MAIN_HAND : InteractionHand.OFF_HAND;
         return entity.getItemInHand(hand);
-    }
-
-    //TODO do some dynamic block item thing in the future, but this works for now
-    private static DeferredHolder<Item, Item> registerHead(DeferredHolder<Block, PiglinSkullBlock> head, DeferredHolder<Block, PiglinWallSkullBlock> wallHead) {
-        DeferredHolder<Item, Item> registeredItem = ITEMS.register(head.unwrapKey().orElseThrow().location().getPath(), () -> new StandingAndWallBlockItem(head.get(), wallHead.get(), new Item.Properties().rarity(Rarity.UNCOMMON), Direction.DOWN));
-        PIGLIN_HEADS.put(registeredItem, head);
-        return registeredItem;
-    }
-
-    public static Item headItem(EntityType<?> entityType) {
-        for (var entry : PIGLIN_HEADS.entrySet()) {
-            if (entry.getValue().get().getType().getEntityType() == entityType)
-                return entry.getKey().get();
-        }
-        return null;
     }
 }

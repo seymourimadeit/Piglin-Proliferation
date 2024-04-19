@@ -6,6 +6,8 @@ import java.util.List;
 
 public class CodeUtilities {
 
+
+
     /**
      * Casts an object to given type if they are compatible, returns null if not.
      *
@@ -14,6 +16,14 @@ public class CodeUtilities {
      * */
     public static <T> T castOrNull(Object object, Class<T> castType) {
         return castType.isInstance(object) ? castType.cast(object) : null;
+    }
+
+    /**
+     * Sus
+     * */
+    @SuppressWarnings("unchecked")
+    public static <T> T castOrThrow(Object object) {
+        return (T) object;
     }
 
     /**

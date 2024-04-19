@@ -308,7 +308,7 @@ public class PPEvents {
     public static void visionPercent(LivingEvent.LivingVisibilityEvent event) {
         if (event.getLookingEntity() != null) {
             ItemStack itemstack = event.getEntity().getItemBySlot(EquipmentSlot.HEAD);
-            if (event.getLookingEntity() instanceof AbstractPiglin && PPItems.PIGLIN_HEADS.keySet().stream().anyMatch(h -> h.get() == itemstack.getItem()))
+            if (event.getLookingEntity() instanceof AbstractPiglin && PiglinSkullBlock.PIGLIN_HEADS.items())
                 event.modifyVisibility(0.5D);
         }
     }
@@ -333,7 +333,7 @@ public class PPEvents {
 
     @SubscribeEvent
     public static void onLootDropEntity(LivingDropsEvent event) {
-        PiglinSkullBlock.spawnSkullIfValidKill(event.getSource(), event.getEntity(), e -> e.getType() == EntityType.PIGLIN ? Items.PIGLIN_HEAD : PPItems.headItem(e.getType()));
+        PiglinSkullBlock.spawnSkullIfValidKill(event.getSource(), event.getEntity(), e -> e.getType() == EntityType.PIGLIN ? Items.PIGLIN_HEAD : PiglinSkullBlock.PIGLIN_HEADS.findFirstMatch(b -> b.getType() instanceof PiglinSkullBlock.Types types && types.getEntityType() == e.getType()).asItem());
         if (event.getEntity() instanceof PiglinBrute brute) {
             ItemStack itemstack = brute.getOffhandItem();
             if (itemstack.getItem() instanceof BucklerItem) {

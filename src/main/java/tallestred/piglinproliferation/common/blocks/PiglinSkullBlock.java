@@ -1,6 +1,7 @@
 package tallestred.piglinproliferation.common.blocks;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Holder;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
@@ -11,6 +12,7 @@ import net.minecraft.world.entity.projectile.Fireball;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.AbstractSkullBlock;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.SkullBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -24,16 +26,23 @@ import tallestred.piglinproliferation.client.PPSounds;
 import tallestred.piglinproliferation.common.blockentities.PPBlockEntities;
 import tallestred.piglinproliferation.common.blockentities.PiglinSkullBlockEntity;
 import tallestred.piglinproliferation.common.entities.PPEntityTypes;
+import tallestred.piglinproliferation.util.LazyLoadedArray;
 
 import javax.annotation.Nullable;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
+import static tallestred.piglinproliferation.util.CodeUtilities.addToArray;
+import static tallestred.piglinproliferation.util.CodeUtilities.castOrThrow;
+
+@SuppressWarnings("unchecked")
 public class PiglinSkullBlock extends SkullBlock {
+    public static final LazyLoadedArray<AbstractSkullBlock> PIGLIN_HEADS = new LazyLoadedArray<>(8);
     protected static final VoxelShape PIGLIN_SHAPE = Block.box(3.0, 0.0, 3.0, 13.0, 8.0, 13.0);
 
     public PiglinSkullBlock(Type pType, Properties pProperties) {
         super(pType, pProperties);
+        PIGLIN_HEADS.add(Holder.direct(this));
     }
 
     public VoxelShape getShape(BlockState pState, BlockGetter pLevel, BlockPos pPos, CollisionContext pContext) {
@@ -90,17 +99,16 @@ public class PiglinSkullBlock extends SkullBlock {
 
     public static void spawnSkullIfValidKill(DamageSource source, Entity killed, Function<Entity, Item> getItemIfValid) {
         if (source.getEntity() instanceof Creeper creeper) {
-            if (creeper.isPowered()) {
+            if (creeper.canDropMobsSkull()) {
                 Item spawnItem = getItemIfValid.apply(killed);
                 if (spawnItem != null) {
-                    if (creeper.canDropMobsSkull()) {
-                        killed.spawnAtLocation(spawnItem);
-                        creeper.increaseDroppedSkulls();
-                    }
+                    killed.spawnAtLocation(spawnItem);
+                    creeper.increaseDroppedSkulls();
+
                 }
             }
         }
-        if (source.getDirectEntity() instanceof Fireball fireBall && fireBall.getOwner() instanceof Ghast) {
+        if (source.getDirectEntity() instanceof Fireball fireball && fireball.getOwner() instanceof Ghast) {
             Item spawnItem = getItemIfValid.apply(killed);
             if (spawnItem != null)
                 killed.spawnAtLocation(spawnItem);
