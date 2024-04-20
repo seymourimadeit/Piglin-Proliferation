@@ -19,11 +19,13 @@ import net.minecraft.world.entity.HumanoidArm;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Pose;
 import net.minecraft.world.entity.monster.ZombifiedPiglin;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.CrossbowItem;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.UseAnim;
 import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.client.event.ComputeFovModifierEvent;
 import net.minecraftforge.client.event.MovementInputUpdateEvent;
 import net.minecraftforge.client.event.RenderHandEvent;
 import net.minecraftforge.client.event.RenderLivingEvent;
@@ -74,6 +76,22 @@ public class PPHandEvents {
             Minecraft.getInstance().gameRenderer.itemInHandRenderer.renderItem(player, stack, transform, !rightHanded, mStack, event.getMultiBufferSource(), event.getPackedLight());
             mStack.popPose();
             event.setCanceled(true);
+        }
+    }
+
+    @SubscribeEvent
+    public static void changeFov(ComputeFovModifierEvent event) {
+        Player player = event.getPlayer();
+        if (player != null) {
+            if (player.getUseItem().getItem() instanceof BucklerItem) {
+                int i = player.getTicksUsingItem();
+                float f1 = (float) i * 0.3F;
+                if (f1 < 1.0F) {
+                    f1 = 1.0F;
+                }
+                f1 = Math.max(f1, event.getFovModifier());
+                event.setNewFovModifier(f1);
+            }
         }
     }
 }

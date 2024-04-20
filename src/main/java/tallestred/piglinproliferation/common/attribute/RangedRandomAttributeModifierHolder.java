@@ -7,6 +7,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 
+import java.util.Random;
 import java.util.UUID;
 import java.util.random.RandomGenerator;
 
@@ -117,7 +118,7 @@ public class RangedRandomAttributeModifierHolder extends AbstractAttributeModifi
 
         protected RandomGenerator random() {
             if (random == null)
-                random = RandomGenerator.getDefault();
+                random = new Random();
             return random;
         }
     }
