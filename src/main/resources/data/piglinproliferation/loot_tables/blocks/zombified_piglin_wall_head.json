@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:block",
+  "pools": [
+    {
+      "bonus_rolls": 0.0,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "piglinproliferation:zombified_piglin_head"
+        }
+      ],
+      "rolls": 1.0
+    }
+  ],
+  "random_sequence": "piglinproliferation:blocks/zombified_piglin_wall_head"
+}

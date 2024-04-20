@@ -48,17 +48,20 @@ public class ChargeTask<T extends PiglinBrute> extends Behavior<T> {
             strafeTicks--;
             if (strafeTicks == 0)
                 chargePhase = ChargePhases.CHARGE;
+            if (BucklerItem.getChargeTicks(PPItems.checkEachHandForBuckler(entityIn)) > 0 && PPEnchantments.getBucklerEnchantsOnHands(PPEnchantments.TURNING.get(), entityIn) > 0 || BucklerItem.getChargeTicks(PPItems.checkEachHandForBuckler(entityIn)) <= 0) {
+                entityIn.lookAt(livingEntity, 30.0F, 30.0F);
+            }
         } else if (chargePhase == ChargePhases.CHARGE) {
             if (!entityIn.isUsingItem() && BucklerItem.getChargeTicks(PPItems.checkEachHandForBuckler(entityIn)) <= 0) {
                 entityIn.startUsingItem(InteractionHand.OFF_HAND);
-                this.chargePhase = ChargePhases.CHARGING;
             }
+            if (entityIn.getTicksUsingItem() >= entityIn.getUseItem().getUseDuration())
+                this.chargePhase = ChargePhases.CHARGING;
+
         } else if (chargePhase == ChargePhases.CHARGING) {
-            if (entityIn.getTicksUsingItem() >= entityIn.getUseItem().getUseDuration() && BucklerItem.getChargeTicks(PPItems.checkEachHandForBuckler(entityIn)) > 0)
+            if (BucklerItem.getChargeTicks(PPItems.checkEachHandForBuckler(entityIn)) <= 0)
                 chargePhase = ChargePhases.FINISH;
         }
-        if (BucklerItem.getChargeTicks(PPItems.checkEachHandForBuckler(entityIn)) > 0 && PPEnchantments.getBucklerEnchantsOnHands(PPEnchantments.TURNING.get(), entityIn) > 0 || BucklerItem.getChargeTicks(PPItems.checkEachHandForBuckler(entityIn)) <= 0)
-            entityIn.lookAt(livingEntity, 30.0F, 30.0F);
     }
 
     @Override

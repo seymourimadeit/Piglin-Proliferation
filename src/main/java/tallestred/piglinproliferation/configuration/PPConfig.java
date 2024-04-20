@@ -102,7 +102,6 @@ public class PPConfig {
     public static class ClientConfig {
         public final ForgeConfigSpec.BooleanValue ziglinTextures;
         public final ForgeConfigSpec.BooleanValue RenderAfterImage;
-        public final ForgeConfigSpec.BooleanValue RenderEntityLayersDuringAfterImage;
 
         public ClientConfig(ForgeConfigSpec.Builder builder) {
             builder.push("vanilla changes");
@@ -110,7 +109,6 @@ public class PPConfig {
             builder.pop();
             builder.push("after image");
             RenderAfterImage = builder.define("Render an after image while an entity is charging with a buckler?", true);
-            RenderEntityLayersDuringAfterImage = builder.comment("Keep in mind this won't affect their opacity due to technical reasons.").define("Render entity layers while rendering the after image?", false);
             builder.pop();
         }
     }
