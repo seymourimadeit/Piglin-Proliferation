@@ -1,6 +1,6 @@
 {
   "type": "neoforge:add_spawns",
-  "biomes": "#piglinprolifertion:nether",
+  "biomes": "#piglinproliferation:nether",
   "spawners": {
     "type": "piglinproliferation:piglin_traveller",
     "maxCount": 2,
