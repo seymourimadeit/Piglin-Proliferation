@@ -22,7 +22,7 @@ public class BucklerModel extends Model {
     public final ModelPart handle;
 
     public BucklerModel(ModelPart part) {
-        super(RenderType::entitySolid);
+        super(RenderType::entityTranslucent);
         this.root = part;
         this.base = part.getChild("base");
         this.handle = part.getChild("handle");

@@ -90,15 +90,12 @@ public class PPConfig {
     public static class ClientConfig {
         public final ModConfigSpec.BooleanValue ziglinTextures;
         public final ModConfigSpec.BooleanValue RenderAfterImage;
-        public final ModConfigSpec.BooleanValue RenderEntityLayersDuringAfterImage;
-
         public ClientConfig(ModConfigSpec.Builder builder) {
             builder.push("vanilla changes");
             ziglinTextures = builder.define("Allow Zombified Piglins to render consistent clothing?", true);
             builder.pop();
             builder.push("after image");
             RenderAfterImage = builder.define("Render an after image while an entity is charging with a buckler?", true);
-            RenderEntityLayersDuringAfterImage = builder.comment("Keep in mind this won't affect their opacity due to technical reasons.").define("Render entity layers while rendering the after image?", false);
             builder.pop();
         }
     }

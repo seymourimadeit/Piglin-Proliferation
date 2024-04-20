@@ -3,6 +3,7 @@ package tallestred.piglinproliferation.common.items;
 import com.mojang.blaze3d.platform.InputConstants;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.BlockParticleOption;
@@ -38,6 +39,7 @@ import net.neoforged.neoforge.common.ToolActions;
 import net.neoforged.neoforge.event.EventHooks;
 import tallestred.piglinproliferation.capablities.PPCapabilities;
 import tallestred.piglinproliferation.client.PPSounds;
+import tallestred.piglinproliferation.client.particles.AfterImageParticle;
 import tallestred.piglinproliferation.client.renderers.BucklerRenderer;
 import tallestred.piglinproliferation.common.attribute.AttributeModifierHolder;
 import tallestred.piglinproliferation.common.attribute.PPAttributes;
@@ -69,6 +71,12 @@ public class BucklerItem extends ShieldItem {
         if (entity.isAlive()) {
             Vec3 look = entity.getViewVector(1.0F);
             Vec3 motion = entity.getDeltaMovement();
+            if (entity.level().isClientSide) {
+                float yHeadRot = entity.yHeadRot + 180.0F;
+                Vec3 vec3 = Vec3.directionFromRotation(0.0F, yHeadRot);
+                if (PPConfig.CLIENT.RenderAfterImage.get())
+                    Minecraft.getInstance().particleEngine.add(new AfterImageParticle(entity, (ClientLevel) entity.level(), entity.xOld + (vec3.x / 1.5), entity.yOld, entity.zOld + (vec3.z / 1.5)));
+            }
             if (entity instanceof Player) {
                 entity.setDeltaMovement(look.x * entity.getAttributeValue(Attributes.MOVEMENT_SPEED), motion.y,
                         look.z * entity.getAttributeValue(Attributes.MOVEMENT_SPEED));
@@ -88,7 +96,7 @@ public class BucklerItem extends ShieldItem {
     public static int startingChargeTicks(ItemStack stack) {
         int min = PPConfig.COMMON.minBucklerChargeTime.get();
         int max = PPConfig.COMMON.maxBucklerChargeTime.get();
-        return min + (((max-min) * stack.getEnchantmentLevel(PPEnchantments.TURNING.get())/PPEnchantments.TURNING.get().getMaxLevel()));
+        return min + (((max - min) * stack.getEnchantmentLevel(PPEnchantments.TURNING.get()) / PPEnchantments.TURNING.get().getMaxLevel()));
     }
 
     public static int getChargeTicks(ItemStack stack) {
@@ -240,7 +248,7 @@ public class BucklerItem extends ShieldItem {
         ArrayList<Component> list = new ArrayList<>();
         list.add(Component.translatable("item.piglinproliferation.buckler.desc.on_use").withStyle(ChatFormatting.GRAY));
         list.add(Component.literal(" ").append(Component.translatable("item.piglinproliferation.buckler.desc.charge_ability", doubleToString(ticksToSeconds(startingChargeTicks(stack)))).withStyle(ChatFormatting.DARK_GREEN)));
-        if(!isDetailed)
+        if (!isDetailed)
             list.add(Component.literal(" ").append(Component.translatable("item.piglinproliferation.buckler.desc.details", minecraft.options.keyShift.getTranslatedKeyMessage()).withStyle(ChatFormatting.GREEN)));
         else {
             list.add(Component.literal(" ").append(Component.translatable("item.piglinproliferation.buckler.desc.while_charging").withStyle(ChatFormatting.GREEN)));
@@ -268,11 +276,11 @@ public class BucklerItem extends ShieldItem {
     }
 
     public static double turningReduction(int turningLevel) {
-        return 0.2*turningLevel;
+        return 0.2 * turningLevel;
     }
 
     public static int minDamageReduction(int turningLevel) {
-        return -1*turningLevel;
+        return -1 * turningLevel;
     }
 
     public static int maxDamageReduction(int turningLevel) {
