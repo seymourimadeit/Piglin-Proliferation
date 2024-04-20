@@ -8,7 +8,6 @@ import tallestred.piglinproliferation.PiglinProliferation;
 
 import java.util.List;
 
-@Mod.EventBusSubscriber(modid = PiglinProliferation.MODID, bus = Mod.EventBusSubscriber.Bus.MOD)
 public class PPConfig {
     public static final ForgeConfigSpec COMMON_SPEC;
     public static final CommonConfig COMMON;
@@ -42,12 +41,13 @@ public class PPConfig {
         public final ForgeConfigSpec.DoubleValue alchemistPotionChance;
         public final ForgeConfigSpec.DoubleValue bucklerChance;
         public final ForgeConfigSpec.DoubleValue crossbowChance;
-        public final ForgeConfigSpec.DoubleValue travellerCrossbowChance;
+        public final ForgeConfigSpec.DoubleValue crossbowChanceTraveller;
         public final ForgeConfigSpec.IntValue healingArrowMinStackSize;
         public final ForgeConfigSpec.IntValue healingArrowMaxStackSize;
-        public final ForgeConfigSpec.IntValue BucklerCooldown;
-        public final ForgeConfigSpec.IntValue BucklerRunTime;
-        public final ForgeConfigSpec.IntValue BucklerTurningRunTime;
+        public final ForgeConfigSpec.IntValue bucklerCooldown;
+        public final ForgeConfigSpec.IntValue minBucklerChargeTime;
+        public final ForgeConfigSpec.IntValue maxBucklerChargeTime;
+        public final ForgeConfigSpec.DoubleValue turningBucklerLaunchStrength;
         public final ForgeConfigSpec.ConfigValue<List<? extends String>> zombifiedPiglinTypeList;
         public final ForgeConfigSpec.BooleanValue travellersCompassBiomeWhitelist;
         public final ForgeConfigSpec.BooleanValue travellersCompassStructureWhitelist;
@@ -72,10 +72,11 @@ public class PPConfig {
             builder.push("Buckler");
             BangBlockDestruction = builder.define("Have the explosion spawned while using the Bang! enchant destroy blocks?", false);
             BruteBuckler = builder.define("Have brutes spawn with bucklers?", true);
-            BucklerCooldown = builder.defineInRange("How long should the buckler's cooldown be in ticks?", 240, Integer.MIN_VALUE, Integer.MAX_VALUE);
-            BucklerRunTime = builder.defineInRange("How long should the buckler's charge move be in ticks?", 15, Integer.MIN_VALUE, Integer.MAX_VALUE); // Thinking of removing this in 1.17.
-            BucklerTurningRunTime = builder.defineInRange("How long should the buckler's charge move if you have the turning enchant be in ticks?", 30, Integer.MIN_VALUE, Integer.MAX_VALUE);
+            bucklerCooldown = builder.defineInRange("How long should the buckler's cooldown be in ticks?", 240, Integer.MIN_VALUE, Integer.MAX_VALUE);
+            minBucklerChargeTime = builder.defineInRange("How long should the buckler's charge move be in ticks?", 15, Integer.MIN_VALUE, Integer.MAX_VALUE); // Thinking of removing this in 1.17.
+            maxBucklerChargeTime = builder.defineInRange("How long should the buckler's charge move if you have the max level of turning enchant be in ticks?", 40, Integer.MIN_VALUE, Integer.MAX_VALUE);
             bucklerChance = builder.defineInRange("Chance of buckler appearing in bastion loot", 0.25F, 0.0F, 9999999.0F);
+            turningBucklerLaunchStrength = builder.comment("Experimental: Bucklers enchanted with Turning will allow the player to launch off of blocks they collide with. By default this is disabled, but if you want to test it out try 0.15").defineInRange("Launch strength ", 0.0D, 0.0D, 999999.0D);
             builder.pop();
             builder.push("Piglin Alchemist");
             alchemistPotionChance = builder.defineInRange("Chance of alchemist potions not getting broken when killed", 0.20F, 0.0F, 9000.0F);
@@ -86,6 +87,7 @@ public class PPConfig {
             builder.pop();
             builder.pop();
             builder.push("Piglin Traveller");
+            crossbowChanceTraveller = builder.defineInRange("Chance of travellers equipping crossbows", 0.20F, 0.0F, 9000.0F);
             travellersCompassBiomeWhitelist = builder.comment("""
                     This config option determines which biomes the Traveller's Compass can point to.
                     If enabled, it will only point to biomes in the "piglinproliferation:travellers_compass_whitelist" biome tag.
@@ -94,7 +96,6 @@ public class PPConfig {
                     This config option determines which structures the Traveller's Compass can point to.
                     If enabled, it will only point to biomes in the "piglinproliferation:travellers_compass_whitelist" structure and structure_set tags.
                     If disabled, it will point to all biomes except those in the "piglinproliferation_travellers_compass_blacklist" structure and structure_set tag.""").define("Should the Traveller's Compass only search for structures in the whitelist?", true);
-            travellerCrossbowChance = builder.defineInRange("Chance of Piglin Traveler spawning with crossbow", 0.50F, 0.0F, 9000.0F);
             builder.pop();
         }
     }

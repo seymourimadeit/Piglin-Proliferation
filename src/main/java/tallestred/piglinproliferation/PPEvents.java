@@ -372,7 +372,7 @@ public class PPEvents {
         if (stack.getItem() == PPItems.BUCKLER.get()) {
             List<Component> toAdd = new ArrayList<>();
             toAdd.add(Component.empty());
-            toAdd.addAll(BucklerItem.getDescription(Minecraft.getInstance(), stack));
+            toAdd.addAll(BucklerItem.getDescription(stack));
             event.getToolTip().addAll(toAdd);
         }
     }

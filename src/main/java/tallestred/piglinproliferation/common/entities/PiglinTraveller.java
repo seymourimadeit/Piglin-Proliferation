@@ -72,7 +72,7 @@ public class PiglinTraveller extends Piglin {
     public SpawnGroupData finalizeSpawn(ServerLevelAccessor pLevel, DifficultyInstance pDifficulty, MobSpawnType pReason, @Nullable SpawnGroupData pSpawnData, @Nullable CompoundTag pDataTag) {
         GlobalPos globalpos = GlobalPos.of(this.level().dimension(), this.blockPosition());
         this.getBrain().setMemory(MemoryModuleType.HOME, globalpos);
-        this.setItemSlot(EquipmentSlot.MAINHAND, (double) this.random.nextFloat() < PPConfig.COMMON.travellerCrossbowChance.get().floatValue() ? new ItemStack(Items.CROSSBOW) : new ItemStack(Items.GOLDEN_SWORD));
+        this.setItemSlot(EquipmentSlot.MAINHAND, (double) this.random.nextFloat() < PPConfig.COMMON.crossbowChanceTraveller.get().floatValue() ? new ItemStack(Items.CROSSBOW) : new ItemStack(Items.GOLDEN_SWORD));
         return super.finalizeSpawn(pLevel, pDifficulty, pReason, pSpawnData, pDataTag);
     }
 

@@ -26,7 +26,7 @@ public class ChargeTask<T extends PiglinBrute> extends Behavior<T> {
     @Override
     protected boolean checkExtraStartConditions(ServerLevel worldIn, T owner) {
         LivingEntity livingentity = this.getAttackTarget(owner);
-        return (worldIn.getGameTime() - nextOkStartTime > (long) PPConfig.COMMON.BucklerCooldown.get()) && livingentity != null && livingentity.distanceTo(owner) >= 4.0D && BehaviorUtils.canSee(owner, livingentity) && owner.getOffhandItem().getItem() instanceof BucklerItem && !owner.isInWaterRainOrBubble();
+        return (worldIn.getGameTime() - nextOkStartTime > (long) PPConfig.COMMON.bucklerCooldown.get()) && livingentity != null && livingentity.distanceTo(owner) >= 4.0D && BehaviorUtils.canSee(owner, livingentity) && owner.getOffhandItem().getItem() instanceof BucklerItem && !owner.isInWaterRainOrBubble();
     }
 
     @Override

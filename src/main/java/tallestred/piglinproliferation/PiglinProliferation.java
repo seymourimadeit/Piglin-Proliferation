@@ -6,6 +6,8 @@ import net.minecraft.client.renderer.item.ItemProperties;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.SpawnPlacements;
 import net.minecraft.world.item.*;
 import net.minecraft.world.level.levelgen.Heightmap;
@@ -15,6 +17,7 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.util.MutableHashedLinkedMap;
 import net.minecraftforge.event.BuildCreativeModeTabContentsEvent;
 import net.minecraftforge.event.entity.EntityAttributeCreationEvent;
+import net.minecraftforge.event.entity.EntityAttributeModificationEvent;
 import net.minecraftforge.event.entity.SpawnPlacementRegisterEvent;
 import net.minecraftforge.event.server.ServerAboutToStartEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
@@ -28,6 +31,7 @@ import net.minecraftforge.fml.event.lifecycle.InterModProcessEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import tallestred.piglinproliferation.client.PPSounds;
 import tallestred.piglinproliferation.common.advancement.PPCriteriaTriggers;
+import tallestred.piglinproliferation.common.attribute.PPAttributes;
 import tallestred.piglinproliferation.common.enchantments.PPEnchantments;
 import tallestred.piglinproliferation.common.entities.PiglinTraveller;
 import tallestred.piglinproliferation.common.items.BucklerItem;
@@ -66,6 +70,7 @@ public class PiglinProliferation {
         PPBlocks.BLOCKS.register(bus);
         PPEnchantments.ENCHANTMENTS.register(bus);
         PPWorldgen.STRUCTURE_TYPES.register(bus);
+        PPAttributes.ATTRIBUTES.register(bus);
         CriteriaTriggers.register(PPCriteriaTriggers.ADD_EFFECT_TO_FIRE_RING);
         PPLoot.GLM.register(bus);
         PPLoot.LOOT_ITEM_FUNCTION_TYPES.register(bus);
@@ -136,6 +141,12 @@ public class PiglinProliferation {
     private void doClientStuff(final FMLClientSetupEvent event) {
         MinecraftForge.EVENT_BUS.register(new ItemModelHandler());
     }
+
+    private void addCustomAttributes(EntityAttributeModificationEvent event) {
+        for (EntityType<? extends LivingEntity> type : event.getTypes())
+            event.add(type, PPAttributes.TURNING_SPEED.get());
+    }
+
 
     public static class ItemModelHandler {
         public ItemModelHandler() {
