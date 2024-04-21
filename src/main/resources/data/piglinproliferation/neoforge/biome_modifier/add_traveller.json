@@ -1,11 +1,10 @@
 {
   "type": "neoforge:add_spawns",
-  "biomes": "#piglinproliferation:nether",
+  "biomes": "#piglinproliferation:can_spawn_traveller",
   "spawners": {
     "type": "piglinproliferation:piglin_traveller",
-    "maxCount": 2,
+    "maxCount": 1,
     "minCount": 1,
     "weight": 1
-  },
-  "category": "monster"
+  }
 }

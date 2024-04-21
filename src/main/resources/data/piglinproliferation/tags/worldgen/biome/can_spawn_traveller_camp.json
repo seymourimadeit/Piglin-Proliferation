@@ -1,6 +1,6 @@
 {
   "replace": "false",
   "values": [
-    "#piglinproliferation:nether"
+    "#minecraft:is_nether"
   ]
 }
