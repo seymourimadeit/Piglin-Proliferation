@@ -1,15 +1,6 @@
 {
   "type": "neoforge:add_spawns",
-  "biomes": {
-    "type": "neoforge:and",
-    "values": [
-      "#piglinproliferation:can_spawn_traveller",
-      {
-        "type": "neoforge:not",
-        "value": "minecraft:warped_forest"
-      }
-    ]
-  },
+  "biomes": "#piglinproliferation:can_spawn_traveller",
   "spawners": {
     "type": "piglinproliferation:piglin_traveller",
     "maxCount": 1,
