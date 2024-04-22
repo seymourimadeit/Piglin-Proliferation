@@ -97,7 +97,7 @@ public class PPConfig {
             builder.pop();
             builder.push("after image");
             RenderAfterImage = builder.define("Render an after image while an entity is charging with a buckler?", true);
-            RenderAfterImageLayers = builder.define("Render the layers of an entity when charging? (this includes things like items and armor, be warned that the alpha transparencies may glitch out)", true);
+            RenderAfterImageLayers = builder.define("Render the layers of an entity when charging? (this includes things like items and armor, be warned that the alpha transparencies may glitch out)", false);
             builder.pop();
         }
     }

@@ -46,7 +46,7 @@ public class AfterImageParticle extends Particle {
         EntityRenderDispatcher entityRenderDispatcher = Minecraft.getInstance().getEntityRenderDispatcher();
         RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 0.5F / Math.abs((float) life + 1));
         PoseStack stack = new PoseStack();
-        if (!PPConfig.CLIENT.RenderAfterImageLayers.get()) {
+        if (PPConfig.CLIENT.RenderAfterImageLayers.get()) {
             multibuffersource$buffersource.getBuffer(RenderType.entityTranslucent(entityRenderDispatcher.getRenderer(this.entity).getTextureLocation(this.entity)));
             entityRenderDispatcher.render(this.entity, this.x - vec3.x(), this.y - vec3.y(), this.z - vec3.z(), this.entity.getYRot(), tick, stack, multibuffersource$buffersource, entityRenderDispatcher.getPackedLightCoords(this.entity, tick));
         } else {
