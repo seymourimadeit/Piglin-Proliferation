@@ -18,6 +18,7 @@ import java.util.Set;
 
 public class PPBlocks {
     public static final DeferredRegister<Block> BLOCKS = DeferredRegister.create(Registries.BLOCK, PiglinProliferation.MODID);
+
     public static final Set<DeferredHolder<Block, ? extends AbstractSkullBlock>> PIGLIN_HEADS = new HashSet<>();
     public static final DeferredHolder<Block, PiglinSkullBlock> PIGLIN_BRUTE_HEAD = registerHead("piglin_brute_head", PiglinSkullBlock.Types.PIGLIN_BRUTE);
     public static final DeferredHolder<Block, PiglinWallSkullBlock> PIGLIN_BRUTE_HEAD_WALL = registerWallHead("piglin_brute_wall_head", PiglinSkullBlock.Types.PIGLIN_BRUTE);
