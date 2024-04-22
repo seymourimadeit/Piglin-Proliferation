@@ -35,9 +35,6 @@ public class PPWorldgen {
     public static DeferredRegister<StructureType<?>> STRUCTURE_TYPES = DeferredRegister.create(Registries.STRUCTURE_TYPE, PiglinProliferation.MODID);
     public static DeferredHolder<StructureType<?>, StructureType<CustomJigsawStructure>> CUSTOM_JIGSAW = STRUCTURE_TYPES.register("custom_jigsaw", () -> () -> CustomJigsawStructure.CODEC);
 
-    public static DeferredRegister<Feature<?>> FEATURES = DeferredRegister.create(BuiltInRegistries.FEATURE, PiglinProliferation.MODID);
-    public static DeferredHolder<Feature<?>, PiglinTravellerFeature> PIGLIN_TRAVELLER_FEATURE = FEATURES.register("piglin_traveller", PiglinTravellerFeature::new);
-
     /**
      * Adds the building to the targeted pool.
      * <p>

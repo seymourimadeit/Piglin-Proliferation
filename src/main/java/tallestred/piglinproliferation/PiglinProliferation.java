@@ -79,7 +79,6 @@ public class PiglinProliferation {
         PPBlocks.BLOCKS.register(modEventBus);
         PPBlockEntities.BLOCK_ENTITIES.register(modEventBus);
         PPEnchantments.ENCHANTMENTS.register(modEventBus);
-        PPWorldgen.FEATURES.register(modEventBus);
         PPWorldgen.STRUCTURE_TYPES.register(modEventBus);
         PPCriteriaTriggers.CRITERIA_TRIGGERS.register(modEventBus);
         PPLoot.GLM.register(modEventBus);
