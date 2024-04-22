@@ -16,8 +16,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import tallestred.piglinproliferation.common.tags.PPTags;
 
 @Mixin(HugeFungusFeature.class)
-public abstract class NetherForestVegetationFeatureMixin extends Feature {
-    public NetherForestVegetationFeatureMixin(Codec pCodec) {
+public abstract class NetherForestVegetationFeatureMixin extends Feature<HugeFungusConfiguration> {
+    public NetherForestVegetationFeatureMixin(Codec<HugeFungusConfiguration> pCodec) {
         super(pCodec);
     }
 
