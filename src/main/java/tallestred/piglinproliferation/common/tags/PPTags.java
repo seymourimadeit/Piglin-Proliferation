@@ -9,6 +9,6 @@ import tallestred.piglinproliferation.PiglinProliferation;
 import tallestred.piglinproliferation.configuration.PPConfig;
 
 public class PPTags {
-    public static final TagKey<Structure> TRAVELLER_BASES = TagKey.create(Registries.STRUCTURE, new ResourceLocation(PiglinProliferation.MODID, "traveller_bases"));
+    public static final TagKey<Structure> TRAVELLER_BASES = TagKey.create(Registries.STRUCTURE, new ResourceLocation(PiglinProliferation.MODID, "traveller_camps"));
     public static final EitherTag<Biome, Structure> TRAVELLERS_COMPASS_SEARCH = new EitherTag<>(Registries.BIOME, Registries.STRUCTURE, new ResourceLocation(PiglinProliferation.MODID, "travellers_compass_search"));
 }
