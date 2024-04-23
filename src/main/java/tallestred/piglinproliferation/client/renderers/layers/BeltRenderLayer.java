@@ -19,7 +19,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import tallestred.piglinproliferation.PiglinProliferation;
-import tallestred.piglinproliferation.client.PPClientEvents;
+import tallestred.piglinproliferation.client.renderers.PPRenderSetupEvents;
 import tallestred.piglinproliferation.client.models.PiglinAlchemistModel;
 import tallestred.piglinproliferation.common.entities.PiglinAlchemist;
 
@@ -29,7 +29,7 @@ public class BeltRenderLayer<T extends PiglinAlchemist, M extends EntityModel<T>
 
     public BeltRenderLayer(RenderLayerParent p_117183_, ItemInHandRenderer itemInHandRenderer) {
         super(p_117183_);
-        this.layerModel = new PiglinAlchemistModel<>(Minecraft.getInstance().getEntityModels().bakeLayer(PPClientEvents.PIGLIN_ALCHEMIST_BELT_SLOTS));
+        this.layerModel = new PiglinAlchemistModel<>(Minecraft.getInstance().getEntityModels().bakeLayer(PPRenderSetupEvents.PIGLIN_ALCHEMIST_BELT_SLOTS));
         this.itemInHandRenderer = itemInHandRenderer;
     }
 

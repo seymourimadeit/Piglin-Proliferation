@@ -365,5 +365,41 @@
       }
     ],
     "subtitle": "subtitles.entity.piglin_traveller.conversion"
+  },
+  "block.note_block.imitate.piglin_brute": {
+    "sounds": [
+      {
+        "name": "entity.piglin_brute.ambient",
+        "type": "event"
+      }
+    ],
+    "subtitle": "subtitles.entity.piglin_brute.ambient"
+  },
+  "block.note_block.imitate.zombified_piglin": {
+    "sounds": [
+      {
+        "name": "entity.zombified_piglin.ambient",
+        "type": "event"
+      }
+    ],
+    "subtitle": "subtitles.entity.zombified_piglin.ambient"
+  },
+  "block.note_block.imitate.piglin_alchemist": {
+    "sounds": [
+      {
+        "name": "piglinproliferation:entity.piglin_alchemist.idle",
+        "type": "event"
+      }
+    ],
+    "subtitle": "subtitles.entity.piglin_alchemist.idle"
+  },
+  "block.note_block.imitate.piglin_traveller": {
+    "sounds": [
+      {
+        "name": "piglinproliferation:entity.piglin_traveller.idle",
+        "type": "event"
+      }
+    ],
+    "subtitle": "subtitles.entity.piglin_traveller.idle"
   }
 }

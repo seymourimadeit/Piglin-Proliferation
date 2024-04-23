@@ -85,12 +85,25 @@ public class PPWorldgen {
             if (!currentBlockstate.canOcclude()) {
                 mutable.move(Direction.DOWN);
                 continue;
-            } else if (blockView.getBlock(mutable.getY() + 3).isAir() && currentBlockstate.getFluidState().isEmpty() && currentBlockstate.getFluidState().isEmpty() && currentBlockstate.canOcclude()) {
-                return mutable;
+            } else if (blockView.getBlock(mutable.getY() + 3).isAir() && currentBlockstate.getFluidState().isEmpty()) {
+                int oldX = mutable.getX();
+                int oldZ = mutable.getZ();
+                Direction direction = Direction.NORTH;
+                boolean hasSolidNeighbours = true;
+                for (int i = 0; i < 5; i++) {
+                    mutable.move(direction, i < 2 ? 1 : 2);
+                    direction = direction.getClockWise();
+                    BlockState tempBlockState = chunkGenerator.getBaseColumn(mutable.getX(), mutable.getZ(), heightLimitView, randomState).getBlock(mutable.getY());
+                    if (!(tempBlockState.canOcclude() && tempBlockState.getFluidState().isEmpty()))
+                        hasSolidNeighbours = false;
+                }
+                mutable.setX(oldX);
+                mutable.setZ(oldZ);
+                if (hasSolidNeighbours)
+                    return mutable;
             }
             mutable.move(Direction.DOWN);
         }
         return null;
     }
-
 }

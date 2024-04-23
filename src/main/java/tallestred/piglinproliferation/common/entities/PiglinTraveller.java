@@ -7,6 +7,7 @@ import net.minecraft.core.GlobalPos;
 import net.minecraft.core.particles.ItemParticleOption;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.IntTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
@@ -19,10 +20,7 @@ import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.Brain;
 import net.minecraft.world.entity.ai.memory.MemoryModuleType;
-import net.minecraft.world.entity.monster.Creeper;
-import net.minecraft.world.entity.monster.Ghast;
 import net.minecraft.world.entity.monster.piglin.Piglin;
-import net.minecraft.world.entity.projectile.Fireball;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
@@ -30,11 +28,13 @@ import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.ServerLevelAccessor;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.phys.Vec3;
+import net.minecraftforge.event.ForgeEventFactory;
 import org.jetbrains.annotations.Nullable;
 import tallestred.piglinproliferation.client.PPSounds;
+import tallestred.piglinproliferation.common.blocks.PiglinSkullBlock;
 import tallestred.piglinproliferation.common.entities.ai.PiglinTravellerAi;
 import tallestred.piglinproliferation.common.items.PPItems;
-import tallestred.piglinproliferation.common.loot.CompassLocationMap;
+import tallestred.piglinproliferation.common.tags.EitherTag;
 import tallestred.piglinproliferation.configuration.PPConfig;
 
 import java.util.*;
@@ -43,8 +43,9 @@ public class PiglinTraveller extends Piglin {
     protected static final EntityDataAccessor<Integer> KICK_TICKS = SynchedEntityData.defineId(PiglinTraveller.class, EntityDataSerializers.INT);
     protected static final EntityDataAccessor<Integer> KICK_COOLDOWN = SynchedEntityData.defineId(PiglinTraveller.class, EntityDataSerializers.INT);
     protected static final EntityDataAccessor<Boolean> SITTING = SynchedEntityData.defineId(PiglinTraveller.class, EntityDataSerializers.BOOLEAN);
-    public CompassLocationMap alreadyLocatedObjects = new CompassLocationMap();
-    public Map.Entry<CompassLocationMap.SearchObject, BlockPos> currentlyLocatedObject;
+    public static final int DEFAULT_EXPIRY_TIME = 24000;
+    public Map<EitherTag.Location, Integer> alreadyLocatedObjects = new HashMap<>();
+    public Map.Entry<EitherTag.Location, BlockPos> currentlyLocatedObject;
 
     public PiglinTraveller(EntityType<? extends PiglinTraveller> pEntityType, Level pLevel) {
         super(pEntityType, pLevel);
@@ -127,7 +128,7 @@ public class PiglinTraveller extends Piglin {
         } else {
             this.timeInOverworld = 0;
         }
-        if (this.timeInOverworld > 300 && net.minecraftforge.event.ForgeEventFactory.canLivingConvert(this, EntityType.ZOMBIFIED_PIGLIN, (timer) -> this.timeInOverworld = timer)) {
+        if (this.timeInOverworld > 300 && ForgeEventFactory.canLivingConvert(this, EntityType.ZOMBIFIED_PIGLIN, (timer) -> this.timeInOverworld = timer)) {
             this.playConvertedSound();
             this.finishConversion((ServerLevel) this.level());
         }
@@ -135,12 +136,8 @@ public class PiglinTraveller extends Piglin {
         this.getBrain().tick((ServerLevel) this.level(), this);
         this.level().getProfiler().pop();
         PiglinTravellerAi.INSTANCE.updateBrainActivity(this);
-        for (Map.Entry<CompassLocationMap.SearchObject, Integer> entry : new HashMap<>(this.alreadyLocatedObjects).entrySet()) {
-            CompassLocationMap.SearchObject searchObject = entry.getKey();
-            this.alreadyLocatedObjects.put(searchObject, entry.getValue()-1);
-            if (this.alreadyLocatedObjects.get(searchObject) <= 0)
-                this.alreadyLocatedObjects.remove(searchObject);
-        }
+        this.alreadyLocatedObjects.replaceAll((key, value) -> value-1);
+        this.alreadyLocatedObjects.entrySet().removeIf(e -> e.getValue() <= 0);
     }
 
     @Override
@@ -153,6 +150,7 @@ public class PiglinTraveller extends Piglin {
         return false;
     }
 
+    @SuppressWarnings("unused") //Needed for where it's called
     public static boolean checkTravellerSpawnRules(EntityType<PiglinTraveller> entityType, LevelAccessor p_219199_, MobSpawnType p_219200_, BlockPos p_219201_, RandomSource p_219202_) {
         return !p_219199_.getBlockState(p_219201_.below()).is(Blocks.NETHER_WART_BLOCK);
     }
@@ -172,19 +170,9 @@ public class PiglinTraveller extends Piglin {
 
     @Override
     protected void dropCustomDeathLoot(DamageSource pSource, int pLooting, boolean pRecentlyHit) {
-        Entity entity = pSource.getEntity();
-        if (entity instanceof Creeper creeper) {
-            if (creeper.canDropMobsSkull()) {
-                creeper.increaseDroppedSkulls();
-                this.spawnAtLocation(PPItems.PIGLIN_TRAVELLER_HEAD_ITEM.get());
-            }
-        }
-        if (pSource.getDirectEntity() instanceof Fireball fireball && fireball.getOwner() instanceof Ghast) {
-            this.spawnAtLocation(PPItems.PIGLIN_TRAVELLER_HEAD_ITEM.get());
-        }
+        PiglinSkullBlock.spawnSkullIfValidKill(pSource, this, e -> PPItems.PIGLIN_TRAVELLER_HEAD_ITEM.get());
         super.dropCustomDeathLoot(pSource, pLooting, pRecentlyHit);
     }
-
 
     public void sit(boolean sit) {
         this.entityData.set(SITTING, sit);
@@ -213,13 +201,18 @@ public class PiglinTraveller extends Piglin {
     @Override
     public void readAdditionalSaveData(CompoundTag pCompound) {
         super.readAdditionalSaveData(pCompound);
-        this.alreadyLocatedObjects = new CompassLocationMap(pCompound.getCompound("AlreadyLocatedObjects"));
+        this.alreadyLocatedObjects = new HashMap<>();
+        CompoundTag map = pCompound.getCompound("AlreadyLocatedObjects");
+        for (String key : map.getAllKeys())
+            this.alreadyLocatedObjects.put(EitherTag.Location.deserialise(key), map.getInt(key));
     }
 
     @Override
     public void addAdditionalSaveData(CompoundTag pCompound) {
         super.addAdditionalSaveData(pCompound);
-        pCompound.put("AlreadyLocatedObjects", this.alreadyLocatedObjects.toNBT());
+        CompoundTag map = new CompoundTag();
+        this.alreadyLocatedObjects.forEach((key, value) -> map.put(key.serialise(), IntTag.valueOf(value)));
+        pCompound.put("AlreadyLocatedObjects", map);
     }
 
     public int getKickTicks() {

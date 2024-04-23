@@ -27,7 +27,7 @@ import tallestred.piglinproliferation.common.entities.ai.behaviors.SwimOnlyOutOf
 
 import java.util.*;
 
-import static tallestred.piglinproliferation.CodeUtilities.mutableListOrThrow;
+import static tallestred.piglinproliferation.util.CodeUtilities.castElementsToList;
 
 public abstract class AbstractPiglinAi<P extends Piglin> extends PiglinAi {
     public Brain<?> populateBrain(P piglin, Brain<P> brain) {
@@ -51,7 +51,8 @@ public abstract class AbstractPiglinAi<P extends Piglin> extends PiglinAi {
             PiglinAi.initRetreatActivity(piglinBrain);
             PiglinAi.initRideHoglinActivity(piglinBrain);
         } catch (ClassCastException e) {
-            throw new RuntimeException("Something went wrong with PiglinAi casts - report to the Piglin Proliferation github.");
+            System.out.println("Something went wrong with PiglinAi casts - report to the Piglin Proliferation github.");
+            throw e;
         }
     }
 
@@ -68,25 +69,21 @@ public abstract class AbstractPiglinAi<P extends Piglin> extends PiglinAi {
     }
 
     protected List<BehaviorControl<? super P>> coreBehaviors(P piglin) {
-        return mutableListOrThrow(List.of(
+        return castElementsToList(
                 new LookAtTargetSink(45, 90),
                 new MoveToTargetSink(),
                 InteractWithDoor.create(),
                 new SwimOnlyOutOfLava(0.8F),
                 PiglinAi.avoidZombified(),
-                stopHoldingItemBehavior(piglin),
+                StopHoldingItemIfNoLongerAdmiring.create(),
                 StartAdmiringItemIfSeen.create(120),
                 StartCelebratingIfTargetDead.create(300, PiglinAi::wantsToDance),
                 StopBeingAngryIfTargetDead.create()
-        ));
-    }
-
-    protected BehaviorControl<Piglin> stopHoldingItemBehavior(P piglin) {
-        return StopHoldingItemIfNoLongerAdmiring.create();
+        );
     }
 
     protected List<BehaviorControl<? super P>> idleBehaviors(P piglin) {
-        return mutableListOrThrow(List.of(
+        return castElementsToList(
                 SetEntityLookTarget.create(PiglinAi::isPlayerHoldingLovedItem, 14.0F),
                 StartAttacking.create(AbstractPiglin::isAdult, this::nearestValidAttackTarget),
                 BehaviorBuilder.triggerIf(Piglin::canHunt, StartHuntingHoglin.create()),
@@ -95,11 +92,11 @@ public abstract class AbstractPiglinAi<P extends Piglin> extends PiglinAi {
                 PiglinAi.createIdleLookBehaviors(),
                 PiglinAi.createIdleMovementBehaviors(),
                 SetLookAndInteract.create(EntityType.PLAYER, 4)
-        ));
+        );
     }
 
     protected List<BehaviorControl<? super P>> fightBehaviors(P piglin) {
-        return mutableListOrThrow(List.of(
+        return castElementsToList(
                 StopAttackingIfTargetInvalid.create((entity) -> {
                     return !isEntityValidForAttack(piglin, entity);
                 }),
@@ -109,7 +106,7 @@ public abstract class AbstractPiglinAi<P extends Piglin> extends PiglinAi {
                 new CrossbowAttack<>(),
                 RememberIfHoglinWasKilled.create(),
                 EraseMemoryIf.create(PiglinAi::isNearZombified, MemoryModuleType.ATTACK_TARGET)
-        ));
+        );
     }
 
     private boolean isEntityValidForAttack(P piglin, LivingEntity target) {

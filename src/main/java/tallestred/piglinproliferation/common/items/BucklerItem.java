@@ -53,7 +53,8 @@ import java.util.List;
 import java.util.UUID;
 import java.util.function.Consumer;
 
-import static tallestred.piglinproliferation.CodeUtilities.*;
+import static tallestred.piglinproliferation.util.CodeUtilities.doubleToString;
+import static tallestred.piglinproliferation.util.CodeUtilities.ticksToSeconds;
 
 public class BucklerItem extends ShieldItem {
     public static final AttributeModifierHolder CHARGE_SPEED_BOOST = new AttributeModifierHolder(Attributes.MOVEMENT_SPEED, UUID.fromString("A2F995E8-B25A-4883-B9D0-93A676DC4045"), "Charge speed boost", 9, AttributeModifier.Operation.MULTIPLY_BASE);
@@ -241,7 +242,7 @@ public class BucklerItem extends ShieldItem {
         return net.minecraftforge.common.ToolActions.DEFAULT_SHIELD_ACTIONS.contains(toolAction);
     }
 
-    public static List<Component> getDescription(ItemStack stack) {
+    public List<Component> getDescription(ItemStack stack) {
         Minecraft minecraft = Minecraft.getInstance();
         boolean isDetailed = InputConstants.isKeyDown(minecraft.getWindow().getWindow(), minecraft.options.keyShift.getKey().getValue());
         int turningLevel = stack.getEnchantmentLevel(PPEnchantments.TURNING.get());

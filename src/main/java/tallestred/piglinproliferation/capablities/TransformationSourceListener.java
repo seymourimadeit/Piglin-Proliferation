@@ -1,12 +1,21 @@
 package tallestred.piglinproliferation.capablities;
 
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraftforge.common.util.INBTSerializable;
+import net.minecraftforge.common.util.LazyOptional;
 
 public interface TransformationSourceListener extends INBTSerializable<CompoundTag> {
     String getTransformationSource();
 
     void setTransformationSource(String entityName);
+
+    static TransformationSourceListener from(LivingEntity entity) {
+        LazyOptional<TransformationSourceListener> listener = entity.getCapability(PPCapablities.TRANSFORMATION_SOURCE_TRACKER);
+        if (listener.isPresent())
+            return listener.orElseThrow(() -> new IllegalStateException("Capability not found! Report this to the piglin proliferation github!"));
+        return null;
+    }
 
 
     class TransformationSource implements TransformationSourceListener {

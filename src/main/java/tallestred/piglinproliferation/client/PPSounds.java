@@ -8,6 +8,7 @@ import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
 import tallestred.piglinproliferation.PiglinProliferation;
 
+@SuppressWarnings("unused")
 @Mod.EventBusSubscriber(modid = PiglinProliferation.MODID, bus = Mod.EventBusSubscriber.Bus.MOD)
 public class PPSounds {
     public static final DeferredRegister<SoundEvent> SOUNDS = DeferredRegister.create(ForgeRegistries.SOUND_EVENTS, PiglinProliferation.MODID);
@@ -39,6 +40,10 @@ public class PPSounds {
     public static final RegistryObject<SoundEvent> TRAVELLER_ANGRY = createVariableRangeSound("entity.piglin_traveller.angry");
     public static final RegistryObject<SoundEvent> TRAVELLER_CELEBRATE = createVariableRangeSound("entity.piglin_traveller.celebrate");
     public static final RegistryObject<SoundEvent> TRAVELLER_CONVERTED = createVariableRangeSound("entity.piglin_traveller.conversion");
+    public static final RegistryObject<SoundEvent> NOTE_BLOCK_IMITATE_PIGLIN_BRUTE = createVariableRangeSound("block.note_block.imitate.piglin_brute");
+    public static final RegistryObject<SoundEvent> NOTE_BLOCK_IMITATE_PIGLIN_ALCHEMIST = createVariableRangeSound("block.note_block.imitate.piglin_alchemist");
+    public static final RegistryObject<SoundEvent> NOTE_BLOCK_IMITATE_PIGLIN_TRAVELLER = createVariableRangeSound("block.note_block.imitate.piglin_traveller");
+    public static final RegistryObject<SoundEvent> NOTE_BLOCK_IMITATE_ZOMBIFIED_PIGLIN = createVariableRangeSound("block.note_block.imitate.zombified_piglin");
 
     public static RegistryObject<SoundEvent> createVariableRangeSound(String path) {
         return SOUNDS.register(path, () -> SoundEvent.createVariableRangeEvent(new ResourceLocation(PiglinProliferation.MODID, path)));

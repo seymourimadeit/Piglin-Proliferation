@@ -2,9 +2,7 @@ package tallestred.piglinproliferation.configuration;
 
 import com.google.common.collect.ImmutableList;
 import net.minecraftforge.common.ForgeConfigSpec;
-import net.minecraftforge.fml.common.Mod;
 import org.apache.commons.lang3.tuple.Pair;
-import tallestred.piglinproliferation.PiglinProliferation;
 
 import java.util.List;
 
@@ -27,7 +25,6 @@ public class PPConfig {
         }
     }
 
-
     public static class CommonConfig {
         public final ForgeConfigSpec.BooleanValue healingArrowDamage;
         public final ForgeConfigSpec.BooleanValue BruteBuckler;
@@ -49,9 +46,6 @@ public class PPConfig {
         public final ForgeConfigSpec.IntValue maxBucklerChargeTime;
         public final ForgeConfigSpec.DoubleValue turningBucklerLaunchStrength;
         public final ForgeConfigSpec.ConfigValue<List<? extends String>> zombifiedPiglinTypeList;
-        public final ForgeConfigSpec.BooleanValue travellersCompassBiomeWhitelist;
-        public final ForgeConfigSpec.BooleanValue travellersCompassStructureWhitelist;
-
 
         public CommonConfig(ForgeConfigSpec.Builder builder) {
             builder.push("Vanilla Changes");
@@ -61,7 +55,7 @@ public class PPConfig {
                     Use https://minecraft.fandom.com/wiki/Bastion_Remnant?so=search#cite_ref-piglin_group_1-39 as a guide.
                     The default weight for alchemists spawning is 4, giving them a 28% chance of spawning in bastions.
                     (Due to this, regular piglins have a spawn rate of 28% aswell, and brutes have a spawn rate of 7% spawn rate, changed values will have to account for this).
-                    To change the natural spawn rates, use a datapack that overrides add_alchemist.json file, located in data/piglinproliferation/data/forge/biome_modifier""").defineInRange("Alchemist spawnrate weight in bastions", 4, Integer.MIN_VALUE, Integer.MAX_VALUE);
+                    To change the natural spawn rates, use a datapack that overrides add_alchemist.json file, located in data/piglinproliferation/data/forge/biome_Forgeifier""").defineInRange("Alchemist spawnrate weight in bastions", 4, Integer.MIN_VALUE, Integer.MAX_VALUE);
             zombifiedPiglinDefaultChance = builder.defineInRange("Chance of zombified piglins spawning with regular piglin clothing", 0.90F, 0.0F, 9000.0F);
             zombifiedBruteChance = builder.defineInRange("Chance of zombified piglins spawning with brute clothing (including items)", 0.015F, 0.0F, 9000.0F);
             crossbowChance = builder.defineInRange("Chance of zombified piglins spawning with crossbows", 0.50F, 0.0F, 9000.0F);
@@ -88,14 +82,6 @@ public class PPConfig {
             builder.pop();
             builder.push("Piglin Traveller");
             crossbowChanceTraveller = builder.defineInRange("Chance of travellers equipping crossbows", 0.20F, 0.0F, 9000.0F);
-            travellersCompassBiomeWhitelist = builder.comment("""
-                    This config option determines which biomes the Traveller's Compass can point to.
-                    If enabled, it will only point to biomes in the "piglinproliferation:travellers_compass_whitelist" biome tag.
-                    If disabled, it will point to all biomes except those in the "piglinproliferation_travellers_compass_blacklist" biome tag.""").define("Should the Traveller's Compass only search for biomes in the whitelist?", false);
-            travellersCompassStructureWhitelist = builder.comment("""
-                    This config option determines which structures the Traveller's Compass can point to.
-                    If enabled, it will only point to biomes in the "piglinproliferation:travellers_compass_whitelist" structure and structure_set tags.
-                    If disabled, it will point to all biomes except those in the "piglinproliferation_travellers_compass_blacklist" structure and structure_set tag.""").define("Should the Traveller's Compass only search for structures in the whitelist?", true);
             builder.pop();
         }
     }
@@ -103,13 +89,14 @@ public class PPConfig {
     public static class ClientConfig {
         public final ForgeConfigSpec.BooleanValue ziglinTextures;
         public final ForgeConfigSpec.BooleanValue RenderAfterImage;
-
+        public final ForgeConfigSpec.BooleanValue RenderAfterImageLayers;
         public ClientConfig(ForgeConfigSpec.Builder builder) {
             builder.push("vanilla changes");
             ziglinTextures = builder.define("Allow Zombified Piglins to render consistent clothing?", true);
             builder.pop();
             builder.push("after image");
             RenderAfterImage = builder.define("Render an after image while an entity is charging with a buckler?", true);
+            RenderAfterImageLayers = builder.define("Render the layers of an entity when charging? (this includes things like items and armor, be warned that the alpha transparencies may glitch out)", false);
             builder.pop();
         }
     }

@@ -13,6 +13,7 @@ import net.minecraft.world.item.*;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.level.levelgen.structure.pools.StructureTemplatePool;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureProcessorList;
+import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.util.MutableHashedLinkedMap;
 import net.minecraftforge.event.BuildCreativeModeTabContentsEvent;
@@ -29,6 +30,7 @@ import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.InterModEnqueueEvent;
 import net.minecraftforge.fml.event.lifecycle.InterModProcessEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.minecraftforge.fml.loading.FMLEnvironment;
 import tallestred.piglinproliferation.client.PPSounds;
 import tallestred.piglinproliferation.common.advancement.PPCriteriaTriggers;
 import tallestred.piglinproliferation.common.attribute.PPAttributes;
@@ -47,6 +49,8 @@ import tallestred.piglinproliferation.common.worldgen.PPWorldgen;
 import tallestred.piglinproliferation.configuration.PPConfig;
 import tallestred.piglinproliferation.networking.PPNetworking;
 
+import static tallestred.piglinproliferation.util.RegistryUtilities.addToCreativeTabAfter;
+
 @Mod(PiglinProliferation.MODID)
 public class PiglinProliferation {
     public static final String MODID = "piglinproliferation";
@@ -56,9 +60,11 @@ public class PiglinProliferation {
         bus.addListener(this::enqueueIMC);
         bus.addListener(this::processIMC);
         bus.addListener(this::addAttributes);
+        bus.addListener(this::addCustomAttributes);
         bus.addListener(this::addSpawn);
         bus.addListener(this::addCreativeTabs);
-        bus.addListener(this::doClientStuff);
+        if (FMLEnvironment.dist == Dist.CLIENT)
+            bus.addListener(this::doClientStuff);
         MinecraftForge.EVENT_BUS.register(this);
         MinecraftForge.EVENT_BUS.addListener(this::serverStart);
         PPSounds.SOUNDS.register(bus);
@@ -85,6 +91,11 @@ public class PiglinProliferation {
     private void addAttributes(final EntityAttributeCreationEvent event) {
         event.put(PPEntityTypes.PIGLIN_TRAVELLER.get(), PiglinAlchemist.createAttributes().build());
         event.put(PPEntityTypes.PIGLIN_ALCHEMIST.get(), PiglinAlchemist.createAttributes().build());
+    }
+
+    private void addCustomAttributes(EntityAttributeModificationEvent event) {
+        for (EntityType<? extends LivingEntity> type : event.getTypes())
+            event.add(type, PPAttributes.TURNING_SPEED.get());
     }
 
     private void addCreativeTabs(final BuildCreativeModeTabContentsEvent event) {
@@ -115,15 +126,6 @@ public class PiglinProliferation {
             addToCreativeTabAfter(creativeTab, Items.SHIELD, PPItems.BUCKLER.get());
     }
 
-    private void addToCreativeTabAfter(MutableHashedLinkedMap<ItemStack, CreativeModeTab.TabVisibility> creativeTab, Item after, Item... toAdd) {
-        if (toAdd.length > 0) {
-            creativeTab.putAfter(new ItemStack(after), new ItemStack(toAdd[0]), CreativeModeTab.TabVisibility.PARENT_AND_SEARCH_TABS);
-            if (toAdd.length > 1)
-                for (int i=1; i < toAdd.length; i++)
-                    creativeTab.putAfter(new ItemStack(toAdd[i-1]), new ItemStack(toAdd[i]), CreativeModeTab.TabVisibility.PARENT_AND_SEARCH_TABS);
-        }
-    }
-
     private void addSpawn(final SpawnPlacementRegisterEvent event) {
         event.register(PPEntityTypes.PIGLIN_ALCHEMIST.get(), SpawnPlacements.Type.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, PiglinAlchemist::checkChemistSpawnRules, SpawnPlacementRegisterEvent.Operation.AND);
         event.register(PPEntityTypes.PIGLIN_TRAVELLER.get(), SpawnPlacements.Type.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, PiglinTraveller::checkTravellerSpawnRules, SpawnPlacementRegisterEvent.Operation.AND);
@@ -141,12 +143,6 @@ public class PiglinProliferation {
     private void doClientStuff(final FMLClientSetupEvent event) {
         MinecraftForge.EVENT_BUS.register(new ItemModelHandler());
     }
-
-    private void addCustomAttributes(EntityAttributeModificationEvent event) {
-        for (EntityType<? extends LivingEntity> type : event.getTypes())
-            event.add(type, PPAttributes.TURNING_SPEED.get());
-    }
-
 
     public static class ItemModelHandler {
         public ItemModelHandler() {

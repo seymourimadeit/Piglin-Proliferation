@@ -12,8 +12,7 @@ import java.util.UUID;
 import java.util.random.RandomGenerator;
 
 import static net.minecraft.world.item.ItemStack.ATTRIBUTE_MODIFIER_FORMAT;
-
-import tallestred.piglinproliferation.CodeUtilities;
+import static tallestred.piglinproliferation.util.CodeUtilities.capToRange;
 
 public class RangedRandomAttributeModifierHolder extends AbstractAttributeModifierHolder {
     public final double defaultMinAmount;
@@ -75,7 +74,7 @@ public class RangedRandomAttributeModifierHolder extends AbstractAttributeModifi
         }
 
         public AttributeModifier modifier(double amount) {
-            return new AttributeModifier(uuid, name, CodeUtilities.capToRange(amount, minAmount, maxAmount), operation);
+            return new AttributeModifier(uuid, name, capToRange(amount, minAmount, maxAmount), operation);
         }
 
         public void addTransientModifier(LivingEntity entity) {

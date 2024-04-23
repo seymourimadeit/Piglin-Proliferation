@@ -1,4 +1,4 @@
-package tallestred.piglinproliferation;
+package tallestred.piglinproliferation.util;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -9,9 +9,9 @@ public class CodeUtilities {
     /**
      * Casts an object to given type if they are compatible, returns null if not.
      *
-     * @param object   the object to try casting
+     * @param object the object to try casting
      * @param castType the type to try casting to
-     */
+     * */
     public static <T> T castOrNull(Object object, Class<T> castType) {
         return castType.isInstance(object) ? castType.cast(object) : null;
     }
@@ -21,7 +21,7 @@ public class CodeUtilities {
      * <p>Example: {@code hello_world -> Hello World}</p>
      *
      * @param raw the snake case string to convert
-     */
+     * */
     public static String snakeCaseToEnglish(String raw) {
         String[] parts = raw.split("_");
         StringBuilder output = new StringBuilder();
@@ -39,7 +39,7 @@ public class CodeUtilities {
      * at runtime if they're not; be careful!
      *
      * @param elements the objects to convert - must be of valid type for the output or this method will fail
-     */
+     * */
     @SuppressWarnings("unchecked") //Properly handled
     public static <T> List<T> castElementsToList(Object... elements) {
         try {
@@ -54,10 +54,11 @@ public class CodeUtilities {
     /**
      * Rounds a double to a specified number of decimal places.
      *
-     * @param value     the number to round
-     * @param precision the number of decimal places to round to
      * @author jpdymond from StackOverflow
-     */
+     *
+     * @param value the number to round
+     * @param precision the number of decimal places to round to
+     * */
     public static double round(double value, int precision) {
         int scale = (int) Math.pow(10, precision);
         return (double) Math.round(value * scale) / scale;
@@ -67,7 +68,7 @@ public class CodeUtilities {
      * Caps an integer value within a given range
      *
      * @author Barry Staes from StackOverflow
-     */
+     * */
     public static int capToRange(int value, int min, int max) {
         return Math.min(Math.max(value, min), max);
     }
@@ -81,26 +82,12 @@ public class CodeUtilities {
      * Rounds to 2dp in case of floating-point error.
      *
      * @param ticks the number of ticks to convert
-     */
+     * */
     public static double ticksToSeconds(int ticks) {
         return round(ticks / 20f, 2);
     }
 
     public static String doubleToString(double value) {
         return value % 1 == 0 ? Integer.toString((int) value) : Double.toString(value);
-    }
-
-    /**
-     * Converts a list to a new, mutable list of a specified type. Throws an error if casting fails.
-     *
-     * @param list the list of unknown type to convert
-     * */
-    @SuppressWarnings("unchecked")
-    public static <T> List<T> mutableListOrThrow(List<?> list) {
-        try {
-            return (List<T>) new ArrayList<>(list);
-        } catch (ClassCastException e) {
-            throw new IllegalArgumentException("Cannot cast the input list to the output type! If you are a player, report to the Piglin Proliferation github");
-        }
     }
 }

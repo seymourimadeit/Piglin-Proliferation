@@ -1,8 +1,0 @@
-{
-  "replace": "false",
-  "values": [
-    "minecraft:nether_wastes",
-    "minecraft:basalt_deltas",
-    "minecraft:warped_forest"
-  ]
-}
