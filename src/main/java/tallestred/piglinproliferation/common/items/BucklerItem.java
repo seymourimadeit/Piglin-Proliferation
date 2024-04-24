@@ -3,7 +3,6 @@ package tallestred.piglinproliferation.common.items;
 import com.mojang.blaze3d.platform.InputConstants;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.BlockParticleOption;
@@ -40,7 +39,7 @@ import net.minecraftforge.event.ForgeEventFactory;
 import tallestred.piglinproliferation.capablities.CriticalAura;
 import tallestred.piglinproliferation.capablities.PPCapablities;
 import tallestred.piglinproliferation.client.PPSounds;
-import tallestred.piglinproliferation.client.particles.AfterImageParticle;
+import tallestred.piglinproliferation.client.particles.ParticleHelper;
 import tallestred.piglinproliferation.client.renderers.BucklerRenderer;
 import tallestred.piglinproliferation.common.attribute.AttributeModifierHolder;
 import tallestred.piglinproliferation.common.attribute.PPAttributes;
@@ -74,9 +73,8 @@ public class BucklerItem extends ShieldItem {
             Vec3 motion = entity.getDeltaMovement();
             if (entity.level().isClientSide) {
                 float yHeadRot = entity.yHeadRot + 180.0F;
-                Vec3 vec3 = Vec3.directionFromRotation(0.0F, yHeadRot);
                 if (PPConfig.CLIENT.RenderAfterImage.get())
-                    Minecraft.getInstance().particleEngine.add(new AfterImageParticle(entity, (ClientLevel) entity.level(), entity.xOld + (vec3.x / 1.5), entity.yOld, entity.zOld + (vec3.z / 1.5)));
+                    ParticleHelper.createAfterImage(entity, Vec3.directionFromRotation(0.0F, yHeadRot));
             }
             if (entity instanceof Player) {
                 entity.setDeltaMovement(look.x * entity.getAttributeValue(Attributes.MOVEMENT_SPEED), motion.y,
