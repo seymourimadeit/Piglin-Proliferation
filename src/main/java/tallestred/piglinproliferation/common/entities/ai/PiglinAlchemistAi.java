@@ -8,6 +8,7 @@ import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.Brain;
 import net.minecraft.world.entity.ai.behavior.*;
+import net.minecraft.world.entity.ai.behavior.declarative.BehaviorBuilder;
 import net.minecraft.world.entity.ai.memory.MemoryModuleType;
 import net.minecraft.world.entity.ai.memory.MemoryStatus;
 import net.minecraft.world.entity.ai.sensing.Sensor;
@@ -57,6 +58,12 @@ public class PiglinAlchemistAi extends AbstractPiglinAi<PiglinAlchemist> {
                 generatePotionAi(piglin),
                 new ShootTippedArrow(1.5F, 15.0F, 20, PotionUtils.setPotion(new ItemStack(Items.TIPPED_ARROW), Potions.STRONG_HEALING), (p -> p.isAlive() && p.getHealth() < p.getMaxHealth()))
         );
+    }
+
+    //Not sure if this is the most dynamic but don't want to touch it now
+    @Override
+    protected RunOne<PiglinAlchemist> idleMovementBehaviors() {
+        return new RunOne<>(ImmutableList.of(Pair.of(MoveAroundPiglins.moveAroundPiglins(0.6F, true), 2), Pair.of(RandomStroll.stroll(0.6F), 2), Pair.of(InteractWith.of(EntityType.PIGLIN, 8, MemoryModuleType.INTERACTION_TARGET, 0.6F, 2), 2), Pair.of(BehaviorBuilder.triggerIf(PiglinAi::doesntSeeAnyPlayerHoldingLovedItem, SetWalkTargetFromLookTarget.create(0.6F, 3)), 2), Pair.of(new DoNothing(30, 60), 1)));
     }
 
     @Override

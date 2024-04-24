@@ -7,11 +7,7 @@ import net.minecraft.core.Registry;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.level.StructureManager;
 import net.minecraft.world.level.WorldGenLevel;
-import net.minecraft.world.level.levelgen.feature.Feature;
-import net.minecraft.world.level.levelgen.feature.FeaturePlaceContext;
-import net.minecraft.world.level.levelgen.feature.HugeFungusConfiguration;
-import net.minecraft.world.level.levelgen.feature.NetherForestVegetationFeature;
-import net.minecraft.world.level.levelgen.feature.configurations.NetherForestVegetationConfig;
+import net.minecraft.world.level.levelgen.feature.*;
 import net.minecraft.world.level.levelgen.structure.Structure;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -19,9 +15,9 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import tallestred.piglinproliferation.common.tags.PPTags;
 
-@Mixin(NetherForestVegetationFeature.class)
-public abstract class NetherForestVegetationFeatureMixin extends Feature<NetherForestVegetationConfig> {
-    public NetherForestVegetationFeatureMixin(Codec<NetherForestVegetationConfig> pCodec) {
+@Mixin(HugeFungusFeature.class)
+public abstract class HugeFungusFeatureMixin extends Feature<HugeFungusConfiguration> {
+    public HugeFungusFeatureMixin(Codec<HugeFungusConfiguration> pCodec) {
         super(pCodec);
     }
 
@@ -35,7 +31,6 @@ public abstract class NetherForestVegetationFeatureMixin extends Feature<NetherF
         for (Holder<Structure> configuredStructureFeature : configuredStructureFeatureRegistry.getOrCreateTag(PPTags.TRAVELLER_CAMPS)) {
             if (structureManager.getStructureAt(pos, configuredStructureFeature.value()).isValid()) {
                 callbackInfoReturnable.setReturnValue(false);
-                //TODO this doesn't work right
                 return;
             }
         }

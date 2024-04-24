@@ -8,7 +8,7 @@
     "MovementControllerMixin",
     "NoteBlockMixin",
     "PiglinBruteBrainMixin",
-    "NetherForestVegetationFeatureMixin"
+    "HugeFungusFeatureMixin"
   ],
   "client": [
     "MouseHelperMixin",

@@ -1,5 +1,7 @@
 package tallestred.piglinproliferation.common.entities.ai;
 
+import com.google.common.collect.ImmutableList;
+import com.mojang.datafixers.util.Pair;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.Brain;
@@ -48,10 +50,16 @@ public class PiglinTravellerAi extends AbstractPiglinAi<PiglinTraveller> {
                 StartAttacking.create(AbstractPiglin::isAdult, this::nearestValidAttackTarget),
                 BehaviorBuilder.triggerIf(Piglin::canHunt, StartHuntingHoglin.create()),
                 PiglinAi.babySometimesRideBabyHoglin(),
-                PiglinAi.createIdleLookBehaviors(),
-                PiglinAi.createIdleMovementBehaviors(),
+                idleLookBehaviors(),
+                idleMovementBehaviors(),
                 SetLookAndInteract.create(EntityType.PLAYER, 4)
         );
+    }
+
+    //Not sure if this is the most dynamic but don't want to touch it now
+    @Override
+    protected RunOne<PiglinTraveller> idleMovementBehaviors() {
+        return new RunOne<>(ImmutableList.of(Pair.of(MoveAroundPiglins.moveAroundPiglins(0.6F, true), 2), Pair.of(new TravellerSit<>(), 1), Pair.of(RandomStroll.stroll(0.6F), 2), Pair.of(InteractWith.of(EntityType.PIGLIN, 8, MemoryModuleType.INTERACTION_TARGET, 0.6F, 2), 2), Pair.of(BehaviorBuilder.triggerIf(PiglinAi::doesntSeeAnyPlayerHoldingLovedItem, SetWalkTargetFromLookTarget.create(0.6F, 3)), 2), Pair.of(StrollToPoi.create(MemoryModuleType.HOME, 0.6F, 2, 100), 2), Pair.of(StrollAroundPoi.create(MemoryModuleType.HOME, 0.6F, 5), 2), Pair.of(new DoNothing(30, 60), 1)));
     }
 
     @Override
