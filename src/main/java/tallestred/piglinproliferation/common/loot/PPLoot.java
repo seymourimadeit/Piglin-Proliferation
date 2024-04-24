@@ -25,9 +25,9 @@ public class PPLoot {
     public static final ResourceLocation ALCHEMIST_BARTER_CHEAP = new ResourceLocation(PiglinProliferation.MODID, "gameplay/compat/alchemist_bartering_cheap");
     public static final ResourceLocation ALCHEMIST_BARTER_EXPENSIVE = new ResourceLocation(PiglinProliferation.MODID, "gameplay/compat/alchemist_bartering_expensive");
 
-    public static final ResourceLocation TRAVELLER_BARTER = new ResourceLocation(PiglinProliferation.MODID, "gameplay/traveller_bartering");
-    public static final ResourceLocation TRAVELLER_BARTER_CHEAP = new ResourceLocation(PiglinProliferation.MODID, "gameplay/compat/traveller_bartering_cheap");
-    public static final ResourceLocation TRAVELLER_BARTER_EXPENSIVE = new ResourceLocation(PiglinProliferation.MODID, "gameplay/compat/traveller_bartering_expensive");
+    public static final ResourceLocation TRAVELER_BARTER = new ResourceLocation(PiglinProliferation.MODID, "gameplay/traveler_bartering");
+    public static final ResourceLocation TRAVELER_BARTER_CHEAP = new ResourceLocation(PiglinProliferation.MODID, "gameplay/compat/traveler_bartering_cheap");
+    public static final ResourceLocation TRAVELER_BARTER_EXPENSIVE = new ResourceLocation(PiglinProliferation.MODID, "gameplay/compat/traveler_bartering_expensive");
     public static final RegistryObject<LootItemConditionType> COMPASS_CAN_FIND_LOCATION = LOOT_ITEM_CONDITION_TYPES.register("compass_can_find_location", () -> new LootItemConditionType(new CompassCanFindLocationCondition.Serializer()));
     public static final RegistryObject<LootItemFunctionType> ADD_LOCATION_TO_COMPASS = LOOT_ITEM_FUNCTION_TYPES.register("add_location_to_compass", () ->  new LootItemFunctionType(new AddLocationToCompassFunction.Serializer()));
     public static final RegistryObject<Codec<BastionLootModifier>> DUNGEON_LOOT = GLM.register("bastion_loot", BastionLootModifier.CODEC);

@@ -1,0 +1,37 @@
+{
+  "parent": "minecraft:nether/distract_piglin",
+  "display": {
+    "icon": {
+      "item": "piglinproliferation:travelers_compass"
+    },
+    "title": {
+      "translate": "piglinproliferation.advancements.nether.obtain_travelers_compass.title"
+    },
+    "description": {
+      "translate": "piglinproliferation.advancements.nether.obtain_travelers_compass.description"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "travelers_compass": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "piglinproliferation:travelers_compass"
+            ]
+          }
+        ]
+      }
+    }
+  },
+  "requirements": [
+    [
+      "travelers_compass"
+    ]
+  ]
+}

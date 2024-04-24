@@ -219,141 +219,141 @@
     ],
     "subtitle": "subtitles.entity.critical_aura.deactivate"
   },
-  "entity.piglin_traveller.make_compass": {
+  "entity.piglin_traveler.make_compass": {
     "sounds": [
-      "piglinproliferation:mob/piglin/traveller/make_compass"
+      "piglinproliferation:mob/piglin/traveler/make_compass"
     ],
-    "subtitle": "subtitles.entity.piglin_traveller.make_compass"
+    "subtitle": "subtitles.entity.piglin_traveler.make_compass"
   },
-  "entity.piglin_traveller.idle": {
+  "entity.piglin_traveler.idle": {
     "sounds": [
       {
-        "name": "piglinproliferation:mob/piglin/traveller/idle1",
+        "name": "piglinproliferation:mob/piglin/traveler/idle1",
         "volume": 0.9
       },
       {
-        "name": "piglinproliferation:mob/piglin/traveller/idle2",
+        "name": "piglinproliferation:mob/piglin/traveler/idle2",
         "volume": 0.9
       },
       {
-        "name": "piglinproliferation:mob/piglin/traveller/idle3",
+        "name": "piglinproliferation:mob/piglin/traveler/idle3",
         "volume": 0.9
       },
       {
-        "name": "piglinproliferation:mob/piglin/traveller/idle4",
+        "name": "piglinproliferation:mob/piglin/traveler/idle4",
         "volume": 0.9
       },
       {
-        "name": "piglinproliferation:mob/piglin/traveller/idle5",
+        "name": "piglinproliferation:mob/piglin/traveler/idle5",
         "volume": 0.9
       }
     ],
-    "subtitle": "subtitles.entity.piglin_traveller.idle"
+    "subtitle": "subtitles.entity.piglin_traveler.idle"
   },
-  "entity.piglin_traveller.hurt": {
+  "entity.piglin_traveler.hurt": {
     "sounds": [
       {
-        "name": "piglinproliferation:mob/piglin/traveller/hurt1",
+        "name": "piglinproliferation:mob/piglin/traveler/hurt1",
         "volume": 0.9
       },
       {
-        "name": "piglinproliferation:mob/piglin/traveller/hurt2",
+        "name": "piglinproliferation:mob/piglin/traveler/hurt2",
         "volume": 0.9
       },
       {
-        "name": "piglinproliferation:mob/piglin/traveller/hurt3",
+        "name": "piglinproliferation:mob/piglin/traveler/hurt3",
         "volume": 0.9
       },
       {
-        "name": "piglinproliferation:mob/piglin/traveller/hurt4",
+        "name": "piglinproliferation:mob/piglin/traveler/hurt4",
         "volume": 0.9
       }
     ],
-    "subtitle": "subtitles.entity.piglin_traveller.hurt"
+    "subtitle": "subtitles.entity.piglin_traveler.hurt"
   },
-  "entity.piglin_traveller.death": {
+  "entity.piglin_traveler.death": {
     "sounds": [
       {
-        "name": "piglinproliferation:mob/piglin/traveller/death1",
+        "name": "piglinproliferation:mob/piglin/traveler/death1",
         "volume": 0.9
       },
       {
-        "name": "piglinproliferation:mob/piglin/traveller/death2",
+        "name": "piglinproliferation:mob/piglin/traveler/death2",
         "volume": 0.9
       }
     ],
-    "subtitle": "subtitles.entity.piglin_traveller.death"
+    "subtitle": "subtitles.entity.piglin_traveler.death"
   },
-  "entity.piglin_traveller.celebrate": {
+  "entity.piglin_traveler.celebrate": {
     "sounds": [
       {
-        "name": "piglinproliferation:mob/piglin/traveller/celebrate1",
+        "name": "piglinproliferation:mob/piglin/traveler/celebrate1",
         "volume": 0.9
       },
       {
-        "name": "piglinproliferation:mob/piglin/traveller/celebrate2",
+        "name": "piglinproliferation:mob/piglin/traveler/celebrate2",
         "volume": 0.9
       }
     ],
-    "subtitle": "subtitles.entity.piglin_traveller.celebrate"
+    "subtitle": "subtitles.entity.piglin_traveler.celebrate"
   },
-  "entity.piglin_traveller.retreat": {
+  "entity.piglin_traveler.retreat": {
     "sounds": [
       {
-        "name": "piglinproliferation:mob/piglin/traveller/retreat1",
+        "name": "piglinproliferation:mob/piglin/traveler/retreat1",
         "volume": 0.9
       },
       {
-        "name": "piglinproliferation:mob/piglin/traveller/retreat2",
+        "name": "piglinproliferation:mob/piglin/traveler/retreat2",
         "volume": 0.9
       },
       {
-        "name": "piglinproliferation:mob/piglin/traveller/retreat3",
+        "name": "piglinproliferation:mob/piglin/traveler/retreat3",
         "volume": 0.9
       }
     ],
-    "subtitle": "subtitles.entity.piglin_traveller.retreat"
+    "subtitle": "subtitles.entity.piglin_traveler.retreat"
   },
-  "entity.piglin_traveller.jealous": {
+  "entity.piglin_traveler.jealous": {
     "sounds": [
       {
-        "name": "piglinproliferation:mob/piglin/traveller/jealous1",
+        "name": "piglinproliferation:mob/piglin/traveler/jealous1",
         "volume": 0.9
       }
     ],
-    "subtitle": "subtitles.entity.piglin_traveller.jealous"
+    "subtitle": "subtitles.entity.piglin_traveler.jealous"
   },
-  "entity.piglin_traveller.angry": {
+  "entity.piglin_traveler.angry": {
     "sounds": [
       {
-        "name": "piglinproliferation:mob/piglin/traveller/angry1",
+        "name": "piglinproliferation:mob/piglin/traveler/angry1",
         "volume": 0.9
       },
       {
-        "name": "piglinproliferation:mob/piglin/traveller/angry2",
+        "name": "piglinproliferation:mob/piglin/traveler/angry2",
         "volume": 0.9
       },
       {
-        "name": "piglinproliferation:mob/piglin/traveller/angry3",
+        "name": "piglinproliferation:mob/piglin/traveler/angry3",
         "volume": 0.9
       },
       {
-        "name": "piglinproliferation:mob/piglin/traveller/angry4",
+        "name": "piglinproliferation:mob/piglin/traveler/angry4",
         "volume": 0.9
       }
     ],
-    "subtitle": "subtitles.entity.piglin_traveller.angry"
+    "subtitle": "subtitles.entity.piglin_traveler.angry"
   },
-  "entity.piglin_traveller.admire": {
+  "entity.piglin_traveler.admire": {
     "sounds": [
       {
-        "name": "piglinproliferation:mob/piglin/traveller/admire1",
+        "name": "piglinproliferation:mob/piglin/traveler/admire1",
         "volume": 0.9
       }
     ],
-    "subtitle": "subtitles.entity.piglin_traveller.admire"
+    "subtitle": "subtitles.entity.piglin_traveler.admire"
   },
-  "entity.piglin_traveller.conversion": {
+  "entity.piglin_traveler.conversion": {
     "sounds": [
       {
         "name": "mob/piglin/converted1",
@@ -364,7 +364,7 @@
         "volume": 0.9
       }
     ],
-    "subtitle": "subtitles.entity.piglin_traveller.conversion"
+    "subtitle": "subtitles.entity.piglin_traveler.conversion"
   },
   "block.note_block.imitate.piglin_brute": {
     "sounds": [
@@ -393,13 +393,13 @@
     ],
     "subtitle": "subtitles.entity.piglin_alchemist.idle"
   },
-  "block.note_block.imitate.piglin_traveller": {
+  "block.note_block.imitate.piglin_traveler": {
     "sounds": [
       {
-        "name": "piglinproliferation:entity.piglin_traveller.idle",
+        "name": "piglinproliferation:entity.piglin_traveler.idle",
         "type": "event"
       }
     ],
-    "subtitle": "subtitles.entity.piglin_traveller.idle"
+    "subtitle": "subtitles.entity.piglin_traveler.idle"
   }
 }

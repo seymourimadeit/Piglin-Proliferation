@@ -28,7 +28,7 @@ public abstract class HugeFungusFeatureMixin extends Feature<HugeFungusConfigura
         Registry<Structure> configuredStructureFeatureRegistry = worldgenlevel.registryAccess().registryOrThrow(Registries.STRUCTURE);
         StructureManager structureManager = worldgenlevel.getLevel().structureManager();
 
-        for (Holder<Structure> configuredStructureFeature : configuredStructureFeatureRegistry.getOrCreateTag(PPTags.TRAVELLER_CAMPS)) {
+        for (Holder<Structure> configuredStructureFeature : configuredStructureFeatureRegistry.getOrCreateTag(PPTags.TRAVELER_CAMPS)) {
             if (structureManager.getStructureAt(pos, configuredStructureFeature.value()).isValid()) {
                 callbackInfoReturnable.setReturnValue(false);
                 return;

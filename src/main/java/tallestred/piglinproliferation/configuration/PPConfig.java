@@ -38,7 +38,7 @@ public class PPConfig {
         public final ForgeConfigSpec.DoubleValue alchemistPotionChance;
         public final ForgeConfigSpec.DoubleValue bucklerChance;
         public final ForgeConfigSpec.DoubleValue crossbowChance;
-        public final ForgeConfigSpec.DoubleValue crossbowChanceTraveller;
+        public final ForgeConfigSpec.DoubleValue crossbowChanceTraveler;
         public final ForgeConfigSpec.IntValue healingArrowMinStackSize;
         public final ForgeConfigSpec.IntValue healingArrowMaxStackSize;
         public final ForgeConfigSpec.IntValue bucklerCooldown;
@@ -80,8 +80,8 @@ public class PPConfig {
             healingArrowMaxStackSize = builder.defineInRange("Maximium healing arrow stack size", 6, Integer.MIN_VALUE, Integer.MAX_VALUE);
             builder.pop();
             builder.pop();
-            builder.push("Piglin Traveller");
-            crossbowChanceTraveller = builder.defineInRange("Chance of travellers equipping crossbows", 0.20F, 0.0F, 9000.0F);
+            builder.push("Piglin Traveler");
+            crossbowChanceTraveler = builder.defineInRange("Chance of travelers equipping crossbows", 0.20F, 0.0F, 9000.0F);
             builder.pop();
         }
     }

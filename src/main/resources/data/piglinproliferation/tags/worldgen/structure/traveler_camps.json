@@ -1,0 +1,8 @@
+{
+  "replace": "false",
+  "values": [
+    "piglinproliferation:traveler_camp",
+    "piglinproliferation:traveler_soul_camp",
+    "piglinproliferation:traveler_camp_gathering"
+  ]
+}

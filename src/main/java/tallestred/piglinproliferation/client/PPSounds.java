@@ -30,19 +30,19 @@ public class PPSounds {
     public static final RegistryObject<SoundEvent> CRITICAL_ACTIVATE = createVariableRangeSound("entity.critical_aura.activate");
     public static final RegistryObject<SoundEvent> CRITICAL_APPLY = createVariableRangeSound("entity.critical_aura.apply");
     public static final RegistryObject<SoundEvent> CRITICAL_DEACTIVATE = createVariableRangeSound("entity.critical_aura.deactivate");
-    public static final RegistryObject<SoundEvent> MAKE_COMPASS = createVariableRangeSound("entity.piglin_traveller.make_compass");
-    public static final RegistryObject<SoundEvent> TRAVELLER_IDLE = createVariableRangeSound("entity.piglin_traveller.idle");
-    public static final RegistryObject<SoundEvent> TRAVELLER_HURT = createVariableRangeSound("entity.piglin_traveller.hurt");
-    public static final RegistryObject<SoundEvent> TRAVELLER_ADMIRE = createVariableRangeSound("entity.piglin_traveller.admire");
-    public static final RegistryObject<SoundEvent> TRAVELLER_JEALOUS = createVariableRangeSound("entity.piglin_traveller.jealous");
-    public static final RegistryObject<SoundEvent> TRAVELLER_RETREAT = createVariableRangeSound("entity.piglin_traveller.retreat");
-    public static final RegistryObject<SoundEvent> TRAVELLER_DEATH = createVariableRangeSound("entity.piglin_traveller.death");
-    public static final RegistryObject<SoundEvent> TRAVELLER_ANGRY = createVariableRangeSound("entity.piglin_traveller.angry");
-    public static final RegistryObject<SoundEvent> TRAVELLER_CELEBRATE = createVariableRangeSound("entity.piglin_traveller.celebrate");
-    public static final RegistryObject<SoundEvent> TRAVELLER_CONVERTED = createVariableRangeSound("entity.piglin_traveller.conversion");
+    public static final RegistryObject<SoundEvent> MAKE_COMPASS = createVariableRangeSound("entity.piglin_traveler.make_compass");
+    public static final RegistryObject<SoundEvent> TRAVELER_IDLE = createVariableRangeSound("entity.piglin_traveler.idle");
+    public static final RegistryObject<SoundEvent> TRAVELER_HURT = createVariableRangeSound("entity.piglin_traveler.hurt");
+    public static final RegistryObject<SoundEvent> TRAVELER_ADMIRE = createVariableRangeSound("entity.piglin_traveler.admire");
+    public static final RegistryObject<SoundEvent> TRAVELER_JEALOUS = createVariableRangeSound("entity.piglin_traveler.jealous");
+    public static final RegistryObject<SoundEvent> TRAVELER_RETREAT = createVariableRangeSound("entity.piglin_traveler.retreat");
+    public static final RegistryObject<SoundEvent> TRAVELER_DEATH = createVariableRangeSound("entity.piglin_traveler.death");
+    public static final RegistryObject<SoundEvent> TRAVELER_ANGRY = createVariableRangeSound("entity.piglin_traveler.angry");
+    public static final RegistryObject<SoundEvent> TRAVELER_CELEBRATE = createVariableRangeSound("entity.piglin_traveler.celebrate");
+    public static final RegistryObject<SoundEvent> TRAVELER_CONVERTED = createVariableRangeSound("entity.piglin_traveler.conversion");
     public static final RegistryObject<SoundEvent> NOTE_BLOCK_IMITATE_PIGLIN_BRUTE = createVariableRangeSound("block.note_block.imitate.piglin_brute");
     public static final RegistryObject<SoundEvent> NOTE_BLOCK_IMITATE_PIGLIN_ALCHEMIST = createVariableRangeSound("block.note_block.imitate.piglin_alchemist");
-    public static final RegistryObject<SoundEvent> NOTE_BLOCK_IMITATE_PIGLIN_TRAVELLER = createVariableRangeSound("block.note_block.imitate.piglin_traveller");
+    public static final RegistryObject<SoundEvent> NOTE_BLOCK_IMITATE_PIGLIN_TRAVELER = createVariableRangeSound("block.note_block.imitate.piglin_traveler");
     public static final RegistryObject<SoundEvent> NOTE_BLOCK_IMITATE_ZOMBIFIED_PIGLIN = createVariableRangeSound("block.note_block.imitate.zombified_piglin");
 
     public static RegistryObject<SoundEvent> createVariableRangeSound(String path) {

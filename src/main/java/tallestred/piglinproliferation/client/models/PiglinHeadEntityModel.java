@@ -45,7 +45,7 @@ public class PiglinHeadEntityModel extends SkullModelBase {
         return LayerDefinition.create(meshdefinition, 120, 64);
     }
 
-    public static LayerDefinition createTravellerMesh() {
+    public static LayerDefinition createTravelerMesh() {
         MeshDefinition meshdefinition = SkullModel.createHeadModel();
         PartDefinition body = meshdefinition.getRoot();
         PartDefinition head = body.addOrReplaceChild("head", CubeListBuilder.create().texOffs(62, 0).addBox(-5.0F, -8.0F, -4.0F, 10.0F, 8.0F, 8.0F, new CubeDeformation(0.25F)), PartPose.ZERO);

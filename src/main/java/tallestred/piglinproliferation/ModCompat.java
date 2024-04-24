@@ -21,10 +21,10 @@ import net.minecraft.world.level.storage.loot.LootTable;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import tallestred.piglinproliferation.common.entities.PiglinAlchemist;
-import tallestred.piglinproliferation.common.entities.PiglinTraveller;
+import tallestred.piglinproliferation.common.entities.PiglinTraveler;
 import tallestred.piglinproliferation.common.entities.ai.AbstractPiglinAi;
 import tallestred.piglinproliferation.common.entities.ai.PiglinAlchemistAi;
-import tallestred.piglinproliferation.common.entities.ai.PiglinTravellerAi;
+import tallestred.piglinproliferation.common.entities.ai.PiglinTravelerAi;
 import tallestred.piglinproliferation.common.loot.PPLoot;
 
 import java.util.Collections;
@@ -135,7 +135,7 @@ public class ModCompat {
      */
     private static List<ItemStack> getBarterResponseItems(AbstractPiglin piglin) {
         ResourceLocation lootTableID =
-                piglin instanceof PiglinTraveller ? PPLoot.TRAVELLER_BARTER :
+                piglin instanceof PiglinTraveler ? PPLoot.TRAVELER_BARTER :
                         piglin instanceof PiglinAlchemist ? PPLoot.ALCHEMIST_BARTER :
                                 BuiltInLootTables.PIGLIN_BARTERING;
         MinecraftServer server = piglin.level().getServer();
@@ -160,7 +160,7 @@ public class ModCompat {
     //This is a bit hacky, but it'll work as long as the correct arguments are passed. There may be a better solution in future
     @SuppressWarnings("unchecked")
     private static <T extends Piglin> AbstractPiglinAi<T> getAiInstance(Piglin piglin) {
-        AbstractPiglinAi<? extends Piglin> ai = piglin instanceof PiglinAlchemist ? PiglinAlchemistAi.INSTANCE : piglin instanceof PiglinTraveller ? PiglinTravellerAi.INSTANCE : null;
+        AbstractPiglinAi<? extends Piglin> ai = piglin instanceof PiglinAlchemist ? PiglinAlchemistAi.INSTANCE : piglin instanceof PiglinTraveler ? PiglinTravelerAi.INSTANCE : null;
         try {
             return (AbstractPiglinAi<T>) ai;
         } catch (ClassCastException ignored) {

@@ -13,7 +13,7 @@ import net.minecraft.world.level.storage.loot.LootContext;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
 import net.minecraft.world.level.storage.loot.predicates.LootItemConditionType;
-import tallestred.piglinproliferation.common.entities.PiglinTraveller;
+import tallestred.piglinproliferation.common.entities.PiglinTraveler;
 import tallestred.piglinproliferation.common.items.PPItems;
 import tallestred.piglinproliferation.common.tags.EitherTag;
 import tallestred.piglinproliferation.common.tags.PPTags;
@@ -30,17 +30,17 @@ public class CompassCanFindLocationCondition implements LootItemCondition {
 
     @Override
     public boolean test(LootContext lootContext) {
-        if (lootContext.getParam(LootContextParams.THIS_ENTITY) instanceof PiglinTraveller traveller) {
+        if (lootContext.getParam(LootContextParams.THIS_ENTITY) instanceof PiglinTraveler traveler) {
             ServerLevel level = lootContext.getLevel();
-            List<Either<Holder<Biome>, Holder<Structure>>> objectsToSearch = PPTags.TRAVELLERS_COMPASS_SEARCH.combinedValues(level.registryAccess());
+            List<Either<Holder<Biome>, Holder<Structure>>> objectsToSearch = PPTags.TRAVELERS_COMPASS_SEARCH.combinedValues(level.registryAccess());
             Collections.shuffle(objectsToSearch);
             for (Either<Holder<Biome>, Holder<Structure>> searchObject : objectsToSearch) {
                 EitherTag.Location searchObjectLocation = EitherTag.elementLocation(searchObject);
                 if (searchObjectLocation != null) {
-                    if (!traveller.alreadyLocatedObjects.containsKey(searchObjectLocation) && !PPItems.TRAVELLERS_COMPASS.get().entityAtSearchObject(searchObject, traveller)) {
-                        BlockPos pos = PPItems.TRAVELLERS_COMPASS.get().search(searchObject, traveller.getOnPos(), level);
+                    if (!traveler.alreadyLocatedObjects.containsKey(searchObjectLocation) && !PPItems.TRAVELERS_COMPASS.get().entityAtSearchObject(searchObject, traveler)) {
+                        BlockPos pos = PPItems.TRAVELERS_COMPASS.get().search(searchObject, traveler.getOnPos(), level);
                         if (pos != null) {
-                            traveller.currentlyLocatedObject = Map.entry(searchObjectLocation, pos);
+                            traveler.currentlyLocatedObject = Map.entry(searchObjectLocation, pos);
                             return true;
                         }
                     }

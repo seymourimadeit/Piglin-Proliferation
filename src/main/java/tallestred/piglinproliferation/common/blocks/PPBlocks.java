@@ -28,8 +28,8 @@ public class PPBlocks {
     public static final RegistryObject<PiglinWallSkullBlock> ZOMBIFIED_PIGLIN_HEAD_WALL = registerWallHead("zombified_piglin_wall_head", PiglinSkullBlock.Types.ZOMBIFIED_PIGLIN);
     public static final RegistryObject<PiglinSkullBlock> PIGLIN_ALCHEMIST_HEAD = registerHead("piglin_alchemist_head", PiglinSkullBlock.Types.PIGLIN_ALCHEMIST);
     public static final RegistryObject<PiglinWallSkullBlock> PIGLIN_ALCHEMIST_HEAD_WALL = registerWallHead("piglin_alchemist_wall_head", PiglinSkullBlock.Types.PIGLIN_ALCHEMIST);
-    public static final RegistryObject<PiglinSkullBlock> PIGLIN_TRAVELLER_HEAD = registerHead("piglin_traveller_head", PiglinSkullBlock.Types.PIGLIN_TRAVELLER);
-    public static final RegistryObject<PiglinWallSkullBlock> PIGLIN_TRAVELLER_HEAD_WALL =  registerWallHead("piglin_traveller_wall_head", PiglinSkullBlock.Types.PIGLIN_TRAVELLER);
+    public static final RegistryObject<PiglinSkullBlock> PIGLIN_TRAVELER_HEAD = registerHead("piglin_traveler_head", PiglinSkullBlock.Types.PIGLIN_TRAVELER);
+    public static final RegistryObject<PiglinWallSkullBlock> PIGLIN_TRAVELER_HEAD_WALL =  registerWallHead("piglin_traveler_wall_head", PiglinSkullBlock.Types.PIGLIN_TRAVELER);
     public static final Set<RegistryObject<FireRingBlock>> FIRE_RINGS = new HashSet<>();
     public static final RegistryObject<FireRingBlock> STONE_FIRE_RING = registerFireRing("stone_fire_ring", false, BlockBehaviour.Properties.of().mapColor(MapColor.STONE).instrument(NoteBlockInstrument.BASEDRUM).requiresCorrectToolForDrops().strength(1.5F, 6.0F).sound(SoundType.STONE));
     public static final RegistryObject<FireRingBlock> STONE_SOUL_FIRE_RING = registerFireRing("stone_soul_fire_ring", true, BlockBehaviour.Properties.of().mapColor(MapColor.STONE).instrument(NoteBlockInstrument.BASEDRUM).requiresCorrectToolForDrops().strength(1.5F, 6.0F).sound(SoundType.STONE));

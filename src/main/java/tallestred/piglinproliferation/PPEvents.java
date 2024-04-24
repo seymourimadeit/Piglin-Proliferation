@@ -42,7 +42,7 @@ import tallestred.piglinproliferation.client.PPSounds;
 import tallestred.piglinproliferation.common.blocks.PiglinSkullBlock;
 import tallestred.piglinproliferation.common.enchantments.PPEnchantments;
 import tallestred.piglinproliferation.common.entities.PPEntityTypes;
-import tallestred.piglinproliferation.common.entities.PiglinTraveller;
+import tallestred.piglinproliferation.common.entities.PiglinTraveler;
 import tallestred.piglinproliferation.common.entities.ai.goals.DumbBowAttackGoal;
 import tallestred.piglinproliferation.common.entities.ai.goals.DumbCrossbowAttackGoal;
 import tallestred.piglinproliferation.common.entities.ai.goals.PiglinCallForHelpGoal;
@@ -261,11 +261,11 @@ public class PPEvents {
         RandomSource random = event.getLevel().getRandom();
         if (event.getEntity() instanceof Strider strider && random.nextInt(60) == 0 && !strider.isBaby()) {
             event.setCanceled(true);
-            PiglinTraveller traveller = PPEntityTypes.PIGLIN_TRAVELLER.get().create(strider.level());
-            traveller.copyPosition(strider);
-            traveller.startRiding(strider);
+            PiglinTraveler traveler = PPEntityTypes.PIGLIN_TRAVELER.get().create(strider.level());
+            traveler.copyPosition(strider);
+            traveler.startRiding(strider);
             strider.equipSaddle(null);
-            traveller.setItemSlot(EquipmentSlot.MAINHAND, new ItemStack(Items.WARPED_FUNGUS_ON_A_STICK));
+            traveler.setItemSlot(EquipmentSlot.MAINHAND, new ItemStack(Items.WARPED_FUNGUS_ON_A_STICK));
         }
         if (event.getEntity() instanceof PiglinBrute piglinBrute) {
             if (!PPConfig.COMMON.BruteBuckler.get()) return;
@@ -315,7 +315,7 @@ public class PPEvents {
                 }
                 if (spawnType == MobSpawnType.JOCKEY) {
                     event.setCanceled(true);
-                    transformationSourceListener.setTransformationSource("piglin_traveller");
+                    transformationSourceListener.setTransformationSource("piglin_traveler");
                     zombifiedPiglin.setItemSlot(EquipmentSlot.MAINHAND, new ItemStack(Items.WARPED_FUNGUS_ON_A_STICK));
                 }
             }
@@ -326,7 +326,7 @@ public class PPEvents {
     public static void visionPercent(LivingEvent.LivingVisibilityEvent event) {
         if (event.getLookingEntity() != null) {
             ItemStack itemstack = event.getEntity().getItemBySlot(EquipmentSlot.HEAD);
-            if (event.getLookingEntity() instanceof AbstractPiglin && (itemstack.is(PPItems.PIGLIN_ALCHEMIST_HEAD_ITEM.get()) || itemstack.is(PPItems.PIGLIN_BRUTE_HEAD_ITEM.get())) || itemstack.is(PPItems.ZOMBIFIED_PIGLIN_HEAD_ITEM.get()) || itemstack.is(PPItems.PIGLIN_TRAVELLER_HEAD_ITEM.get())) {
+            if (event.getLookingEntity() instanceof AbstractPiglin && (itemstack.is(PPItems.PIGLIN_ALCHEMIST_HEAD_ITEM.get()) || itemstack.is(PPItems.PIGLIN_BRUTE_HEAD_ITEM.get())) || itemstack.is(PPItems.ZOMBIFIED_PIGLIN_HEAD_ITEM.get()) || itemstack.is(PPItems.PIGLIN_TRAVELER_HEAD_ITEM.get())) {
                 event.modifyVisibility(0.5D);
             }
         }
