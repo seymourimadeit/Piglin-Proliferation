@@ -1,39 +1,24 @@
 package tallestred.piglinproliferation.client;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.VertexConsumer;
-import com.mojang.math.Axis;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.model.EntityModel;
 import net.minecraft.client.player.LocalPlayer;
-import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.entity.LivingEntityRenderer;
-import net.minecraft.client.renderer.entity.layers.RenderLayer;
-import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.HumanoidArm;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.Pose;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.Mod;
-import net.neoforged.fml.util.ObfuscationReflectionHelper;
 import net.neoforged.neoforge.client.event.*;
 import net.neoforged.neoforge.event.entity.player.ItemTooltipEvent;
 import tallestred.piglinproliferation.PiglinProliferation;
 import tallestred.piglinproliferation.common.attribute.PPAttributes;
 import tallestred.piglinproliferation.common.items.BucklerItem;
 import tallestred.piglinproliferation.common.items.PPItems;
-import tallestred.piglinproliferation.configuration.PPConfig;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -44,7 +29,7 @@ public class PPClientEvents {
     public static void onMovementKeyPressed(MovementInputUpdateEvent event) {
         Minecraft mc = Minecraft.getInstance();
         LocalPlayer player = mc.player;
-        if (BucklerItem.getChargeTicks(PPItems.checkEachHandForBuckler(player)) > 0) {
+        if (player != null && BucklerItem.getChargeTicks(PPItems.checkEachHandForBuckler(player)) > 0) {
             event.getInput().jumping = false;
             event.getInput().leftImpulse = 0;
         }
@@ -53,16 +38,14 @@ public class PPClientEvents {
     @SubscribeEvent
     public static void changeFov(ComputeFovModifierEvent event) {
         Player player = event.getPlayer();
-        if (player != null) {
-            if (player.getUseItem().getItem() instanceof BucklerItem) {
-                int i = player.getTicksUsingItem();
-                float f1 = (float) i * 0.3F;
-                if (f1 < 1.0F) {
-                    f1 = 1.0F;
-                }
-                f1 = Math.max(f1, event.getFovModifier());
-                event.setNewFovModifier(f1);
+        if (player.getUseItem().getItem() instanceof BucklerItem) {
+            int i = player.getTicksUsingItem();
+            float f1 = (float) i * 0.3F;
+            if (f1 < 1.0F) {
+                f1 = 1.0F;
             }
+            f1 = Math.max(f1, event.getFovModifier());
+            event.setNewFovModifier(f1);
         }
     }
 
@@ -73,7 +56,7 @@ public class PPClientEvents {
         Minecraft mc = Minecraft.getInstance();
         LocalPlayer player = mc.player;
         float partialTicks = event.getPartialTick();
-        if (stack.getItem() instanceof BucklerItem && (player.isUsingItem() && player.getUseItem() == stack || BucklerItem.getChargeTicks(stack) > 0 && BucklerItem.isReady(stack))) {
+        if (stack.getItem() instanceof BucklerItem && player != null && (player.isUsingItem() && player.getUseItem() == stack || BucklerItem.getChargeTicks(stack) > 0 && BucklerItem.isReady(stack))) {
             boolean mainHand = event.getHand() == InteractionHand.MAIN_HAND;
             HumanoidArm handside = mainHand ? player.getMainArm() : player.getMainArm().getOpposite();
             boolean rightHanded = handside == HumanoidArm.RIGHT;
@@ -111,7 +94,7 @@ public class PPClientEvents {
         if (player != null) {
             double turningValue = PPAttributes.turningValue(player);
             if (turningValue != 1)
-                mouseSensitivity = (mouseSensitivity * turningValue) - 0.20000000298023224;
+                mouseSensitivity = (mouseSensitivity * turningValue) - 0.2F;
         }
         event.setMouseSensitivity(mouseSensitivity);
     }

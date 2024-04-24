@@ -239,8 +239,8 @@ public class PPEvents {
     @SubscribeEvent
     public static void finalizeSpawn(MobSpawnEvent.FinalizeSpawn event) {
         MobSpawnType spawnType = event.getSpawnType();
-        RandomSource rSource = event.getLevel().getRandom();
-        if (event.getEntity() instanceof Strider strider && rSource.nextInt(60) == 0 && !strider.isBaby()) {
+        RandomSource random = event.getLevel().getRandom();
+        if (event.getEntity() instanceof Strider strider && random.nextInt(60) == 0 && !strider.isBaby()) {
             event.setCanceled(true);
             PiglinTraveller traveller = PPEntityTypes.PIGLIN_TRAVELLER.get().create(strider.level());
             if (traveller != null) {
@@ -255,13 +255,13 @@ public class PPEvents {
             piglinBrute.setItemSlot(EquipmentSlot.OFFHAND, new ItemStack(PPItems.BUCKLER.get()));
             ItemStack itemstack = piglinBrute.getOffhandItem();
             if (itemstack.getItem() instanceof BucklerItem) {
-                if (rSource.nextInt(300) == 0) {
+                if (random.nextInt(300) == 0) {
                     Map<Enchantment, Integer> map = EnchantmentHelper.getEnchantments(itemstack);
                     map.putIfAbsent(PPEnchantments.TURNING.get(), 5);
                     EnchantmentHelper.setEnchantments(map, itemstack);
                     piglinBrute.setItemSlot(EquipmentSlot.OFFHAND, itemstack);
                 }
-                if (rSource.nextInt(500) == 0) {
+                if (random.nextInt(500) == 0) {
                     Map<Enchantment, Integer> map = EnchantmentHelper.getEnchantments(itemstack);
                     map.putIfAbsent(PPEnchantments.BANG.get(), 1);
                     EnchantmentHelper.setEnchantments(map, itemstack);
@@ -272,25 +272,25 @@ public class PPEvents {
         if (event.getEntity().getType() == EntityType.ZOMBIFIED_PIGLIN) { // Some mods have entities that extend zombified piglins in order to make their own ziglins have custom textures
             ZombifiedPiglin zombifiedPiglin = (ZombifiedPiglin) event.getEntity();
             if (spawnType != MobSpawnType.CONVERSION) {
-                if (rSource.nextFloat() < PPConfig.COMMON.zombifiedPiglinDefaultChance.get().floatValue())
+                if (random.nextFloat() < PPConfig.COMMON.zombifiedPiglinDefaultChance.get().floatValue())
                     zombifiedPiglin.setData(PPCapabilities.TRANSFORMATION_TRACKER.get(), "piglin");
-                if (rSource.nextFloat() < PPConfig.COMMON.piglinVariantChances.get().floatValue()) {
+                if (random.nextFloat() < PPConfig.COMMON.piglinVariantChances.get().floatValue()) {
                     List<? extends String> piglinTypes = PPConfig.COMMON.zombifiedPiglinTypeList.get();
                     if (!piglinTypes.isEmpty())
-                        zombifiedPiglin.setData(PPCapabilities.TRANSFORMATION_TRACKER.get(), piglinTypes.get(rSource.nextInt(piglinTypes.size())));
+                        zombifiedPiglin.setData(PPCapabilities.TRANSFORMATION_TRACKER.get(), piglinTypes.get(random.nextInt(piglinTypes.size())));
                 }
                 float bruteChance = PPConfig.COMMON.zombifiedBruteChance.get().floatValue();
                 if (zombifiedPiglin.getData(PPCapabilities.TRANSFORMATION_TRACKER.get()).equalsIgnoreCase("piglin")) {
-                    if (rSource.nextFloat() < bruteChance) {
+                    if (random.nextFloat() < bruteChance) {
                         event.setCanceled(true);
                         zombifiedPiglin.setData(PPCapabilities.TRANSFORMATION_TRACKER.get(), "piglin_brute");
                         zombifiedPiglin.setItemSlot(EquipmentSlot.MAINHAND, new ItemStack(Items.GOLDEN_AXE));
                         zombifiedPiglin.setItemSlot(EquipmentSlot.OFFHAND, new ItemStack(PPItems.BUCKLER.get()));
-                    } else if (rSource.nextFloat() < PPConfig.COMMON.zombifiedAlchemistChance.get().floatValue()) {
+                    } else if (random.nextFloat() < PPConfig.COMMON.zombifiedAlchemistChance.get().floatValue()) {
                         event.setCanceled(true);
                         zombifiedPiglin.setItemSlot(EquipmentSlot.MAINHAND, new ItemStack(Items.BOW));
                         zombifiedPiglin.setData(PPCapabilities.TRANSFORMATION_TRACKER.get(), "piglin_alchemist");
-                    } else if (rSource.nextFloat() < PPConfig.COMMON.crossbowChance.get().floatValue()) {
+                    } else if (random.nextFloat() < PPConfig.COMMON.crossbowChance.get().floatValue()) {
                         event.setCanceled(true);
                         zombifiedPiglin.setItemSlot(EquipmentSlot.MAINHAND, new ItemStack(Items.CROSSBOW));
                     }

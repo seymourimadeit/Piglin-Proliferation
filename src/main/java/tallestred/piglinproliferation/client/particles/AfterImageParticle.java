@@ -14,8 +14,6 @@ import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.EntityRenderDispatcher;
 import net.minecraft.client.renderer.entity.LivingEntityRenderer;
-import net.minecraft.client.renderer.entity.layers.RenderLayer;
-import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.core.Direction;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
@@ -97,7 +95,7 @@ public class AfterImageParticle extends Particle {
             try {
                 preRenderCallback.invoke(renderer, this.entity, stack, tick);
             } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
-                new RuntimeException("Piglin Proliferation has failed to invoke preRenderCallback via reflection.");
+                throw new RuntimeException("Piglin Proliferation has failed to invoke preRenderCallback via reflection.");
             }
             stack.scale(-1.0F, -1.0F, 1.0F);
             float f8 = 0.0F;
