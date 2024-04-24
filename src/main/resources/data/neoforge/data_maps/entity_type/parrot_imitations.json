@@ -3,8 +3,8 @@
     "piglinproliferation:piglin_alchemist": {
       "sound": "piglinproliferation:entity.parrot.imitate.piglin_alchemist"
     },
-    "piglinproliferation:piglin_traveller": {
-      "sound": "piglinproliferation:entity.parrot.imitate.piglin_traveller"
+    "piglinproliferation:piglin_traveler": {
+      "sound": "piglinproliferation:entity.parrot.imitate.piglin_traveler"
     },
     "minecraft:zombified_piglin": {
       "sound": "piglinproliferation:entity.parrot.imitate.zombified_piglin"

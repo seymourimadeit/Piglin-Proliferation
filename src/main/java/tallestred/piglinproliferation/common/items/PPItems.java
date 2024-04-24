@@ -23,17 +23,17 @@ public class PPItems {
     public static final DeferredRegister<Item> ITEMS = DeferredRegister.create(Registries.ITEM, PiglinProliferation.MODID);
 
     public static final DeferredHolder<Item, BucklerItem> BUCKLER = ITEMS.register("buckler", () -> new BucklerItem((new Item.Properties()).durability(128)));
-    public static final DeferredHolder<Item, TravellersCompassItem> TRAVELLERS_COMPASS = ITEMS.register("travellers_compass", () -> new TravellersCompassItem(new Item.Properties()));
+    public static final DeferredHolder<Item, TravelersCompassItem> TRAVELERS_COMPASS = ITEMS.register("travelers_compass", () -> new TravelersCompassItem(new Item.Properties()));
 
     public static final DeferredHolder<Item, DeferredSpawnEggItem> PIGLIN_ALCHEMIST_SPAWN_EGG = ITEMS.register("piglin_alchemist_spawn_egg", () -> new DeferredSpawnEggItem(PPEntityTypes.PIGLIN_ALCHEMIST, 10944611, 16380836, (new Item.Properties())));
-    public static final DeferredHolder<Item, DeferredSpawnEggItem> PIGLIN_TRAVELLER_SPAWN_EGG = ITEMS.register("piglin_traveller_spawn_egg", () -> new DeferredSpawnEggItem(PPEntityTypes.PIGLIN_TRAVELLER, 3848107, 16380836, (new Item.Properties())));
+    public static final DeferredHolder<Item, DeferredSpawnEggItem> PIGLIN_TRAVELER_SPAWN_EGG = ITEMS.register("piglin_traveler_spawn_egg", () -> new DeferredSpawnEggItem(PPEntityTypes.PIGLIN_TRAVELER, 3848107, 16380836, (new Item.Properties())));
 
     public static final Map<DeferredHolder<Item, Item>, DeferredHolder<Block, PiglinSkullBlock>> PIGLIN_HEADS = new HashMap<>();
 
     public static final DeferredHolder<Item, Item> PIGLIN_BRUTE_HEAD_ITEM = registerHead(PPBlocks.PIGLIN_BRUTE_HEAD, PPBlocks.PIGLIN_BRUTE_HEAD_WALL);
     public static final DeferredHolder<Item, Item> ZOMBIFIED_PIGLIN_HEAD_ITEM = registerHead(PPBlocks.ZOMBIFIED_PIGLIN_HEAD, PPBlocks.ZOMBIFIED_PIGLIN_HEAD_WALL);
     public static final DeferredHolder<Item, Item> PIGLIN_ALCHEMIST_HEAD_ITEM = registerHead(PPBlocks.PIGLIN_ALCHEMIST_HEAD, PPBlocks.PIGLIN_ALCHEMIST_HEAD_WALL);
-    public static final DeferredHolder<Item, Item> PIGLIN_TRAVELLER_HEAD_ITEM = registerHead(PPBlocks.PIGLIN_TRAVELLER_HEAD, PPBlocks.PIGLIN_TRAVELLER_HEAD_WALL);
+    public static final DeferredHolder<Item, Item> PIGLIN_TRAVELER_HEAD_ITEM = registerHead(PPBlocks.PIGLIN_TRAVELER_HEAD, PPBlocks.PIGLIN_TRAVELER_HEAD_WALL);
 
     public static final DeferredHolder<Item, Item> STONE_FIRE_RING_ITEM = ITEMS.register("stone_fire_ring", () -> new BlockItem(PPBlocks.STONE_FIRE_RING.get(), new Item.Properties()));
     public static final DeferredHolder<Item, Item> STONE_SOUL_FIRE_RING_ITEM = ITEMS.register("stone_soul_fire_ring", () -> new BlockItem(PPBlocks.STONE_SOUL_FIRE_RING.get(), new Item.Properties()));

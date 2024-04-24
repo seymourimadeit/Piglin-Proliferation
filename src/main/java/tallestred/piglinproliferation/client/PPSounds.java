@@ -28,22 +28,22 @@ public class PPSounds {
     public static final DeferredHolder<SoundEvent, SoundEvent> CRITICAL_ACTIVATE = createVariableRangeSound("entity.critical_aura.activate");
     public static final DeferredHolder<SoundEvent, SoundEvent> CRITICAL_APPLY = createVariableRangeSound("entity.critical_aura.apply");
     public static final DeferredHolder<SoundEvent, SoundEvent> CRITICAL_DEACTIVATE = createVariableRangeSound("entity.critical_aura.deactivate");
-    public static final DeferredHolder<SoundEvent, SoundEvent> MAKE_COMPASS = createVariableRangeSound("entity.piglin_traveller.make_compass");
-    public static final DeferredHolder<SoundEvent, SoundEvent> TRAVELLER_IDLE = createVariableRangeSound("entity.piglin_traveller.idle");
-    public static final DeferredHolder<SoundEvent, SoundEvent> TRAVELLER_HURT = createVariableRangeSound("entity.piglin_traveller.hurt");
-    public static final DeferredHolder<SoundEvent, SoundEvent> TRAVELLER_ADMIRE = createVariableRangeSound("entity.piglin_traveller.admire");
-    public static final DeferredHolder<SoundEvent, SoundEvent> TRAVELLER_JEALOUS = createVariableRangeSound("entity.piglin_traveller.jealous");
-    public static final DeferredHolder<SoundEvent, SoundEvent> TRAVELLER_RETREAT = createVariableRangeSound("entity.piglin_traveller.retreat");
-    public static final DeferredHolder<SoundEvent, SoundEvent> TRAVELLER_DEATH = createVariableRangeSound("entity.piglin_traveller.death");
-    public static final DeferredHolder<SoundEvent, SoundEvent> TRAVELLER_ANGRY = createVariableRangeSound("entity.piglin_traveller.angry");
-    public static final DeferredHolder<SoundEvent, SoundEvent> TRAVELLER_CELEBRATE = createVariableRangeSound("entity.piglin_traveller.celebrate");
-    public static final DeferredHolder<SoundEvent, SoundEvent> TRAVELLER_CONVERTED = createVariableRangeSound("entity.piglin_traveller.conversion");
+    public static final DeferredHolder<SoundEvent, SoundEvent> MAKE_COMPASS = createVariableRangeSound("entity.piglin_traveler.make_compass");
+    public static final DeferredHolder<SoundEvent, SoundEvent> TRAVELER_IDLE = createVariableRangeSound("entity.piglin_traveler.idle");
+    public static final DeferredHolder<SoundEvent, SoundEvent> TRAVELER_HURT = createVariableRangeSound("entity.piglin_traveler.hurt");
+    public static final DeferredHolder<SoundEvent, SoundEvent> TRAVELER_ADMIRE = createVariableRangeSound("entity.piglin_traveler.admire");
+    public static final DeferredHolder<SoundEvent, SoundEvent> TRAVELER_JEALOUS = createVariableRangeSound("entity.piglin_traveler.jealous");
+    public static final DeferredHolder<SoundEvent, SoundEvent> TRAVELER_RETREAT = createVariableRangeSound("entity.piglin_traveler.retreat");
+    public static final DeferredHolder<SoundEvent, SoundEvent> TRAVELER_DEATH = createVariableRangeSound("entity.piglin_traveler.death");
+    public static final DeferredHolder<SoundEvent, SoundEvent> TRAVELER_ANGRY = createVariableRangeSound("entity.piglin_traveler.angry");
+    public static final DeferredHolder<SoundEvent, SoundEvent> TRAVELER_CELEBRATE = createVariableRangeSound("entity.piglin_traveler.celebrate");
+    public static final DeferredHolder<SoundEvent, SoundEvent> TRAVELER_CONVERTED = createVariableRangeSound("entity.piglin_traveler.conversion");
     public static final DeferredHolder<SoundEvent, SoundEvent> NOTE_BLOCK_IMITATE_PIGLIN_BRUTE = createVariableRangeSound("block.note_block.imitate.piglin_brute");
     public static final DeferredHolder<SoundEvent, SoundEvent> NOTE_BLOCK_IMITATE_PIGLIN_ALCHEMIST = createVariableRangeSound("block.note_block.imitate.piglin_alchemist");
-    public static final DeferredHolder<SoundEvent, SoundEvent> NOTE_BLOCK_IMITATE_PIGLIN_TRAVELLER = createVariableRangeSound("block.note_block.imitate.piglin_traveller");
+    public static final DeferredHolder<SoundEvent, SoundEvent> NOTE_BLOCK_IMITATE_PIGLIN_TRAVELER = createVariableRangeSound("block.note_block.imitate.piglin_traveler");
     public static final DeferredHolder<SoundEvent, SoundEvent> NOTE_BLOCK_IMITATE_ZOMBIFIED_PIGLIN = createVariableRangeSound("block.note_block.imitate.zombified_piglin");
     public static final DeferredHolder<SoundEvent, SoundEvent> PARROT_IMITATE_PIGLIN_ALCHEMIST = createVariableRangeSound("entity.parrot.imitate.piglin_alchemist");
-    public static final DeferredHolder<SoundEvent, SoundEvent> PARROT_IMITATE_PIGLIN_TRAVELLER = createVariableRangeSound("entity.parrot.imitate.piglin_traveller");
+    public static final DeferredHolder<SoundEvent, SoundEvent> PARROT_IMITATE_PIGLIN_TRAVELER = createVariableRangeSound("entity.parrot.imitate.piglin_traveler");
     public static final DeferredHolder<SoundEvent, SoundEvent> PARROT_IMITATE_ZOMBIFIED_PIGLIN = createVariableRangeSound("entity.parrot.imitate.zombified_piglin");
 
     public static DeferredHolder<SoundEvent, SoundEvent> createVariableRangeSound(String path) {

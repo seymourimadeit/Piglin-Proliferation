@@ -43,7 +43,7 @@ import tallestred.piglinproliferation.client.PPSounds;
 import tallestred.piglinproliferation.common.blocks.PiglinSkullBlock;
 import tallestred.piglinproliferation.common.enchantments.PPEnchantments;
 import tallestred.piglinproliferation.common.entities.PPEntityTypes;
-import tallestred.piglinproliferation.common.entities.PiglinTraveller;
+import tallestred.piglinproliferation.common.entities.PiglinTraveler;
 import tallestred.piglinproliferation.common.entities.ai.goals.DumbBowAttackGoal;
 import tallestred.piglinproliferation.common.entities.ai.goals.DumbCrossbowAttackGoal;
 import tallestred.piglinproliferation.common.entities.ai.goals.PiglinCallForHelpGoal;
@@ -242,12 +242,12 @@ public class PPEvents {
         RandomSource random = event.getLevel().getRandom();
         if (event.getEntity() instanceof Strider strider && random.nextInt(60) == 0 && !strider.isBaby()) {
             event.setCanceled(true);
-            PiglinTraveller traveller = PPEntityTypes.PIGLIN_TRAVELLER.get().create(strider.level());
-            if (traveller != null) {
-                traveller.copyPosition(strider);
-                traveller.startRiding(strider);
+            PiglinTraveler traveler = PPEntityTypes.PIGLIN_TRAVELER.get().create(strider.level());
+            if (traveler != null) {
+                traveler.copyPosition(strider);
+                traveler.startRiding(strider);
                 strider.equipSaddle(null);
-                traveller.setItemSlot(EquipmentSlot.MAINHAND, new ItemStack(Items.WARPED_FUNGUS_ON_A_STICK));
+                traveler.setItemSlot(EquipmentSlot.MAINHAND, new ItemStack(Items.WARPED_FUNGUS_ON_A_STICK));
             }
         }
         if (event.getEntity() instanceof PiglinBrute piglinBrute) {
@@ -297,7 +297,7 @@ public class PPEvents {
                 }
                 if (spawnType == MobSpawnType.JOCKEY) {
                     event.setCanceled(true);
-                    zombifiedPiglin.setData(PPCapabilities.TRANSFORMATION_TRACKER.get(), "piglin_traveller");
+                    zombifiedPiglin.setData(PPCapabilities.TRANSFORMATION_TRACKER.get(), "piglin_traveler");
                     zombifiedPiglin.setItemSlot(EquipmentSlot.MAINHAND, new ItemStack(Items.WARPED_FUNGUS_ON_A_STICK));
                 }
             }

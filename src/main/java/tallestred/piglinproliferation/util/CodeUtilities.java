@@ -17,6 +17,16 @@ public class CodeUtilities {
     }
 
     /**
+     * Very suspicious...
+     *
+     * @param object the object to try casting
+     * */
+    @SuppressWarnings("unchecked")
+    public static <T> T castOrThrow(Object object) {
+        return (T) object;
+    }
+
+    /**
      * <p>Converts a string formatted in snake case to its equivalent plaintext capitalised form.</p>
      * <p>Example: {@code hello_world -> Hello World}</p>
      *

@@ -20,7 +20,7 @@ import tallestred.piglinproliferation.PiglinProliferation;
 import tallestred.piglinproliferation.client.models.BucklerModel;
 import tallestred.piglinproliferation.client.models.PiglinAlchemistModel;
 import tallestred.piglinproliferation.client.models.PiglinHeadEntityModel;
-import tallestred.piglinproliferation.client.models.PiglinTravellerModel;
+import tallestred.piglinproliferation.client.models.PiglinTravelerModel;
 import tallestred.piglinproliferation.client.renderers.layers.PiglinClothingRenderLayer;
 import tallestred.piglinproliferation.common.blockentities.PPBlockEntities;
 import tallestred.piglinproliferation.common.blocks.PiglinSkullBlock;
@@ -37,18 +37,18 @@ public class PPRenderSetupEvents {
             new ResourceLocation(PiglinProliferation.MODID + "piglin_skull"), "piglin_skull");
     public static final ModelLayerLocation PIGLIN_ALCHEMIST_SKULL = new ModelLayerLocation(
             new ResourceLocation(PiglinProliferation.MODID + "piglin_alchemist_skull"), "piglin_alchemist_skull");
-    public static final ModelLayerLocation PIGLIN_TRAVELLER_SKULL = new ModelLayerLocation(
-            new ResourceLocation(PiglinProliferation.MODID + "piglin_traveller_skull"), "piglin_traveller_skull");
+    public static final ModelLayerLocation PIGLIN_TRAVELER_SKULL = new ModelLayerLocation(
+            new ResourceLocation(PiglinProliferation.MODID + "piglin_traveler_skull"), "piglin_traveler_skull");
     public static final ModelLayerLocation PIGLIN_ALCHEMIST = new ModelLayerLocation(
             new ResourceLocation(PiglinProliferation.MODID + "piglin_alchemist"), "piglin_alchemist");
-    public static final ModelLayerLocation PIGLIN_TRAVELLER = new ModelLayerLocation(
-            new ResourceLocation(PiglinProliferation.MODID + "piglin_traveller"), "piglin_traveller");
+    public static final ModelLayerLocation PIGLIN_TRAVELER = new ModelLayerLocation(
+            new ResourceLocation(PiglinProliferation.MODID + "piglin_traveler"), "piglin_traveler");
     public static final ModelLayerLocation PIGLIN_ALCHEMIST_BELT_SLOTS = new ModelLayerLocation(
             new ResourceLocation(PiglinProliferation.MODID + "piglin_alchemist_belt"), "piglin_alchemist_belt");
     public static final ModelLayerLocation BUCKLER = new ModelLayerLocation(new ResourceLocation(PiglinProliferation.MODID + "buckler"),
             "buckler");
-    public static final ModelLayerLocation TRAVELLER_ARMOR_OUTER_LAYER = new ModelLayerLocation(
-            new ResourceLocation(PiglinProliferation.MODID + "traveller_outer_armor"), "traveller_outer_armor");
+    public static final ModelLayerLocation TRAVELER_ARMOR_OUTER_LAYER = new ModelLayerLocation(
+            new ResourceLocation(PiglinProliferation.MODID + "traveler_outer_armor"), "traveler_outer_armor");
 
     public static final ModelLayerLocation ALCHEMIST_ARMOR_OUTER_LAYER = new ModelLayerLocation(
             new ResourceLocation(PiglinProliferation.MODID + "alchemist_outer_armor"), "alchemist_outer_armor");
@@ -59,11 +59,11 @@ public class PPRenderSetupEvents {
     public static void layerDefinitions(EntityRenderersEvent.RegisterLayerDefinitions event) {
         event.registerLayerDefinition(PIGLIN_SKULL, Lazy.of(PiglinHeadEntityModel::createMesh));
         event.registerLayerDefinition(PIGLIN_ALCHEMIST_SKULL, Lazy.of(PiglinHeadEntityModel::createAlchemistMesh));
-        event.registerLayerDefinition(PIGLIN_TRAVELLER_SKULL, Lazy.of(PiglinHeadEntityModel::createTravellerMesh));
+        event.registerLayerDefinition(PIGLIN_TRAVELER_SKULL, Lazy.of(PiglinHeadEntityModel::createTravelerMesh));
         event.registerLayerDefinition(ZIGLIN_CLOTHING, () -> LayerDefinition.create(PiglinModel.createMesh(new CubeDeformation(0.25F)), 64, 64));
         event.registerLayerDefinition(PIGLIN_ALCHEMIST, () -> LayerDefinition.create(PiglinAlchemistModel.createBodyLayer(new CubeDeformation(0.25F), new CubeDeformation(0.70F), new CubeDeformation(1.05F)), 120, 64));
-        event.registerLayerDefinition(PIGLIN_TRAVELLER, PiglinTravellerModel::createBodyLayer);
-        event.registerLayerDefinition(TRAVELLER_ARMOR_OUTER_LAYER, () -> LayerDefinition.create(HumanoidArmorModel.createBodyLayer(new CubeDeformation(1.3F)), 64, 32));
+        event.registerLayerDefinition(PIGLIN_TRAVELER, PiglinTravelerModel::createBodyLayer);
+        event.registerLayerDefinition(TRAVELER_ARMOR_OUTER_LAYER, () -> LayerDefinition.create(HumanoidArmorModel.createBodyLayer(new CubeDeformation(1.3F)), 64, 32));
         event.registerLayerDefinition(ALCHEMIST_ARMOR_OUTER_LAYER, () -> LayerDefinition.create(HumanoidArmorModel.createBodyLayer(new CubeDeformation(1.3F)), 64, 32));
         event.registerLayerDefinition(PIGLIN_ALCHEMIST_BELT_SLOTS, () -> LayerDefinition.create(PiglinAlchemistModel.createBodyLayer(new CubeDeformation(0.40F), new CubeDeformation(1.0F), new CubeDeformation(1.40F)), 120, 64));
         event.registerLayerDefinition(BUCKLER, BucklerModel::createLayer);
@@ -74,7 +74,7 @@ public class PPRenderSetupEvents {
         event.registerBlockEntityRenderer(PPBlockEntities.PIGLIN_SKULL.get(), SkullBlockRenderer::new);
         event.registerBlockEntityRenderer(PPBlockEntities.FIRE_RING.get(), FireRingRenderer::new);
         event.registerEntityRenderer(PPEntityTypes.PIGLIN_ALCHEMIST.get(), PiglinAlchemistRenderer::new);
-        event.registerEntityRenderer(PPEntityTypes.PIGLIN_TRAVELLER.get(), PiglinTravellerRenderer::new);
+        event.registerEntityRenderer(PPEntityTypes.PIGLIN_TRAVELER.get(), PiglinTravelerRenderer::new);
     }
 
     @SubscribeEvent
@@ -87,7 +87,7 @@ public class PPRenderSetupEvents {
         event.registerSkullModel(PiglinSkullBlock.Types.PIGLIN_BRUTE, new PiglinHeadEntityModel(event.getEntityModelSet().bakeLayer(PIGLIN_SKULL)));
         event.registerSkullModel(PiglinSkullBlock.Types.ZOMBIFIED_PIGLIN, new PiglinHeadEntityModel(event.getEntityModelSet().bakeLayer(PIGLIN_SKULL)));
         event.registerSkullModel(PiglinSkullBlock.Types.PIGLIN_ALCHEMIST, new PiglinHeadEntityModel(event.getEntityModelSet().bakeLayer(PIGLIN_ALCHEMIST_SKULL)));
-        event.registerSkullModel(PiglinSkullBlock.Types.PIGLIN_TRAVELLER, new PiglinHeadEntityModel(event.getEntityModelSet().bakeLayer(PIGLIN_TRAVELLER_SKULL)));
+        event.registerSkullModel(PiglinSkullBlock.Types.PIGLIN_TRAVELER, new PiglinHeadEntityModel(event.getEntityModelSet().bakeLayer(PIGLIN_TRAVELER_SKULL)));
     }
 
     @SubscribeEvent
@@ -95,6 +95,6 @@ public class PPRenderSetupEvents {
         event.enqueueWork(() -> SkullBlockRenderer.SKIN_BY_TYPE.put(PiglinSkullBlock.Types.PIGLIN_BRUTE, new ResourceLocation("textures/entity/piglin/piglin_brute.png")));
         event.enqueueWork(() -> SkullBlockRenderer.SKIN_BY_TYPE.put(PiglinSkullBlock.Types.ZOMBIFIED_PIGLIN, new ResourceLocation("textures/entity/piglin/zombified_piglin.png")));
         event.enqueueWork(() -> SkullBlockRenderer.SKIN_BY_TYPE.put(PiglinSkullBlock.Types.PIGLIN_ALCHEMIST, new ResourceLocation(PiglinProliferation.MODID, "textures/entity/piglin/alchemist/alchemist.png")));
-        event.enqueueWork(() -> SkullBlockRenderer.SKIN_BY_TYPE.put(PiglinSkullBlock.Types.PIGLIN_TRAVELLER, new ResourceLocation(PiglinProliferation.MODID, "textures/entity/piglin/traveller/traveller.png")));
+        event.enqueueWork(() -> SkullBlockRenderer.SKIN_BY_TYPE.put(PiglinSkullBlock.Types.PIGLIN_TRAVELER, new ResourceLocation(PiglinProliferation.MODID, "textures/entity/piglin/traveler/traveler.png")));
     }
 }

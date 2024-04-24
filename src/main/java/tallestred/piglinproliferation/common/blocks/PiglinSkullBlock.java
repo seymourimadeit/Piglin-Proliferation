@@ -61,7 +61,7 @@ public class PiglinSkullBlock extends SkullBlock {
         PIGLIN_BRUTE("piglin_brute", () -> EntityType.PIGLIN_BRUTE, PPSounds.NOTE_BLOCK_IMITATE_PIGLIN_BRUTE),
         PIGLIN_ALCHEMIST("piglin_alchemist", PPEntityTypes.PIGLIN_ALCHEMIST::get, PPSounds.NOTE_BLOCK_IMITATE_PIGLIN_ALCHEMIST),
         ZOMBIFIED_PIGLIN("zombified_piglin", () -> EntityType.ZOMBIFIED_PIGLIN, PPSounds.NOTE_BLOCK_IMITATE_ZOMBIFIED_PIGLIN),
-        PIGLIN_TRAVELLER("piglin_traveller", PPEntityTypes.PIGLIN_TRAVELLER::get, PPSounds.NOTE_BLOCK_IMITATE_PIGLIN_TRAVELLER);
+        PIGLIN_TRAVELER("piglin_traveler", PPEntityTypes.PIGLIN_TRAVELER::get, PPSounds.NOTE_BLOCK_IMITATE_PIGLIN_TRAVELER);
 
         private final String name;
         private final Supplier<EntityType<?>> entityType;

@@ -36,14 +36,14 @@ import tallestred.piglinproliferation.client.PPSounds;
 import tallestred.piglinproliferation.common.advancement.PPCriteriaTriggers;
 import tallestred.piglinproliferation.common.attribute.PPAttributes;
 import tallestred.piglinproliferation.common.enchantments.PPEnchantments;
-import tallestred.piglinproliferation.common.entities.PiglinTraveller;
+import tallestred.piglinproliferation.common.entities.PiglinTraveler;
 import tallestred.piglinproliferation.common.items.BucklerItem;
 import tallestred.piglinproliferation.common.items.PPItems;
 import tallestred.piglinproliferation.common.blockentities.PPBlockEntities;
 import tallestred.piglinproliferation.common.blocks.PPBlocks;
 import tallestred.piglinproliferation.common.entities.PPEntityTypes;
 import tallestred.piglinproliferation.common.entities.PiglinAlchemist;
-import tallestred.piglinproliferation.common.items.TravellersCompassItem;
+import tallestred.piglinproliferation.common.items.TravelersCompassItem;
 import tallestred.piglinproliferation.common.loot.PPLoot;
 import tallestred.piglinproliferation.common.recipes.PPRecipeSerializers;
 import tallestred.piglinproliferation.common.worldgen.PPWorldgen;
@@ -92,7 +92,7 @@ public class PiglinProliferation {
 
 
     private void addAttributes(final EntityAttributeCreationEvent event) {
-        event.put(PPEntityTypes.PIGLIN_TRAVELLER.get(), PiglinAlchemist.createAttributes().build());
+        event.put(PPEntityTypes.PIGLIN_TRAVELER.get(), PiglinAlchemist.createAttributes().build());
         event.put(PPEntityTypes.PIGLIN_ALCHEMIST.get(), PiglinAlchemist.createAttributes().build());
     }
 
@@ -105,11 +105,11 @@ public class PiglinProliferation {
         MutableHashedLinkedMap<ItemStack, CreativeModeTab.TabVisibility> creativeTab = event.getEntries();
         if (CreativeModeTabs.SPAWN_EGGS.equals(event.getTabKey())) {
             addToCreativeTabAfter(creativeTab, Items.PIGLIN_SPAWN_EGG, PPItems.PIGLIN_ALCHEMIST_SPAWN_EGG.get());
-            addToCreativeTabAfter(creativeTab, Items.PIGLIN_BRUTE_SPAWN_EGG, PPItems.PIGLIN_TRAVELLER_SPAWN_EGG.get());
+            addToCreativeTabAfter(creativeTab, Items.PIGLIN_BRUTE_SPAWN_EGG, PPItems.PIGLIN_TRAVELER_SPAWN_EGG.get());
         } else if (CreativeModeTabs.FUNCTIONAL_BLOCKS.equals(event.getTabKey())) {
             addToCreativeTabAfter(creativeTab, Items.PIGLIN_HEAD,
                     PPItems.PIGLIN_ALCHEMIST_HEAD_ITEM.get(),
-                    PPItems.PIGLIN_TRAVELLER_HEAD_ITEM.get(),
+                    PPItems.PIGLIN_TRAVELER_HEAD_ITEM.get(),
                     PPItems.PIGLIN_BRUTE_HEAD_ITEM.get(),
                     PPItems.ZOMBIFIED_PIGLIN_HEAD_ITEM.get()
             );
@@ -131,7 +131,7 @@ public class PiglinProliferation {
 
     private void addSpawn(final SpawnPlacementRegisterEvent event) {
         event.register(PPEntityTypes.PIGLIN_ALCHEMIST.get(), SpawnPlacements.Type.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, PiglinAlchemist::checkChemistSpawnRules, SpawnPlacementRegisterEvent.Operation.AND);
-        event.register(PPEntityTypes.PIGLIN_TRAVELLER.get(), SpawnPlacements.Type.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, PiglinTraveller::checkTravellerSpawnRules, SpawnPlacementRegisterEvent.Operation.AND);
+        event.register(PPEntityTypes.PIGLIN_TRAVELER.get(), SpawnPlacements.Type.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, PiglinTraveler::checkTravelerSpawnRules, SpawnPlacementRegisterEvent.Operation.AND);
     }
 
     private void setup(final FMLCommonSetupEvent event) {
@@ -153,7 +153,7 @@ public class PiglinProliferation {
                                 || livingEntity != null && BucklerItem.isReady(stack);
                         return livingEntity != null && active ? 1.0F : 0.0F;
                     });
-            ItemProperties.register(PPItems.TRAVELLERS_COMPASS.get(), new ResourceLocation("angle"), new CompassItemPropertyFunction((level, itemStack, player) -> TravellersCompassItem.getPosition(itemStack.getOrCreateTag())));
+            ItemProperties.register(PPItems.TRAVELERS_COMPASS.get(), new ResourceLocation("angle"), new CompassItemPropertyFunction((level, itemStack, player) -> TravelersCompassItem.getPosition(itemStack.getOrCreateTag())));
         });
     }
 

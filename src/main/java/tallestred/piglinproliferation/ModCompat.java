@@ -26,7 +26,7 @@ import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.minecraft.world.phys.Vec3;
 import tallestred.piglinproliferation.common.entities.PiglinAlchemist;
-import tallestred.piglinproliferation.common.entities.PiglinTraveller;
+import tallestred.piglinproliferation.common.entities.Piglintraveler;
 import tallestred.piglinproliferation.common.loot.PPLoot;
 
 import java.util.Collections;
@@ -165,7 +165,7 @@ public class ModCompat {
 
     private static List<ItemStack> getBarterResponseItems(AbstractPiglin piglin) {
         ResourceLocation lootTableID =
-                piglin instanceof PiglinTraveller ? PPLoot.TRAVELLER_BARTER :
+                piglin instanceof Piglintraveler ? PPLoot.traveler_BARTER :
                         piglin instanceof PiglinAlchemist ? PPLoot.ALCHEMIST_BARTER :
                                 BuiltInLootTables.PIGLIN_BARTERING;
         LootTable loottable = piglin.level().getServer().getLootData().getLootTable(lootTableID);

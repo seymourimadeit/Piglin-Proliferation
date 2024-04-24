@@ -2,11 +2,13 @@ package tallestred.piglinproliferation.common.entities.ai;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
+import com.mojang.datafixers.util.Pair;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.InteractionHand;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
@@ -30,6 +32,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static tallestred.piglinproliferation.util.CodeUtilities.castElementsToList;
+import static tallestred.piglinproliferation.util.CodeUtilities.castOrThrow;
 
 public abstract class AbstractPiglinAi<P extends Piglin> extends PiglinAi {
     public Brain<?> populateBrain(P piglin, Brain<P> brain) {
@@ -51,11 +54,17 @@ public abstract class AbstractPiglinAi<P extends Piglin> extends PiglinAi {
             setupFightActivity(brain, piglin);
             PiglinAi.initCelebrateActivity(piglinBrain);
             PiglinAi.initRetreatActivity(piglinBrain);
-            PiglinAi.initRideHoglinActivity(piglinBrain);
+            setupRideHoglinActivity(piglinBrain);
         } catch (ClassCastException e) {
             System.out.println("Something went wrong with PiglinAi casts - report to the Piglin Proliferation github.");
             throw e;
         }
+    }
+
+    public void setupRideHoglinActivity(Brain<Piglin> pBrain) {
+        pBrain.addActivityAndRemoveMemoryWhenStopped(Activity.RIDE, 10, ImmutableList.of(Mount.create(0.8F), SetEntityLookTarget.create(PiglinAi::isPlayerHoldingLovedItem, 8.0F), BehaviorBuilder.sequence(BehaviorBuilder.triggerIf(Entity::isPassenger), TriggerGate.triggerOneShuffled(castOrThrow(ImmutableList.builder().addAll(lookBehaviors()).add(Pair.of(BehaviorBuilder.triggerIf((p_258950_) -> {
+            return true;
+        }), 1)).build()))), DismountOrSkipMounting.create(8, PiglinAi::wantsToStopRiding)), MemoryModuleType.RIDE_TARGET);
     }
 
     private void setupCoreActivity(Brain<P> brain, P piglin) {
@@ -91,10 +100,22 @@ public abstract class AbstractPiglinAi<P extends Piglin> extends PiglinAi {
                 BehaviorBuilder.triggerIf(Piglin::canHunt, StartHuntingHoglin.create()),
                 PiglinAi.avoidRepellent(),
                 PiglinAi.babySometimesRideBabyHoglin(),
-                PiglinAi.createIdleLookBehaviors(),
-                PiglinAi.createIdleMovementBehaviors(),
+                idleLookBehaviors(),
+                idleMovementBehaviors(),
                 SetLookAndInteract.create(EntityType.PLAYER, 4)
         );
+    }
+
+    protected ImmutableList<Pair<OneShot<LivingEntity>, Integer>> lookBehaviors() {
+        return PiglinAi.createLookBehaviors();
+    }
+
+    protected RunOne<LivingEntity> idleLookBehaviors() {
+        return PiglinAi.createIdleLookBehaviors();
+    }
+
+    protected RunOne<P> idleMovementBehaviors() {
+        return castOrThrow(PiglinAi.createIdleMovementBehaviors());
     }
 
     protected List<BehaviorControl<? super P>> fightBehaviors(P piglin) {
