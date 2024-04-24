@@ -18,16 +18,15 @@ public class MouseHelperMixin {
     private Minecraft minecraft;
 
     @ModifyVariable(at = @At(value = "STORE", opcode = Opcodes.DSTORE), method = "turnPlayer", ordinal = 2)
-    public double updatePlayerLook(double mouseSensitivity) {
+    public double updatePlayerLook(double d4) {
         if (minecraft.player != null) {
             Player player = Minecraft.getInstance().player;
             if (player != null) {
                 double turningValue = PPAttributes.turningValue(player);
                 if (turningValue != 1)
-                    mouseSensitivity = (mouseSensitivity * turningValue) - 0.20000000298023224;
-                //TODO this doesn't work right
+                    d4 = (d4 - 0.20000000298023224) * turningValue;
             }
         }
-        return mouseSensitivity;
+        return d4;
     }
 }
