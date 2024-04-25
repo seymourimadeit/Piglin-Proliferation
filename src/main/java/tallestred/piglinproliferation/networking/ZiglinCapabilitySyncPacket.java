@@ -13,9 +13,7 @@ public record ZiglinCapabilitySyncPacket(int entityId, String transformedFromId)
     public static final StreamCodec<RegistryFriendlyByteBuf, ZiglinCapabilitySyncPacket> STREAM_CODEC = StreamCodec.composite(ByteBufCodecs.INT, ZiglinCapabilitySyncPacket::entityId, ByteBufCodecs.STRING_UTF8, ZiglinCapabilitySyncPacket::transformedFromId, ZiglinCapabilitySyncPacket::new);
 
     public static void handle(ZiglinCapabilitySyncPacket payload, IPayloadContext context) {
-        context.enqueueWork(() -> {
-            ServerToClientPacketStuff.syncZiglinClothes(payload);
-        });
+        context.enqueueWork(() -> ServerToClientPacketStuff.syncZiglinClothes(payload));
     }
 
     @Override

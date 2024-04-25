@@ -13,9 +13,7 @@ public record CriticalCapabilityPacket(int entityId, boolean crit) implements Cu
     public static final StreamCodec<RegistryFriendlyByteBuf, CriticalCapabilityPacket> STREAM_CODEC = StreamCodec.composite(ByteBufCodecs.INT, CriticalCapabilityPacket::entityId, ByteBufCodecs.BOOL, CriticalCapabilityPacket::crit, CriticalCapabilityPacket::new);
 
     public static void handle(CriticalCapabilityPacket payload, IPayloadContext context) {
-        context.enqueueWork(() -> {
-            ServerToClientPacketStuff.syncCritical(payload);
-        });
+        context.enqueueWork(() -> ServerToClientPacketStuff.syncCritical(payload));
     }
 
     @Override

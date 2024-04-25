@@ -8,8 +8,6 @@ import net.minecraft.core.NonNullList;
 import net.minecraft.core.particles.ItemParticleOption;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.NbtOps;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
@@ -18,6 +16,7 @@ import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
+import net.minecraft.world.ContainerHelper;
 import net.minecraft.world.DifficultyInstance;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffectInstance;
@@ -39,6 +38,7 @@ import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
+import net.minecraft.world.level.ServerLevelAccessor;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.pathfinder.PathType;
@@ -51,6 +51,7 @@ import tallestred.piglinproliferation.common.blocks.PiglinSkullBlock;
 import tallestred.piglinproliferation.common.items.PPItems;
 import tallestred.piglinproliferation.common.entities.ai.PiglinAlchemistAi;
 import tallestred.piglinproliferation.configuration.PPConfig;
+import tallestred.piglinproliferation.networking.AlchemistBeltSlotSyncPacket;
 import tallestred.piglinproliferation.networking.AlchemistBeltSyncPacket;
 
 import javax.annotation.Nullable;
@@ -103,15 +104,23 @@ public class PiglinAlchemist extends Piglin {
             if (source.nextFloat() < PPConfig.COMMON.healingArrowChances.get().floatValue()) {
                 ItemStack tippedArrow = PotionContents.createItemStack(Items.TIPPED_ARROW, Potions.STRONG_HEALING);
                 tippedArrow.setCount(source.nextInt(PPConfig.COMMON.healingArrowMinStackSize.get(), PPConfig.COMMON.healingArrowMaxStackSize.get()));
-                this.setBeltInventorySlot(source.nextInt(6), tippedArrow);
+                this.beltInventory.set(source.nextInt(6), tippedArrow);
             }
             for (int slot = 0; slot < this.beltInventory.size(); slot++) {
                 if (this.beltInventory.get(slot).isEmpty()) {
                     Holder<Potion> potion = source.nextFloat() < 0.35F ? Potions.FIRE_RESISTANCE : source.nextFloat() < 0.30F ? Potions.STRONG_REGENERATION : source.nextFloat() < 0.25F ? Potions.STRONG_HEALING : Potions.STRONG_STRENGTH;
-                    this.setBeltInventorySlot(slot, PotionContents.createItemStack(Items.SPLASH_POTION, potion));
+                    this.beltInventory.set(slot, PotionContents.createItemStack(Items.SPLASH_POTION, potion));
+                    //Direct set method is used here instead so that sync belt only needs to be called once in onAddedToWorld
+                    //this.syncBeltToClient();
                 }
             }
         }
+    }
+
+    @Override
+    public void onAddedToWorld() {
+        super.onAddedToWorld();
+        this.syncBeltToClient();
     }
 
     @Override
@@ -252,7 +261,7 @@ public class PiglinAlchemist extends Piglin {
                     Iterable<MobEffectInstance> effectInstanceList = potionContents(beltInventory.get(slot)).getAllEffects();
                     if (this.getTarget() != null && target == this.getTarget() && anyEffectsMatch(effectInstanceList, instance -> !instance.getEffect().value().isBeneficial()) || target != this.getTarget() || this.getTarget() != null && this.getTarget().isInvertedHealAndHarm() && anyEffectsMatch(effectInstanceList, instance -> instance.getEffect() == MobEffects.HEAL)) {
                         this.setItemShownOnOffhand(beltInventory.get(slot).copy());
-                        this.beltInventory.set(slot, ItemStack.EMPTY);
+                        this.setBeltInventorySlot(slot, ItemStack.EMPTY);
                     }
                 }
             }
@@ -294,29 +303,18 @@ public class PiglinAlchemist extends Piglin {
     }
 
     @Override
-    public void addAdditionalSaveData(CompoundTag compound) {
-        super.addAdditionalSaveData(compound);
-        ListTag listnbt = new ListTag();
-        for (ItemStack itemstack : this.beltInventory) {
-            CompoundTag compoundtag = new CompoundTag();
-            if (!itemstack.isEmpty()) {
-                itemstack.save(this.registryAccess(), compoundtag);
-            }
-            listnbt.add(compoundtag);
-        }
-        compound.put("BeltInventory", listnbt);
-        compound.putInt("ArrowsShot", this.getArrowsShot());
+    public void addAdditionalSaveData(CompoundTag tag) {
+        super.addAdditionalSaveData(tag);
+        ContainerHelper.saveAllItems(tag, this.beltInventory, this.registryAccess());
+        tag.putInt("ArrowsShot", this.getArrowsShot());
     }
 
     @Override
-    public void readAdditionalSaveData(CompoundTag compound) {
-        super.readAdditionalSaveData(compound);
-        if (compound.contains("BeltInventory", 9)) {
-            ListTag listtag = compound.getList("BeltInventory", 10);
-            for (int i = 0; i < this.beltInventory.size(); ++i)
-                this.beltInventory.set(i, ItemStack.CODEC.parse(NbtOps.INSTANCE, listtag.getCompound(i)).getOrThrow());
-        }
-        this.setArrowsShot(compound.getInt("ArrowsShot"));
+    public void readAdditionalSaveData(CompoundTag tag) {
+        super.readAdditionalSaveData(tag);
+        ContainerHelper.loadAllItems(tag, this.beltInventory, this.registryAccess());
+        //this.syncBeltToClient();
+        this.setArrowsShot(tag.getInt("ArrowsShot"));
     }
 
     public int getArrowsShot() {
@@ -327,23 +325,25 @@ public class PiglinAlchemist extends Piglin {
         this.arrowsShot = arrowsShot;
     }
 
-    @Override
+   /* @Override //TODO seeing what happens if it's not called in tick?
     public void tick() {
         super.tick();
         this.syncBeltToClient(); // This is poo poo, and I will probably need to find a better method in the future
-    }
+    }*/
 
     public void setBeltInventorySlot(int index, ItemStack stack) {
         this.beltInventory.set(index, stack);
-        this.syncBeltToClient();
+        this.syncBeltSlotToClient(index);
+    }
+
+    public void syncBeltSlotToClient(int index) {
+        if (!this.level().isClientSide)
+            PacketDistributor.sendToPlayersTrackingEntity(this, new AlchemistBeltSlotSyncPacket(index, this.beltInventory.get(index), this.getId()));
     }
 
     public void syncBeltToClient() {
-        if (!this.level().isClientSide) {
-            for (int i = 0; i < this.beltInventory.size(); i++) {
-               PacketDistributor.sendToPlayersTrackingEntity(this, new AlchemistBeltSyncPacket(this.getId(), this.beltInventory.get(i), i));
-            }
-        }
+        if (!this.level().isClientSide)
+            PacketDistributor.sendToPlayersTrackingEntity(this, new AlchemistBeltSyncPacket(new ArrayList<>(this.beltInventory), this.getId()));
     }
 
     @Override

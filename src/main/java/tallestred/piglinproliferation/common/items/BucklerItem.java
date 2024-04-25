@@ -8,7 +8,6 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.BlockParticleOption;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.particles.SimpleParticleType;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.Mth;
@@ -34,7 +33,7 @@ import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.client.extensions.common.IClientItemExtensions;
 import net.neoforged.neoforge.common.Tags;
 import net.neoforged.neoforge.common.ToolActions;
-import tallestred.piglinproliferation.capablities.PPCapabilities;
+import tallestred.piglinproliferation.capablities.PPDataAttachments;
 import tallestred.piglinproliferation.client.PPSounds;
 import tallestred.piglinproliferation.client.particles.ParticleHelper;
 import tallestred.piglinproliferation.client.renderers.BucklerRenderer;
@@ -150,7 +149,7 @@ public class BucklerItem extends ShieldItem {
                 entity.setLastHurtMob(entityHit);
                 if (entity instanceof Player player && !PPEnchantments.hasBucklerEnchantsOnHands(player, PPEnchantments.BANG.get(), PPEnchantments.TURNING.get())) {
                     player.level().playSound(null, entity.getX(), entity.getY(), entity.getZ(), PPSounds.CRITICAL_ACTIVATE.get(), entity.getSoundSource(), 1.0F, 1.0F);
-                    player.setData(PPCapabilities.CRITICAL.get(), true);
+                    player.setData(PPDataAttachments.CRITICAL.get(), true);
                 }
             }
         }

@@ -37,8 +37,9 @@ import javax.annotation.Nullable;
 import java.util.*;
 
 public class FireRingBlockEntity extends CampfireBlockEntity {
-    private final List<MobEffectInstance> effects = new ArrayList<>();
-    private final List<ParticleOptions> particles = new ArrayList<>();
+    private final List<MobEffectInstance> effects = new ArrayList<>(); //Only on server
+    private boolean hasEffects = false; //Synced to client, substitute for effects.isEmpty()
+    private final List<ParticleOptions> particles = new ArrayList<>(); //Synced to client
     private int unsafeLightLevel = -1;
 
     public FireRingBlockEntity(BlockPos pos, BlockState state) {
@@ -56,26 +57,30 @@ public class FireRingBlockEntity extends CampfireBlockEntity {
     }
 
     public boolean addEffects(@Nullable Player player, @Nullable InteractionHand hand, @Nullable ItemStack stack, Iterable<MobEffectInstance> effectsToAdd, int maxDuration) {
-        if (player instanceof ServerPlayer serverPlayer)
-            PPCriteriaTriggers.ADD_EFFECT_TO_FIRE_RING.get().trigger(serverPlayer);
-        if (this.effects.isEmpty() && effectsToAdd.iterator().hasNext()) {
-            if (this.level != null && !this.level.isClientSide)
-                this.level.sendBlockUpdated(this.getBlockPos(), this.getBlockState(), this.getBlockState(), Block.UPDATE_CLIENTS);
-            if (player != null) {
-                if (!player.getAbilities().instabuild && stack != null) {
-                    stack.shrink(1);
-                    ItemStack result = ItemUtils.createFilledResult(stack, player, new ItemStack(Items.GLASS_BOTTLE));
-                    if (stack.isEmpty() && hand != null)
-                        player.setItemInHand(hand, result);
+        if (this.level != null) {
+            if (effectsToAdd.iterator().hasNext() && this.level.isClientSide ? !this.hasEffects : this.effects.isEmpty()) {
+                if (player instanceof ServerPlayer serverPlayer) {
+                    PPCriteriaTriggers.ADD_EFFECT_TO_FIRE_RING.get().trigger(serverPlayer);
+                    //this.level.sendBlockUpdated(this.getBlockPos(), this.getBlockState(), this.getBlockState(), Block.UPDATE_CLIENTS);
+                    if (!player.getAbilities().instabuild && stack != null) {
+                        stack.shrink(1);
+                        ItemStack result = ItemUtils.createFilledResult(stack, player, new ItemStack(Items.GLASS_BOTTLE));
+                        if (stack.isEmpty() && hand != null)
+                            player.setItemInHand(hand, result);
+                    }
+                    for (MobEffectInstance effect : effectsToAdd)
+                        this.effects.add(new MobEffectInstance(effect.getEffect(), Math.min(effect.getDuration(), maxDuration), effect.getAmplifier()));
+                    this.level.playSound(null, this.getBlockPos(), SoundEvents.BOTTLE_EMPTY, SoundSource.BLOCKS, 1.0F, 1.0F);
+                    //this.setChanged();
+                } else {
+                    //This is done in place of syncing to the client
+                    for (MobEffectInstance effect : effectsToAdd)
+                        if (effect.isVisible())
+                            particles.add(effect.getParticleOptions());
+                    this.hasEffects = true;
                 }
+                return true;
             }
-            for (MobEffectInstance effectInstance : effectsToAdd) {
-                this.effects.add(new MobEffectInstance(effectInstance.getEffect(), Math.min(effectInstance.getDuration(), maxDuration), effectInstance.getAmplifier()));
-            }
-            if (!(this.level == null))
-                this.level.playSound(null, this.getBlockPos(), SoundEvents.BOTTLE_EMPTY, SoundSource.BLOCKS, 1.0F, 1.0F);
-            this.setChanged();
-            return true;
         }
         return false;
     }
@@ -83,9 +88,9 @@ public class FireRingBlockEntity extends CampfireBlockEntity {
     public static void particleTick(Level level, BlockPos pos, BlockState state, FireRingBlockEntity blockEntity) {
         RandomSource random = level.random;
         if (!blockEntity.particles.isEmpty()) {
-            if (random.nextInt(4) == 0)
+            //if (random.nextInt(2) == 0)
                 //TODO test velocity
-                level.addParticle(Util.getRandom(blockEntity.particles, random), (double)pos.getX() + 0.5 + random.nextDouble() / 3.0 * (double)(random.nextBoolean() ? 1 : -1), (double)pos.getY() + random.nextDouble() + random.nextDouble(), (double)pos.getZ() + 0.5 + random.nextDouble() / 3.0 * (double)(random.nextBoolean() ? 1 : -1), 1.0, 1.0, 1.0);
+                level.addParticle(Util.getRandom(blockEntity.particles, random), (double)pos.getX() + 0.5 + random.nextDouble() / 3.0 * (double)(random.nextBoolean() ? 1 : -1), (double)pos.getY() + random.nextDouble() + random.nextDouble(), (double)pos.getZ() + 0.5 + random.nextDouble() / 3.0 * (double)(random.nextBoolean() ? 1 : -1), 1.0, 1.25, 1.0);
         }
         int i;
         if (random.nextFloat() < 0.11F) {
@@ -132,7 +137,7 @@ public class FireRingBlockEntity extends CampfireBlockEntity {
                 }
                 if (!toRemove.isEmpty() || blockEntity.particles.isEmpty()) {
                     blockEntity.effects.removeAll(toRemove);
-                    blockEntity.updateColors(level, pos, state);
+                    blockEntity.syncToClient();
                 }
                 if (!blockEntity.effects.isEmpty()) {
                     double radius = blockEntity.getLightLevel();
@@ -147,14 +152,15 @@ public class FireRingBlockEntity extends CampfireBlockEntity {
         }
     }
 
-    public void updateColors(Level level, BlockPos pos, BlockState state) {
-        if (!effects.isEmpty()) {
-            particles.clear();
-            for (MobEffectInstance effect : effects)
+    public void syncToClient() {
+        this.hasEffects = !this.effects.isEmpty();
+        particles.clear();
+        for (MobEffectInstance effect : effects)
+            if (effect.isVisible())
                 particles.add(effect.getParticleOptions());
-            level.sendBlockUpdated(pos, state, state, Block.UPDATE_CLIENTS);
-            this.setChanged();
-        }
+        if (this.level != null)
+            this.level.sendBlockUpdated(this.getBlockPos(), this.getBlockState(), this.getBlockState(), Block.UPDATE_CLIENTS);
+        this.setChanged();
     }
 
     @Override
@@ -187,6 +193,7 @@ public class FireRingBlockEntity extends CampfireBlockEntity {
         for (ParticleOptions options : particles)
             ParticleTypes.CODEC.encodeStart(NbtOps.INSTANCE, options).result().ifPresent(particlesTag::add);
         tag.put("Particles", particlesTag);
+        tag.putBoolean("HasEffects", this.hasEffects);
         return tag;
     }
 
@@ -195,8 +202,11 @@ public class FireRingBlockEntity extends CampfireBlockEntity {
         super.handleUpdateTag(tag, lookupProvider);
         if (tag.contains("Particles", Tag.TAG_LIST)) { //TODO test
             ListTag particlesTag = tag.getList("Particles", Tag.TAG_COMPOUND);
-            particlesTag.forEach(p -> ParticleTypes.CODEC.parse(NbtOps.INSTANCE, particlesTag));
+            this.particles.clear();
+            particlesTag.forEach(pTag -> ParticleTypes.CODEC.parse(NbtOps.INSTANCE, pTag).result().ifPresent(this.particles::add));
         }
+        if (tag.contains("HasEffects"))
+            this.hasEffects = tag.getBoolean("HasEffects");
     }
 
     @Override

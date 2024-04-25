@@ -3,19 +3,10 @@ package tallestred.piglinproliferation.common.items.component;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.netty.buffer.ByteBuf;
-import net.minecraft.core.BlockPos;
 import net.minecraft.core.GlobalPos;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.level.ServerLevel;
-import net.minecraft.world.entity.ai.village.poi.PoiTypes;
-import net.minecraft.world.item.component.LodestoneTracker;
-import net.minecraft.world.level.dimension.DimensionType;
-
-import java.awt.*;
-import java.util.Optional;
-
 
 public record TravelersCompassTracker(GlobalPos target, ResourceLocation targetID, boolean isBiome) {
     public static final Codec<TravelersCompassTracker> CODEC = RecordCodecBuilder.create(

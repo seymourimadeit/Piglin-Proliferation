@@ -16,7 +16,6 @@ import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
-import net.neoforged.fml.ModLoadingContext;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.config.ModConfig;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
@@ -32,7 +31,7 @@ import net.neoforged.neoforge.event.entity.SpawnPlacementRegisterEvent;
 import net.neoforged.neoforge.event.server.ServerAboutToStartEvent;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import net.neoforged.neoforge.network.registration.PayloadRegistrar;
-import tallestred.piglinproliferation.capablities.PPCapabilities;
+import tallestred.piglinproliferation.capablities.PPDataAttachments;
 import tallestred.piglinproliferation.client.PPSounds;
 import tallestred.piglinproliferation.common.advancement.PPCriteriaTriggers;
 import tallestred.piglinproliferation.common.attribute.PPAttributes;
@@ -50,6 +49,7 @@ import tallestred.piglinproliferation.common.loot.PPLoot;
 import tallestred.piglinproliferation.common.recipes.PPRecipeSerializers;
 import tallestred.piglinproliferation.common.worldgen.PPWorldgen;
 import tallestred.piglinproliferation.configuration.PPConfig;
+import tallestred.piglinproliferation.networking.AlchemistBeltSlotSyncPacket;
 import tallestred.piglinproliferation.networking.AlchemistBeltSyncPacket;
 import tallestred.piglinproliferation.networking.CriticalCapabilityPacket;
 import tallestred.piglinproliferation.networking.ZiglinCapabilitySyncPacket;
@@ -68,9 +68,9 @@ public class PiglinProliferation {
         modEventBus.addListener(this::addCustomAttributes);
         modEventBus.addListener(this::addSpawn);
         modEventBus.addListener(this::addCreativeTabs);
-        modEventBus.addListener(this::register);
+        modEventBus.addListener(this::registerPackets);
         if (dist == Dist.CLIENT)
-            modEventBus.addListener(this::doClientStuff);
+            modEventBus.addListener(this::doClientStuff) ;
         NeoForge.EVENT_BUS.addListener(this::serverStart);
         PPSounds.SOUNDS.register(modEventBus);
         PPAttributes.ATTRIBUTES.register(modEventBus);
@@ -88,7 +88,7 @@ public class PiglinProliferation {
         PPLoot.LOOT_ITEM_FUNCTION_TYPES.register(modEventBus);
         PPLoot.LOOT_ITEM_CONDITION_TYPES.register(modEventBus);
         PPRecipeSerializers.RECIPE_SERIALIZERS.register(modEventBus);
-        PPCapabilities.ATTACHMENT_TYPES.register(modEventBus);
+        PPDataAttachments.ATTACHMENT_TYPES.register(modEventBus);
         container.registerConfig(ModConfig.Type.COMMON, PPConfig.COMMON_SPEC);
         container.registerConfig(ModConfig.Type.CLIENT, PPConfig.CLIENT_SPEC);
     }
@@ -173,10 +173,11 @@ public class PiglinProliferation {
                 "piglinproliferation:bastion/alchemist_piglin", PPConfig.COMMON.alchemistWeightInBastions.get());
     }
 
-    private void register(final RegisterPayloadHandlersEvent event) {
-        final PayloadRegistrar reg = event.registrar(MODID).versioned("2.0.0");
-        reg.playToClient(AlchemistBeltSyncPacket.TYPE, AlchemistBeltSyncPacket.STREAM_CODEC, AlchemistBeltSyncPacket::handle);
-        reg.playToClient(CriticalCapabilityPacket.TYPE, CriticalCapabilityPacket.STREAM_CODEC, CriticalCapabilityPacket::handle);
-        reg.playToClient(ZiglinCapabilitySyncPacket.TYPE, ZiglinCapabilitySyncPacket.STREAM_CODEC, ZiglinCapabilitySyncPacket::handle);
+    private void registerPackets(final RegisterPayloadHandlersEvent event) {
+        PayloadRegistrar registrar = event.registrar("1");
+        registrar.playToClient(AlchemistBeltSlotSyncPacket.TYPE, AlchemistBeltSlotSyncPacket.STREAM_CODEC, AlchemistBeltSlotSyncPacket::handle);
+        registrar.playToClient(AlchemistBeltSyncPacket.TYPE, AlchemistBeltSyncPacket.STREAM_CODEC, AlchemistBeltSyncPacket::handle);
+        registrar.playToClient(CriticalCapabilityPacket.TYPE, CriticalCapabilityPacket.STREAM_CODEC, CriticalCapabilityPacket::handle);
+        registrar.playToClient(ZiglinCapabilitySyncPacket.TYPE, ZiglinCapabilitySyncPacket.STREAM_CODEC, ZiglinCapabilitySyncPacket::handle);
     }
 }

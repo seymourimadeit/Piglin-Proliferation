@@ -8,7 +8,7 @@ import tallestred.piglinproliferation.PiglinProliferation;
 
 import java.util.function.Supplier;
 
-public class PPCapabilities {
+public class PPDataAttachments {
     public static final DeferredRegister<AttachmentType<?>> ATTACHMENT_TYPES = DeferredRegister.create(NeoForgeRegistries.Keys.ATTACHMENT_TYPES, PiglinProliferation.MODID);
     public static final Supplier<AttachmentType<String>> TRANSFORMATION_TRACKER = ATTACHMENT_TYPES.register(
             "transformation_type", () -> AttachmentType.builder(() -> "").serialize(Codec.STRING).build());
