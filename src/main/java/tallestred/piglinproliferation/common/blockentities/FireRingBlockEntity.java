@@ -51,9 +51,9 @@ public class FireRingBlockEntity extends CampfireBlockEntity {
     }
 
     public boolean addEffects(@Nullable Player player, @Nullable InteractionHand hand, @Nullable ItemStack stack, List<MobEffectInstance> effectsToAdd, int maxDuration) {
-        if (player instanceof ServerPlayer serverPlayer)
-            PPCriteriaTriggers.ADD_EFFECT_TO_FIRE_RING.get().trigger(serverPlayer);
         if (this.effects.isEmpty() && !effectsToAdd.isEmpty()) {
+            if (player instanceof ServerPlayer serverPlayer)
+                PPCriteriaTriggers.ADD_EFFECT_TO_FIRE_RING.get().trigger(serverPlayer);
             this.potionColor = PotionUtils.getColor(effectsToAdd);
             if (this.level != null && !this.level.isClientSide)
                 this.level.sendBlockUpdated(this.getBlockPos(), this.getBlockState(), this.getBlockState(), Block.UPDATE_CLIENTS);
@@ -76,14 +76,13 @@ public class FireRingBlockEntity extends CampfireBlockEntity {
     }
 
     public static void particleTick(Level level, BlockPos pos, BlockState state, FireRingBlockEntity blockEntity) {
+        RandomSource random = level.random;
         if (blockEntity.potionColor != -1) {
             double xComponent = (double)(blockEntity.potionColor >> 16 & 255) / 255.0;
             double yComponent = (double)(blockEntity.potionColor >> 8 & 255) / 255.0;
             double zComponent = (double)(blockEntity.potionColor >> 0 & 255) / 255.0;
-            RandomSource randomSource = level.getRandom();
-            level.addAlwaysVisibleParticle(randomSource.nextBoolean() ? ParticleTypes.ENTITY_EFFECT : ParticleTypes.AMBIENT_ENTITY_EFFECT, true, (double)pos.getX() + 0.5 + randomSource.nextDouble() / 3.0 * (double)(randomSource.nextBoolean() ? 1 : -1), (double)pos.getY() + randomSource.nextDouble() + randomSource.nextDouble(), (double)pos.getZ() + 0.5 + randomSource.nextDouble() / 3.0 * (double)(randomSource.nextBoolean() ? 1 : -1), xComponent, yComponent, zComponent);
+            level.addParticle(ParticleTypes.ENTITY_EFFECT, true, (double)pos.getX() + 0.5 + random.nextDouble() / 3.0 * (double)(random.nextBoolean() ? 1 : -1), (double)pos.getY() + random.nextDouble() + random.nextDouble(), (double)pos.getZ() + 0.5 + random.nextDouble() / 3.0 * (double)(random.nextBoolean() ? 1 : -1), xComponent, yComponent, zComponent);
         }
-        RandomSource random = level.random;
         int i;
         if (random.nextFloat() < 0.11F) {
             for(i = 0; i < random.nextInt(2) + 2; ++i) {
@@ -137,7 +136,7 @@ public class FireRingBlockEntity extends CampfireBlockEntity {
                     int y = pos.getY();
                     int z = pos.getZ();
                     for (LivingEntity entity : level.getEntitiesOfClass(LivingEntity.class, new AABB(x - radius, y - radius, z - radius, x + radius, y + radius, z + radius)))
-                        blockEntity.effects.forEach(effect -> entity.addEffect(new MobEffectInstance(effect.getEffect(), 210, effect.getAmplifier())));
+                        blockEntity.effects.forEach(effect -> entity.addEffect(new MobEffectInstance(effect.getEffect(), 210, effect.getAmplifier(), true, effect.isVisible())));
                 }
 
             }
