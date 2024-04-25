@@ -16,10 +16,9 @@ public class PiglinTravelerRenderer extends PiglinRenderer {
         this.model = new PiglinTravelerModel(context.bakeLayer(PPRenderSetupEvents.PIGLIN_TRAVELER));
     }
 
-
     @Override
-    protected void setupRotations(Mob pEntity, PoseStack pMatrixStack, float pAgeInTicks, float pRotationYaw, float pPartialTicks) {
-        super.setupRotations(pEntity, pMatrixStack, pAgeInTicks, pRotationYaw, pPartialTicks);
+    protected void setupRotations(Mob pEntity, PoseStack pMatrixStack, float pAgeInTicks, float pRotationYaw, float pPartialTicks, float amogus) {
+        super.setupRotations(pEntity, pMatrixStack, pAgeInTicks, pRotationYaw, pPartialTicks, amogus);
         if (pEntity instanceof PiglinTraveler traveler && traveler.isSitting()) {
             pMatrixStack.translate(-0.0F, -0.6F, -0.0F);
         }

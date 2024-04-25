@@ -11,7 +11,7 @@ import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.*;
 import net.neoforged.neoforge.event.entity.player.ItemTooltipEvent;
 import tallestred.piglinproliferation.PiglinProliferation;
@@ -23,7 +23,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @SuppressWarnings("unused")
-@Mod.EventBusSubscriber(value = Dist.CLIENT, modid = PiglinProliferation.MODID)
+@EventBusSubscriber(value = Dist.CLIENT, modid = PiglinProliferation.MODID)
 public class PPClientEvents {
     @SubscribeEvent
     public static void onMovementKeyPressed(MovementInputUpdateEvent event) {

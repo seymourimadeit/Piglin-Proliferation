@@ -34,7 +34,6 @@ import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.client.extensions.common.IClientItemExtensions;
 import net.neoforged.neoforge.common.Tags;
 import net.neoforged.neoforge.common.ToolActions;
-import net.neoforged.neoforge.event.EventHooks;
 import tallestred.piglinproliferation.capablities.PPCapabilities;
 import tallestred.piglinproliferation.client.PPSounds;
 import tallestred.piglinproliferation.client.particles.ParticleHelper;
@@ -43,6 +42,7 @@ import tallestred.piglinproliferation.common.attribute.AttributeModifierHolder;
 import tallestred.piglinproliferation.common.attribute.PPAttributes;
 import tallestred.piglinproliferation.common.attribute.RangedRandomAttributeModifierHolder;
 import tallestred.piglinproliferation.common.enchantments.PPEnchantments;
+import tallestred.piglinproliferation.common.items.component.PPComponents;
 import tallestred.piglinproliferation.configuration.PPConfig;
 
 import java.util.ArrayList;
@@ -54,10 +54,10 @@ import static tallestred.piglinproliferation.util.CodeUtilities.doubleToString;
 import static tallestred.piglinproliferation.util.CodeUtilities.ticksToSeconds;
 
 public class BucklerItem extends ShieldItem {
-    public static final AttributeModifierHolder CHARGE_SPEED_BOOST = new AttributeModifierHolder(Attributes.MOVEMENT_SPEED, UUID.fromString("A2F995E8-B25A-4883-B9D0-93A676DC4045"), "Charge speed boost", 9, AttributeModifier.Operation.MULTIPLY_BASE);
-    public static final AttributeModifierHolder INCREASED_KNOCKBACK_RESISTANCE = new AttributeModifierHolder(Attributes.KNOCKBACK_RESISTANCE, UUID.fromString("93E74BB2-05A5-4AC0-8DF5-A55768208A95"), "Increased knockback resistance", 1, AttributeModifier.Operation.ADDITION);
-    public static final AttributeModifierHolder TURNING_SPEED_REDUCTION = new AttributeModifierHolder(PPAttributes.TURNING_SPEED.get(), UUID.fromString("25329357-86FD-48DC-BD51-8705EA0CC36E"), "Turning speed reduction", -1, AttributeModifier.Operation.MULTIPLY_TOTAL);
-    public static final RangedRandomAttributeModifierHolder ATTACK_DAMAGE = new RangedRandomAttributeModifierHolder(Attributes.ATTACK_DAMAGE, UUID.fromString("1DDF2C1B-0279-440F-A919-D07479E60684"), "Attack damage", 6, 8, AttributeModifier.Operation.ADDITION);
+    public static final AttributeModifierHolder CHARGE_SPEED_BOOST = new AttributeModifierHolder(Attributes.MOVEMENT_SPEED, UUID.fromString("A2F995E8-B25A-4883-B9D0-93A676DC4045"), "Charge speed boost", 9, AttributeModifier.Operation.ADD_MULTIPLIED_BASE);
+    public static final AttributeModifierHolder INCREASED_KNOCKBACK_RESISTANCE = new AttributeModifierHolder(Attributes.KNOCKBACK_RESISTANCE, UUID.fromString("93E74BB2-05A5-4AC0-8DF5-A55768208A95"), "Increased knockback resistance", 1, AttributeModifier.Operation.ADD_VALUE);
+    public static final AttributeModifierHolder TURNING_SPEED_REDUCTION = new AttributeModifierHolder(PPAttributes.TURNING_SPEED, UUID.fromString("25329357-86FD-48DC-BD51-8705EA0CC36E"), "Turning speed reduction", -1, AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL);
+    public static final RangedRandomAttributeModifierHolder ATTACK_DAMAGE = new RangedRandomAttributeModifierHolder(Attributes.ATTACK_DAMAGE, UUID.fromString("1DDF2C1B-0279-440F-A919-D07479E60684"), "Attack damage", 6, 8, AttributeModifier.Operation.ADD_VALUE);
     //This is stored as a modifier for easy localisation, even though it's not actually modifying anything
 
     public BucklerItem(Properties p_i48470_1_) {
@@ -86,8 +86,7 @@ public class BucklerItem extends ShieldItem {
     }
 
     public static boolean isReady(ItemStack stack) {
-        CompoundTag compoundnbt = stack.getTag();
-        return compoundnbt != null && compoundnbt.getBoolean("Ready");
+        return stack.getOrDefault(PPComponents.BUCKLER_IS_READY, false);
     }
 
     public static int startingChargeTicks(ItemStack stack) {
@@ -97,11 +96,7 @@ public class BucklerItem extends ShieldItem {
     }
 
     public static int getChargeTicks(ItemStack stack) {
-        CompoundTag compoundnbt = stack.getTag();
-        if (compoundnbt != null)
-            return compoundnbt.getInt("ChargeTicks");
-        else
-            return 0;
+        return stack.getOrDefault(PPComponents.BUCKLER_CHARGE_TICKS, 0);
     }
 
     public static void setChargeTicks(ItemStack stack) {
@@ -109,19 +104,17 @@ public class BucklerItem extends ShieldItem {
     }
 
     public static void setChargeTicks(ItemStack stack, int chargeTicks) {
-        CompoundTag compoundnbt = stack.getOrCreateTag();
-        compoundnbt.putInt("ChargeTicks", chargeTicks);
+        stack.set(PPComponents.BUCKLER_CHARGE_TICKS, chargeTicks);
     }
 
     public static void setReady(ItemStack stack, boolean ready) {
-        CompoundTag compoundnbt = stack.getOrCreateTag();
-        compoundnbt.putBoolean("Ready", ready);
+        stack.set(PPComponents.BUCKLER_IS_READY, ready);
     }
 
     public static void bucklerBash(LivingEntity entity) {
         List<LivingEntity> list = entity.level().getNearbyEntities(LivingEntity.class, TargetingConditions.forCombat(), entity, entity.getBoundingBox().inflate(1.5D));
         if (!list.isEmpty()) {
-            LivingEntity entityHit = list.get(0);
+            LivingEntity entityHit = list.getFirst();
             entityHit.push(entity);
             if (entityHit.invulnerableTime <= 0) {
                 int bangLevel = PPEnchantments.getBucklerEnchantsOnHands(PPEnchantments.BANG.get(), entity);
@@ -145,15 +138,11 @@ public class BucklerItem extends ShieldItem {
                     if (!entity.isSilent())
                         entity.level().playSound(null, entity.getX(), entity.getY(), entity.getZ(), PPSounds.SHIELD_BASH.get(), entity.getSoundSource(), 0.5F, 0.8F + entity.getRandom().nextFloat() * 0.4F);
                     if (entityHit instanceof Player && entityHit.getUseItem().canPerformAction(ToolActions.SHIELD_BLOCK))
-                        ((Player) entityHit).disableShield(true);
+                        ((Player) entityHit).disableShield();
                 } else {
-                    InteractionHand hand = entity.getMainHandItem().getItem() instanceof BucklerItem ? InteractionHand.MAIN_HAND : InteractionHand.OFF_HAND;
-                    ItemStack stack = entity.getItemInHand(hand);
-                    stack.hurtAndBreak(2 * bangLevel, entity, (player1) -> {
-                        player1.broadcastBreakEvent(hand);
-                        if (entity instanceof Player)
-                            EventHooks.onPlayerDestroyItem((Player) entity, entity.getUseItem(), hand);
-                    });
+                    boolean isInMainHand = entity.getMainHandItem().getItem() instanceof BucklerItem;
+                    ItemStack stack = entity.getItemInHand(isInMainHand ? InteractionHand.MAIN_HAND : InteractionHand.OFF_HAND);
+                    stack.hurtAndBreak(2 * bangLevel, entity, isInMainHand ? EquipmentSlot.MAINHAND : EquipmentSlot.OFFHAND);
                     Level.ExplosionInteraction mode = PPConfig.COMMON.BangBlockDestruction.get() ? Level.ExplosionInteraction.TNT : Level.ExplosionInteraction.NONE;
                     entity.level().explode(null, entity.getX(), entity.getY(), entity.getZ(), (float) bangLevel, mode);
                     setChargeTicks(stack, 0);
@@ -176,7 +165,7 @@ public class BucklerItem extends ShieldItem {
         if (!blockstate.addRunningEffects(entity.level(), blockpos, entity))
             if (blockstate.getRenderShape() != RenderShape.INVISIBLE) {
                 Vec3 vec3 = entity.getDeltaMovement();
-                entity.level().addParticle(new BlockParticleOption(ParticleTypes.BLOCK, blockstate).setPos(blockpos), entity.getX() + (entity.getRandom().nextDouble() - 0.5D) * (double) entity.getDimensions(entity.getPose()).height, entity.getY() + 0.1D, entity.getZ() + (entity.getRandom().nextDouble() - 0.5D) * (double) entity.getDimensions(entity.getPose()).width, vec3.x * -4.0D, 1.5D, vec3.z * -4.0D);
+                entity.level().addParticle(new BlockParticleOption(ParticleTypes.BLOCK, blockstate).setPos(blockpos), entity.getX() + (entity.getRandom().nextDouble() - 0.5D) * (double) entity.getDimensions(entity.getPose()).height(), entity.getY() + 0.1D, entity.getZ() + (entity.getRandom().nextDouble() - 0.5D) * (double) entity.getDimensions(entity.getPose()).width(), vec3.x * -4.0D, 1.5D, vec3.z * -4.0D);
             }
     }
 
@@ -191,21 +180,21 @@ public class BucklerItem extends ShieldItem {
     }
 
     @Override
-    public ItemStack finishUsingItem(ItemStack stack, Level worldIn, LivingEntity entityLiving) {
-        ItemStack itemstack = super.finishUsingItem(stack, worldIn, entityLiving);
+    public ItemStack finishUsingItem(ItemStack stack, Level worldIn, LivingEntity entity) {
+        ItemStack itemstack = super.finishUsingItem(stack, worldIn, entity);
         BucklerItem.setReady(stack, true);
         BucklerItem.setChargeTicks(stack);
-        CHARGE_SPEED_BOOST.get().resetTransientModifier(entityLiving);
-        INCREASED_KNOCKBACK_RESISTANCE.get().resetTransientModifier(entityLiving);
-        TURNING_SPEED_REDUCTION.getWithSummand(turningReduction(stack.getEnchantmentLevel(PPEnchantments.TURNING.get()))).resetTransientModifier(entityLiving);
-        stack.hurtAndBreak(1, entityLiving, (entityLiving1) -> entityLiving1.broadcastBreakEvent(EquipmentSlot.OFFHAND));
-        if (entityLiving instanceof Player)
-            ((Player) entityLiving).getCooldowns().addCooldown(this, PPConfig.COMMON.bucklerCooldown.get());
-        entityLiving.stopUsingItem();
-        if (entityLiving instanceof AbstractPiglin)
-            entityLiving.playSound(PPSounds.PIGLIN_BRUTE_CHARGE.get(), 2.0F, entityLiving.isBaby()
-                    ? (entityLiving.getRandom().nextFloat() - entityLiving.getRandom().nextFloat()) * 0.2F + 1.5F
-                    : (entityLiving.getRandom().nextFloat() - entityLiving.getRandom().nextFloat()) * 0.2F + 1.0F);
+        CHARGE_SPEED_BOOST.get().resetTransientModifier(entity);
+        INCREASED_KNOCKBACK_RESISTANCE.get().resetTransientModifier(entity);
+        TURNING_SPEED_REDUCTION.getWithSummand(turningReduction(stack.getEnchantmentLevel(PPEnchantments.TURNING.get()))).resetTransientModifier(entity);
+        stack.hurtAndBreak(1, entity, EquipmentSlot.OFFHAND);
+        if (entity instanceof Player)
+            ((Player) entity).getCooldowns().addCooldown(this, PPConfig.COMMON.bucklerCooldown.get());
+        entity.stopUsingItem();
+        if (entity instanceof AbstractPiglin)
+            entity.playSound(PPSounds.PIGLIN_BRUTE_CHARGE.get(), 2.0F, entity.isBaby()
+                    ? (entity.getRandom().nextFloat() - entity.getRandom().nextFloat()) * 0.2F + 1.5F
+                    : (entity.getRandom().nextFloat() - entity.getRandom().nextFloat()) * 0.2F + 1.0F);
         return itemstack;
     }
 

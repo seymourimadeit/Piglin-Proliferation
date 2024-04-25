@@ -16,7 +16,7 @@ import net.minecraft.world.entity.monster.piglin.*;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.schedule.Activity;
 import net.minecraft.world.item.*;
-import net.minecraft.world.item.alchemy.PotionUtils;
+import net.minecraft.world.item.alchemy.PotionContents;
 import net.minecraft.world.item.alchemy.Potions;
 
 import tallestred.piglinproliferation.PPActivities;
@@ -30,6 +30,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static tallestred.piglinproliferation.util.CodeUtilities.castElementsToList;
+import static tallestred.piglinproliferation.util.CodeUtilities.potionContents;
 
 public class PiglinAlchemistAi extends AbstractPiglinAi<PiglinAlchemist> {
     public static PiglinAlchemistAi INSTANCE = new PiglinAlchemistAi();
@@ -56,7 +57,7 @@ public class PiglinAlchemistAi extends AbstractPiglinAi<PiglinAlchemist> {
                 StartCelebratingIfTargetDead.create(300, PiglinAi::wantsToDance),
                 StopBeingAngryIfTargetDead.create(),
                 generatePotionAi(piglin),
-                new ShootTippedArrow(1.5F, 15.0F, 20, PotionUtils.setPotion(new ItemStack(Items.TIPPED_ARROW), Potions.STRONG_HEALING), (p -> p.isAlive() && p.getHealth() < p.getMaxHealth()))
+                new ShootTippedArrow(1.5F, 15.0F, 20, PotionContents.createItemStack(Items.TIPPED_ARROW, Potions.STRONG_HEALING), (p -> p.isAlive() && p.getHealth() < p.getMaxHealth()))
         );
     }
 
@@ -74,14 +75,14 @@ public class PiglinAlchemistAi extends AbstractPiglinAi<PiglinAlchemist> {
     }
 
     private static void initThrowPotionActivity(Brain<PiglinAlchemist> brain, PiglinAlchemist piglin) {
-        brain.addActivityAndRemoveMemoryWhenStopped(PPActivities.THROW_POTION_ACTIVITY.get(), 10, ImmutableList.<net.minecraft.world.entity.ai.behavior.BehaviorControl<? super PiglinAlchemist>>of(new ShootTippedArrow(1.5F, 15.0F, 20, PotionUtils.setPotion(new ItemStack(Items.TIPPED_ARROW), Potions.STRONG_HEALING), (piglin2 -> piglin2.isAlive() && piglin2.getHealth() < piglin2.getMaxHealth())), generatePotionAi(piglin)), PPMemoryModules.POTION_THROW_TARGET.get());
+        brain.addActivityAndRemoveMemoryWhenStopped(PPActivities.THROW_POTION_ACTIVITY.get(), 10, ImmutableList.<net.minecraft.world.entity.ai.behavior.BehaviorControl<? super PiglinAlchemist>>of(new ShootTippedArrow(1.5F, 15.0F, 20, PotionContents.createItemStack(Items.TIPPED_ARROW, Potions.STRONG_HEALING), (piglin2 -> piglin2.isAlive() && piglin2.getHealth() < piglin2.getMaxHealth())), generatePotionAi(piglin)), PPMemoryModules.POTION_THROW_TARGET.get());
     }
 
     private static RunOne<PiglinAlchemist> generatePotionAi(PiglinAlchemist piglinAlchemist) {
         return new RunOne<>(ImmutableList.of(
-                Pair.of(new ThrowPotionAtTargetTask<>(PotionUtils.setPotion(new ItemStack(Items.SPLASH_POTION), Potions.FIRE_RESISTANCE),
+                Pair.of(new ThrowPotionAtTargetTask<>(PotionContents.createItemStack(Items.SPLASH_POTION, Potions.FIRE_RESISTANCE),
                         LivingEntity::isAlive, (piglin) -> piglin.isAlive() && piglin.isOnFire()), 1),
-                Pair.of(new ThrowPotionAtTargetTask<>(PotionUtils.setPotion(new ItemStack(Items.SPLASH_POTION), Potions.STRONG_REGENERATION),
+                Pair.of(new ThrowPotionAtTargetTask<>(PotionContents.createItemStack(Items.SPLASH_POTION, Potions.STRONG_REGENERATION),
                         LivingEntity::isAlive, (piglin) -> {
                     List<AbstractPiglin> list = piglinAlchemist.level().getEntitiesOfClass(AbstractPiglin.class, piglinAlchemist.getBoundingBox().inflate(10.0D, 3.0D, 10.0D));
                     if (!list.isEmpty()) {
@@ -95,19 +96,19 @@ public class PiglinAlchemistAi extends AbstractPiglinAi<PiglinAlchemist> {
                     }
                     return piglin.isAlive() && piglin.getHealth() < piglin.getMaxHealth();
                 }), 1),
-                Pair.of(new ThrowPotionAtTargetTask<>(PotionUtils.setPotion(new ItemStack(Items.SPLASH_POTION), Potions.STRONG_HEALING), LivingEntity::isAlive, (piglin) -> {
+                Pair.of(new ThrowPotionAtTargetTask<>(PotionContents.createItemStack(Items.SPLASH_POTION, Potions.STRONG_HEALING), LivingEntity::isAlive, (piglin) -> {
                     List<AbstractPiglin> list = piglinAlchemist.level().getEntitiesOfClass(AbstractPiglin.class, piglinAlchemist.getBoundingBox().inflate(10.0D, 3.0D, 10.0D));
                     if (!list.isEmpty()) {
                         for (AbstractPiglin piglin1 : list) {
                             if (piglin1.getTarget() != null || piglinAlchemist.getTarget() != null)
-                                return piglin.isAlive() && piglin.getHealth() < piglin.getMaxHealth() && piglinAlchemist.beltInventory.stream().noneMatch(itemStack -> PotionUtils.getPotion(itemStack) == Potions.STRONG_REGENERATION) && list.size() > 2; // This makes it so alchemists don't
+                                return piglin.isAlive() && piglin.getHealth() < piglin.getMaxHealth() && piglinAlchemist.beltInventory.stream().noneMatch(itemStack -> potionContents(itemStack).potion().orElse(Potions.WATER) == Potions.STRONG_REGENERATION) && list.size() > 2; // This makes it so alchemists don't
                             // attempt to throw a healing potion if there's only 2 or less of them, as if they did it would make it so only one is attacking while the other is failing to throw the potion because the
                             // attacker would just keep pushing into them
                         }
                     }
                     return piglin.isAlive() && piglin.getHealth() < piglin.getMaxHealth();
                 }), 1),
-                Pair.of(new ThrowPotionAtTargetTask<>(PotionUtils.setPotion(new ItemStack(Items.SPLASH_POTION), Potions.STRONG_STRENGTH), LivingEntity::isAlive, (piglin) -> piglin.isAlive() && piglin.getTarget() != null && piglin.getHealth() < (piglin.getMaxHealth() / 2) && !piglin.isHolding((itemStack) -> {
+                Pair.of(new ThrowPotionAtTargetTask<>(PotionContents.createItemStack(Items.SPLASH_POTION, Potions.STRONG_STRENGTH), LivingEntity::isAlive, (piglin) -> piglin.isAlive() && piglin.getTarget() != null && piglin.getHealth() < (piglin.getMaxHealth() / 2) && !piglin.isHolding((itemStack) -> {
                     Item itemInStack = itemStack.getItem();
                     return itemInStack instanceof ProjectileWeaponItem;
                 })) {
@@ -125,14 +126,14 @@ public class PiglinAlchemistAi extends AbstractPiglinAi<PiglinAlchemist> {
                         piglinsCalled.getNavigation().moveTo(alchemist, 1.0D);
                     }
                 }, 1),
-                Pair.of(new ThrowPotionAtTargetTask<>(PotionUtils.setPotion(new ItemStack(Items.SPLASH_POTION), Potions.FIRE_RESISTANCE),
+                Pair.of(new ThrowPotionAtTargetTask<>(PotionContents.createItemStack(Items.SPLASH_POTION, Potions.FIRE_RESISTANCE),
                         LivingEntity::isAlive, (piglin) -> piglin.isAlive() && piglin.isOnFire()), 1),
-                Pair.of(new ThrowPotionAtSelfTask<>(PotionUtils.setPotion(new ItemStack(Items.SPLASH_POTION), Potions.STRONG_REGENERATION),
+                Pair.of(new ThrowPotionAtSelfTask<>(PotionContents.createItemStack(Items.SPLASH_POTION, Potions.STRONG_REGENERATION),
                         (alchemist) -> alchemist.isAlive() && alchemist.getHealth() < alchemist.getMaxHealth()), 1),
-                Pair.of(new ThrowPotionAtSelfTask<>(PotionUtils.setPotion(new ItemStack(Items.SPLASH_POTION), Potions.FIRE_RESISTANCE),
+                Pair.of(new ThrowPotionAtSelfTask<>(PotionContents.createItemStack(Items.SPLASH_POTION, Potions.FIRE_RESISTANCE),
                         (alchemist) -> alchemist.isAlive() && alchemist.isOnFire()), 1),
-                Pair.of(new ThrowPotionAtSelfTask<>(PotionUtils.setPotion(new ItemStack(Items.SPLASH_POTION), Potions.STRONG_HEALING),
-                        (alchemist) -> alchemist.isAlive() && alchemist.getHealth() < alchemist.getMaxHealth() && alchemist.beltInventory.stream().noneMatch(itemStack -> PotionUtils.getPotion(itemStack) == Potions.STRONG_REGENERATION)), 2)));
+                Pair.of(new ThrowPotionAtSelfTask<>(PotionContents.createItemStack(Items.SPLASH_POTION, Potions.STRONG_HEALING),
+                        (alchemist) -> alchemist.isAlive() && alchemist.getHealth() < alchemist.getMaxHealth() && alchemist.beltInventory.stream().noneMatch(itemStack -> potionContents(itemStack).potion().orElse(Potions.WATER) == Potions.STRONG_REGENERATION)), 2)));
     }
 
     @Override

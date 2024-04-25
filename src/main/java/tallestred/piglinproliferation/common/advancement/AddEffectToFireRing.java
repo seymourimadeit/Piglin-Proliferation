@@ -6,7 +6,6 @@ import net.minecraft.advancements.critereon.ContextAwarePredicate;
 import net.minecraft.advancements.critereon.EntityPredicate;
 import net.minecraft.advancements.critereon.SimpleCriterionTrigger;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.util.ExtraCodecs;
 
 import java.util.Optional;
 
@@ -27,7 +26,7 @@ public class AddEffectToFireRing extends SimpleCriterionTrigger<AddEffectToFireR
     public record TriggerInstance(
             Optional<ContextAwarePredicate> player) implements SimpleCriterionTrigger.SimpleInstance {
         public static final Codec<TriggerInstance> CODEC = RecordCodecBuilder.create((triggerInstanceInstance) -> {
-            return triggerInstanceInstance.group(ExtraCodecs.strictOptionalField(EntityPredicate.ADVANCEMENT_CODEC, "player").forGetter(TriggerInstance::player)).apply(triggerInstanceInstance, TriggerInstance::new);
+            return triggerInstanceInstance.group(EntityPredicate.ADVANCEMENT_CODEC.optionalFieldOf("player").forGetter(TriggerInstance::player)).apply(triggerInstanceInstance, TriggerInstance::new);
         });
 
         public Optional<ContextAwarePredicate> player() {

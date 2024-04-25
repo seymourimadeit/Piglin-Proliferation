@@ -7,7 +7,7 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.SpawnPlacements;
+import net.minecraft.world.entity.SpawnPlacementTypes;
 import net.minecraft.world.item.*;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.level.levelgen.structure.pools.StructureTemplatePool;
@@ -15,6 +15,7 @@ import net.minecraft.world.level.levelgen.structure.templatesystem.StructureProc
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.bus.api.IEventBus;
+import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.ModLoadingContext;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.config.ModConfig;
@@ -29,8 +30,8 @@ import net.neoforged.neoforge.event.entity.EntityAttributeCreationEvent;
 import net.neoforged.neoforge.event.entity.EntityAttributeModificationEvent;
 import net.neoforged.neoforge.event.entity.SpawnPlacementRegisterEvent;
 import net.neoforged.neoforge.event.server.ServerAboutToStartEvent;
-import net.neoforged.neoforge.network.event.RegisterPayloadHandlerEvent;
-import net.neoforged.neoforge.network.registration.IPayloadRegistrar;
+import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
+import net.neoforged.neoforge.network.registration.PayloadRegistrar;
 import tallestred.piglinproliferation.capablities.PPCapabilities;
 import tallestred.piglinproliferation.client.PPSounds;
 import tallestred.piglinproliferation.common.advancement.PPCriteriaTriggers;
@@ -43,14 +44,15 @@ import tallestred.piglinproliferation.common.blockentities.PPBlockEntities;
 import tallestred.piglinproliferation.common.blocks.PPBlocks;
 import tallestred.piglinproliferation.common.entities.PPEntityTypes;
 import tallestred.piglinproliferation.common.entities.PiglinAlchemist;
-import tallestred.piglinproliferation.common.items.TravelersCompassItem;
+import tallestred.piglinproliferation.common.items.component.PPComponents;
+import tallestred.piglinproliferation.common.items.component.TravelersCompassTracker;
 import tallestred.piglinproliferation.common.loot.PPLoot;
 import tallestred.piglinproliferation.common.recipes.PPRecipeSerializers;
 import tallestred.piglinproliferation.common.worldgen.PPWorldgen;
 import tallestred.piglinproliferation.configuration.PPConfig;
 import tallestred.piglinproliferation.networking.AlchemistBeltSyncPacket;
 import tallestred.piglinproliferation.networking.CriticalCapabilityPacket;
-import tallestred.piglinproliferation.networking.ZiglinCapablitySyncPacket;
+import tallestred.piglinproliferation.networking.ZiglinCapabilitySyncPacket;
 
 import static tallestred.piglinproliferation.util.RegistryUtilities.addToCreativeTabAfter;
 
@@ -58,7 +60,7 @@ import static tallestred.piglinproliferation.util.RegistryUtilities.addToCreativ
 public class PiglinProliferation {
     public static final String MODID = "piglinproliferation";
 
-    public PiglinProliferation(IEventBus modEventBus, Dist dist) {
+    public PiglinProliferation(ModContainer container, IEventBus modEventBus, Dist dist) {
         modEventBus.addListener(this::setup);
         modEventBus.addListener(this::enqueueIMC);
         modEventBus.addListener(this::processIMC);
@@ -72,6 +74,7 @@ public class PiglinProliferation {
         NeoForge.EVENT_BUS.addListener(this::serverStart);
         PPSounds.SOUNDS.register(modEventBus);
         PPAttributes.ATTRIBUTES.register(modEventBus);
+        PPComponents.COMPONENTS.register(modEventBus);
         PPEntityTypes.ENTITIES.register(modEventBus);
         PPItems.ITEMS.register(modEventBus);
         PPMemoryModules.MEMORY_MODULE_TYPE.register(modEventBus);
@@ -86,8 +89,8 @@ public class PiglinProliferation {
         PPLoot.LOOT_ITEM_CONDITION_TYPES.register(modEventBus);
         PPRecipeSerializers.RECIPE_SERIALIZERS.register(modEventBus);
         PPCapabilities.ATTACHMENT_TYPES.register(modEventBus);
-        ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, PPConfig.COMMON_SPEC);
-        ModLoadingContext.get().registerConfig(ModConfig.Type.CLIENT, PPConfig.CLIENT_SPEC);
+        container.registerConfig(ModConfig.Type.COMMON, PPConfig.COMMON_SPEC);
+        container.registerConfig(ModConfig.Type.CLIENT, PPConfig.CLIENT_SPEC);
     }
 
 
@@ -98,7 +101,7 @@ public class PiglinProliferation {
 
     private void addCustomAttributes(EntityAttributeModificationEvent event) {
         for (EntityType<? extends LivingEntity> type : event.getTypes())
-            event.add(type, PPAttributes.TURNING_SPEED.get());
+            event.add(type, PPAttributes.TURNING_SPEED);
     }
 
     private void addCreativeTabs(final BuildCreativeModeTabContentsEvent event) {
@@ -130,8 +133,8 @@ public class PiglinProliferation {
     }
 
     private void addSpawn(final SpawnPlacementRegisterEvent event) {
-        event.register(PPEntityTypes.PIGLIN_ALCHEMIST.get(), SpawnPlacements.Type.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, PiglinAlchemist::checkChemistSpawnRules, SpawnPlacementRegisterEvent.Operation.AND);
-        event.register(PPEntityTypes.PIGLIN_TRAVELER.get(), SpawnPlacements.Type.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, PiglinTraveler::checkTravelerSpawnRules, SpawnPlacementRegisterEvent.Operation.AND);
+        event.register(PPEntityTypes.PIGLIN_ALCHEMIST.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, PiglinAlchemist::checkChemistSpawnRules, SpawnPlacementRegisterEvent.Operation.AND);
+        event.register(PPEntityTypes.PIGLIN_TRAVELER.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, PiglinTraveler::checkTravelerSpawnRules, SpawnPlacementRegisterEvent.Operation.AND);
     }
 
     private void setup(final FMLCommonSetupEvent event) {
@@ -153,7 +156,12 @@ public class PiglinProliferation {
                                 || livingEntity != null && BucklerItem.isReady(stack);
                         return livingEntity != null && active ? 1.0F : 0.0F;
                     });
-            ItemProperties.register(PPItems.TRAVELERS_COMPASS.get(), new ResourceLocation("angle"), new CompassItemPropertyFunction((level, itemStack, player) -> TravelersCompassItem.getPosition(itemStack.getOrCreateTag())));
+            ItemProperties.register(PPItems.TRAVELERS_COMPASS.get(), new ResourceLocation("angle"), new CompassItemPropertyFunction((level, itemStack, player) -> {
+                TravelersCompassTracker tracker = itemStack.get(PPComponents.TRAVELERS_COMPASS_TRACKER);
+                if (tracker != null)
+                    return tracker.target();
+                return null; //TODO not sure
+            }));
         });
     }
 
@@ -165,10 +173,10 @@ public class PiglinProliferation {
                 "piglinproliferation:bastion/alchemist_piglin", PPConfig.COMMON.alchemistWeightInBastions.get());
     }
 
-    private void register(final RegisterPayloadHandlerEvent event) {
-        final IPayloadRegistrar reg = event.registrar(MODID).versioned("2.0.0");
-        reg.play(AlchemistBeltSyncPacket.ID, AlchemistBeltSyncPacket::new, payload -> payload.client(AlchemistBeltSyncPacket::handle));
-        reg.play(CriticalCapabilityPacket.ID, CriticalCapabilityPacket::new, payload -> payload.client(CriticalCapabilityPacket::handle));
-        reg.play(ZiglinCapablitySyncPacket.ID, ZiglinCapablitySyncPacket::new, payload -> payload.client(ZiglinCapablitySyncPacket::handle));
+    private void register(final RegisterPayloadHandlersEvent event) {
+        final PayloadRegistrar reg = event.registrar(MODID).versioned("2.0.0");
+        reg.playToClient(AlchemistBeltSyncPacket.TYPE, AlchemistBeltSyncPacket.STREAM_CODEC, AlchemistBeltSyncPacket::handle);
+        reg.playToClient(CriticalCapabilityPacket.TYPE, CriticalCapabilityPacket.STREAM_CODEC, CriticalCapabilityPacket::handle);
+        reg.playToClient(ZiglinCapabilitySyncPacket.TYPE, ZiglinCapabilitySyncPacket.STREAM_CODEC, ZiglinCapabilitySyncPacket::handle);
     }
 }

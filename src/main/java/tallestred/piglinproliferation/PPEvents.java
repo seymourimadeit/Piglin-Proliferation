@@ -1,5 +1,6 @@
 package tallestred.piglinproliferation;
 
+import net.minecraft.core.Holder;
 import net.minecraft.core.Registry;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.registries.Registries;
@@ -22,16 +23,14 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.Arrow;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.item.alchemy.PotionUtils;
 import net.minecraft.world.item.alchemy.Potions;
-import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.pathfinder.BlockPathTypes;
+import net.minecraft.world.level.pathfinder.PathType;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.bus.api.Event;
 import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
 import net.neoforged.neoforge.event.entity.living.*;
 import net.neoforged.neoforge.event.entity.player.CriticalHitEvent;
@@ -52,12 +51,14 @@ import tallestred.piglinproliferation.common.items.BucklerItem;
 import tallestred.piglinproliferation.common.items.PPItems;
 import tallestred.piglinproliferation.configuration.PPConfig;
 import tallestred.piglinproliferation.networking.CriticalCapabilityPacket;
-import tallestred.piglinproliferation.networking.ZiglinCapablitySyncPacket;
+import tallestred.piglinproliferation.networking.ZiglinCapabilitySyncPacket;
 
 import java.util.*;
 
+import static tallestred.piglinproliferation.util.CodeUtilities.potionContents;
+
 @SuppressWarnings("unused")
-@Mod.EventBusSubscriber(modid = PiglinProliferation.MODID)
+@EventBusSubscriber(modid = PiglinProliferation.MODID)
 public class PPEvents {
     @SubscribeEvent
     public static void onJump(LivingEvent.LivingJumpEvent event) {
@@ -70,16 +71,16 @@ public class PPEvents {
     public static void entityJoin(EntityJoinLevelEvent event) {
         if (event.getEntity() instanceof ZombifiedPiglin ziglin) {
             if (!event.getEntity().level().isClientSide) {
-                PacketDistributor.TRACKING_ENTITY.with(ziglin).send(new ZiglinCapablitySyncPacket(ziglin.getId(), ziglin.getData(PPCapabilities.TRANSFORMATION_TRACKER.get())));
+                PacketDistributor.sendToPlayersTrackingEntity(ziglin, new ZiglinCapabilitySyncPacket(ziglin.getId(), ziglin.getData(PPCapabilities.TRANSFORMATION_TRACKER.get())));
             }
             ziglin.goalSelector.addGoal(2, new DumbBowAttackGoal<>(ziglin, 0.5D, 20, 15.0F));
             ziglin.goalSelector.addGoal(2, new DumbCrossbowAttackGoal<>(ziglin, 1.0D, 8.0F));
         }
         if (event.getEntity() instanceof AbstractPiglin piglin) {
-            piglin.goalSelector.addGoal(0, new PiglinCallForHelpGoal(piglin, (piglin1) -> piglin1.isOnFire() && !piglin1.hasEffect(MobEffects.FIRE_RESISTANCE), (alchemist -> alchemist.getItemShownOnOffhand() != null && PotionUtils.getPotion(alchemist.getItemShownOnOffhand()) == Potions.FIRE_RESISTANCE)));
-            piglin.goalSelector.addGoal(0, new PiglinCallForHelpGoal(piglin, (piglin1) -> piglin1.getHealth() < piglin1.getMaxHealth() && !piglin1.hasEffect(MobEffects.REGENERATION), (alchemist -> alchemist.getItemShownOnOffhand() != null && PotionUtils.getPotion(alchemist.getItemShownOnOffhand()) == Potions.STRONG_REGENERATION)));
-            piglin.goalSelector.addGoal(0, new PiglinCallForHelpGoal(piglin, (piglin1) -> piglin1.getHealth() < piglin1.getMaxHealth() && !piglin1.hasEffect(MobEffects.HEAL), (alchemist -> alchemist.getItemShownOnOffhand() != null && PotionUtils.getPotion(alchemist.getItemShownOnOffhand()) == Potions.STRONG_HEALING)));
-            piglin.goalSelector.addGoal(0, new PiglinCallForHelpGoal(piglin, (piglin1) -> piglin1.getHealth() < (piglin1.getMaxHealth() / 2) && piglin1.getTarget() != null && !piglin1.hasEffect(MobEffects.DAMAGE_BOOST), (alchemist -> alchemist.getItemShownOnOffhand() != null && PotionUtils.getPotion(alchemist.getItemShownOnOffhand()) == Potions.STRONG_STRENGTH)));
+            piglin.goalSelector.addGoal(0, new PiglinCallForHelpGoal(piglin, (piglin1) -> piglin1.isOnFire() && !piglin1.hasEffect(MobEffects.FIRE_RESISTANCE), (alchemist -> alchemist.getItemShownOnOffhand() != null && potionContents(alchemist.getItemShownOnOffhand()).potion().orElse(Potions.WATER) == Potions.FIRE_RESISTANCE)));
+            piglin.goalSelector.addGoal(0, new PiglinCallForHelpGoal(piglin, (piglin1) -> piglin1.getHealth() < piglin1.getMaxHealth() && !piglin1.hasEffect(MobEffects.REGENERATION), (alchemist -> alchemist.getItemShownOnOffhand() != null && potionContents(alchemist.getItemShownOnOffhand()).potion().orElse(Potions.WATER) == Potions.STRONG_REGENERATION)));
+            piglin.goalSelector.addGoal(0, new PiglinCallForHelpGoal(piglin, (piglin1) -> piglin1.getHealth() < piglin1.getMaxHealth() && !piglin1.hasEffect(MobEffects.HEAL), (alchemist -> alchemist.getItemShownOnOffhand() != null && potionContents(alchemist.getItemShownOnOffhand()).potion().orElse(Potions.WATER) == Potions.STRONG_HEALING)));
+            piglin.goalSelector.addGoal(0, new PiglinCallForHelpGoal(piglin, (piglin1) -> piglin1.getHealth() < (piglin1.getMaxHealth() / 2) && piglin1.getTarget() != null && !piglin1.hasEffect(MobEffects.DAMAGE_BOOST), (alchemist -> alchemist.getItemShownOnOffhand() != null && potionContents(alchemist.getItemShownOnOffhand()).potion().orElse(Potions.WATER) == Potions.STRONG_STRENGTH)));
             piglin.goalSelector.addGoal(1, new PiglinSwimInLavaGoal(piglin));
         }
     }
@@ -88,7 +89,8 @@ public class PPEvents {
     public static void startTracking(PlayerEvent.StartTracking event) {
         if (event.getTarget() instanceof ZombifiedPiglin ziglin) {
             if (!event.getTarget().level().isClientSide) {
-                PacketDistributor.TRACKING_ENTITY.with(ziglin).send(new ZiglinCapablitySyncPacket(ziglin.getId(), ziglin.getData(PPCapabilities.TRANSFORMATION_TRACKER.get())));
+                PacketDistributor.sendToPlayersTrackingEntity(ziglin, new ZiglinCapabilitySyncPacket(ziglin.getId(), ziglin.getData(PPCapabilities.TRANSFORMATION_TRACKER.get())));
+
             }
         }
     }
@@ -139,18 +141,18 @@ public class PPEvents {
             }
         }
         if (event.getEntity() instanceof ServerPlayer player)
-            PacketDistributor.PLAYER.with(player).send(new CriticalCapabilityPacket(player.getId(), criticalAfterCharge));
+            PacketDistributor.sendToPlayer(player, new CriticalCapabilityPacket(player.getId(), criticalAfterCharge));
     }
 
     @SubscribeEvent
     public static void onEffectApplied(MobEffectEvent.Added event) {
         if (event.getEffectInstance() != null) {
-            MobEffect mobEffect = event.getEffectInstance().getEffect();
+            Holder<MobEffect> mobEffect = event.getEffectInstance().getEffect();
             if (event.getEntity() instanceof AbstractPiglin piglin) {
                 if (mobEffect == MobEffects.FIRE_RESISTANCE) {
-                    piglin.setPathfindingMalus(BlockPathTypes.DANGER_FIRE, 0.0F);
-                    piglin.setPathfindingMalus(BlockPathTypes.DAMAGE_FIRE, 0.0F);
-                    piglin.setPathfindingMalus(BlockPathTypes.LAVA, 0.0F);
+                    piglin.setPathfindingMalus(PathType.DANGER_FIRE, 0.0F);
+                    piglin.setPathfindingMalus(PathType.DAMAGE_FIRE, 0.0F);
+                    piglin.setPathfindingMalus(PathType.LAVA, 0.0F);
                 }
             }
         }
@@ -160,12 +162,12 @@ public class PPEvents {
     public static void onEffectRemoved(MobEffectEvent.Remove event) {
         if (event.getEffectInstance() == null)
             return;
-        MobEffect mobEffect = event.getEffectInstance().getEffect();
+        Holder<MobEffect> mobEffect = event.getEffectInstance().getEffect();
         if (event.getEntity() instanceof AbstractPiglin piglin) {
             if (mobEffect == MobEffects.FIRE_RESISTANCE) {
-                piglin.setPathfindingMalus(BlockPathTypes.DANGER_FIRE, 16.0F);
-                piglin.setPathfindingMalus(BlockPathTypes.DAMAGE_FIRE, -1.0F);
-                piglin.setPathfindingMalus(BlockPathTypes.LAVA, -1.0F);
+                piglin.setPathfindingMalus(PathType.DANGER_FIRE, 16.0F);
+                piglin.setPathfindingMalus(PathType.DAMAGE_FIRE, -1.0F);
+                piglin.setPathfindingMalus(PathType.LAVA, -1.0F);
             }
         }
     }
@@ -173,7 +175,7 @@ public class PPEvents {
     @SubscribeEvent
     public static void hurtEntity(LivingHurtEvent event) {
         if (event.getSource().getDirectEntity() instanceof Arrow arrow && PPConfig.COMMON.healingArrowDamage.get()) {
-            for (MobEffectInstance mobeffectinstance : arrow.potion.getEffects()) {
+            for (MobEffectInstance mobeffectinstance : arrow.getPotionContents().getAllEffects()) {
                 if ((mobeffectinstance.getEffect() == MobEffects.REGENERATION || mobeffectinstance.getEffect() == MobEffects.HEAL)) {
                     if ((event.getEntity() instanceof Mob && event.getEntity().isInvertedHealAndHarm()))
                         return;
@@ -255,18 +257,11 @@ public class PPEvents {
             piglinBrute.setItemSlot(EquipmentSlot.OFFHAND, new ItemStack(PPItems.BUCKLER.get()));
             ItemStack itemstack = piglinBrute.getOffhandItem();
             if (itemstack.getItem() instanceof BucklerItem) {
-                if (random.nextInt(300) == 0) {
-                    Map<Enchantment, Integer> map = EnchantmentHelper.getEnchantments(itemstack);
-                    map.putIfAbsent(PPEnchantments.TURNING.get(), 5);
-                    EnchantmentHelper.setEnchantments(map, itemstack);
-                    piglinBrute.setItemSlot(EquipmentSlot.OFFHAND, itemstack);
-                }
-                if (random.nextInt(500) == 0) {
-                    Map<Enchantment, Integer> map = EnchantmentHelper.getEnchantments(itemstack);
-                    map.putIfAbsent(PPEnchantments.BANG.get(), 1);
-                    EnchantmentHelper.setEnchantments(map, itemstack);
-                    piglinBrute.setItemSlot(EquipmentSlot.OFFHAND, itemstack);
-                }
+                if (random.nextInt(300) == 0)
+                    itemstack.enchant(PPEnchantments.TURNING.get(), 5);
+                if (random.nextInt(500) == 0)
+                    itemstack.enchant(PPEnchantments.BANG.get(), 1);
+                piglinBrute.setItemSlot(EquipmentSlot.OFFHAND, itemstack);
             }
         }
         if (event.getEntity().getType() == EntityType.ZOMBIFIED_PIGLIN) { // Some mods have entities that extend zombified piglins in order to make their own ziglins have custom textures
@@ -325,7 +320,7 @@ public class PPEvents {
                 if (location != null) {
                     String piglinName = location.getPath();
                     ziglin.setData(PPCapabilities.TRANSFORMATION_TRACKER.get(), piglinName);
-                    PacketDistributor.TRACKING_ENTITY.with(ziglin).send(new ZiglinCapablitySyncPacket(ziglin.getId(), piglinName));
+                    PacketDistributor.sendToPlayersTrackingEntity(ziglin, new ZiglinCapabilitySyncPacket(ziglin.getId(), piglinName));
                 }
             }
         }

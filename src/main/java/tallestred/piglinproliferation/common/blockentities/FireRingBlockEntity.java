@@ -1,9 +1,15 @@
 package tallestred.piglinproliferation.common.blockentities;
 
+import net.minecraft.Util;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.NbtOps;
+import net.minecraft.nbt.Tag;
 import net.minecraft.network.Connection;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.server.level.ServerPlayer;
@@ -17,7 +23,6 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.ItemUtils;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.item.alchemy.PotionUtils;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.CampfireBlock;
@@ -33,8 +38,8 @@ import java.util.*;
 
 public class FireRingBlockEntity extends CampfireBlockEntity {
     private final List<MobEffectInstance> effects = new ArrayList<>();
+    private final List<ParticleOptions> particles = new ArrayList<>();
     private int unsafeLightLevel = -1;
-    private int potionColor = -1;
 
     public FireRingBlockEntity(BlockPos pos, BlockState state) {
         super(pos, state);
@@ -50,11 +55,10 @@ public class FireRingBlockEntity extends CampfireBlockEntity {
         return this.unsafeLightLevel;
     }
 
-    public boolean addEffects(@Nullable Player player, @Nullable InteractionHand hand, @Nullable ItemStack stack, List<MobEffectInstance> effectsToAdd, int maxDuration) {
+    public boolean addEffects(@Nullable Player player, @Nullable InteractionHand hand, @Nullable ItemStack stack, Iterable<MobEffectInstance> effectsToAdd, int maxDuration) {
         if (player instanceof ServerPlayer serverPlayer)
             PPCriteriaTriggers.ADD_EFFECT_TO_FIRE_RING.get().trigger(serverPlayer);
-        if (this.effects.isEmpty() && !effectsToAdd.isEmpty()) {
-            this.potionColor = PotionUtils.getColor(effectsToAdd);
+        if (this.effects.isEmpty() && effectsToAdd.iterator().hasNext()) {
             if (this.level != null && !this.level.isClientSide)
                 this.level.sendBlockUpdated(this.getBlockPos(), this.getBlockState(), this.getBlockState(), Block.UPDATE_CLIENTS);
             if (player != null) {
@@ -65,8 +69,9 @@ public class FireRingBlockEntity extends CampfireBlockEntity {
                         player.setItemInHand(hand, result);
                 }
             }
-            for (MobEffectInstance effectInstance : effectsToAdd)
+            for (MobEffectInstance effectInstance : effectsToAdd) {
                 this.effects.add(new MobEffectInstance(effectInstance.getEffect(), Math.min(effectInstance.getDuration(), maxDuration), effectInstance.getAmplifier()));
+            }
             if (!(this.level == null))
                 this.level.playSound(null, this.getBlockPos(), SoundEvents.BOTTLE_EMPTY, SoundSource.BLOCKS, 1.0F, 1.0F);
             this.setChanged();
@@ -76,14 +81,12 @@ public class FireRingBlockEntity extends CampfireBlockEntity {
     }
 
     public static void particleTick(Level level, BlockPos pos, BlockState state, FireRingBlockEntity blockEntity) {
-        if (blockEntity.potionColor != -1) {
-            double xComponent = (double)(blockEntity.potionColor >> 16 & 255) / 255.0;
-            double yComponent = (double)(blockEntity.potionColor >> 8 & 255) / 255.0;
-            double zComponent = (double)(blockEntity.potionColor >> 0 & 255) / 255.0;
-            RandomSource randomSource = level.getRandom();
-            level.addAlwaysVisibleParticle(randomSource.nextBoolean() ? ParticleTypes.ENTITY_EFFECT : ParticleTypes.AMBIENT_ENTITY_EFFECT, true, (double)pos.getX() + 0.5 + randomSource.nextDouble() / 3.0 * (double)(randomSource.nextBoolean() ? 1 : -1), (double)pos.getY() + randomSource.nextDouble() + randomSource.nextDouble(), (double)pos.getZ() + 0.5 + randomSource.nextDouble() / 3.0 * (double)(randomSource.nextBoolean() ? 1 : -1), xComponent, yComponent, zComponent);
-        }
         RandomSource random = level.random;
+        if (!blockEntity.particles.isEmpty()) {
+            if (random.nextInt(4) == 0)
+                //TODO test velocity
+                level.addParticle(Util.getRandom(blockEntity.particles, random), (double)pos.getX() + 0.5 + random.nextDouble() / 3.0 * (double)(random.nextBoolean() ? 1 : -1), (double)pos.getY() + random.nextDouble() + random.nextDouble(), (double)pos.getZ() + 0.5 + random.nextDouble() / 3.0 * (double)(random.nextBoolean() ? 1 : -1), 1.0, 1.0, 1.0);
+        }
         int i;
         if (random.nextFloat() < 0.11F) {
             for(i = 0; i < random.nextInt(2) + 2; ++i) {
@@ -127,9 +130,9 @@ public class FireRingBlockEntity extends CampfireBlockEntity {
                             toRemove.add(effectInstance);
                     }
                 }
-                if (!toRemove.isEmpty()) {
+                if (!toRemove.isEmpty() || blockEntity.particles.isEmpty()) {
                     blockEntity.effects.removeAll(toRemove);
-                    blockEntity.updateColor(level, pos, state);
+                    blockEntity.updateColors(level, pos, state);
                 }
                 if (!blockEntity.effects.isEmpty()) {
                     double radius = blockEntity.getLightLevel();
@@ -137,17 +140,18 @@ public class FireRingBlockEntity extends CampfireBlockEntity {
                     int y = pos.getY();
                     int z = pos.getZ();
                     for (LivingEntity entity : level.getEntitiesOfClass(LivingEntity.class, new AABB(x - radius, y - radius, z - radius, x + radius, y + radius, z + radius)))
-                        blockEntity.effects.forEach(effect -> entity.addEffect(new MobEffectInstance(effect.getEffect(), 210, effect.getAmplifier())));
+                        blockEntity.effects.forEach(effect -> entity.addEffect(new MobEffectInstance(effect.getEffect(), 210, effect.getAmplifier(), true, effect.isVisible())));
                 }
 
             }
         }
     }
 
-    public void updateColor(Level level, BlockPos pos, BlockState state) {
-        int newColor = effects.isEmpty() ? -1 : PotionUtils.getColor(effects);
-        if (potionColor != newColor) {
-            potionColor = newColor;
+    public void updateColors(Level level, BlockPos pos, BlockState state) {
+        if (!effects.isEmpty()) {
+            particles.clear();
+            for (MobEffectInstance effect : effects)
+                particles.add(effect.getParticleOptions());
             level.sendBlockUpdated(pos, state, state, Block.UPDATE_CLIENTS);
             this.setChanged();
         }
@@ -159,55 +163,49 @@ public class FireRingBlockEntity extends CampfireBlockEntity {
     }
 
     @Override
-    public void load(CompoundTag tag) {
-        super.load(tag);
-        CompoundTag effects = tag.getCompound("Effects");
-        for (String string : effects.getAllKeys()) {
-            CompoundTag effect = effects.getCompound(string);
-            this.effects.add(MobEffectInstance.load(effect));
-        }
-        if (!this.effects.isEmpty())
-            this.potionColor = PotionUtils.getColor(this.effects);
+    public void loadAdditional(CompoundTag tag, HolderLookup.Provider provider) {
+        super.loadAdditional(tag, provider);
+        ListTag effectsTag = tag.getList("Effects", Tag.TAG_COMPOUND);
+        for (Tag effectTag : effectsTag)
+            if (effectTag instanceof CompoundTag compoundTag)
+                this.effects.add(MobEffectInstance.load(compoundTag));
     }
 
     @Override
-    protected void saveAdditional(CompoundTag tag) {
-        super.saveAdditional(tag);
-        CompoundTag effects = new CompoundTag();
-        int i = 0;
-        for (MobEffectInstance effectInstance : this.effects) {
-            CompoundTag effect = new CompoundTag();
-            effectInstance.save(effect);
-            effects.put(String.valueOf(i), effect);
-            i++;
-        }
-        tag.put("Effects", effects);
+    protected void saveAdditional(CompoundTag tag, HolderLookup.Provider provider) {
+        super.saveAdditional(tag, provider);
+        ListTag effectsTag = new ListTag();
+        for (MobEffectInstance effectInstance : this.effects)
+            effectsTag.add(effectInstance.save());
+        tag.put("Effects", effectsTag);
     }
 
     @Override
-    public CompoundTag getUpdateTag() {
-        CompoundTag tag = super.getUpdateTag();
-        tag.putInt("PotionColor", this.potionColor);
+    public CompoundTag getUpdateTag(HolderLookup.Provider provider) {
+        CompoundTag tag = super.getUpdateTag(provider);
+        ListTag particlesTag = new ListTag();
+        for (ParticleOptions options : particles)
+            ParticleTypes.CODEC.encodeStart(NbtOps.INSTANCE, options).result().ifPresent(particlesTag::add);
+        tag.put("Particles", particlesTag);
         return tag;
     }
 
     @Override
-    public void handleUpdateTag(CompoundTag tag) {
-        super.handleUpdateTag(tag);
-        if (tag.contains("PotionColor", CompoundTag.TAG_INT))
-            this.potionColor = tag.getInt("PotionColor");
+    public void handleUpdateTag(CompoundTag tag, HolderLookup.Provider lookupProvider) {
+        super.handleUpdateTag(tag, lookupProvider);
+        if (tag.contains("Particles", Tag.TAG_LIST)) { //TODO test
+            ListTag particlesTag = tag.getList("Particles", Tag.TAG_COMPOUND);
+            particlesTag.forEach(p -> ParticleTypes.CODEC.parse(NbtOps.INSTANCE, particlesTag));
+        }
     }
 
     @Override
-    public void onDataPacket(Connection connection, ClientboundBlockEntityDataPacket packet) {
-        super.onDataPacket(connection, packet);
-        CompoundTag tag = packet.getTag();
-        if (tag != null) {
-            handleUpdateTag(tag);
-            if (this.level != null) {
-                BlockState state = level.getBlockState(worldPosition);
-                level.sendBlockUpdated(worldPosition, state, state, 3);
-            }
+    public void onDataPacket(Connection net, ClientboundBlockEntityDataPacket packet, HolderLookup.Provider provider) {
+        super.onDataPacket(net, packet, provider);
+        handleUpdateTag(packet.getTag(), provider);
+        if (this.level != null) {
+            BlockState state = level.getBlockState(worldPosition);
+            level.sendBlockUpdated(worldPosition, state, state, 3);
         }
     }
 }

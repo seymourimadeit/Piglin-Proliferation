@@ -1,8 +1,14 @@
 package tallestred.piglinproliferation.util;
 
+import net.minecraft.core.Holder;
+import net.minecraft.core.component.DataComponents;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.alchemy.PotionContents;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 public class CodeUtilities {
 
@@ -99,5 +105,15 @@ public class CodeUtilities {
 
     public static String doubleToString(double value) {
         return value % 1 == 0 ? Integer.toString((int) value) : Double.toString(value);
+    }
+
+    public static <T> boolean compareOptionalHolders(Optional<Holder<T>> holder1, Optional<Holder<T>> holder2) {
+        if (holder1.isPresent() && holder2.isPresent())
+            return holder1.get().value().equals(holder2.get().value());
+        return false;
+    }
+
+    public static PotionContents potionContents(ItemStack stack) {
+        return stack.getOrDefault(DataComponents.POTION_CONTENTS, PotionContents.EMPTY);
     }
 }

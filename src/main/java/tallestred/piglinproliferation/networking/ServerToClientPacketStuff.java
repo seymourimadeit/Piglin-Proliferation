@@ -12,20 +12,20 @@ import javax.annotation.Nullable;
 
 public class ServerToClientPacketStuff {
     public static void syncBelt(AlchemistBeltSyncPacket msg) {
-        if (getEntity(msg.getEntityId()) instanceof PiglinAlchemist alchemist) {
-            alchemist.setBeltInventorySlot(msg.slotId, msg.stack);
+        if (getEntity(msg.entityId()) instanceof PiglinAlchemist alchemist) {
+            alchemist.setBeltInventorySlot(msg.slotId(), msg.stack());
         }
     }
 
-    public static void syncZiglinClothes(ZiglinCapablitySyncPacket msg) {
-        if (getEntity(msg.getEntityId()) instanceof ZombifiedPiglin ziglin) {
-            ziglin.setData(PPCapabilities.TRANSFORMATION_TRACKER.get(), msg.getTransformedFromId());
+    public static void syncZiglinClothes(ZiglinCapabilitySyncPacket msg) {
+        if (getEntity(msg.entityId()) instanceof ZombifiedPiglin ziglin) {
+            ziglin.setData(PPCapabilities.TRANSFORMATION_TRACKER.get(), msg.transformedFromId());
         }
     }
 
     public static void syncCritical(CriticalCapabilityPacket msg) {
-        if (getEntity(msg.getEntityId()) instanceof LivingEntity living) {
-            living.setData(PPCapabilities.CRITICAL.get(), msg.getCrit());
+        if (getEntity(msg.entityId()) instanceof LivingEntity living) {
+            living.setData(PPCapabilities.CRITICAL.get(), msg.crit());
         }
     }
 

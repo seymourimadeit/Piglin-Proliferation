@@ -12,7 +12,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EntityType;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 import net.neoforged.neoforge.client.event.EntityRenderersEvent;
 import net.neoforged.neoforge.common.util.Lazy;
@@ -29,7 +29,7 @@ import tallestred.piglinproliferation.common.entities.PPEntityTypes;
 import static tallestred.piglinproliferation.util.RegistryUtilities.addLayerToRenderer;
 
 @SuppressWarnings("unused")
-@Mod.EventBusSubscriber(modid = PiglinProliferation.MODID, bus = Mod.EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
+@EventBusSubscriber(modid = PiglinProliferation.MODID, bus = EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
 public class PPRenderSetupEvents {
     public static final ModelLayerLocation ZIGLIN_CLOTHING = new ModelLayerLocation(
             new ResourceLocation(PiglinProliferation.MODID + "ziglin_clothing"), "ziglin_clothing");

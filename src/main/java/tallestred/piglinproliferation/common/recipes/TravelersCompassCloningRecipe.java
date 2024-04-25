@@ -1,6 +1,6 @@
 package tallestred.piglinproliferation.common.recipes;
 
-import net.minecraft.core.RegistryAccess;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.world.inventory.CraftingContainer;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -9,6 +9,7 @@ import net.minecraft.world.item.crafting.CustomRecipe;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.level.Level;
 import tallestred.piglinproliferation.common.items.PPItems;
+import tallestred.piglinproliferation.common.items.component.PPComponents;
 
 /*matches and assemble are heavily based on the corresponding methods in BookCloningRecipe*/
 public class TravelersCompassCloningRecipe extends CustomRecipe {
@@ -32,11 +33,11 @@ public class TravelersCompassCloningRecipe extends CustomRecipe {
                 else return false;
         }
 
-        return !compassToCopy.isEmpty() && compassToCopy.hasTag() && hasWriteableCompasses;
+        return !compassToCopy.isEmpty() && compassToCopy.has(PPComponents.TRAVELERS_COMPASS_TRACKER) && hasWriteableCompasses;
     }
 
     @Override
-    public ItemStack assemble(CraftingContainer container, RegistryAccess registryAccess) {
+    public ItemStack assemble(CraftingContainer container, HolderLookup.Provider provider) {
         ItemStack compassToCopy = ItemStack.EMPTY;
         int compassesToCreate = 1;
 
@@ -51,9 +52,9 @@ public class TravelersCompassCloningRecipe extends CustomRecipe {
                 else return ItemStack.EMPTY;
         }
 
-        if (!compassToCopy.isEmpty() && compassToCopy.hasTag() && compassesToCreate >= 1) {
+        if (!compassToCopy.isEmpty() && compassToCopy.has(PPComponents.TRAVELERS_COMPASS_TRACKER) && compassesToCreate >= 1) {
             ItemStack result = new ItemStack(PPItems.TRAVELERS_COMPASS.get(), compassesToCreate);
-            result.setTag(compassToCopy.getTag().copy());
+            result.set(PPComponents.TRAVELERS_COMPASS_TRACKER, compassToCopy.get(PPComponents.TRAVELERS_COMPASS_TRACKER));
             return result;
         } else return ItemStack.EMPTY;
     }

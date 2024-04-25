@@ -1,15 +1,17 @@
 package tallestred.piglinproliferation.common.blocks;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.stats.Stats;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.entity.projectile.ThrownPotion;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.item.alchemy.PotionUtils;
+import net.minecraft.world.item.alchemy.PotionContents;
 import net.minecraft.world.item.crafting.CampfireCookingRecipe;
 import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.level.BlockGetter;
@@ -27,9 +29,11 @@ import org.jetbrains.annotations.Nullable;
 import tallestred.piglinproliferation.common.blockentities.FireRingBlockEntity;
 import tallestred.piglinproliferation.common.blockentities.PPBlockEntities;
 
+import java.util.Objects;
 import java.util.Optional;
 
 import static tallestred.piglinproliferation.util.CodeUtilities.castOrNull;
+import static tallestred.piglinproliferation.util.CodeUtilities.potionContents;
 
 public class FireRingBlock extends CampfireBlock {
     protected static final VoxelShape SHAPE = Block.box(0.0, 0.0, 0.0, 16.0, 5.0, 16.0);
@@ -46,21 +50,20 @@ public class FireRingBlock extends CampfireBlock {
     }
 
     @Override
-    public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
+    public ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
         if (level.getBlockEntity(pos) instanceof FireRingBlockEntity blockEntity) {
-            ItemStack stack = player.getItemInHand(hand);
             Optional<RecipeHolder<CampfireCookingRecipe>> optional = blockEntity.getCookableRecipe(stack);
             if (optional.isPresent()) {
                 if (!level.isClientSide && blockEntity.placeFood(player, player.getAbilities().instabuild ? stack.copy() : stack, 2 * ((CampfireCookingRecipe) ((RecipeHolder<?>) optional.get()).value()).getCookingTime())) {
                     player.awardStat(Stats.INTERACT_WITH_CAMPFIRE);
-                    return InteractionResult.SUCCESS;
+                    return ItemInteractionResult.SUCCESS;
                 }
-                return InteractionResult.CONSUME;
+                return ItemInteractionResult.CONSUME;
             }
             else if (state.getValue(LIT) && stack.getItem() == Items.POTION)
-                return blockEntity.addEffects(player, hand, stack, PotionUtils.getMobEffects(stack), this.potionTime) ? InteractionResult.SUCCESS : InteractionResult.PASS;
+                return blockEntity.addEffects(player, hand, stack, potionContents(stack).getAllEffects(), this.potionTime) ? ItemInteractionResult.SUCCESS : ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
         }
-        return InteractionResult.PASS;
+        return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
     }
 
     @Override
@@ -82,6 +85,6 @@ public class FireRingBlock extends CampfireBlock {
     public void onProjectileHit(Level level, BlockState state, BlockHitResult hitResult, Projectile projectile) {
         super.onProjectileHit(level, state, hitResult, projectile);
         if (state.getValue(LIT) && level.getBlockEntity(hitResult.getBlockPos()) instanceof FireRingBlockEntity blockEntity && projectile instanceof ThrownPotion potion)
-            blockEntity.addEffects(castOrNull(projectile.getOwner(), Player.class), null, null, PotionUtils.getMobEffects(potion.getItem()), this.potionTime);
+            blockEntity.addEffects(castOrNull(projectile.getOwner(), Player.class), null, null, potionContents(potion.getItem()).getAllEffects(), this.potionTime);
     }
 }

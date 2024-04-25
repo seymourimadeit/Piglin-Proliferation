@@ -1,5 +1,6 @@
 package tallestred.piglinproliferation.common.attribute;
 
+import net.minecraft.core.Holder;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.Attribute;
@@ -13,7 +14,7 @@ public class AttributeModifierHolder extends AbstractAttributeModifierHolder {
 
     protected final Instance defaultInstance;
 
-    public AttributeModifierHolder(Attribute attribute, UUID uuid, String name, double defaultAmount, AttributeModifier.Operation defaultOperation) {
+    public AttributeModifierHolder(Holder<Attribute> attribute, UUID uuid, String name, double defaultAmount, AttributeModifier.Operation defaultOperation) {
         super(attribute, uuid, name);
         this.defaultAmount = defaultAmount;
         this.defaultOperation = defaultOperation;
@@ -59,11 +60,11 @@ public class AttributeModifierHolder extends AbstractAttributeModifierHolder {
         }
 
         public MutableComponent translatable() {
-            return translatableInternal(this.modifier.getAmount(), this.modifier.getOperation(), false,-1);
+            return translatableInternal(this.modifier.amount(), this.modifier.operation(), false,-1);
         }
 
         public MutableComponent translatable(double baseAmount) {
-            return translatableInternal(this.modifier.getAmount(), this.modifier.getOperation(), true, baseAmount);
+            return translatableInternal(this.modifier.amount(), this.modifier.operation(), true, baseAmount);
         }
     }
 }

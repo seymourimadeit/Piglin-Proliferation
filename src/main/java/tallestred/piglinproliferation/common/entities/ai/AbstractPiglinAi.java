@@ -3,7 +3,7 @@ package tallestred.piglinproliferation.common.entities.ai;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import com.mojang.datafixers.util.Pair;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
@@ -21,6 +21,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.schedule.Activity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.storage.loot.LootParams;
+import net.minecraft.world.level.storage.loot.LootTable;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.minecraft.world.phys.Vec3;
@@ -154,7 +155,7 @@ public abstract class AbstractPiglinAi<P extends Piglin> extends PiglinAi {
         return optional;
     }
 
-    public void stopHoldingOffHandItem(P piglin, boolean barter, ResourceLocation lootTableLocation) {
+    public void stopHoldingOffHandItem(P piglin, boolean barter, ResourceKey<LootTable> lootTableLocation) {
         ItemStack stack = piglin.getItemInHand(InteractionHand.OFF_HAND);
         piglin.setItemInHand(InteractionHand.OFF_HAND, ItemStack.EMPTY);
         if (piglin.isAdult()) {
@@ -162,7 +163,7 @@ public abstract class AbstractPiglinAi<P extends Piglin> extends PiglinAi {
             if (barter && stackIsPiglinCurrency) {
                 MinecraftServer server = piglin.level().getServer();
                 if (server != null)
-                    throwItems(piglin, server.getLootData().getLootTable(lootTableLocation).getRandomItems((new LootParams.Builder((ServerLevel) piglin.level())).withParameter(LootContextParams.ORIGIN, piglin.position()).withParameter(LootContextParams.THIS_ENTITY, piglin).create(LootContextParamSets.PIGLIN_BARTER)));
+                    throwItems(piglin, server.reloadableRegistries().getLootTable(lootTableLocation).getRandomItems((new LootParams.Builder((ServerLevel) piglin.level())).withParameter(LootContextParams.ORIGIN, piglin.position()).withParameter(LootContextParams.THIS_ENTITY, piglin).create(LootContextParamSets.PIGLIN_BARTER)));
             } else if (!stackIsPiglinCurrency) {
                 boolean flag1 = piglin.equipItemIfPossible(stack).isEmpty();
                 if (!flag1) {
@@ -226,7 +227,7 @@ public abstract class AbstractPiglinAi<P extends Piglin> extends PiglinAi {
         Activity activity = brain.getActiveNonCoreActivity().orElse(null);
         brain.setActiveActivityToFirstValid(ImmutableList.of(PPActivities.THROW_POTION_ACTIVITY.get(), Activity.ADMIRE_ITEM, Activity.FIGHT, Activity.AVOID, Activity.CELEBRATE, Activity.RIDE, Activity.IDLE));
         Activity activity1 = brain.getActiveNonCoreActivity().orElse(null);
-        if (activity != activity1) soundForCurrentActivity(piglin).ifPresent(piglin::playSoundEvent);
+        if (activity != activity1) soundForCurrentActivity(piglin).ifPresent(piglin::playSound);
         piglin.setAggressive(brain.hasMemoryValue(MemoryModuleType.ATTACK_TARGET));
         if (!brain.hasMemoryValue(MemoryModuleType.RIDE_TARGET) && isBabyRidingBaby(piglin)) piglin.stopRiding();
         if (!brain.hasMemoryValue(MemoryModuleType.CELEBRATE_LOCATION)) brain.eraseMemory(MemoryModuleType.DANCING);

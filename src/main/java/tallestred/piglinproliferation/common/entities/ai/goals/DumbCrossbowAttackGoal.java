@@ -1,19 +1,14 @@
 package tallestred.piglinproliferation.common.entities.ai.goals;
 
-import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.TimeUtil;
 import net.minecraft.util.valueproviders.UniformInt;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.entity.monster.Monster;
-import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.entity.projectile.ProjectileUtil;
 import net.minecraft.world.item.CrossbowItem;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.phys.Vec3;
-import org.joml.Vector3f;
-import org.joml.Vector3fc;
 
 import java.util.EnumSet;
 
@@ -69,7 +64,7 @@ public class DumbCrossbowAttackGoal<T extends Monster> extends Goal {
         this.seeTime = 0;
         if (this.mob.isUsingItem()) {
             this.mob.stopUsingItem();
-            CrossbowItem.setCharged(this.mob.getUseItem(), false);
+            //CrossbowItem.setCharged(this.mob.getUseItem(), false);
         }
 
     }
@@ -134,7 +129,7 @@ public class DumbCrossbowAttackGoal<T extends Monster> extends Goal {
                 }
             } else if (this.crossbowState == READY_TO_ATTACK && flag) {
                 ItemStack itemstack1 = this.mob.getItemInHand(ProjectileUtil.getWeaponHoldingHand(this.mob, item -> item instanceof CrossbowItem));
-                CrossbowItem.setCharged(itemstack1, false);
+                //CrossbowItem.setCharged(itemstack1, false);
                 shootCrossBow(1.6F);
                 this.crossbowState = UNCHARGED;
             }
@@ -149,9 +144,8 @@ public class DumbCrossbowAttackGoal<T extends Monster> extends Goal {
     private void shootCrossBow(float pVelocity) {
         InteractionHand interactionhand = ProjectileUtil.getWeaponHoldingHand(this.mob, item -> item instanceof CrossbowItem);
         ItemStack itemstack = this.mob.getItemInHand(interactionhand);
-        if (this.mob.isHolding(is -> is.getItem() instanceof CrossbowItem)) {
-            CrossbowItem.performShooting(this.mob.level(), this.mob, interactionhand, itemstack, pVelocity, (float)(14 - this.mob.level().getDifficulty().getId() * 4));
-        }
+        if (this.mob.isHolding(is -> is.getItem() instanceof CrossbowItem) && itemstack.getItem() instanceof CrossbowItem crossbow) //TODO not sure about this
+            crossbow.performShooting(this.mob.level(), this.mob, interactionhand, itemstack, pVelocity, (float)(14 - this.mob.level().getDifficulty().getId() * 4), null);
     }
     
     enum CrossbowState {

@@ -15,7 +15,6 @@
     "BBB"
   ],
   "result": {
-    "item": "piglinproliferation:netherrack_soul_fire_ring"
-  },
-  "show_notification": true
+    "id": "piglinproliferation:netherrack_soul_fire_ring"
+  }
 }

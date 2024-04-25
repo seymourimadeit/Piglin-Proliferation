@@ -10,7 +10,6 @@ import net.minecraft.world.entity.ai.memory.NearestVisibleLivingEntities;
 import net.minecraft.world.entity.ai.util.LandRandomPos;
 import net.minecraft.world.entity.monster.piglin.AbstractPiglin;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.alchemy.PotionUtils;
 import net.minecraft.world.phys.Vec3;
 import tallestred.piglinproliferation.PPActivities;
 import tallestred.piglinproliferation.PPMemoryModules;
@@ -20,6 +19,8 @@ import tallestred.piglinproliferation.common.entities.PiglinAlchemist;
 import javax.annotation.Nullable;
 import java.util.List;
 import java.util.function.Predicate;
+
+import static tallestred.piglinproliferation.util.CodeUtilities.potionContents;
 
 public class ThrowPotionAtTargetTask<E extends PiglinAlchemist> extends BaseThrowPotion<E> {
     protected final Predicate<Mob> nearbyPiglinPredicate;
@@ -35,11 +36,11 @@ public class ThrowPotionAtTargetTask<E extends PiglinAlchemist> extends BaseThro
         if (!list.isEmpty()) {
             for (AbstractPiglin piglin : list) {
                 if (piglin != alchemist) {
-                    for (MobEffectInstance mobeffectinstance : PotionUtils.getMobEffects(itemToUse)) {
-                        List listOfAlchemists = list.stream().filter(abstractPiglin -> abstractPiglin != alchemist
+                    for (MobEffectInstance mobeffectinstance : potionContents(itemToUse).getAllEffects()) {
+                        List<AbstractPiglin> listOfAlchemists = list.stream().filter(abstractPiglin -> abstractPiglin != alchemist
                                 && abstractPiglin instanceof PiglinAlchemist).toList();
                         if (piglin != null && alchemist.hasLineOfSight(piglin)
-                                && !listOfAlchemists.stream().filter(abstractPiglin -> ((PiglinAlchemist) abstractPiglin).isGonnaThrowPotion()).findAny().isPresent() &&
+                                && listOfAlchemists.stream().noneMatch(abstractPiglin -> ((PiglinAlchemist) abstractPiglin).isGonnaThrowPotion()) &&
                                 super.checkExtraStartConditions(level, alchemist)
                                 && this.nearbyPiglinPredicate.test(piglin) && !piglin.hasEffect(mobeffectinstance.getEffect())) {
                             if (piglin.getTarget() != null && listOfAlchemists.size() < 2 && alchemist.getBrain().getMemory(MemoryModuleType.NEAREST_VISIBLE_LIVING_ENTITIES).orElse(NearestVisibleLivingEntities.empty()).find(livingEntity -> (livingEntity instanceof Mob && ((Mob) livingEntity).getTarget() instanceof AbstractPiglin || livingEntity.getLastHurtMob() instanceof AbstractPiglin)).toList().size() > 1) {
@@ -59,7 +60,7 @@ public class ThrowPotionAtTargetTask<E extends PiglinAlchemist> extends BaseThro
     @Override
     protected boolean canStillUse(ServerLevel level, E alchemist, long gameTime) {
         Mob throwTarget = alchemist.getBrain().getMemory(PPMemoryModules.POTION_THROW_TARGET.get()).orElseGet(null);
-        for (MobEffectInstance mobeffectinstance : PotionUtils.getMobEffects(itemToUse)) {
+        for (MobEffectInstance mobeffectinstance : potionContents(itemToUse).getAllEffects()) {
             return throwTarget != null && alchemist.hasLineOfSight(throwTarget) && this.nearbyPiglinPredicate.test(throwTarget) && !throwTarget.hasEffect(mobeffectinstance.getEffect()) && this.ticksUntilThrow > 0;
         }
         return alchemist.hasLineOfSight(throwTarget);

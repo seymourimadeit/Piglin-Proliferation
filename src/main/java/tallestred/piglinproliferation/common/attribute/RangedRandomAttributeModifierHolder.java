@@ -1,5 +1,6 @@
 package tallestred.piglinproliferation.common.attribute;
 
+import net.minecraft.core.Holder;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.contents.TranslatableContents;
@@ -10,7 +11,7 @@ import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import java.util.UUID;
 import java.util.random.RandomGenerator;
 
-import static net.minecraft.world.item.ItemStack.ATTRIBUTE_MODIFIER_FORMAT;
+import static net.minecraft.world.item.component.ItemAttributeModifiers.ATTRIBUTE_MODIFIER_FORMAT;
 import static tallestred.piglinproliferation.util.CodeUtilities.capToRange;
 
 public class RangedRandomAttributeModifierHolder extends AbstractAttributeModifierHolder {
@@ -19,7 +20,7 @@ public class RangedRandomAttributeModifierHolder extends AbstractAttributeModifi
     public final AttributeModifier.Operation defaultOperation;
     protected final Instance defaultInstance;
 
-    public RangedRandomAttributeModifierHolder(Attribute attribute, UUID uuid, String name, double defaultMinAmount, double defaultMaxAmount, AttributeModifier.Operation defaultOperation) {
+    public RangedRandomAttributeModifierHolder(Holder<Attribute> attribute, UUID uuid, String name, double defaultMinAmount, double defaultMaxAmount, AttributeModifier.Operation defaultOperation) {
         super(attribute, uuid, name);
         this.defaultMinAmount = defaultMinAmount;
         this.defaultMaxAmount = defaultMaxAmount;

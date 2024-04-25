@@ -1,49 +1,25 @@
 package tallestred.piglinproliferation.networking;
 
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
-import net.neoforged.neoforge.network.handling.PlayPayloadContext;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
 import tallestred.piglinproliferation.PiglinProliferation;
 
-public class CriticalCapabilityPacket implements CustomPacketPayload {
-    private final int entityId;
-    private final boolean crit;
-    public static final ResourceLocation ID = new ResourceLocation(PiglinProliferation.MODID, "crit_sync");
+public record CriticalCapabilityPacket(int entityId, boolean crit) implements CustomPacketPayload {
+    public static final Type<CriticalCapabilityPacket> TYPE = new Type<>(new ResourceLocation(PiglinProliferation.MODID, "crit_sync"));
+    public static final StreamCodec<RegistryFriendlyByteBuf, CriticalCapabilityPacket> STREAM_CODEC = StreamCodec.composite(ByteBufCodecs.INT, CriticalCapabilityPacket::entityId, ByteBufCodecs.BOOL, CriticalCapabilityPacket::crit, CriticalCapabilityPacket::new);
 
-    public CriticalCapabilityPacket(int entityId, boolean crit) {
-        this.entityId = entityId;
-        this.crit = crit;
-    }
-
-    public CriticalCapabilityPacket(FriendlyByteBuf buf) {
-        this.crit = buf.readBoolean();
-        this.entityId = buf.readInt();
-    }
-
-
-    public void handle(PlayPayloadContext context) {
-        context.workHandler().execute(() -> {
-            ServerToClientPacketStuff.syncCritical(this);
+    public static void handle(CriticalCapabilityPacket payload, IPayloadContext context) {
+        context.enqueueWork(() -> {
+            ServerToClientPacketStuff.syncCritical(payload);
         });
     }
 
     @Override
-    public void write(FriendlyByteBuf buf) {
-        buf.writeInt(this.entityId);
-        buf.writeBoolean(this.crit);
-    }
-
-    @Override
-    public ResourceLocation id() {
-        return ID;
-    }
-
-    public int getEntityId() {
-        return this.entityId;
-    }
-
-    public boolean getCrit() {
-        return this.crit;
+    public Type<? extends CustomPacketPayload> type() {
+        return TYPE;
     }
 }

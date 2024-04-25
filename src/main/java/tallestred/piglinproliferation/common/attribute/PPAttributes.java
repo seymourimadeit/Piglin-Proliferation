@@ -14,7 +14,7 @@ public class PPAttributes {
     public static final DeferredHolder<Attribute, Attribute> TURNING_SPEED = ATTRIBUTES.register("turning_speed", () -> new RangedAttribute("attribute.piglinproliferation.name.generic.turning_speed", 1, 0, 10).setSyncable(true));
 
     public static double turningValue(LivingEntity entity) {
-        AttributeInstance instance = entity.getAttribute(PPAttributes.TURNING_SPEED.get());
+        AttributeInstance instance = entity.getAttribute(PPAttributes.TURNING_SPEED);
         return instance != null ? instance.getValue() : 1;
     }
 

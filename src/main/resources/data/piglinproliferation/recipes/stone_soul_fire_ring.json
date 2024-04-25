@@ -15,7 +15,6 @@
     "BBB"
   ],
   "result": {
-    "item": "piglinproliferation:stone_soul_fire_ring"
-  },
-  "show_notification": true
+    "id": "piglinproliferation:stone_soul_fire_ring"
+  }
 }

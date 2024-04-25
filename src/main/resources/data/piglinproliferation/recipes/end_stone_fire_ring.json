@@ -16,7 +16,6 @@
     "BBB"
   ],
   "result": {
-    "item": "piglinproliferation:end_stone_fire_ring"
-  },
-  "show_notification": true
+    "id": "piglinproliferation:end_stone_fire_ring"
+  }
 }

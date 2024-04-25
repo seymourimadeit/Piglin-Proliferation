@@ -2,6 +2,7 @@ package tallestred.piglinproliferation.common.entities.ai.behaviors;
 
 import com.google.common.collect.ImmutableList;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.Mth;
 import net.minecraft.world.effect.MobEffectInstance;
@@ -12,7 +13,7 @@ import net.minecraft.world.entity.ai.memory.MemoryModuleType;
 import net.minecraft.world.entity.ai.util.LandRandomPos;
 import net.minecraft.world.entity.monster.piglin.AbstractPiglin;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.alchemy.PotionUtils;
+import net.minecraft.world.item.alchemy.PotionContents;
 import net.minecraft.world.phys.Vec3;
 import tallestred.piglinproliferation.PPActivities;
 import tallestred.piglinproliferation.PPMemoryModules;
@@ -21,16 +22,20 @@ import tallestred.piglinproliferation.common.entities.PiglinAlchemist;
 
 import javax.annotation.Nullable;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Predicate;
+
+import static tallestred.piglinproliferation.util.CodeUtilities.potionContents;
 
 public class ThrowPotionAtSelfTask<E extends PiglinAlchemist> extends BaseThrowPotion<E> {
     public ThrowPotionAtSelfTask(ItemStack stack, Predicate<PiglinAlchemist> pCanUseSelector) {
         super(stack, pCanUseSelector);
     }
 
+    //TODO this might have broken
     @Override
     protected boolean checkExtraStartConditions(ServerLevel level, E alchemist) {
-        for (MobEffectInstance mobeffectinstance : PotionUtils.getMobEffects(itemToUse)) {
+        for (MobEffectInstance mobeffectinstance : potionContents(itemToUse).getAllEffects()) {
             if (super.checkExtraStartConditions(level, alchemist)) {
                 List<AbstractPiglin> list = alchemist.getBrain().getMemory(MemoryModuleType.NEARBY_ADULT_PIGLINS).orElse(ImmutableList.of());
                 if (!alchemist.hasEffect(mobeffectinstance.getEffect())) {
@@ -90,7 +95,7 @@ public class ThrowPotionAtSelfTask<E extends PiglinAlchemist> extends BaseThrowP
         if (alchemist.getTarget() != null) {
             return list.size() > 2; // Make sure I have people backing me up if I have to throw a potion and theres someone attacking me
         } else {
-            for (MobEffectInstance mobeffectinstance : PotionUtils.getMobEffects(itemToUse)) {
+            for (MobEffectInstance mobeffectinstance : potionContents(itemToUse).getAllEffects()) {
                 return this.canUseSelector.test(alchemist) && !alchemist.hasEffect(mobeffectinstance.getEffect()) && this.ticksUntilThrow > 0;
             }
         }

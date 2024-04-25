@@ -1,50 +1,26 @@
 package tallestred.piglinproliferation.networking;
 
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.neoforge.network.handling.PlayPayloadContext;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
 import tallestred.piglinproliferation.PiglinProliferation;
 
-public class AlchemistBeltSyncPacket implements CustomPacketPayload {
-    final int slotId;
-    final ItemStack stack;
-    private final int entityId;
-    public static final ResourceLocation ID = new ResourceLocation(PiglinProliferation.MODID, "alchemist_belt_sync");
+public record AlchemistBeltSyncPacket(int slotId, ItemStack stack, int entityId) implements CustomPacketPayload {
+    public static final Type<AlchemistBeltSyncPacket> TYPE = new Type<>(new ResourceLocation(PiglinProliferation.MODID, "alchemist_belt_sync"));
+    public static final StreamCodec<RegistryFriendlyByteBuf, AlchemistBeltSyncPacket> STREAM_CODEC = StreamCodec.composite(ByteBufCodecs.INT, AlchemistBeltSyncPacket::slotId, ItemStack.STREAM_CODEC, AlchemistBeltSyncPacket::stack, ByteBufCodecs.INT, AlchemistBeltSyncPacket::entityId, AlchemistBeltSyncPacket::new);
 
-    public AlchemistBeltSyncPacket(int entityId, int slotID, ItemStack stack) {
-        this.entityId = entityId;
-        this.slotId = slotID;
-        this.stack = stack;
-    }
-
-    public AlchemistBeltSyncPacket(FriendlyByteBuf buf) {
-        this.entityId = buf.readInt();
-        this.slotId = buf.readInt();
-        this.stack = buf.readItem();
-    }
-
-
-    public void handle(PlayPayloadContext context) {
-        context.workHandler().execute(() -> {
-            ServerToClientPacketStuff.syncBelt(this);
+    public static void handle(AlchemistBeltSyncPacket payload, IPayloadContext context) {
+        context.enqueueWork(() -> {
+            ServerToClientPacketStuff.syncBelt(payload);
         });
     }
 
-    public int getEntityId() {
-        return this.entityId;
-    }
-
     @Override
-    public void write(FriendlyByteBuf buf) {
-        buf.writeInt(this.entityId);
-        buf.writeInt(this.slotId);
-        buf.writeItem(this.stack);
-    }
-
-    @Override
-    public ResourceLocation id() {
-        return ID;
+    public Type<? extends CustomPacketPayload> type() {
+        return TYPE;
     }
 }

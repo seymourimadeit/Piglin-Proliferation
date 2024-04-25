@@ -1,6 +1,7 @@
 package tallestred.piglinproliferation.common.attribute;
 
 import net.minecraft.ChatFormatting;
+import net.minecraft.core.Holder;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.world.entity.LivingEntity;
@@ -11,14 +12,14 @@ import net.minecraft.world.entity.ai.attributes.Attributes;
 
 import java.util.UUID;
 
-import static net.minecraft.world.item.ItemStack.ATTRIBUTE_MODIFIER_FORMAT;
+import static net.minecraft.world.item.component.ItemAttributeModifiers.ATTRIBUTE_MODIFIER_FORMAT;
 
 public abstract class AbstractAttributeModifierHolder {
-    public final Attribute attribute;
+    public final Holder<Attribute> attribute;
     public final UUID uuid;
     public final String name;
 
-    public AbstractAttributeModifierHolder(Attribute attribute, UUID uuid, String name) {
+    public AbstractAttributeModifierHolder(Holder<Attribute> attribute, UUID uuid, String name) {
         this.attribute = attribute;
         this.uuid = uuid;
         this.name = name;
@@ -87,15 +88,15 @@ public abstract class AbstractAttributeModifierHolder {
                     style = ChatFormatting.RED;
                 }
             }
-            return Component.translatable(key + operation.toValue(), ATTRIBUTE_MODIFIER_FORMAT.format(amount), Component.translatable(attribute.getDescriptionId())).withStyle(style);
+            return Component.translatable(key + operation.id(), ATTRIBUTE_MODIFIER_FORMAT.format(amount), Component.translatable(attribute.value().getDescriptionId())).withStyle(style);
         }
 
         protected double formattedAmount(double amount, AttributeModifier.Operation operation, boolean displaysBase, double base) {
             if (displaysBase)
                 amount += base;
             switch (operation) {
-                case ADDITION -> amount *= attribute.equals(Attributes.KNOCKBACK_RESISTANCE) ? 10 : 1;
-                case MULTIPLY_BASE, MULTIPLY_TOTAL -> amount *= 100.0;
+                case ADD_VALUE -> amount *= attribute.equals(Attributes.KNOCKBACK_RESISTANCE) ? 10 : 1;
+                case ADD_MULTIPLIED_BASE, ADD_MULTIPLIED_TOTAL -> amount *= 100.0;
             }
             return amount;
         }

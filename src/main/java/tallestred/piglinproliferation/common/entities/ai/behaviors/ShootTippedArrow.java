@@ -2,6 +2,7 @@ package tallestred.piglinproliferation.common.entities.ai.behaviors;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.LivingEntity;
@@ -10,13 +11,16 @@ import net.minecraft.world.entity.ai.memory.MemoryStatus;
 import net.minecraft.world.entity.monster.piglin.AbstractPiglin;
 import net.minecraft.world.item.ArrowItem;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.alchemy.PotionUtils;
+import net.minecraft.world.item.alchemy.PotionContents;
 import tallestred.piglinproliferation.PPActivities;
 import tallestred.piglinproliferation.PPMemoryModules;
 import tallestred.piglinproliferation.common.entities.PiglinAlchemist;
 
 import java.util.List;
 import java.util.function.Predicate;
+
+import static tallestred.piglinproliferation.util.CodeUtilities.compareOptionalHolders;
+import static tallestred.piglinproliferation.util.CodeUtilities.potionContents;
 
 public class ShootTippedArrow extends BowAttack<PiglinAlchemist, LivingEntity> {
     protected final Predicate<? super AbstractPiglin> nearbyPiglinPredicate;
@@ -35,13 +39,12 @@ public class ShootTippedArrow extends BowAttack<PiglinAlchemist, LivingEntity> {
         if (!list.isEmpty()) {
             for (AbstractPiglin piglin : list) {
                     piglinToTarget = piglin;
-                    for (MobEffectInstance mobeffectinstance : PotionUtils.getMobEffects(itemToUse)) {
+                    for (MobEffectInstance mobeffectinstance : potionContents(itemToUse).getAllEffects()) {
                         List<ItemStack> filteredList = alchemist.beltInventory.stream().filter(itemStack -> itemStack.is((itemToUse.getItem()))).toList();
-                        for (ItemStack item : filteredList) {
-                            if (PotionUtils.getPotion(item) == PotionUtils.getPotion(itemToUse)) {
-                                boolean hasArrow = alchemist.getItemShownOnOffhand().is(itemToUse.getItem()) || alchemist.beltInventory.stream().filter(itemStack -> itemStack.is((itemToUse.getItem()))).toList() != null;
-                                return hasArrow && this.nearbyPiglinPredicate.test(piglinToTarget) && !piglinToTarget.hasEffect(mobeffectinstance.getEffect()) ? piglinToTarget : null;
-                            }
+                        for (ItemStack stack : filteredList) {
+                            if (compareOptionalHolders(potionContents(stack).potion(), potionContents(itemToUse).potion())) {
+                                return alchemist.getItemShownOnOffhand().is(itemToUse.getItem()) && this.nearbyPiglinPredicate.test(piglinToTarget) && !piglinToTarget.hasEffect(mobeffectinstance.getEffect()) ? piglinToTarget : null;
+                            } //TODO not sure if this right
                         }
                     }
                 }

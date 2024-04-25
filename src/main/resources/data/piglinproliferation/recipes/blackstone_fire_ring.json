@@ -15,7 +15,6 @@
     "BBB"
   ],
   "result": {
-    "item": "piglinproliferation:blackstone_fire_ring"
-  },
-  "show_notification": true
+    "id": "piglinproliferation:blackstone_fire_ring"
+  }
 }

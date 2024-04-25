@@ -1,5 +1,4 @@
 {
-  "replace": "false",
   "values": [
     "minecraft:basalt_deltas",
     "#piglinproliferation:can_spawn_traveler_camp_gathering",

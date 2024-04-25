@@ -7,7 +7,6 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.ExtraCodecs;
 import net.minecraft.util.StringRepresentable;
 import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.level.ChunkPos;
@@ -42,23 +41,21 @@ public class CustomJigsawStructure extends Structure {
                     )
                     .apply(p_259014_, Structure.StructureSettings::new)
     );
-    public static final Codec<CustomJigsawStructure> CODEC = ExtraCodecs.validate(RecordCodecBuilder.mapCodec((kind) -> {
-        return kind.group(customSettingsCodec(), StructureTemplatePool.CODEC.fieldOf("start_pool").forGetter((structure) -> {
-            return structure.startPool;
-        }), ResourceLocation.CODEC.optionalFieldOf("start_jigsaw_name").forGetter((structure) -> {
-            return structure.startJigsawName;
-        }), Codec.intRange(0, 7).fieldOf("size").forGetter((structure) -> {
-            return structure.maxDepth;
-        }), HeightProvider.CODEC.fieldOf("start_height").forGetter((structure) -> {
-            return structure.startHeight;
-        }), Codec.BOOL.fieldOf("use_expansion_hack").forGetter((structure) -> {
-            return structure.useExpansionHack;
-        }), Heightmap.Types.CODEC.optionalFieldOf("project_start_to_heightmap").forGetter((structure) -> {
-            return structure.projectStartToHeightmap;
-        }), Codec.intRange(1, 128).fieldOf("max_distance_from_center").forGetter((structure) -> {
-            return structure.maxDistanceFromCenter;
-        }), Codec.list(PoolAliasBinding.CODEC).optionalFieldOf("pool_aliases", List.of()).forGetter(p_307187_ -> p_307187_.poolAliases)).apply(kind, CustomJigsawStructure::new);
-    }), CustomJigsawStructure::verifyRange).codec();
+    public static final MapCodec<CustomJigsawStructure> CODEC = RecordCodecBuilder.<CustomJigsawStructure>mapCodec(
+                    instance -> instance.group(
+                                    customSettingsCodec(),
+                                    StructureTemplatePool.CODEC.fieldOf("start_pool").forGetter(p_227656_ -> p_227656_.startPool),
+                                    ResourceLocation.CODEC.optionalFieldOf("start_jigsaw_name").forGetter(p_227654_ -> p_227654_.startJigsawName),
+                                    Codec.intRange(0, 20).fieldOf("size").forGetter(p_227652_ -> p_227652_.maxDepth),
+                                    HeightProvider.CODEC.fieldOf("start_height").forGetter(p_227649_ -> p_227649_.startHeight),
+                                    Codec.BOOL.fieldOf("use_expansion_hack").forGetter(p_227646_ -> p_227646_.useExpansionHack),
+                                    Heightmap.Types.CODEC.optionalFieldOf("project_start_to_heightmap").forGetter(p_227644_ -> p_227644_.projectStartToHeightmap),
+                                    Codec.intRange(1, 128).fieldOf("max_distance_from_center").forGetter(p_227642_ -> p_227642_.maxDistanceFromCenter),
+                                    Codec.list(PoolAliasBinding.CODEC).optionalFieldOf("pool_aliases", List.of()).forGetter(p_307187_ -> p_307187_.poolAliases)
+                            )
+                            .apply(instance, CustomJigsawStructure::new)
+            )
+            .validate(CustomJigsawStructure::verifyRange);
     private final Holder<StructureTemplatePool> startPool;
     private final Optional<ResourceLocation> startJigsawName;
     private final int maxDepth;
@@ -68,13 +65,14 @@ public class CustomJigsawStructure extends Structure {
     private final int maxDistanceFromCenter;
     private final List<PoolAliasBinding> poolAliases;
 
-
     private static DataResult<CustomJigsawStructure> verifyRange(CustomJigsawStructure structure) {
-        byte b0 = switch (structure.terrainAdaptation()) {
+        int i = switch (structure.terrainAdaptation()) {
             case NONE -> 0;
-            case BURY, BEARD_THIN, BEARD_BOX -> 12;
+            case BURY, BEARD_THIN, BEARD_BOX, ENCAPSULATE -> 12;
         };
-        return structure.maxDistanceFromCenter + b0 > 128 ? DataResult.error(() -> "Structure size including terrain adaptation must not exceed 128") : DataResult.success(structure);
+        return structure.maxDistanceFromCenter + i > 128
+                ? DataResult.error(() -> "Structure size including terrain adaptation must not exceed 128")
+                : DataResult.success(structure);
     }
 
     public CustomJigsawStructure(Structure.StructureSettings structureSettings, Holder<StructureTemplatePool> startPool, Optional<ResourceLocation> startJigsawName, int maxDepth, HeightProvider startHeight, boolean useExpansionHack, Optional<Heightmap.Types> projectStartToHeightmap, int maxDistanceFromCenter, List<PoolAliasBinding> poolAliases) {

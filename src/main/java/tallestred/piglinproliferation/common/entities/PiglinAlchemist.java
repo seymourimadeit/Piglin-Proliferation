@@ -3,11 +3,13 @@ package tallestred.piglinproliferation.common.entities;
 import com.google.common.collect.ImmutableList;
 import com.mojang.serialization.Dynamic;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Holder;
 import net.minecraft.core.NonNullList;
 import net.minecraft.core.particles.ItemParticleOption;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.NbtOps;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
@@ -31,7 +33,7 @@ import net.minecraft.world.entity.projectile.ProjectileUtil;
 import net.minecraft.world.entity.projectile.ThrownPotion;
 import net.minecraft.world.item.*;
 import net.minecraft.world.item.alchemy.Potion;
-import net.minecraft.world.item.alchemy.PotionUtils;
+import net.minecraft.world.item.alchemy.PotionContents;
 import net.minecraft.world.item.alchemy.Potions;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.item.enchantment.Enchantments;
@@ -39,7 +41,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.pathfinder.BlockPathTypes;
+import net.minecraft.world.level.pathfinder.PathType;
 import net.neoforged.neoforge.event.EventHooks;
 import net.neoforged.neoforge.network.PacketDistributor;
 import org.jetbrains.annotations.NotNull;
@@ -54,6 +56,9 @@ import tallestred.piglinproliferation.networking.AlchemistBeltSyncPacket;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Predicate;
+
+import static tallestred.piglinproliferation.util.CodeUtilities.potionContents;
 
 public class PiglinAlchemist extends Piglin {
     // Used for displaying holding animation
@@ -96,14 +101,14 @@ public class PiglinAlchemist extends Piglin {
         if (this.isAdult()) {
             this.setItemSlot(EquipmentSlot.MAINHAND, new ItemStack(Items.BOW));
             if (source.nextFloat() < PPConfig.COMMON.healingArrowChances.get().floatValue()) {
-                ItemStack tippedArrow = PotionUtils.setPotion(new ItemStack(Items.TIPPED_ARROW, source.nextInt(PPConfig.COMMON.healingArrowMinStackSize.get(), PPConfig.COMMON.healingArrowMaxStackSize.get())), Potions.STRONG_HEALING);
+                ItemStack tippedArrow = PotionContents.createItemStack(Items.TIPPED_ARROW, Potions.STRONG_HEALING);
+                tippedArrow.setCount(source.nextInt(PPConfig.COMMON.healingArrowMinStackSize.get(), PPConfig.COMMON.healingArrowMaxStackSize.get()));
                 this.setBeltInventorySlot(source.nextInt(6), tippedArrow);
             }
             for (int slot = 0; slot < this.beltInventory.size(); slot++) {
                 if (this.beltInventory.get(slot).isEmpty()) {
-                    Potion effect = source.nextFloat() < 0.35F ? Potions.FIRE_RESISTANCE : source.nextFloat() < 0.30F ? Potions.STRONG_REGENERATION : source.nextFloat() < 0.25F ? Potions.STRONG_HEALING : Potions.STRONG_STRENGTH;
-                    ItemStack potion = PotionUtils.setPotion(new ItemStack(Items.SPLASH_POTION), effect);
-                    this.setBeltInventorySlot(slot, potion);
+                    Holder<Potion> potion = source.nextFloat() < 0.35F ? Potions.FIRE_RESISTANCE : source.nextFloat() < 0.30F ? Potions.STRONG_REGENERATION : source.nextFloat() < 0.25F ? Potions.STRONG_HEALING : Potions.STRONG_STRENGTH;
+                    this.setBeltInventorySlot(slot, PotionContents.createItemStack(Items.SPLASH_POTION, potion));
                 }
             }
         }
@@ -117,18 +122,18 @@ public class PiglinAlchemist extends Piglin {
     }
 
     @Override
-    protected void defineSynchedData() {
-        super.defineSynchedData();
-        this.entityData.define(IS_ABOUT_TO_THROW_POTION, false);
-        this.entityData.define(ITEM_SHOWN_ON_OFFHAND, ItemStack.EMPTY);
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        super.defineSynchedData(builder);
+        builder.define(IS_ABOUT_TO_THROW_POTION, false);
+        builder.define(ITEM_SHOWN_ON_OFFHAND, ItemStack.EMPTY);
     }
 
     @Override
     protected void onEffectAdded(MobEffectInstance mobEffect, @Nullable Entity entity) {
         if (mobEffect.getEffect() == MobEffects.FIRE_RESISTANCE) {
-            this.setPathfindingMalus(BlockPathTypes.DANGER_FIRE, 0.0F);
-            this.setPathfindingMalus(BlockPathTypes.DAMAGE_FIRE, 0.0F);
-            this.setPathfindingMalus(BlockPathTypes.LAVA, 0.0F);
+            this.setPathfindingMalus(PathType.DANGER_FIRE, 0.0F);
+            this.setPathfindingMalus(PathType.DAMAGE_FIRE, 0.0F);
+            this.setPathfindingMalus(PathType.LAVA, 0.0F);
         }
         super.onEffectAdded(mobEffect, entity);
     }
@@ -136,9 +141,9 @@ public class PiglinAlchemist extends Piglin {
     @Override
     protected void onEffectRemoved(MobEffectInstance mobEffectInstance) {
         if (mobEffectInstance.getEffect() == MobEffects.FIRE_RESISTANCE) {
-            this.setPathfindingMalus(BlockPathTypes.DANGER_FIRE, 16.0F);
-            this.setPathfindingMalus(BlockPathTypes.DAMAGE_FIRE, -1.0F);
-            this.setPathfindingMalus(BlockPathTypes.LAVA, -1.0F);
+            this.setPathfindingMalus(PathType.DANGER_FIRE, 16.0F);
+            this.setPathfindingMalus(PathType.DAMAGE_FIRE, -1.0F);
+            this.setPathfindingMalus(PathType.LAVA, -1.0F);
         }
         super.onEffectRemoved(mobEffectInstance);
     }
@@ -244,8 +249,8 @@ public class PiglinAlchemist extends Piglin {
             ItemStack itemstack = this.getProjectile(this.getItemInHand(ProjectileUtil.getWeaponHoldingHand(this, item -> item instanceof BowItem)));
             for (int slot = 0; slot < this.beltInventory.size() && !(this.getItemShownOnOffhand().getItem() instanceof TippedArrowItem); slot++) {
                 if (beltInventory.get(slot).getItem() instanceof TippedArrowItem) {
-                    List<MobEffectInstance> effectInstanceList = PotionUtils.getPotion(beltInventory.get(slot)).getEffects();
-                    if (this.getTarget() != null && target == this.getTarget() && effectInstanceList.stream().anyMatch(mobEffectInstance -> !mobEffectInstance.getEffect().isBeneficial()) || target != this.getTarget() || this.getTarget() != null && this.getTarget().isInvertedHealAndHarm() && effectInstanceList.stream().anyMatch(mobEffectInstance -> mobEffectInstance.getEffect() == MobEffects.HEAL)) {
+                    Iterable<MobEffectInstance> effectInstanceList = potionContents(beltInventory.get(slot)).getAllEffects();
+                    if (this.getTarget() != null && target == this.getTarget() && anyEffectsMatch(effectInstanceList, instance -> !instance.getEffect().value().isBeneficial()) || target != this.getTarget() || this.getTarget() != null && this.getTarget().isInvertedHealAndHarm() && anyEffectsMatch(effectInstanceList, instance -> instance.getEffect() == MobEffects.HEAL)) {
                         this.setItemShownOnOffhand(beltInventory.get(slot).copy());
                         this.beltInventory.set(slot, ItemStack.EMPTY);
                     }
@@ -256,15 +261,15 @@ public class PiglinAlchemist extends Piglin {
             AbstractArrow abstractarrowentity = ProjectileUtil.getMobArrow(this, itemstack, distanceFactor);
             if (this.getMainHandItem().getItem() instanceof net.minecraft.world.item.BowItem)
                 abstractarrowentity = ((net.minecraft.world.item.BowItem)this.getMainHandItem().getItem()).customArrow(abstractarrowentity, itemstack);
-            int powerLevel = itemstack.getEnchantmentLevel(Enchantments.POWER_ARROWS);
+            int powerLevel = itemstack.getEnchantmentLevel(Enchantments.POWER);
             if (powerLevel > 0)
                 abstractarrowentity
                         .setBaseDamage(abstractarrowentity.getBaseDamage() + (double) powerLevel * 0.5D + 0.5D);
-            int punchLevel = itemstack.getEnchantmentLevel(Enchantments.PUNCH_ARROWS);
+            int punchLevel = itemstack.getEnchantmentLevel(Enchantments.PUNCH);
             if (punchLevel > 0)
                 abstractarrowentity.setKnockback(punchLevel);
-            if (itemstack.getEnchantmentLevel(Enchantments.FLAMING_ARROWS) > 0)
-                abstractarrowentity.setSecondsOnFire(100);
+            if (itemstack.getEnchantmentLevel(Enchantments.FLAME) > 0)
+                abstractarrowentity.igniteForSeconds(100);
             double d0 = target.getX() - this.getX();
             double d1 = target.getY(0.3333333333333333D) - abstractarrowentity.getY();
             double d2 = target.getZ() - this.getZ();
@@ -281,6 +286,13 @@ public class PiglinAlchemist extends Piglin {
         }
     }
 
+    private boolean anyEffectsMatch(Iterable<MobEffectInstance> effectInstances, Predicate<MobEffectInstance> condition) {
+        for (MobEffectInstance effectInstance : effectInstances)
+            if (condition.test(effectInstance))
+                return true;
+        return false;
+    }
+
     @Override
     public void addAdditionalSaveData(CompoundTag compound) {
         super.addAdditionalSaveData(compound);
@@ -288,7 +300,7 @@ public class PiglinAlchemist extends Piglin {
         for (ItemStack itemstack : this.beltInventory) {
             CompoundTag compoundtag = new CompoundTag();
             if (!itemstack.isEmpty()) {
-                itemstack.save(compoundtag);
+                itemstack.save(this.registryAccess(), compoundtag);
             }
             listnbt.add(compoundtag);
         }
@@ -301,9 +313,8 @@ public class PiglinAlchemist extends Piglin {
         super.readAdditionalSaveData(compound);
         if (compound.contains("BeltInventory", 9)) {
             ListTag listtag = compound.getList("BeltInventory", 10);
-            for (int i = 0; i < this.beltInventory.size(); ++i) {
-                this.beltInventory.set(i, ItemStack.of(listtag.getCompound(i)));
-            }
+            for (int i = 0; i < this.beltInventory.size(); ++i)
+                this.beltInventory.set(i, ItemStack.CODEC.parse(NbtOps.INSTANCE, listtag.getCompound(i)).getOrThrow());
         }
         this.setArrowsShot(compound.getInt("ArrowsShot"));
     }
@@ -330,7 +341,7 @@ public class PiglinAlchemist extends Piglin {
     public void syncBeltToClient() {
         if (!this.level().isClientSide) {
             for (int i = 0; i < this.beltInventory.size(); i++) {
-               PacketDistributor.TRACKING_ENTITY.with(this).send(new AlchemistBeltSyncPacket(this.getId(), i, this.beltInventory.get(i)));
+               PacketDistributor.sendToPlayersTrackingEntity(this, new AlchemistBeltSyncPacket(this.getId(), this.beltInventory.get(i), i));
             }
         }
     }

@@ -1,17 +1,20 @@
 package tallestred.piglinproliferation.common.entities.ai.behaviors;
 
 import com.google.common.collect.ImmutableMap;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.ai.behavior.Behavior;
 import net.minecraft.world.entity.ai.memory.MemoryModuleType;
 import net.minecraft.world.entity.ai.memory.MemoryStatus;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.alchemy.PotionUtils;
 import tallestred.piglinproliferation.PPMemoryModules;
 import tallestred.piglinproliferation.common.entities.PiglinAlchemist;
 
 import java.util.function.Predicate;
+
+import static tallestred.piglinproliferation.util.CodeUtilities.compareOptionalHolders;
+import static tallestred.piglinproliferation.util.CodeUtilities.potionContents;
 
 public class BaseThrowPotion<E extends PiglinAlchemist> extends Behavior<E> {
     protected final ItemStack itemToUse; // This should probably be a memory value in the near future
@@ -30,7 +33,7 @@ public class BaseThrowPotion<E extends PiglinAlchemist> extends Behavior<E> {
     protected boolean checkExtraStartConditions(ServerLevel level, E alchemist) {
         for (int slot = 0; slot < alchemist.beltInventory.size(); slot++) {
             ItemStack stackInSlot = alchemist.beltInventory.get(slot);
-            if (stackInSlot.is(itemToUse.getItem()) && PotionUtils.getPotion(itemToUse) == PotionUtils.getPotion(stackInSlot)) {
+            if (stackInSlot.is(itemToUse.getItem()) && compareOptionalHolders(potionContents(itemToUse).potion(), potionContents(stackInSlot).potion())) {
                 this.potionToThrow = stackInSlot;
                 return this.canUseSelector.test(alchemist);
             }
@@ -43,12 +46,12 @@ public class BaseThrowPotion<E extends PiglinAlchemist> extends Behavior<E> {
         for (int slot = 0; slot < alchemist.beltInventory.size(); slot++) {
             ItemStack stackInSlot = alchemist.beltInventory.get(slot);
             if (!alchemist.isGonnaThrowPotion()) {
-                if (stackInSlot.is(itemToUse.getItem()) && PotionUtils.getPotion(itemToUse) == PotionUtils.getPotion(stackInSlot) && this.canUseSelector.test(alchemist)) {
+                if (stackInSlot.is(itemToUse.getItem()) && compareOptionalHolders(potionContents(itemToUse).potion(), potionContents(stackInSlot).potion()) && this.canUseSelector.test(alchemist)) {
                     this.potionToThrow = stackInSlot;
                     alchemist.setBeltInventorySlot(slot, ItemStack.EMPTY);
                     alchemist.swing(InteractionHand.OFF_HAND);
                     alchemist.setItemShownOnOffhand(stackInSlot.copy());
-                    PotionUtils.setPotion(alchemist.getItemShownOnOffhand(), PotionUtils.getPotion(stackInSlot));
+                    alchemist.getItemShownOnOffhand().set(DataComponents.POTION_CONTENTS, stackInSlot.get(DataComponents.POTION_CONTENTS));
                     alchemist.willThrowPotion(true);
                 }
             }

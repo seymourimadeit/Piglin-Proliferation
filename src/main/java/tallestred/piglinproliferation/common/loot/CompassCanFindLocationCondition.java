@@ -2,6 +2,7 @@ package tallestred.piglinproliferation.common.loot;
 
 import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
 import net.minecraft.server.level.ServerLevel;
@@ -21,7 +22,7 @@ import java.util.List;
 import java.util.Map;
 
 public class CompassCanFindLocationCondition implements LootItemCondition {
-    public static final Codec<CompassCanFindLocationCondition> CODEC = Codec.unit(new CompassCanFindLocationCondition());
+    public static final MapCodec<CompassCanFindLocationCondition> CODEC = MapCodec.unit(new CompassCanFindLocationCondition());
 
     @Override
     public LootItemConditionType getType() {

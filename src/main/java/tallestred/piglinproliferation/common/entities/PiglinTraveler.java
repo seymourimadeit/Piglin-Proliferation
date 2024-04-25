@@ -75,11 +75,11 @@ public class PiglinTraveler extends Piglin {
 
     @Nullable
     @Override
-    public SpawnGroupData finalizeSpawn(ServerLevelAccessor pLevel, DifficultyInstance pDifficulty, MobSpawnType pReason, @Nullable SpawnGroupData pSpawnData, @Nullable CompoundTag pDataTag) {
+    public SpawnGroupData finalizeSpawn(ServerLevelAccessor pLevel, DifficultyInstance pDifficulty, MobSpawnType pReason, @Nullable SpawnGroupData pSpawnData) {
         GlobalPos globalpos = GlobalPos.of(this.level().dimension(), this.blockPosition());
         this.getBrain().setMemory(MemoryModuleType.HOME, globalpos);
         this.setItemSlot(EquipmentSlot.MAINHAND, (double) this.random.nextFloat() < PPConfig.COMMON.crossbowChanceTraveler.get() ? new ItemStack(Items.CROSSBOW) : new ItemStack(Items.GOLDEN_SWORD));
-        return super.finalizeSpawn(pLevel, pDifficulty, pReason, pSpawnData, pDataTag);
+        return super.finalizeSpawn(pLevel, pDifficulty, pReason, pSpawnData);
     }
 
     @Override
@@ -162,11 +162,11 @@ public class PiglinTraveler extends Piglin {
     }
 
     @Override
-    protected void defineSynchedData() {
-        super.defineSynchedData();
-        this.entityData.define(SITTING, false);
-        this.entityData.define(KICK_COOLDOWN, 0);
-        this.entityData.define(KICK_TICKS, 0);
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        super.defineSynchedData(builder);
+        builder.define(SITTING, false);
+        builder.define(KICK_COOLDOWN, 0);
+        builder.define(KICK_TICKS, 0);
 
     }
 
