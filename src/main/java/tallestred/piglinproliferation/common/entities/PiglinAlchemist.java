@@ -121,7 +121,7 @@ public class PiglinAlchemist extends Piglin {
 
     @Override
     protected void playStepSound(BlockPos p_32159_, BlockState p_32160_) {
-        if (this.getRandom().nextInt(20) == 0 && this.beltInventory.anyMatch(this.entityData, stack -> stack.getItem() instanceof PotionItem))
+        if (this.getRandom().nextInt(20) == 0 && this.beltInventory.anyMatch(stack -> stack.getItem() instanceof PotionItem))
             this.playSound(PPSounds.ALCHEMIST_WALK.get(), 0.5F * (this.beltInventory.countMatches(stack -> stack.getItem() instanceof PotionItem) * 0.5F), 1.0F);
         this.playSound(PPSounds.ALCHEMIST_STEP.get(), 0.15F, 1.0F);
     }
@@ -364,9 +364,9 @@ public class PiglinAlchemist extends Piglin {
             entityData.set(BELT_INVENTORY_SLOTS[slot], stack);
         }
 
-        public boolean anyMatch(SynchedEntityData data, Predicate<ItemStack> predicate) {
+        public boolean anyMatch(Predicate<ItemStack> predicate) {
             for (EntityDataAccessor<ItemStack> accessor : BELT_INVENTORY_SLOTS)
-                if (predicate.test(data.get(accessor)))
+                if (predicate.test(entityData.get(accessor)))
                     return true;
             return false;
         }

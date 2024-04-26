@@ -42,7 +42,6 @@ public class ShootTippedArrow extends BowAttack<PiglinAlchemist, LivingEntity> {
                         for (ItemStack stack : filteredList) {
                             if (compareOptionalHolders(potionContents(stack).potion(), potionContents(itemToUse).potion()))
                                 return alchemist.getItemShownOnOffhand().is(itemToUse.getItem()) && this.nearbyPiglinPredicate.test(piglinToTarget) && !piglinToTarget.hasEffect(mobeffectinstance.getEffect()) ? piglinToTarget : null;
-                            //TODO not sure if this right
                         }
                     }
                 }
