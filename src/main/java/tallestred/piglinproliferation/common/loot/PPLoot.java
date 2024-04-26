@@ -1,6 +1,5 @@
 package tallestred.piglinproliferation.common.loot;
 
-import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
@@ -35,6 +34,6 @@ public class PPLoot {
     public static final DeferredHolder<LootItemFunctionType<?>, LootItemFunctionType<AddLocationToCompassFunction>> ADD_LOCATION_TO_COMPASS = LOOT_ITEM_FUNCTION_TYPES.register("add_location_to_compass", () ->  new LootItemFunctionType<>(AddLocationToCompassFunction.CODEC));
 
     private static ResourceKey<LootTable> lootTable(String name) {
-        return ResourceKey.create(Registries.LOOT_TABLE, new ResourceLocation(name));
+        return ResourceKey.create(Registries.LOOT_TABLE, new ResourceLocation(MODID, name));
     }
 }

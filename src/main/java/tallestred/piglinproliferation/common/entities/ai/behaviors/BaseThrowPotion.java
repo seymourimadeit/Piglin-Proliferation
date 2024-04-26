@@ -72,7 +72,7 @@ public class BaseThrowPotion<E extends PiglinAlchemist> extends Behavior<E> {
             for (int slot = 0; slot < alchemist.beltInventory.size(); slot++) {
                 ItemStack stackInSlot = alchemist.beltInventory.get(slot);
                 if (stackInSlot.isEmpty()) {
-                    alchemist.beltInventory.set(slot, alchemist.getItemShownOnOffhand().copy());
+                    alchemist.setBeltInventorySlot(slot, alchemist.getItemShownOnOffhand().copy());
                     alchemist.setItemShownOnOffhand(ItemStack.EMPTY);
                 }
             }

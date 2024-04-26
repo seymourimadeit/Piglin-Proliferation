@@ -42,9 +42,9 @@ public class ShootTippedArrow extends BowAttack<PiglinAlchemist, LivingEntity> {
                     for (MobEffectInstance mobeffectinstance : potionContents(itemToUse).getAllEffects()) {
                         List<ItemStack> filteredList = alchemist.beltInventory.stream().filter(itemStack -> itemStack.is((itemToUse.getItem()))).toList();
                         for (ItemStack stack : filteredList) {
-                            if (compareOptionalHolders(potionContents(stack).potion(), potionContents(itemToUse).potion())) {
+                            if (compareOptionalHolders(potionContents(stack).potion(), potionContents(itemToUse).potion()))
                                 return alchemist.getItemShownOnOffhand().is(itemToUse.getItem()) && this.nearbyPiglinPredicate.test(piglinToTarget) && !piglinToTarget.hasEffect(mobeffectinstance.getEffect()) ? piglinToTarget : null;
-                            } //TODO not sure if this right
+                            //TODO not sure if this right
                         }
                     }
                 }
@@ -65,7 +65,7 @@ public class ShootTippedArrow extends BowAttack<PiglinAlchemist, LivingEntity> {
             for (int slot = 0; slot < alchemist.beltInventory.size(); slot++) {
                 ItemStack stackInSlot = alchemist.beltInventory.get(slot);
                 if (stackInSlot.isEmpty()) {
-                    alchemist.beltInventory.set(slot, alchemist.getItemShownOnOffhand().copy());
+                    alchemist.setBeltInventorySlot(slot, alchemist.getItemShownOnOffhand().copy());
                     alchemist.setItemShownOnOffhand(ItemStack.EMPTY);
                 }
             }

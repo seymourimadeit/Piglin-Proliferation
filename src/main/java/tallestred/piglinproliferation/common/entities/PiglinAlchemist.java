@@ -8,6 +8,8 @@ import net.minecraft.core.NonNullList;
 import net.minecraft.core.particles.ItemParticleOption;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.protocol.Packet;
+import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
@@ -111,7 +113,6 @@ public class PiglinAlchemist extends Piglin {
                     Holder<Potion> potion = source.nextFloat() < 0.35F ? Potions.FIRE_RESISTANCE : source.nextFloat() < 0.30F ? Potions.STRONG_REGENERATION : source.nextFloat() < 0.25F ? Potions.STRONG_HEALING : Potions.STRONG_STRENGTH;
                     this.beltInventory.set(slot, PotionContents.createItemStack(Items.SPLASH_POTION, potion));
                     //Direct set method is used here instead so that sync belt only needs to be called once in onAddedToWorld
-                    //this.syncBeltToClient();
                 }
             }
         }
@@ -121,6 +122,12 @@ public class PiglinAlchemist extends Piglin {
     public void onAddedToWorld() {
         super.onAddedToWorld();
         this.syncBeltToClient();
+    }
+
+
+    @Override
+    public Packet<ClientGamePacketListener> getAddEntityPacket() {
+        return super.getAddEntityPacket();
     }
 
     @Override
@@ -313,7 +320,7 @@ public class PiglinAlchemist extends Piglin {
     public void readAdditionalSaveData(CompoundTag tag) {
         super.readAdditionalSaveData(tag);
         ContainerHelper.loadAllItems(tag, this.beltInventory, this.registryAccess());
-        //this.syncBeltToClient();
+        this.syncBeltToClient();
         this.setArrowsShot(tag.getInt("ArrowsShot"));
     }
 
