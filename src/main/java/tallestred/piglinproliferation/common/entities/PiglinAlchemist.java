@@ -386,7 +386,7 @@ public class PiglinAlchemist extends Piglin {
             return count;
         }
 
-        public List<ItemStack> matches(Predicate<ItemStack> predicate) {
+        public List<ItemStack> getMatches(Predicate<ItemStack> predicate) {
             List<ItemStack> items = new ArrayList<>();
             for (EntityDataAccessor<ItemStack> accessor : BELT_INVENTORY_SLOTS) {
                 ItemStack stack = entityData.get(accessor);
