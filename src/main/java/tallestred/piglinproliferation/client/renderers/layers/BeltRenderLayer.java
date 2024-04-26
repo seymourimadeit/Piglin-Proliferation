@@ -34,31 +34,31 @@ public class BeltRenderLayer<T extends PiglinAlchemist, M extends EntityModel<T>
     }
 
     @Override
-    public void render(PoseStack pMatrixStack, MultiBufferSource pBuffer, int pPackedLight, T pLivingEntity, float pLimbSwing, float pLimbSwingAmount, float pPartialTicks, float pAgeInTicks, float pNetHeadYaw, float pHeadPitch) {
-        for (int inventorySlots = 0; inventorySlots < pLivingEntity.beltInventory.size(); inventorySlots++) {
-            ItemStack itemstack = pLivingEntity.beltInventory.get(inventorySlots);
+    public void render(PoseStack pMatrixStack, MultiBufferSource pBuffer, int pPackedLight, T alchemist, float pLimbSwing, float pLimbSwingAmount, float pPartialTicks, float pAgeInTicks, float pNetHeadYaw, float pHeadPitch) {
+        for (int slot = 0; slot < alchemist.beltInventory.size(); slot++) {
+            ItemStack itemstack = alchemist.beltInventory.get(slot);
             if (!itemstack.isEmpty()) {
                 pMatrixStack.pushPose();
                 if (this.getParentModel().young) {
                     pMatrixStack.translate(0.0D, 0.75D, 0.0D);
                     pMatrixStack.scale(0.5F, 0.5F, 0.5F);
                 }
-                this.renderBeltItems(pLivingEntity, itemstack, ItemDisplayContext.GROUND, pMatrixStack, pBuffer, pAgeInTicks, pPackedLight, inventorySlots);
+                this.renderBeltItems(alchemist, itemstack, ItemDisplayContext.GROUND, pMatrixStack, pBuffer, pAgeInTicks, pPackedLight, slot);
                 pMatrixStack.popPose();
             }
-            HumanoidArm arm = pLivingEntity.isLeftHanded() ? HumanoidArm.RIGHT : HumanoidArm.LEFT;
-            ItemDisplayContext transformType = pLivingEntity.isLeftHanded() ? ItemDisplayContext.THIRD_PERSON_RIGHT_HAND : ItemDisplayContext.THIRD_PERSON_LEFT_HAND;
-            if (pLivingEntity.isGonnaThrowPotion()) {
+            HumanoidArm arm = alchemist.isLeftHanded() ? HumanoidArm.RIGHT : HumanoidArm.LEFT;
+            ItemDisplayContext transformType = alchemist.isLeftHanded() ? ItemDisplayContext.THIRD_PERSON_RIGHT_HAND : ItemDisplayContext.THIRD_PERSON_LEFT_HAND;
+            if (alchemist.isGonnaThrowPotion()) {
                 pMatrixStack.pushPose();
                 if (this.getParentModel().young) {
                     pMatrixStack.translate(0.0D, 0.75D, 0.0D);
                     pMatrixStack.scale(0.5F, 0.5F, 0.5F);
                 }
-                this.renderArmWithItem(pLivingEntity, pLivingEntity.getItemShownOnOffhand(), transformType, arm, pMatrixStack, pBuffer, pPackedLight);
+                this.renderArmWithItem(alchemist, alchemist.getItemShownOnOffhand(), transformType, arm, pMatrixStack, pBuffer, pPackedLight);
                 pMatrixStack.popPose();
             }
         }
-        coloredCutoutModelCopyLayerRender(this.getParentModel(), layerModel, new ResourceLocation(PiglinProliferation.MODID, "textures/entity/piglin/alchemist/belt.png"), pMatrixStack, pBuffer, pPackedLight, pLivingEntity, pLimbSwing, pLimbSwingAmount, pAgeInTicks, pNetHeadYaw, pHeadPitch, pPartialTicks, 1.0F, 1.0F, 1.0F);
+        coloredCutoutModelCopyLayerRender(this.getParentModel(), layerModel, new ResourceLocation(PiglinProliferation.MODID, "textures/entity/piglin/alchemist/belt.png"), pMatrixStack, pBuffer, pPackedLight, alchemist, pLimbSwing, pLimbSwingAmount, pAgeInTicks, pNetHeadYaw, pHeadPitch, pPartialTicks, 1.0F, 1.0F, 1.0F);
     }
 
     protected void renderBeltItems(LivingEntity entity, ItemStack stack, ItemDisplayContext transformType, PoseStack poseStack, MultiBufferSource source, float ageInTicks, int light, int inventorySlot) {

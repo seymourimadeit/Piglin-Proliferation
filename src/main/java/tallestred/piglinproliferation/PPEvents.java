@@ -42,7 +42,6 @@ import tallestred.piglinproliferation.client.PPSounds;
 import tallestred.piglinproliferation.common.blocks.PiglinSkullBlock;
 import tallestred.piglinproliferation.common.enchantments.PPEnchantments;
 import tallestred.piglinproliferation.common.entities.PPEntityTypes;
-import tallestred.piglinproliferation.common.entities.PiglinAlchemist;
 import tallestred.piglinproliferation.common.entities.PiglinTraveler;
 import tallestred.piglinproliferation.common.entities.ai.goals.DumbBowAttackGoal;
 import tallestred.piglinproliferation.common.entities.ai.goals.DumbCrossbowAttackGoal;
@@ -83,8 +82,6 @@ public class PPEvents {
             piglin.goalSelector.addGoal(0, new PiglinCallForHelpGoal(piglin, (piglin1) -> piglin1.getHealth() < piglin1.getMaxHealth() && !piglin1.hasEffect(MobEffects.HEAL), (alchemist -> alchemist.getItemShownOnOffhand() != null && potionContents(alchemist.getItemShownOnOffhand()).potion().orElse(Potions.WATER) == Potions.STRONG_HEALING)));
             piglin.goalSelector.addGoal(0, new PiglinCallForHelpGoal(piglin, (piglin1) -> piglin1.getHealth() < (piglin1.getMaxHealth() / 2) && piglin1.getTarget() != null && !piglin1.hasEffect(MobEffects.DAMAGE_BOOST), (alchemist -> alchemist.getItemShownOnOffhand() != null && potionContents(alchemist.getItemShownOnOffhand()).potion().orElse(Potions.WATER) == Potions.STRONG_STRENGTH)));
             piglin.goalSelector.addGoal(1, new PiglinSwimInLavaGoal(piglin));
-            if (piglin instanceof PiglinAlchemist alchemist)
-                alchemist.syncBeltToClient(); //For some reason the call in onAddedToWorld isn't triggering for every load, so I have to put it here
         }
     }
 

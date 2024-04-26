@@ -40,12 +40,10 @@ import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
-import net.minecraft.world.level.ServerLevelAccessor;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.pathfinder.PathType;
 import net.neoforged.neoforge.event.EventHooks;
-import net.neoforged.neoforge.network.PacketDistributor;
 import org.jetbrains.annotations.NotNull;
 import tallestred.piglinproliferation.PPMemoryModules;
 import tallestred.piglinproliferation.client.PPSounds;
@@ -53,8 +51,6 @@ import tallestred.piglinproliferation.common.blocks.PiglinSkullBlock;
 import tallestred.piglinproliferation.common.items.PPItems;
 import tallestred.piglinproliferation.common.entities.ai.PiglinAlchemistAi;
 import tallestred.piglinproliferation.configuration.PPConfig;
-import tallestred.piglinproliferation.networking.AlchemistBeltSlotSyncPacket;
-import tallestred.piglinproliferation.networking.AlchemistBeltSyncPacket;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -67,7 +63,8 @@ public class PiglinAlchemist extends Piglin {
     // Used for displaying holding animation
     protected static final EntityDataAccessor<Boolean> IS_ABOUT_TO_THROW_POTION = SynchedEntityData.defineId(PiglinAlchemist.class, EntityDataSerializers.BOOLEAN);
     protected static final EntityDataAccessor<ItemStack> ITEM_SHOWN_ON_OFFHAND = SynchedEntityData.defineId(PiglinAlchemist.class, EntityDataSerializers.ITEM_STACK);
-    public final NonNullList<ItemStack> beltInventory = NonNullList.withSize(6, ItemStack.EMPTY);
+    protected static final EntityDataAccessor<ItemStack>[] BELT_INVENTORY_SLOTS = defineBeltInventory(6);
+    public final BeltInventory beltInventory = new BeltInventory();
     protected int arrowsShot;
 
     public PiglinAlchemist(EntityType<? extends PiglinAlchemist> type, Level level) {
@@ -112,18 +109,10 @@ public class PiglinAlchemist extends Piglin {
                 if (this.beltInventory.get(slot).isEmpty()) {
                     Holder<Potion> potion = source.nextFloat() < 0.35F ? Potions.FIRE_RESISTANCE : source.nextFloat() < 0.30F ? Potions.STRONG_REGENERATION : source.nextFloat() < 0.25F ? Potions.STRONG_HEALING : Potions.STRONG_STRENGTH;
                     this.beltInventory.set(slot, PotionContents.createItemStack(Items.SPLASH_POTION, potion));
-                    //Direct set method is used here instead so that sync belt only needs to be called once in onAddedToWorld
                 }
             }
         }
     }
-
-    @Override
-    public void onAddedToWorld() {
-        super.onAddedToWorld();
-        this.syncBeltToClient();
-    }
-
 
     @Override
     public Packet<ClientGamePacketListener> getAddEntityPacket() {
@@ -132,8 +121,8 @@ public class PiglinAlchemist extends Piglin {
 
     @Override
     protected void playStepSound(BlockPos p_32159_, BlockState p_32160_) {
-        if (this.getRandom().nextInt(20) == 0 && this.beltInventory.stream().anyMatch(itemStack -> itemStack.getItem() instanceof PotionItem))
-            this.playSound(PPSounds.ALCHEMIST_WALK.get(), 0.5F * (this.beltInventory.stream().filter(itemStack -> itemStack.getItem() instanceof PotionItem).count() * 0.5F), 1.0F);
+        if (this.getRandom().nextInt(20) == 0 && this.beltInventory.anyMatch(this.entityData, stack -> stack.getItem() instanceof PotionItem))
+            this.playSound(PPSounds.ALCHEMIST_WALK.get(), 0.5F * (this.beltInventory.countMatches(stack -> stack.getItem() instanceof PotionItem) * 0.5F), 1.0F);
         this.playSound(PPSounds.ALCHEMIST_STEP.get(), 0.15F, 1.0F);
     }
 
@@ -142,6 +131,8 @@ public class PiglinAlchemist extends Piglin {
         super.defineSynchedData(builder);
         builder.define(IS_ABOUT_TO_THROW_POTION, false);
         builder.define(ITEM_SHOWN_ON_OFFHAND, ItemStack.EMPTY);
+        for (EntityDataAccessor<ItemStack> accessor : BELT_INVENTORY_SLOTS)
+            builder.define(accessor, ItemStack.EMPTY);
     }
 
     @Override
@@ -209,7 +200,7 @@ public class PiglinAlchemist extends Piglin {
 
     @Override
     protected void dropCustomDeathLoot(DamageSource pSource, int pLooting, boolean pRecentlyHit) {
-        for (ItemStack itemStack : this.beltInventory) {
+        for (ItemStack itemStack : this.beltInventory.values()) {
             if (!itemStack.isEmpty()) {
                 if (!EnchantmentHelper.hasVanishingCurse(itemStack) && this.getRandom().nextFloat() < PPConfig.COMMON.alchemistPotionChance.get()) {
                     this.spawnAtLocation(itemStack);
@@ -264,11 +255,12 @@ public class PiglinAlchemist extends Piglin {
         if (this.getMainHandItem().getItem() instanceof BowItem) {
             ItemStack itemstack = this.getProjectile(this.getItemInHand(ProjectileUtil.getWeaponHoldingHand(this, item -> item instanceof BowItem)));
             for (int slot = 0; slot < this.beltInventory.size() && !(this.getItemShownOnOffhand().getItem() instanceof TippedArrowItem); slot++) {
-                if (beltInventory.get(slot).getItem() instanceof TippedArrowItem) {
-                    Iterable<MobEffectInstance> effectInstanceList = potionContents(beltInventory.get(slot)).getAllEffects();
+                if (this.beltInventory.get(slot).getItem() instanceof TippedArrowItem) {
+                    ItemStack tippedArrow = this.beltInventory.get(slot);
+                    Iterable<MobEffectInstance> effectInstanceList = potionContents(tippedArrow).getAllEffects();
                     if (this.getTarget() != null && target == this.getTarget() && anyEffectsMatch(effectInstanceList, instance -> !instance.getEffect().value().isBeneficial()) || target != this.getTarget() || this.getTarget() != null && this.getTarget().isInvertedHealAndHarm() && anyEffectsMatch(effectInstanceList, instance -> instance.getEffect() == MobEffects.HEAL)) {
-                        this.setItemShownOnOffhand(beltInventory.get(slot).copy());
-                        this.setBeltInventorySlot(slot, ItemStack.EMPTY);
+                        this.setItemShownOnOffhand(tippedArrow.copy());
+                        this.beltInventory.set(slot, ItemStack.EMPTY);
                     }
                 }
             }
@@ -312,15 +304,17 @@ public class PiglinAlchemist extends Piglin {
     @Override
     public void addAdditionalSaveData(CompoundTag tag) {
         super.addAdditionalSaveData(tag);
-        ContainerHelper.saveAllItems(tag, this.beltInventory, this.registryAccess());
+        ContainerHelper.saveAllItems(tag, this.beltInventory.values(), this.registryAccess());
         tag.putInt("ArrowsShot", this.getArrowsShot());
     }
 
     @Override
     public void readAdditionalSaveData(CompoundTag tag) {
         super.readAdditionalSaveData(tag);
-        ContainerHelper.loadAllItems(tag, this.beltInventory, this.registryAccess());
-        this.syncBeltToClient();
+        NonNullList<ItemStack> readItems = NonNullList.withSize(6, ItemStack.EMPTY);
+        ContainerHelper.loadAllItems(tag, readItems, this.registryAccess());
+        for (int i = 0; i < readItems.size(); ++i)
+            this.beltInventory.set(i, readItems.get(i));
         this.setArrowsShot(tag.getInt("ArrowsShot"));
     }
 
@@ -332,29 +326,74 @@ public class PiglinAlchemist extends Piglin {
         this.arrowsShot = arrowsShot;
     }
 
-   /* @Override //TODO seeing what happens if it's not called in tick?
-    public void tick() {
-        super.tick();
-        this.syncBeltToClient(); // This is poo poo, and I will probably need to find a better method in the future
-    }*/
-
-    public void setBeltInventorySlot(int index, ItemStack stack) {
-        this.beltInventory.set(index, stack);
-        this.syncBeltSlotToClient(index);
-    }
-
-    public void syncBeltSlotToClient(int index) {
-        if (!this.level().isClientSide)
-            PacketDistributor.sendToPlayersTrackingEntity(this, new AlchemistBeltSlotSyncPacket(index, this.beltInventory.get(index), this.getId()));
-    }
-
-    public void syncBeltToClient() {
-        if (!this.level().isClientSide)
-            PacketDistributor.sendToPlayersTrackingEntity(this, new AlchemistBeltSyncPacket(new ArrayList<>(this.beltInventory), this.getId()));
-    }
-
     @Override
     public boolean canFireProjectileWeapon(ProjectileWeaponItem item) {
         return item instanceof BowItem || super.canFireProjectileWeapon(item);
+    }
+
+    @SuppressWarnings("unchecked")
+    public static EntityDataAccessor<ItemStack>[] defineBeltInventory(int capacity) {
+        EntityDataAccessor<ItemStack>[] slots = new EntityDataAccessor[capacity];
+        for (int i = 0; i < capacity; i++)
+            slots[i] = SynchedEntityData.defineId(PiglinAlchemist.class, EntityDataSerializers.ITEM_STACK);
+        return slots;
+    }
+
+    public class BeltInventory {
+        public NonNullList<ItemStack> values() {
+            NonNullList<ItemStack> items = NonNullList.withSize(size(), ItemStack.EMPTY);
+            for (int i = 0; i < size(); i++)
+                items.set(i, entityData.get(BELT_INVENTORY_SLOTS[i]));
+            return items;
+        }
+
+        public int size() {
+            return BELT_INVENTORY_SLOTS.length;
+        }
+
+        public void clear() {
+            for (int i = 0; i < size(); i++)
+               entityData.set(BELT_INVENTORY_SLOTS[i], ItemStack.EMPTY);
+        }
+
+        public ItemStack get(int slot) {
+           return entityData.get(BELT_INVENTORY_SLOTS[slot]);
+        }
+
+        public void set(int slot, ItemStack stack) {
+            entityData.set(BELT_INVENTORY_SLOTS[slot], stack);
+        }
+
+        public boolean anyMatch(SynchedEntityData data, Predicate<ItemStack> predicate) {
+            for (EntityDataAccessor<ItemStack> accessor : BELT_INVENTORY_SLOTS)
+                if (predicate.test(data.get(accessor)))
+                    return true;
+            return false;
+        }
+
+        public boolean noneMatch(Predicate<ItemStack> predicate) {
+            for (EntityDataAccessor<ItemStack> accessor : BELT_INVENTORY_SLOTS)
+                if (predicate.test(entityData.get(accessor)))
+                    return false;
+            return true;
+        }
+
+        public int countMatches(Predicate<ItemStack> predicate) {
+            int count = 0;
+            for (EntityDataAccessor<ItemStack> accessor : BELT_INVENTORY_SLOTS)
+                if (predicate.test(entityData.get(accessor)))
+                    count++;
+            return count;
+        }
+
+        public List<ItemStack> matches(Predicate<ItemStack> predicate) {
+            List<ItemStack> items = new ArrayList<>();
+            for (EntityDataAccessor<ItemStack> accessor : BELT_INVENTORY_SLOTS) {
+                ItemStack stack = entityData.get(accessor);
+                if (predicate.test(stack))
+                    items.add(stack);
+            }
+            return items;
+        }
     }
 }

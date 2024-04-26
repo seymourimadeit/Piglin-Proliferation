@@ -48,7 +48,7 @@ public class BaseThrowPotion<E extends PiglinAlchemist> extends Behavior<E> {
             if (!alchemist.isGonnaThrowPotion()) {
                 if (stackInSlot.is(itemToUse.getItem()) && compareOptionalHolders(potionContents(itemToUse).potion(), potionContents(stackInSlot).potion()) && this.canUseSelector.test(alchemist)) {
                     this.potionToThrow = stackInSlot;
-                    alchemist.setBeltInventorySlot(slot, ItemStack.EMPTY);
+                    alchemist.beltInventory.set(slot, ItemStack.EMPTY);
                     alchemist.swing(InteractionHand.OFF_HAND);
                     alchemist.setItemShownOnOffhand(stackInSlot.copy());
                     alchemist.getItemShownOnOffhand().set(DataComponents.POTION_CONTENTS, stackInSlot.get(DataComponents.POTION_CONTENTS));
@@ -67,12 +67,12 @@ public class BaseThrowPotion<E extends PiglinAlchemist> extends Behavior<E> {
 
     @Override
     protected void stop(ServerLevel level, E alchemist, long gameTime) {
-        if (alchemist.isGonnaThrowPotion() && alchemist.getItemShownOnOffhand() != null) {
+        if (alchemist.isGonnaThrowPotion() && alchemist.getItemShownOnOffhand() != null) { //TODO this is regenerating the potion
             alchemist.willThrowPotion(false);
             for (int slot = 0; slot < alchemist.beltInventory.size(); slot++) {
                 ItemStack stackInSlot = alchemist.beltInventory.get(slot);
                 if (stackInSlot.isEmpty()) {
-                    alchemist.setBeltInventorySlot(slot, alchemist.getItemShownOnOffhand().copy());
+                    alchemist.beltInventory.set(slot, alchemist.getItemShownOnOffhand().copy());
                     alchemist.setItemShownOnOffhand(ItemStack.EMPTY);
                 }
             }
