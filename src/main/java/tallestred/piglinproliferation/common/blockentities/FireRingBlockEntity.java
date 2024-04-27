@@ -59,7 +59,7 @@ public class FireRingBlockEntity extends CampfireBlockEntity {
 
     public boolean addEffects(@Nullable Player player, @Nullable InteractionHand hand, @Nullable ItemStack stack, Iterable<MobEffectInstance> effectsToAdd) {
         if (this.level != null && this.getBlockState().getValue(FireRingBlock.LIT)) {
-            if (effectsToAdd.iterator().hasNext() && this.level.isClientSide ? !this.hasEffects : this.effects.isEmpty()) {
+            if (effectsToAdd.iterator().hasNext() && (this.level.isClientSide ? !this.hasEffects : this.effects.isEmpty())) {
                 if (!this.level.isClientSide) {
                     if (stack != null) {
                         if (player != null) {
@@ -69,8 +69,8 @@ public class FireRingBlockEntity extends CampfireBlockEntity {
                                 ItemStack result = ItemUtils.createFilledResult(stack, player, new ItemStack(Items.GLASS_BOTTLE));
                                 if (stack.isEmpty() && hand != null)
                                     player.setItemInHand(hand, result);
-                                this.level.playSound(null, this.getBlockPos(), SoundEvents.BOTTLE_EMPTY, SoundSource.BLOCKS, 1.0F, 1.0F);
                             }
+                            this.level.playSound(null, this.getBlockPos(), SoundEvents.BOTTLE_EMPTY, SoundSource.BLOCKS, 1.0F, 1.0F);
                         }
                     }
                     effectsToAdd.forEach(effectInstance -> effects.add(new MobEffectInstance(effectInstance)));
