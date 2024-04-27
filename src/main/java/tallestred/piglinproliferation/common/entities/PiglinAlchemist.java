@@ -40,7 +40,6 @@ import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.pathfinder.BlockPathTypes;
-import net.minecraftforge.network.PacketDistributor;
 import org.jetbrains.annotations.NotNull;
 import tallestred.piglinproliferation.PPMemoryModules;
 import tallestred.piglinproliferation.client.PPSounds;
@@ -48,7 +47,6 @@ import tallestred.piglinproliferation.common.blocks.PiglinSkullBlock;
 import tallestred.piglinproliferation.common.entities.ai.PiglinAlchemistAi;
 import tallestred.piglinproliferation.common.items.PPItems;
 import tallestred.piglinproliferation.configuration.PPConfig;
-import tallestred.piglinproliferation.networking.PPNetworking;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -112,7 +110,7 @@ public class PiglinAlchemist extends Piglin {
 
     @Override
     protected void playStepSound(BlockPos p_32159_, BlockState p_32160_) {
-        if (this.getRandom().nextInt(20) == 0 && this.beltInventory.anyMatch(this.entityData, stack -> stack.getItem() instanceof PotionItem))
+        if (this.getRandom().nextInt(20) == 0 && this.beltInventory.anyMatch(stack -> stack.getItem() instanceof PotionItem))
             this.playSound(PPSounds.ALCHEMIST_WALK.get(), 0.5F * (this.beltInventory.countMatches(stack -> stack.getItem() instanceof PotionItem) * 0.5F), 1.0F);
         this.playSound(PPSounds.ALCHEMIST_STEP.get(), 0.15F, 1.0F);
     }
@@ -357,9 +355,9 @@ public class PiglinAlchemist extends Piglin {
             entityData.set(BELT_INVENTORY_SLOTS[slot], stack);
         }
 
-        public boolean anyMatch(SynchedEntityData data, Predicate<ItemStack> predicate) {
+        public boolean anyMatch(Predicate<ItemStack> predicate) {
             for (EntityDataAccessor<ItemStack> accessor : BELT_INVENTORY_SLOTS)
-                if (predicate.test(data.get(accessor)))
+                if (predicate.test(entityData.get(accessor)))
                     return true;
             return false;
         }
@@ -379,7 +377,7 @@ public class PiglinAlchemist extends Piglin {
             return count;
         }
 
-        public List<ItemStack> matches(Predicate<ItemStack> predicate) {
+        public List<ItemStack> getMatches(Predicate<ItemStack> predicate) {
             List<ItemStack> items = new ArrayList<>();
             for (EntityDataAccessor<ItemStack> accessor : BELT_INVENTORY_SLOTS) {
                 ItemStack stack = entityData.get(accessor);
