@@ -67,7 +67,7 @@
   "enchantment.piglinproliferation.turning.desc": "Cuando se usa el broquel se tiene gira total pero no se puede golpar con un broquel",
   "enchantment.piglinproliferation.bang.desc": "Cuando alguien se golpea con un broquel hace una explosión.",
   "piglinproliferation.advancements.nether.obtain_buckler.title": "Targe de Carga",
-  "piglinproliferation.advancements.nether.obtain_buckler.description": "Saca una broquel de los cofres de Bastiónes o un cadáver de piglin bruto.",
+  "piglinproliferation.advancements.nether.obtain_buckler.description": "Saca una broquel de los cofres de Bastiónes o un cadáver de piglin bruto",
   "item.piglinproliferation.travelers_compass.desc.locked": "Hacia: ",
   "item.piglinproliferation.travelers_compass.desc.structure.minecraft.bastion_remnant": "Bastión en Ruinas",
   "item.piglinproliferation.travelers_compass.desc.structure.minecraft.fortress": "Fortaleza del Nether",

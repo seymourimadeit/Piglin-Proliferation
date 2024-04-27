@@ -62,6 +62,7 @@ import tallestred.piglinproliferation.networking.ZiglinCapabilitySyncPacket;
 
 import java.util.*;
 
+import static tallestred.piglinproliferation.util.CodeUtilities.castOrNull;
 import static tallestred.piglinproliferation.util.CodeUtilities.potionContents;
 
 @SuppressWarnings("unused")
@@ -101,7 +102,7 @@ public class PPEvents {
                     mutable.setX(x);
                     mutable.setZ(z);
                     event.getLevel().getBlockEntity(mutable, PPBlockEntities.FIRE_RING.get()).ifPresent(fireRing -> {
-                        fireRing.addEffects(null, null, null, lingeringCloud.potionContents.getAllEffects());
+                        fireRing.addEffects(castOrNull(lingeringCloud.getOwner(), Player.class), null, null, lingeringCloud.potionContents.getAllEffects());
                     });
                 }
         }

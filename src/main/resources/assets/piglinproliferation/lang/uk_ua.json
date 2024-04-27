@@ -67,7 +67,7 @@
    "enchantment.piglinproliferation.turning.desc": "Дозволяє повне керування поворотом при ривку, але при цьому баклер утрачає здатність вибуху.",
    "enchantment.piglinproliferation.bang.desc": "Коли щит гравця сильно ударяє, утворюється великий вибух. Цей вибух завдає шкоди гравцю та мобам довкола.",
    "piglinproliferation.advancements.nether.obtain_buckler.title": "Що за «щит»",
-   "piglinproliferation.advancements.nether.obtain_buckler.description": "Отримайте баклер зі скрині бастіона чи при вбивстві брутального піґліна.",
+   "piglinproliferation.advancements.nether.obtain_buckler.description": "Отримайте баклер зі скрині бастіона чи при вбивстві брутального піґліна",
    "item.piglinproliferation.travelers_compass.desc.locked": "Замкнено на: ",
    "item.piglinproliferation.travelers_compass.desc.structure.minecraft.bastion_remnant": "Бастіон",
    "item.piglinproliferation.travelers_compass.desc.structure.minecraft.fortress": "Незерська фортеця",

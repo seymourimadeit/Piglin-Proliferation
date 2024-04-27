@@ -2,7 +2,6 @@ package tallestred.piglinproliferation.common.blockentities;
 
 import net.minecraft.Util;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
@@ -25,7 +24,6 @@ import net.minecraft.world.item.ItemUtils;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.CampfireBlock;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.entity.CampfireBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
@@ -65,9 +63,9 @@ public class FireRingBlockEntity extends CampfireBlockEntity {
                         hasInstantaneousEffects = true;
                 if (!hasInstantaneousEffects) {
                     if (!this.level.isClientSide) {
-                        if (stack != null) {
-                            if (player != null) {
-                                PPCriteriaTriggers.ADD_EFFECT_TO_FIRE_RING.get().trigger((ServerPlayer) player);
+                        if (player != null) {
+                            PPCriteriaTriggers.ADD_EFFECT_TO_FIRE_RING.get().trigger((ServerPlayer) player);
+                            if (stack != null) {
                                 if (!player.getAbilities().instabuild) {
                                     stack.shrink(1);
                                     ItemStack result = ItemUtils.createFilledResult(stack, player, new ItemStack(Items.GLASS_BOTTLE));
@@ -96,24 +94,7 @@ public class FireRingBlockEntity extends CampfireBlockEntity {
         if (!blockEntity.particles.isEmpty()) {
             level.addParticle(Util.getRandom(blockEntity.particles, random), (double) pos.getX() + 0.5 + random.nextDouble() / 3.0 * (double) (random.nextBoolean() ? 1 : -1), (double) pos.getY() + random.nextDouble() + random.nextDouble(), (double) pos.getZ() + 0.5 + random.nextDouble() / 3.0 * (double) (random.nextBoolean() ? 1 : -1), 1.0, 1.25, 1.0);
         }
-        int i;
-        if (random.nextFloat() < 0.11F) {
-            for(i = 0; i < random.nextInt(2) + 2; ++i) {
-                 CampfireBlock.makeParticles(level, pos, state.getValue(CampfireBlock.SIGNAL_FIRE), false);
-            }
-        }
-        i = state.getValue(CampfireBlock.FACING).get2DDataValue();
-        for(int j = 0; j < blockEntity.getItems().size(); ++j) {
-            if (!blockEntity.getItems().get(j).isEmpty() && random.nextFloat() < 0.2F) {
-                Direction direction = Direction.from2DDataValue(Math.floorMod(j + i, 4));
-                double x = (double)pos.getX() + 0.5 - (double)((float)direction.getStepX() * 0.3125F) + (double)((float)direction.getClockWise().getStepX() * 0.3125F);
-                double y = (double)pos.getY() + 0.378;
-                double z = (double)pos.getZ() + 0.5 - (double)((float)direction.getStepZ() * 0.3125F) + (double)((float)direction.getClockWise().getStepZ() * 0.3125F);
-
-                for(int k = 0; k < 4; ++k)
-                    level.addParticle(ParticleTypes.SMOKE, x, y, z, 0.0, 5.0E-4, 0.0);
-            }
-        }
+        CampfireBlockEntity.particleTick(level, pos, state, blockEntity);
     }
 
     public static void cookTick(Level level, BlockPos pos, BlockState state, FireRingBlockEntity blockEntity, int tempEffectTime) {

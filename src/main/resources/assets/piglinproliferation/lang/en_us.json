@@ -67,7 +67,7 @@
   "enchantment.piglinproliferation.turning.desc": "Increases turning speed while charging, but also reduces buckler bash attack damage.",
   "enchantment.piglinproliferation.bang.desc": "Shield bashing creates a large explosion, which deals damage to the user and surrounding mobs.",
   "piglinproliferation.advancements.nether.obtain_buckler.title": "Chargin' Targe",
-  "piglinproliferation.advancements.nether.obtain_buckler.description": "Obtain a buckler from a bastion chest or by killing a piglin brute.",
+  "piglinproliferation.advancements.nether.obtain_buckler.description": "Obtain a buckler from a bastion chest or by killing a piglin brute",
   "item.piglinproliferation.travelers_compass.desc.locked": "Locked on to: ",
   "item.piglinproliferation.travelers_compass.desc.structure.minecraft.bastion_remnant": "Bastion Remnant",
   "item.piglinproliferation.travelers_compass.desc.structure.minecraft.fortress": "Nether Fortress",
