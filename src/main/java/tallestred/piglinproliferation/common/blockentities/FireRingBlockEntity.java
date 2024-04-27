@@ -60,12 +60,11 @@ public class FireRingBlockEntity extends CampfireBlockEntity {
     public boolean addEffects(@Nullable Player player, @Nullable InteractionHand hand, @Nullable ItemStack stack, Iterable<MobEffectInstance> effectsToAdd) {
         if (this.level != null && this.getBlockState().getValue(FireRingBlock.LIT)) {
             if (effectsToAdd.iterator().hasNext() && (this.level.isClientSide ? !this.hasEffects : this.effects.isEmpty())) {
-                AtomicBoolean hasInstantaneousEffects = new AtomicBoolean(false);
-                effectsToAdd.forEach(effect -> {
+                boolean hasInstantaneousEffects = false;
+                for (MobEffectInstance effect : effectsToAdd)
                     if (effect.getEffect().value().isInstantenous())
-                        hasInstantaneousEffects.set(true);
-                });
-                if (!hasInstantaneousEffects.get()) {
+                        hasInstantaneousEffects = true;
+                if (!hasInstantaneousEffects) {
                     if (!this.level.isClientSide) {
                         if (stack != null) {
                             if (player != null) {

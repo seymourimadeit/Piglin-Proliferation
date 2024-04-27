@@ -96,9 +96,8 @@ public class PPEvents {
             int centreZ = (int) lingeringCloud.getZ();
             int radius = (int) lingeringCloud.getRadius();
             BlockPos.MutableBlockPos mutable = new BlockPos.MutableBlockPos(centreX, centreY, centreZ);
-            boolean found = false;
-            for (int x = centreX - radius; x < centreX + radius && !found; x++)
-                for (int z = centreZ - radius; z < centreZ + radius && !found; z++) {
+            for (int x = centreX - radius; x < centreX + radius; x++)
+                for (int z = centreZ - radius; z < centreZ + radius; z++) {
                     mutable.setX(x);
                     mutable.setZ(z);
                     event.getLevel().getBlockEntity(mutable, PPBlockEntities.FIRE_RING.get()).ifPresent(fireRing -> {
