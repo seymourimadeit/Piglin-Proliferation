@@ -60,27 +60,34 @@ public class FireRingBlockEntity extends CampfireBlockEntity {
     public boolean addEffects(@Nullable Player player, @Nullable InteractionHand hand, @Nullable ItemStack stack, Iterable<MobEffectInstance> effectsToAdd) {
         if (this.level != null && this.getBlockState().getValue(FireRingBlock.LIT)) {
             if (effectsToAdd.iterator().hasNext() && (this.level.isClientSide ? !this.hasEffects : this.effects.isEmpty())) {
-                if (!this.level.isClientSide) {
-                    if (stack != null) {
-                        if (player != null) {
-                            PPCriteriaTriggers.ADD_EFFECT_TO_FIRE_RING.get().trigger((ServerPlayer) player);
-                            if (!player.getAbilities().instabuild) {
-                                stack.shrink(1);
-                                ItemStack result = ItemUtils.createFilledResult(stack, player, new ItemStack(Items.GLASS_BOTTLE));
-                                if (stack.isEmpty() && hand != null)
-                                    player.setItemInHand(hand, result);
+                AtomicBoolean hasInstantaneousEffects = new AtomicBoolean(false);
+                effectsToAdd.forEach(effect -> {
+                    if (effect.getEffect().value().isInstantenous())
+                        hasInstantaneousEffects.set(true);
+                });
+                if (!hasInstantaneousEffects.get()) {
+                    if (!this.level.isClientSide) {
+                        if (stack != null) {
+                            if (player != null) {
+                                PPCriteriaTriggers.ADD_EFFECT_TO_FIRE_RING.get().trigger((ServerPlayer) player);
+                                if (!player.getAbilities().instabuild) {
+                                    stack.shrink(1);
+                                    ItemStack result = ItemUtils.createFilledResult(stack, player, new ItemStack(Items.GLASS_BOTTLE));
+                                    if (stack.isEmpty() && hand != null)
+                                        player.setItemInHand(hand, result);
+                                }
+                                this.level.playSound(null, this.getBlockPos(), SoundEvents.BOTTLE_EMPTY, SoundSource.BLOCKS, 1.0F, 1.0F);
                             }
-                            this.level.playSound(null, this.getBlockPos(), SoundEvents.BOTTLE_EMPTY, SoundSource.BLOCKS, 1.0F, 1.0F);
                         }
+                        effectsToAdd.forEach(effectInstance -> effects.add(new MobEffectInstance(effectInstance)));
+                    } else {
+                        for (MobEffectInstance effect : effectsToAdd)
+                            if (effect.isVisible())
+                                particles.add(effect.getParticleOptions());
+                        this.hasEffects = true;
                     }
-                    effectsToAdd.forEach(effectInstance -> effects.add(new MobEffectInstance(effectInstance)));
-                } else {
-                    for (MobEffectInstance effect : effectsToAdd)
-                        if (effect.isVisible())
-                            particles.add(effect.getParticleOptions());
-                    this.hasEffects = true;
+                    return true;
                 }
-                return true;
             }
         }
         return false;
@@ -127,7 +134,6 @@ public class FireRingBlockEntity extends CampfireBlockEntity {
     public static void potionTick(Level level, BlockPos pos, BlockState state, FireRingBlockEntity blockEntity, int tempEffectTime) {
         if (!blockEntity.effects.isEmpty()) {
             List<MobEffectInstance> toRemove = new ArrayList<>();
-            AtomicBoolean effectsListChanged = new AtomicBoolean(false);
             for (MobEffectInstance effectInstance : blockEntity.effects) {
                 effectInstance.tickDownDuration();
                 if (effectInstance.getDuration() <= 0)
@@ -135,7 +141,7 @@ public class FireRingBlockEntity extends CampfireBlockEntity {
             }
             if (!toRemove.isEmpty() || blockEntity.particles.isEmpty()) {
                 blockEntity.effects.removeAll(toRemove);
-                effectsListChanged.set(true);
+                blockEntity.syncToClient();
             }
             if (!blockEntity.effects.isEmpty()) {
                 double radius = blockEntity.getLightLevel();
@@ -144,17 +150,10 @@ public class FireRingBlockEntity extends CampfireBlockEntity {
                 int z = pos.getZ();
                 for (LivingEntity entity : level.getEntitiesOfClass(LivingEntity.class, new AABB(x - radius, y - radius, z - radius, x + radius, y + radius, z + radius)))
                     blockEntity.effects.forEach(effect -> {
-                        if (effect.getEffect().value().isInstantenous()) {
-                            effect.getEffect().value().applyInstantenousEffect(null, null, entity, effect.getAmplifier(), 1.0);
-                            blockEntity.effects.remove(effect);
-                            effectsListChanged.set(true);
-                        }
                         entity.addEffect(new MobEffectInstance(effect.getEffect(), tempEffectTime, effect.getAmplifier(), true, effect.isVisible()));
                     });
             }
             blockEntity.setChanged();
-            if (effectsListChanged.get())
-                blockEntity.syncToClient();
         }
     }
 
