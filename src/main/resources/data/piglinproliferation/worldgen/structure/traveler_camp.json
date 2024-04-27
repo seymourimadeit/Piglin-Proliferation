@@ -3,10 +3,10 @@
   "biomes": {
     "type": "neoforge:and",
     "values": [
-      "#piglinproliferation:can_spawn_traveler_camp",
+      "#piglinproliferation:generates_traveler_camp",
       {
         "type": "neoforge:not",
-        "value": "#piglinproliferation:cannot_spawn_traveler_camp"
+        "value": "#piglinproliferation:cannot_generate_traveler_camp"
       }
     ]
   },

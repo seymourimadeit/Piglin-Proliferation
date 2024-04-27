@@ -1,6 +1,6 @@
 {
   "type": "piglinproliferation:custom_jigsaw",
-  "biomes": "#piglinproliferation:can_spawn_traveler_camp_gathering",
+  "biomes": "#piglinproliferation:generates_traveler_camp_gathering",
   "max_distance_from_center": 80,
   "size": 6,
   "spawn_overrides": {},

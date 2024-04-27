@@ -36,10 +36,10 @@ public class ShootTippedArrow extends BowAttack<PiglinAlchemist, LivingEntity> {
             for (AbstractPiglin piglin : list) {
                     piglinToTarget = piglin;
                     for (MobEffectInstance mobeffectinstance : PotionUtils.getMobEffects(itemToUse)) {
-                        List<ItemStack> filteredList = alchemist.beltInventory.stream().filter(itemStack -> itemStack.is((itemToUse.getItem()))).toList();
+                        List<ItemStack> filteredList = alchemist.beltInventory.getMatches(itemStack -> itemStack.is((itemToUse.getItem())));
                         for (ItemStack item : filteredList) {
                             if (PotionUtils.getPotion(item) == PotionUtils.getPotion(itemToUse)) {
-                                boolean hasArrow = alchemist.getItemShownOnOffhand().is(itemToUse.getItem()) || alchemist.beltInventory.stream().filter(itemStack -> itemStack.is((itemToUse.getItem()))).toList() != null;
+                                boolean hasArrow = alchemist.getItemShownOnOffhand().is(itemToUse.getItem()) || alchemist.beltInventory.getMatches(itemStack -> itemStack.is((itemToUse.getItem())))!= null;
                                 return hasArrow && this.nearbyPiglinPredicate.test(piglinToTarget) && !piglinToTarget.hasEffect(mobeffectinstance.getEffect()) ? piglinToTarget : null;
                             }
                         }

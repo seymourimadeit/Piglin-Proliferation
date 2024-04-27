@@ -11,12 +11,6 @@ import tallestred.piglinproliferation.common.entities.PiglinAlchemist;
 import javax.annotation.Nullable;
 
 public class ServerToClientPacketStuff {
-    public static void syncBelt(AlchemistBeltSyncPacket msg) {
-        if (getEntity(msg.getEntityId()) instanceof PiglinAlchemist alchemist) {
-            alchemist.setBeltInventorySlot(msg.slotId, msg.stack);
-        }
-    }
-
     public static void syncZiglinClothes(ZiglinCapablitySyncPacket msg) {
         if (getEntity(msg.getEntityId()) instanceof ZombifiedPiglin ziglin) {
             ziglin.setData(PPCapabilities.TRANSFORMATION_TRACKER.get(), msg.getTransformedFromId());

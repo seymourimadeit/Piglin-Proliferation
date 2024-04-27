@@ -45,7 +45,7 @@ public class BaseThrowPotion<E extends PiglinAlchemist> extends Behavior<E> {
             if (!alchemist.isGonnaThrowPotion()) {
                 if (stackInSlot.is(itemToUse.getItem()) && PotionUtils.getPotion(itemToUse) == PotionUtils.getPotion(stackInSlot) && this.canUseSelector.test(alchemist)) {
                     this.potionToThrow = stackInSlot;
-                    alchemist.setBeltInventorySlot(slot, ItemStack.EMPTY);
+                    alchemist.beltInventory.set(slot, ItemStack.EMPTY);
                     alchemist.swing(InteractionHand.OFF_HAND);
                     alchemist.setItemShownOnOffhand(stackInSlot.copy());
                     PotionUtils.setPotion(alchemist.getItemShownOnOffhand(), PotionUtils.getPotion(stackInSlot));

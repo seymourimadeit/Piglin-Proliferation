@@ -48,7 +48,6 @@ import tallestred.piglinproliferation.common.loot.PPLoot;
 import tallestred.piglinproliferation.common.recipes.PPRecipeSerializers;
 import tallestred.piglinproliferation.common.worldgen.PPWorldgen;
 import tallestred.piglinproliferation.configuration.PPConfig;
-import tallestred.piglinproliferation.networking.AlchemistBeltSyncPacket;
 import tallestred.piglinproliferation.networking.CriticalCapabilityPacket;
 import tallestred.piglinproliferation.networking.ZiglinCapablitySyncPacket;
 
@@ -167,7 +166,6 @@ public class PiglinProliferation {
 
     private void register(final RegisterPayloadHandlerEvent event) {
         final IPayloadRegistrar reg = event.registrar(MODID).versioned("2.0.0");
-        reg.play(AlchemistBeltSyncPacket.ID, AlchemistBeltSyncPacket::new, payload -> payload.client(AlchemistBeltSyncPacket::handle));
         reg.play(CriticalCapabilityPacket.ID, CriticalCapabilityPacket::new, payload -> payload.client(CriticalCapabilityPacket::handle));
         reg.play(ZiglinCapablitySyncPacket.ID, ZiglinCapablitySyncPacket::new, payload -> payload.client(ZiglinCapablitySyncPacket::handle));
     }
