@@ -3,13 +3,22 @@ package tallestred.piglinproliferation;
 import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.client.renderer.item.CompassItemPropertyFunction;
 import net.minecraft.client.renderer.item.ItemProperties;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.BlockSource;
 import net.minecraft.core.Registry;
+import net.minecraft.core.dispenser.DefaultDispenseItemBehavior;
+import net.minecraft.core.dispenser.DispenseItemBehavior;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.SpawnPlacements;
 import net.minecraft.world.item.*;
+import net.minecraft.world.item.alchemy.PotionUtils;
+import net.minecraft.world.level.block.DispenserBlock;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.level.levelgen.structure.pools.StructureTemplatePool;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureProcessorList;
@@ -34,6 +43,7 @@ import net.minecraftforge.fml.loading.FMLEnvironment;
 import tallestred.piglinproliferation.client.PPSounds;
 import tallestred.piglinproliferation.common.advancement.PPCriteriaTriggers;
 import tallestred.piglinproliferation.common.attribute.PPAttributes;
+import tallestred.piglinproliferation.common.blockentities.FireRingBlockEntity;
 import tallestred.piglinproliferation.common.enchantments.PPEnchantments;
 import tallestred.piglinproliferation.common.entities.PiglinTraveler;
 import tallestred.piglinproliferation.common.items.BucklerItem;
@@ -54,6 +64,7 @@ import static tallestred.piglinproliferation.util.RegistryUtilities.addToCreativ
 @Mod(PiglinProliferation.MODID)
 public class PiglinProliferation {
     public static final String MODID = "piglinproliferation";
+
     public PiglinProliferation() {
         IEventBus bus = FMLJavaModLoadingContext.get().getModEventBus();
         bus.addListener(this::setup);
@@ -103,7 +114,7 @@ public class PiglinProliferation {
         if (CreativeModeTabs.SPAWN_EGGS.equals(event.getTabKey())) {
             addToCreativeTabAfter(creativeTab, Items.PIGLIN_SPAWN_EGG, PPItems.PIGLIN_ALCHEMIST_SPAWN_EGG.get());
             addToCreativeTabAfter(creativeTab, Items.PIGLIN_BRUTE_SPAWN_EGG, PPItems.PIGLIN_TRAVELER_SPAWN_EGG.get());
-        } else if(CreativeModeTabs.FUNCTIONAL_BLOCKS.equals(event.getTabKey())) {
+        } else if (CreativeModeTabs.FUNCTIONAL_BLOCKS.equals(event.getTabKey())) {
             addToCreativeTabAfter(creativeTab, Items.PIGLIN_HEAD,
                     PPItems.PIGLIN_ALCHEMIST_HEAD_ITEM.get(),
                     PPItems.PIGLIN_TRAVELER_HEAD_ITEM.get(),
@@ -122,7 +133,7 @@ public class PiglinProliferation {
                     PPItems.END_STONE_FIRE_RING_ITEM.get(),
                     PPItems.END_STONE_SOUL_FIRE_RING_ITEM.get()
             );
-        } else if(CreativeModeTabs.COMBAT.equals(event.getTabKey()))
+        } else if (CreativeModeTabs.COMBAT.equals(event.getTabKey()))
             addToCreativeTabAfter(creativeTab, Items.SHIELD, PPItems.BUCKLER.get());
     }
 
@@ -132,6 +143,21 @@ public class PiglinProliferation {
     }
 
     private void setup(final FMLCommonSetupEvent event) {
+        DispenseItemBehavior oldBehavior = DispenserBlock.DISPENSER_REGISTRY.get(Items.POTION);
+        event.enqueueWork(() -> DispenserBlock.registerBehavior(Items.POTION, new DefaultDispenseItemBehavior() {
+            @Override
+            protected ItemStack execute(BlockSource blockSource, ItemStack stack) {
+                ServerLevel level = blockSource.getLevel();
+                BlockPos frontPos = blockSource.getPos().relative(blockSource.getBlockState().getValue(DispenserBlock.FACING));
+                if (level.getBlockEntity(frontPos) instanceof FireRingBlockEntity fireRing)
+                    if (fireRing.addEffects(null, null, stack, PotionUtils.getMobEffects(stack))) {
+                        stack.shrink(1);
+                        level.playSound(null, frontPos, SoundEvents.BOTTLE_EMPTY, SoundSource.BLOCKS, 1.0F, 1.0F);
+                        return new ItemStack(Items.GLASS_BOTTLE);
+                    }
+                return oldBehavior.dispense(blockSource, stack);
+            }
+        }));
     }
 
     private void enqueueIMC(final InterModEnqueueEvent event) {

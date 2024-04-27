@@ -318,6 +318,7 @@ public class PiglinAlchemist extends Piglin {
     public void setBeltInventorySlot(int index, ItemStack stack) {
         this.beltInventory.set(index, stack);
     }
+
     @Override
     public boolean canFireProjectileWeapon(ProjectileWeaponItem item) {
         return item instanceof BowItem || super.canFireProjectileWeapon(item);

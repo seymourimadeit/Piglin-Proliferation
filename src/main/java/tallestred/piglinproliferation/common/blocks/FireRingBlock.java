@@ -57,7 +57,7 @@ public class FireRingBlock extends CampfireBlock {
                 return InteractionResult.CONSUME;
             }
             else if (state.getValue(LIT) && stack.getItem() == Items.POTION)
-                return blockEntity.addEffects(player, hand, stack, PotionUtils.getMobEffects(stack), this.potionTime) ? InteractionResult.SUCCESS : InteractionResult.PASS;
+                return blockEntity.addEffects(player, hand, stack, PotionUtils.getMobEffects(stack)) ? InteractionResult.SUCCESS : InteractionResult.PASS;
         }
         return InteractionResult.PASS;
     }
@@ -73,7 +73,7 @@ public class FireRingBlock extends CampfireBlock {
         if (level.isClientSide) {
              return state.getValue(LIT) ? createTickerHelper(blockEntityType, PPBlockEntities.FIRE_RING.get(), FireRingBlockEntity::particleTick) : null;
         } else {
-            return state.getValue(LIT) ? createTickerHelper(blockEntityType, PPBlockEntities.FIRE_RING.get(), FireRingBlockEntity::cookTick) : createTickerHelper(blockEntityType, PPBlockEntities.FIRE_RING.get(), FireRingBlockEntity::cooldownTick);
+            return state.getValue(LIT) ? (lvl, pos, st, be) -> FireRingBlockEntity.cookTick(lvl, pos, st, (FireRingBlockEntity) be, this.potionTime) : createTickerHelper(blockEntityType, PPBlockEntities.FIRE_RING.get(), FireRingBlockEntity::cooldownTick);
         }
     }
 
@@ -81,6 +81,6 @@ public class FireRingBlock extends CampfireBlock {
     public void onProjectileHit(Level level, BlockState state, BlockHitResult hitResult, Projectile projectile) {
         super.onProjectileHit(level, state, hitResult, projectile);
         if (state.getValue(LIT) && level.getBlockEntity(hitResult.getBlockPos()) instanceof FireRingBlockEntity blockEntity && projectile instanceof ThrownPotion potion)
-            blockEntity.addEffects(castOrNull(projectile.getOwner(), Player.class), null, null, PotionUtils.getMobEffects(potion.getItem()), this.potionTime);
+            blockEntity.addEffects(castOrNull(projectile.getOwner(), Player.class), null, null, PotionUtils.getMobEffects(potion.getItem()));
     }
 }

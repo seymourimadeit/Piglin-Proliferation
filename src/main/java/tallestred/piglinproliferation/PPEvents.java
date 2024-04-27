@@ -1,5 +1,6 @@
 package tallestred.piglinproliferation;
 
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -43,6 +44,7 @@ import net.minecraftforge.network.PacketDistributor;
 import net.minecraftforge.registries.ForgeRegistries;
 import tallestred.piglinproliferation.capablities.*;
 import tallestred.piglinproliferation.client.PPSounds;
+import tallestred.piglinproliferation.common.blockentities.PPBlockEntities;
 import tallestred.piglinproliferation.common.blocks.PiglinSkullBlock;
 import tallestred.piglinproliferation.common.enchantments.PPEnchantments;
 import tallestred.piglinproliferation.common.entities.PPEntityTypes;
@@ -102,6 +104,22 @@ public class PPEvents {
             piglin.goalSelector.addGoal(0, new PiglinCallForHelpGoal(piglin, (piglin1) -> piglin1.getHealth() < piglin1.getMaxHealth() && !piglin1.hasEffect(MobEffects.HEAL), (alchemist -> alchemist.getItemShownOnOffhand() != null && PotionUtils.getPotion(alchemist.getItemShownOnOffhand()) == Potions.STRONG_HEALING)));
             piglin.goalSelector.addGoal(0, new PiglinCallForHelpGoal(piglin, (piglin1) -> piglin1.getHealth() < (piglin1.getMaxHealth() / 2) && piglin1.getTarget() != null && !piglin1.hasEffect(MobEffects.DAMAGE_BOOST), (alchemist -> alchemist.getItemShownOnOffhand() != null && PotionUtils.getPotion(alchemist.getItemShownOnOffhand()) == Potions.STRONG_STRENGTH)));
             piglin.goalSelector.addGoal(1, new PiglinSwimInLavaGoal(piglin));
+        }
+        if (event.getEntity() instanceof AreaEffectCloud lingeringCloud) {
+            int centreX = (int) lingeringCloud.getX();
+            int centreY = (int) lingeringCloud.getY();
+            int centreZ = (int) lingeringCloud.getZ();
+            int radius = (int) lingeringCloud.getRadius();
+            BlockPos.MutableBlockPos mutable = new BlockPos.MutableBlockPos(centreX, centreY, centreZ);
+            boolean found = false;
+            for (int x = centreX - radius; x < centreX + radius && !found; x++)
+                for (int z = centreZ - radius; z < centreZ + radius && !found; z++) {
+                    mutable.setX(x);
+                    mutable.setZ(z);
+                    event.getLevel().getBlockEntity(mutable, PPBlockEntities.FIRE_RING.get()).ifPresent(fireRing -> {
+                        fireRing.addEffects(null, null, null, lingeringCloud.getPotion().getEffects());
+                    });
+                }
         }
     }
 
