@@ -42,7 +42,7 @@ public class PPBlocks {
     public static final DeferredHolder<Block, FireRingBlock> END_STONE_SOUL_FIRE_RING = registerFireRing("end_stone_soul_fire_ring", true, BlockBehaviour.Properties.of().mapColor(MapColor.SAND).instrument(NoteBlockInstrument.BASEDRUM).requiresCorrectToolForDrops().strength(3.0F, 9.0F));
 
     private static DeferredHolder<Block, FireRingBlock> registerFireRing(String name, boolean isSoulFire, BlockBehaviour.Properties properties) {
-        DeferredHolder<Block, FireRingBlock> registeredBlock = BLOCKS.register(name, () -> new FireRingBlock(!isSoulFire, isSoulFire ? 2 : 1, isSoulFire ? 1200 : 600, properties.lightLevel(Blocks.litBlockEmission(isSoulFire ? 5 : 10)).noOcclusion().ignitedByLava()));
+        DeferredHolder<Block, FireRingBlock> registeredBlock = BLOCKS.register(name, () -> new FireRingBlock(!isSoulFire, isSoulFire ? 2 : 1, isSoulFire ? 410 : 210, properties.lightLevel(Blocks.litBlockEmission(isSoulFire ? 5 : 10)).noOcclusion().ignitedByLava()));
         FIRE_RINGS.add(registeredBlock);
         return registeredBlock;
     }

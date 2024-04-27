@@ -35,6 +35,7 @@ import tallestred.piglinproliferation.common.blocks.FireRingBlock;
 
 import javax.annotation.Nullable;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class FireRingBlockEntity extends CampfireBlockEntity {
     private final List<MobEffectInstance> effects = new ArrayList<>(); //Only on server
@@ -56,24 +57,24 @@ public class FireRingBlockEntity extends CampfireBlockEntity {
         return this.unsafeLightLevel;
     }
 
-    public boolean addEffects(@Nullable Player player, @Nullable InteractionHand hand, @Nullable ItemStack stack, Iterable<MobEffectInstance> effectsToAdd, int maxDuration) {
-        if (this.level != null) {
+    public boolean addEffects(@Nullable Player player, @Nullable InteractionHand hand, @Nullable ItemStack stack, Iterable<MobEffectInstance> effectsToAdd) {
+        if (this.level != null && this.getBlockState().getValue(FireRingBlock.LIT)) {
             if (effectsToAdd.iterator().hasNext() && this.level.isClientSide ? !this.hasEffects : this.effects.isEmpty()) {
-                if (player instanceof ServerPlayer serverPlayer) {
-                    PPCriteriaTriggers.ADD_EFFECT_TO_FIRE_RING.get().trigger(serverPlayer);
-                    //this.level.sendBlockUpdated(this.getBlockPos(), this.getBlockState(), this.getBlockState(), Block.UPDATE_CLIENTS);
-                    if (!player.getAbilities().instabuild && stack != null) {
-                        stack.shrink(1);
-                        ItemStack result = ItemUtils.createFilledResult(stack, player, new ItemStack(Items.GLASS_BOTTLE));
-                        if (stack.isEmpty() && hand != null)
-                            player.setItemInHand(hand, result);
+                if (!this.level.isClientSide) {
+                    if (stack != null) {
+                        if (player != null) {
+                            PPCriteriaTriggers.ADD_EFFECT_TO_FIRE_RING.get().trigger((ServerPlayer) player);
+                            if (!player.getAbilities().instabuild) {
+                                stack.shrink(1);
+                                ItemStack result = ItemUtils.createFilledResult(stack, player, new ItemStack(Items.GLASS_BOTTLE));
+                                if (stack.isEmpty() && hand != null)
+                                    player.setItemInHand(hand, result);
+                                this.level.playSound(null, this.getBlockPos(), SoundEvents.BOTTLE_EMPTY, SoundSource.BLOCKS, 1.0F, 1.0F);
+                            }
+                        }
                     }
-                    for (MobEffectInstance effect : effectsToAdd)
-                        this.effects.add(new MobEffectInstance(effect.getEffect(), Math.min(effect.getDuration(), maxDuration), effect.getAmplifier()));
-                    this.level.playSound(null, this.getBlockPos(), SoundEvents.BOTTLE_EMPTY, SoundSource.BLOCKS, 1.0F, 1.0F);
-                    //this.setChanged();
+                    effectsToAdd.forEach(effectInstance -> effects.add(new MobEffectInstance(effectInstance)));
                 } else {
-                    //This is done in place of syncing to the client
                     for (MobEffectInstance effect : effectsToAdd)
                         if (effect.isVisible())
                             particles.add(effect.getParticleOptions());
@@ -88,14 +89,12 @@ public class FireRingBlockEntity extends CampfireBlockEntity {
     public static void particleTick(Level level, BlockPos pos, BlockState state, FireRingBlockEntity blockEntity) {
         RandomSource random = level.random;
         if (!blockEntity.particles.isEmpty()) {
-            //if (random.nextInt(2) == 0)
-                //TODO test velocity
-                level.addParticle(Util.getRandom(blockEntity.particles, random), (double)pos.getX() + 0.5 + random.nextDouble() / 3.0 * (double)(random.nextBoolean() ? 1 : -1), (double)pos.getY() + random.nextDouble() + random.nextDouble(), (double)pos.getZ() + 0.5 + random.nextDouble() / 3.0 * (double)(random.nextBoolean() ? 1 : -1), 1.0, 1.25, 1.0);
+            level.addParticle(Util.getRandom(blockEntity.particles, random), (double) pos.getX() + 0.5 + random.nextDouble() / 3.0 * (double) (random.nextBoolean() ? 1 : -1), (double) pos.getY() + random.nextDouble() + random.nextDouble(), (double) pos.getZ() + 0.5 + random.nextDouble() / 3.0 * (double) (random.nextBoolean() ? 1 : -1), 1.0, 1.25, 1.0);
         }
         int i;
         if (random.nextFloat() < 0.11F) {
             for(i = 0; i < random.nextInt(2) + 2; ++i) {
-                CampfireBlock.makeParticles(level, pos, state.getValue(CampfireBlock.SIGNAL_FIRE), false);
+                 CampfireBlock.makeParticles(level, pos, state.getValue(CampfireBlock.SIGNAL_FIRE), false);
             }
         }
         i = state.getValue(CampfireBlock.FACING).get2DDataValue();
@@ -112,43 +111,50 @@ public class FireRingBlockEntity extends CampfireBlockEntity {
         }
     }
 
-    public static void cookTick(Level level, BlockPos pos, BlockState state, FireRingBlockEntity blockEntity) {
-        potionTick(level, pos, state, blockEntity);
+    public static void cookTick(Level level, BlockPos pos, BlockState state, FireRingBlockEntity blockEntity, int tempEffectTime) {
+        potionTick(level, pos, state, blockEntity, tempEffectTime);
         CampfireBlockEntity.cookTick(level, pos, state, blockEntity);
     }
 
     public static void cooldownTick(Level level, BlockPos pos, BlockState state, FireRingBlockEntity blockEntity) {
-        potionTick(level, pos, state, blockEntity);
+        if (!blockEntity.effects.isEmpty()) {
+            blockEntity.effects.clear();
+            blockEntity.syncToClient();
+        }
         CampfireBlockEntity.cooldownTick(level, pos, state, blockEntity);
     }
 
-    public static void potionTick(Level level, BlockPos pos, BlockState state, FireRingBlockEntity blockEntity) {
+    public static void potionTick(Level level, BlockPos pos, BlockState state, FireRingBlockEntity blockEntity, int tempEffectTime) {
         if (!blockEntity.effects.isEmpty()) {
-            if (!state.getValue(FireRingBlock.LIT))
-                blockEntity.effects.clear();
-            else {
-                List<MobEffectInstance> toRemove = new ArrayList<>();
-                for (MobEffectInstance effectInstance : blockEntity.effects) {
-                    if (!effectInstance.isInfiniteDuration()) {
-                        effectInstance.tickDownDuration();
-                        if (effectInstance.getDuration() <= 0)
-                            toRemove.add(effectInstance);
-                    }
-                }
-                if (!toRemove.isEmpty() || blockEntity.particles.isEmpty()) {
-                    blockEntity.effects.removeAll(toRemove);
-                    blockEntity.syncToClient();
-                }
-                if (!blockEntity.effects.isEmpty()) {
-                    double radius = blockEntity.getLightLevel();
-                    int x = pos.getX();
-                    int y = pos.getY();
-                    int z = pos.getZ();
-                    for (LivingEntity entity : level.getEntitiesOfClass(LivingEntity.class, new AABB(x - radius, y - radius, z - radius, x + radius, y + radius, z + radius)))
-                        blockEntity.effects.forEach(effect -> entity.addEffect(new MobEffectInstance(effect.getEffect(), 210, effect.getAmplifier(), true, effect.isVisible())));
-                }
-
+            List<MobEffectInstance> toRemove = new ArrayList<>();
+            AtomicBoolean effectsListChanged = new AtomicBoolean(false);
+            for (MobEffectInstance effectInstance : blockEntity.effects) {
+                effectInstance.tickDownDuration();
+                if (effectInstance.getDuration() <= 0)
+                    toRemove.add(effectInstance);
             }
+            if (!toRemove.isEmpty() || blockEntity.particles.isEmpty()) {
+                blockEntity.effects.removeAll(toRemove);
+                effectsListChanged.set(true);
+            }
+            if (!blockEntity.effects.isEmpty()) {
+                double radius = blockEntity.getLightLevel();
+                int x = pos.getX();
+                int y = pos.getY();
+                int z = pos.getZ();
+                for (LivingEntity entity : level.getEntitiesOfClass(LivingEntity.class, new AABB(x - radius, y - radius, z - radius, x + radius, y + radius, z + radius)))
+                    blockEntity.effects.forEach(effect -> {
+                        if (effect.getEffect().value().isInstantenous()) {
+                            effect.getEffect().value().applyInstantenousEffect(null, null, entity, effect.getAmplifier(), 1.0);
+                            blockEntity.effects.remove(effect);
+                            effectsListChanged.set(true);
+                        }
+                        entity.addEffect(new MobEffectInstance(effect.getEffect(), tempEffectTime, effect.getAmplifier(), true, effect.isVisible()));
+                    });
+            }
+            blockEntity.setChanged();
+            if (effectsListChanged.get())
+                blockEntity.syncToClient();
         }
     }
 
@@ -171,6 +177,7 @@ public class FireRingBlockEntity extends CampfireBlockEntity {
     @Override
     public void loadAdditional(CompoundTag tag, HolderLookup.Provider provider) {
         super.loadAdditional(tag, provider);
+        this.effects.clear();
         ListTag effectsTag = tag.getList("Effects", Tag.TAG_COMPOUND);
         for (Tag effectTag : effectsTag)
             if (effectTag instanceof CompoundTag compoundTag)
@@ -200,7 +207,7 @@ public class FireRingBlockEntity extends CampfireBlockEntity {
     @Override
     public void handleUpdateTag(CompoundTag tag, HolderLookup.Provider lookupProvider) {
         super.handleUpdateTag(tag, lookupProvider);
-        if (tag.contains("Particles", Tag.TAG_LIST)) { //TODO test
+        if (tag.contains("Particles", Tag.TAG_LIST)) {
             ListTag particlesTag = tag.getList("Particles", Tag.TAG_COMPOUND);
             this.particles.clear();
             particlesTag.forEach(pTag -> ParticleTypes.CODEC.parse(NbtOps.INSTANCE, pTag).result().ifPresent(this.particles::add));

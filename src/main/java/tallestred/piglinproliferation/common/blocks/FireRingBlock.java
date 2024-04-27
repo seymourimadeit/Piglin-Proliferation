@@ -1,17 +1,14 @@
 package tallestred.piglinproliferation.common.blocks;
 
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.component.DataComponents;
 import net.minecraft.stats.Stats;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResult;
 import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.entity.projectile.ThrownPotion;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.item.alchemy.PotionContents;
 import net.minecraft.world.item.crafting.CampfireCookingRecipe;
 import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.level.BlockGetter;
@@ -29,7 +26,6 @@ import org.jetbrains.annotations.Nullable;
 import tallestred.piglinproliferation.common.blockentities.FireRingBlockEntity;
 import tallestred.piglinproliferation.common.blockentities.PPBlockEntities;
 
-import java.util.Objects;
 import java.util.Optional;
 
 import static tallestred.piglinproliferation.util.CodeUtilities.castOrNull;
@@ -37,11 +33,11 @@ import static tallestred.piglinproliferation.util.CodeUtilities.potionContents;
 
 public class FireRingBlock extends CampfireBlock {
     protected static final VoxelShape SHAPE = Block.box(0.0, 0.0, 0.0, 16.0, 5.0, 16.0);
-    protected final int potionTime;
+    protected final int effectApplyTime;
 
-    public FireRingBlock(boolean spawnParticles, int fireDamage, int potionTime, Properties properties) {
+    public FireRingBlock(boolean spawnParticles, int fireDamage, int effectApplyTime, Properties properties) {
         super(spawnParticles, fireDamage, properties);
-        this.potionTime = potionTime;
+        this.effectApplyTime = effectApplyTime;
     }
 
     @Override
@@ -60,8 +56,9 @@ public class FireRingBlock extends CampfireBlock {
                 }
                 return ItemInteractionResult.CONSUME;
             }
-            else if (state.getValue(LIT) && stack.getItem() == Items.POTION)
-                return blockEntity.addEffects(player, hand, stack, potionContents(stack).getAllEffects(), this.potionTime) ? ItemInteractionResult.SUCCESS : ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+            else if (stack.getItem() == Items.POTION)
+                if (blockEntity.addEffects(player, hand, stack, potionContents(stack).getAllEffects()))
+                    return ItemInteractionResult.SUCCESS;
         }
         return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
     }
@@ -77,14 +74,14 @@ public class FireRingBlock extends CampfireBlock {
         if (level.isClientSide) {
              return state.getValue(LIT) ? createTickerHelper(blockEntityType, PPBlockEntities.FIRE_RING.get(), FireRingBlockEntity::particleTick) : null;
         } else {
-            return state.getValue(LIT) ? createTickerHelper(blockEntityType, PPBlockEntities.FIRE_RING.get(), FireRingBlockEntity::cookTick) : createTickerHelper(blockEntityType, PPBlockEntities.FIRE_RING.get(), FireRingBlockEntity::cooldownTick);
+            return state.getValue(LIT) ? createTickerHelper(blockEntityType, PPBlockEntities.FIRE_RING.get(), (lvl, pos, st, be) -> FireRingBlockEntity.cookTick(lvl, pos, st, be, this.effectApplyTime)) : createTickerHelper(blockEntityType, PPBlockEntities.FIRE_RING.get(), FireRingBlockEntity::cooldownTick);
         }
     }
 
     @Override
     public void onProjectileHit(Level level, BlockState state, BlockHitResult hitResult, Projectile projectile) {
         super.onProjectileHit(level, state, hitResult, projectile);
-        if (state.getValue(LIT) && level.getBlockEntity(hitResult.getBlockPos()) instanceof FireRingBlockEntity blockEntity && projectile instanceof ThrownPotion potion)
-            blockEntity.addEffects(castOrNull(projectile.getOwner(), Player.class), null, null, potionContents(potion.getItem()).getAllEffects(), this.potionTime);
+        if (level.getBlockEntity(hitResult.getBlockPos()) instanceof FireRingBlockEntity blockEntity && projectile instanceof ThrownPotion potion)
+            blockEntity.addEffects(castOrNull(projectile.getOwner(), Player.class), null, null, potionContents(potion.getItem()).getAllEffects());
     }
 }

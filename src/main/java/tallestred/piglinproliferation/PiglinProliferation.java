@@ -2,13 +2,21 @@ package tallestred.piglinproliferation;
 
 import net.minecraft.client.renderer.item.CompassItemPropertyFunction;
 import net.minecraft.client.renderer.item.ItemProperties;
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.Registry;
+import net.minecraft.core.dispenser.BlockSource;
+import net.minecraft.core.dispenser.DefaultDispenseItemBehavior;
+import net.minecraft.core.dispenser.DispenseItemBehavior;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.SpawnPlacementTypes;
 import net.minecraft.world.item.*;
+import net.minecraft.world.level.block.DispenserBlock;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.level.levelgen.structure.pools.StructureTemplatePool;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureProcessorList;
@@ -35,6 +43,8 @@ import tallestred.piglinproliferation.capablities.PPDataAttachments;
 import tallestred.piglinproliferation.client.PPSounds;
 import tallestred.piglinproliferation.common.advancement.PPCriteriaTriggers;
 import tallestred.piglinproliferation.common.attribute.PPAttributes;
+import tallestred.piglinproliferation.common.blockentities.FireRingBlockEntity;
+import tallestred.piglinproliferation.common.blocks.FireRingBlock;
 import tallestred.piglinproliferation.common.enchantments.PPEnchantments;
 import tallestred.piglinproliferation.common.entities.PiglinTraveler;
 import tallestred.piglinproliferation.common.items.BucklerItem;
@@ -52,6 +62,7 @@ import tallestred.piglinproliferation.configuration.PPConfig;
 import tallestred.piglinproliferation.networking.CriticalCapabilityPacket;
 import tallestred.piglinproliferation.networking.ZiglinCapabilitySyncPacket;
 
+import static tallestred.piglinproliferation.util.CodeUtilities.potionContents;
 import static tallestred.piglinproliferation.util.RegistryUtilities.addToCreativeTabAfter;
 
 @Mod(PiglinProliferation.MODID)
@@ -136,6 +147,20 @@ public class PiglinProliferation {
     }
 
     private void setup(final FMLCommonSetupEvent event) {
+        DispenseItemBehavior oldBehavior = DispenserBlock.DISPENSER_REGISTRY.get(Items.POTION);
+        event.enqueueWork(() -> DispenserBlock.registerBehavior(Items.POTION, new DefaultDispenseItemBehavior() {
+            @Override
+            protected ItemStack execute(BlockSource blockSource, ItemStack stack) {
+                ServerLevel level = blockSource.level();
+                BlockPos frontPos = blockSource.pos().relative(blockSource.state().getValue(DispenserBlock.FACING));
+                if (level.getBlockEntity(frontPos) instanceof FireRingBlockEntity fireRing)
+                    if (fireRing.addEffects(null, null, stack, potionContents(stack).getAllEffects())) {
+                        stack.shrink(1);
+                        level.playSound(null, frontPos, SoundEvents.BOTTLE_EMPTY, SoundSource.BLOCKS, 1.0F, 1.0F);
+                        return new ItemStack(Items.GLASS_BOTTLE);
+                    }
+                return oldBehavior.dispense(blockSource, stack);
+        }}));
     }
 
     private void enqueueIMC(final InterModEnqueueEvent event) {
