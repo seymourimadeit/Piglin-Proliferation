@@ -35,7 +35,6 @@ import tallestred.piglinproliferation.common.blocks.FireRingBlock;
 
 import javax.annotation.Nullable;
 import java.util.*;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 public class FireRingBlockEntity extends CampfireBlockEntity {
     private final List<MobEffectInstance> effects = new ArrayList<>(); //Only on server
