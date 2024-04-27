@@ -100,7 +100,7 @@ public class PiglinAlchemistAi extends AbstractPiglinAi<PiglinAlchemist> {
                     if (!list.isEmpty()) {
                         for (AbstractPiglin piglin1 : list) {
                             if (piglin1.getTarget() != null || piglinAlchemist.getTarget() != null)
-                                return piglin.isAlive() && piglin.getHealth() < piglin.getMaxHealth() && piglinAlchemist.beltInventory.stream().noneMatch(itemStack -> PotionUtils.getPotion(itemStack) == Potions.STRONG_REGENERATION) && list.size() > 2; // This makes it so alchemists don't
+                                return piglin.isAlive() && piglin.getHealth() < piglin.getMaxHealth() && piglinAlchemist.beltInventory.noneMatch(itemStack -> PotionUtils.getPotion(itemStack) == Potions.STRONG_REGENERATION) && list.size() > 2; // This makes it so alchemists don't
                             // attempt to throw a healing potion if there's only 2 or less of them, as if they did it would make it so only one is attacking while the other is failing to throw the potion because the
                             // attacker would just keep pushing into them
                         }
@@ -132,7 +132,7 @@ public class PiglinAlchemistAi extends AbstractPiglinAi<PiglinAlchemist> {
                 Pair.of(new ThrowPotionAtSelfTask<>(PotionUtils.setPotion(new ItemStack(Items.SPLASH_POTION), Potions.FIRE_RESISTANCE),
                         (alchemist) -> alchemist.isAlive() && alchemist.isOnFire()), 1),
                 Pair.of(new ThrowPotionAtSelfTask<>(PotionUtils.setPotion(new ItemStack(Items.SPLASH_POTION), Potions.STRONG_HEALING),
-                        (alchemist) -> alchemist.isAlive() && alchemist.getHealth() < alchemist.getMaxHealth() && alchemist.beltInventory.stream().noneMatch(itemStack -> PotionUtils.getPotion(itemStack) == Potions.STRONG_REGENERATION)), 2)));
+                        (alchemist) -> alchemist.isAlive() && alchemist.getHealth() < alchemist.getMaxHealth() && alchemist.beltInventory.noneMatch(itemStack -> PotionUtils.getPotion(itemStack) == Potions.STRONG_REGENERATION)), 2)));
     }
 
     @Override

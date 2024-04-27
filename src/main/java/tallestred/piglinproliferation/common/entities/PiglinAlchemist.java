@@ -7,7 +7,6 @@ import net.minecraft.core.NonNullList;
 import net.minecraft.core.particles.ItemParticleOption;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
@@ -16,6 +15,7 @@ import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
+import net.minecraft.world.ContainerHelper;
 import net.minecraft.world.DifficultyInstance;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffectInstance;
@@ -26,7 +26,6 @@ import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.memory.MemoryModuleType;
 import net.minecraft.world.entity.monster.piglin.Piglin;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.AbstractArrow;
 import net.minecraft.world.entity.projectile.ProjectileUtil;
 import net.minecraft.world.entity.projectile.ThrownPotion;
@@ -46,21 +45,22 @@ import org.jetbrains.annotations.NotNull;
 import tallestred.piglinproliferation.PPMemoryModules;
 import tallestred.piglinproliferation.client.PPSounds;
 import tallestred.piglinproliferation.common.blocks.PiglinSkullBlock;
-import tallestred.piglinproliferation.common.items.PPItems;
 import tallestred.piglinproliferation.common.entities.ai.PiglinAlchemistAi;
+import tallestred.piglinproliferation.common.items.PPItems;
 import tallestred.piglinproliferation.configuration.PPConfig;
-import tallestred.piglinproliferation.networking.AlchemistBeltSyncPacket;
 import tallestred.piglinproliferation.networking.PPNetworking;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Predicate;
 
 public class PiglinAlchemist extends Piglin {
     // Used for displaying holding animation
     protected static final EntityDataAccessor<Boolean> IS_ABOUT_TO_THROW_POTION = SynchedEntityData.defineId(PiglinAlchemist.class, EntityDataSerializers.BOOLEAN);
     protected static final EntityDataAccessor<ItemStack> ITEM_SHOWN_ON_OFFHAND = SynchedEntityData.defineId(PiglinAlchemist.class, EntityDataSerializers.ITEM_STACK);
-    public final NonNullList<ItemStack> beltInventory = NonNullList.withSize(6, ItemStack.EMPTY);
+    protected static final EntityDataAccessor<ItemStack>[] BELT_INVENTORY_SLOTS = defineBeltInventory(6);
+    public final BeltInventory beltInventory = new BeltInventory();
     protected int arrowsShot;
 
     public PiglinAlchemist(EntityType<? extends PiglinAlchemist> type, Level level) {
@@ -112,8 +112,8 @@ public class PiglinAlchemist extends Piglin {
 
     @Override
     protected void playStepSound(BlockPos p_32159_, BlockState p_32160_) {
-        if (this.getRandom().nextInt(20) == 0 && this.beltInventory.stream().anyMatch(itemStack -> itemStack.getItem() instanceof PotionItem))
-            this.playSound(PPSounds.ALCHEMIST_WALK.get(), 0.5F * (this.beltInventory.stream().filter(itemStack -> itemStack.getItem() instanceof PotionItem).count() * 0.5F), 1.0F);
+        if (this.getRandom().nextInt(20) == 0 && this.beltInventory.anyMatch(this.entityData, stack -> stack.getItem() instanceof PotionItem))
+            this.playSound(PPSounds.ALCHEMIST_WALK.get(), 0.5F * (this.beltInventory.countMatches(stack -> stack.getItem() instanceof PotionItem) * 0.5F), 1.0F);
         this.playSound(PPSounds.ALCHEMIST_STEP.get(), 0.15F, 1.0F);
     }
 
@@ -122,6 +122,8 @@ public class PiglinAlchemist extends Piglin {
         super.defineSynchedData();
         this.entityData.define(IS_ABOUT_TO_THROW_POTION, false);
         this.entityData.define(ITEM_SHOWN_ON_OFFHAND, ItemStack.EMPTY);
+        for (EntityDataAccessor<ItemStack> accessor : BELT_INVENTORY_SLOTS)
+            this.entityData.define(accessor, ItemStack.EMPTY);
     }
 
     @Override
@@ -194,7 +196,7 @@ public class PiglinAlchemist extends Piglin {
 
     @Override
     protected void dropCustomDeathLoot(DamageSource pSource, int pLooting, boolean pRecentlyHit) {
-        for (ItemStack itemStack : this.beltInventory) {
+        for (ItemStack itemStack : this.beltInventory.values()) {
             if (!itemStack.isEmpty()) {
                 if (!EnchantmentHelper.hasVanishingCurse(itemStack) && this.getRandom().nextFloat() < PPConfig.COMMON.alchemistPotionChance.get()) {
                     this.spawnAtLocation(itemStack);
@@ -249,10 +251,11 @@ public class PiglinAlchemist extends Piglin {
         if (this.getMainHandItem().getItem() instanceof BowItem) {
             ItemStack itemstack = this.getProjectile(this.getItemInHand(ProjectileUtil.getWeaponHoldingHand(this, item -> item instanceof BowItem)));
             for (int slot = 0; slot < this.beltInventory.size() && !(this.getItemShownOnOffhand().getItem() instanceof TippedArrowItem); slot++) {
-                if (beltInventory.get(slot).getItem() instanceof TippedArrowItem) {
+                if (this.beltInventory.get(slot).getItem() instanceof TippedArrowItem) {
+                    ItemStack tippedArrow = this.beltInventory.get(slot);
                     List<MobEffectInstance> effectInstanceList = PotionUtils.getPotion(beltInventory.get(slot)).getEffects();
                     if (this.getTarget() != null && target == this.getTarget() && effectInstanceList.stream().anyMatch(mobEffectInstance -> !mobEffectInstance.getEffect().isBeneficial()) || target != this.getTarget() || this.getTarget() != null && this.getTarget().isInvertedHealAndHarm() && effectInstanceList.stream().anyMatch(mobEffectInstance -> mobEffectInstance.getEffect() == MobEffects.HEAL)) {
-                        this.setItemShownOnOffhand(beltInventory.get(slot).copy());
+                        this.setItemShownOnOffhand(tippedArrow.copy());
                         this.beltInventory.set(slot, ItemStack.EMPTY);
                     }
                 }
@@ -261,7 +264,7 @@ public class PiglinAlchemist extends Piglin {
                 itemstack = this.getItemShownOnOffhand();
             AbstractArrow abstractarrowentity = ProjectileUtil.getMobArrow(this, itemstack, distanceFactor);
             if (this.getMainHandItem().getItem() instanceof net.minecraft.world.item.BowItem)
-                abstractarrowentity = ((net.minecraft.world.item.BowItem)this.getMainHandItem().getItem()).customArrow(abstractarrowentity);
+                abstractarrowentity = ((net.minecraft.world.item.BowItem) this.getMainHandItem().getItem()).customArrow(abstractarrowentity);
             int powerLevel = itemstack.getEnchantmentLevel(Enchantments.POWER_ARROWS);
             if (powerLevel > 0)
                 abstractarrowentity
@@ -290,27 +293,17 @@ public class PiglinAlchemist extends Piglin {
     @Override
     public void addAdditionalSaveData(CompoundTag compound) {
         super.addAdditionalSaveData(compound);
-        ListTag listnbt = new ListTag();
-        for (ItemStack itemstack : this.beltInventory) {
-            CompoundTag compoundtag = new CompoundTag();
-            if (!itemstack.isEmpty()) {
-                itemstack.save(compoundtag);
-            }
-            listnbt.add(compoundtag);
-        }
-        compound.put("BeltInventory", listnbt);
+        ContainerHelper.saveAllItems(compound, this.beltInventory.values());
         compound.putInt("ArrowsShot", this.getArrowsShot());
     }
 
     @Override
     public void readAdditionalSaveData(CompoundTag compound) {
         super.readAdditionalSaveData(compound);
-        if (compound.contains("BeltInventory", 9)) {
-            ListTag listtag = compound.getList("BeltInventory", 10);
-            for (int i = 0; i < this.beltInventory.size(); ++i) {
-                this.beltInventory.set(i, ItemStack.of(listtag.getCompound(i)));
-            }
-        }
+        NonNullList<ItemStack> readItems = NonNullList.withSize(6, ItemStack.EMPTY);
+        ContainerHelper.loadAllItems(compound, readItems);
+        for (int i = 0; i < readItems.size(); ++i)
+            this.beltInventory.set(i, readItems.get(i));
         this.setArrowsShot(compound.getInt("ArrowsShot"));
     }
 
@@ -322,27 +315,77 @@ public class PiglinAlchemist extends Piglin {
         this.arrowsShot = arrowsShot;
     }
 
-    @Override
-    public void tick() {
-        super.tick();
-        this.syncBeltToClient(); // This is poo poo, and I will probably need to find a better method in the future
-    }
-
     public void setBeltInventorySlot(int index, ItemStack stack) {
         this.beltInventory.set(index, stack);
-        this.syncBeltToClient();
     }
-
-    public void syncBeltToClient() {
-        if (!this.level().isClientSide) {
-            for (int i = 0; i < this.beltInventory.size(); i++) {
-                PPNetworking.INSTANCE.send(PacketDistributor.TRACKING_ENTITY.with(() -> this), new AlchemistBeltSyncPacket(this.getId(), i, this.beltInventory.get(i)));
-            }
-        }
-    }
-
     @Override
     public boolean canFireProjectileWeapon(ProjectileWeaponItem item) {
         return item instanceof BowItem || super.canFireProjectileWeapon(item);
+    }
+
+    @SuppressWarnings("unchecked")
+    public static EntityDataAccessor<ItemStack>[] defineBeltInventory(int capacity) {
+        EntityDataAccessor<ItemStack>[] slots = new EntityDataAccessor[capacity];
+        for (int i = 0; i < capacity; i++)
+            slots[i] = SynchedEntityData.defineId(PiglinAlchemist.class, EntityDataSerializers.ITEM_STACK);
+        return slots;
+    }
+
+    public class BeltInventory {
+        public NonNullList<ItemStack> values() {
+            NonNullList<ItemStack> items = NonNullList.withSize(size(), ItemStack.EMPTY);
+            for (int i = 0; i < size(); i++)
+                items.set(i, entityData.get(BELT_INVENTORY_SLOTS[i]));
+            return items;
+        }
+
+        public int size() {
+            return BELT_INVENTORY_SLOTS.length;
+        }
+
+        public void clear() {
+            for (int i = 0; i < size(); i++)
+                entityData.set(BELT_INVENTORY_SLOTS[i], ItemStack.EMPTY);
+        }
+
+        public ItemStack get(int slot) {
+            return entityData.get(BELT_INVENTORY_SLOTS[slot]);
+        }
+
+        public void set(int slot, ItemStack stack) {
+            entityData.set(BELT_INVENTORY_SLOTS[slot], stack);
+        }
+
+        public boolean anyMatch(SynchedEntityData data, Predicate<ItemStack> predicate) {
+            for (EntityDataAccessor<ItemStack> accessor : BELT_INVENTORY_SLOTS)
+                if (predicate.test(data.get(accessor)))
+                    return true;
+            return false;
+        }
+
+        public boolean noneMatch(Predicate<ItemStack> predicate) {
+            for (EntityDataAccessor<ItemStack> accessor : BELT_INVENTORY_SLOTS)
+                if (predicate.test(entityData.get(accessor)))
+                    return false;
+            return true;
+        }
+
+        public int countMatches(Predicate<ItemStack> predicate) {
+            int count = 0;
+            for (EntityDataAccessor<ItemStack> accessor : BELT_INVENTORY_SLOTS)
+                if (predicate.test(entityData.get(accessor)))
+                    count++;
+            return count;
+        }
+
+        public List<ItemStack> matches(Predicate<ItemStack> predicate) {
+            List<ItemStack> items = new ArrayList<>();
+            for (EntityDataAccessor<ItemStack> accessor : BELT_INVENTORY_SLOTS) {
+                ItemStack stack = entityData.get(accessor);
+                if (predicate.test(stack))
+                    items.add(stack);
+            }
+            return items;
+        }
     }
 }

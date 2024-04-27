@@ -10,13 +10,6 @@ import tallestred.piglinproliferation.capablities.TransformationSourceListener;
 import tallestred.piglinproliferation.common.entities.PiglinAlchemist;
 
 public class ServerToClientPacketStuff {
-    public static void syncBelt(AlchemistBeltSyncPacket msg) {
-        ClientLevel level = Minecraft.getInstance().level;
-        if (level != null && level.getEntity(msg.getEntityId()) instanceof PiglinAlchemist alchemist) {
-            alchemist.setBeltInventorySlot(msg.slotId, msg.stack);
-        }
-    }
-
     public static void syncZiglinClothes(ZiglinCapablitySyncPacket msg) {
         ClientLevel level = Minecraft.getInstance().level;
         if (level != null && level.getEntity(msg.getEntityId()) instanceof ZombifiedPiglin ziglin) {
