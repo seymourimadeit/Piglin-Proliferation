@@ -1,7 +1,6 @@
 package tallestred.piglinproliferation.common.blockentities;
 
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -22,7 +21,6 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.item.alchemy.PotionUtils;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.CampfireBlock;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.entity.CampfireBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
@@ -33,11 +31,11 @@ import tallestred.piglinproliferation.common.blocks.FireRingBlock;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 public class FireRingBlockEntity extends CampfireBlockEntity {
     private final List<MobEffectInstance> effects = new ArrayList<>(); //Only on server
     private boolean hasEffects = false; //Synced to client, substitute for effects.isEmpty()
+    private int effectColor = -1;
     private int unsafeLightLevel = -1;
 
     public FireRingBlockEntity(BlockPos pos, BlockState state) {
@@ -57,16 +55,15 @@ public class FireRingBlockEntity extends CampfireBlockEntity {
     public boolean addEffects(@Nullable Player player, @Nullable InteractionHand hand, @Nullable ItemStack stack, Iterable<MobEffectInstance> effectsToAdd) {
         if (this.level != null && this.getBlockState().getValue(FireRingBlock.LIT)) {
             if (effectsToAdd.iterator().hasNext() && (this.level.isClientSide ? !this.hasEffects : this.effects.isEmpty())) {
-                AtomicBoolean hasInstantaneousEffects = new AtomicBoolean(false);
-                effectsToAdd.forEach(effect -> {
+                boolean hasInstantaneousEffects = false;
+                for (MobEffectInstance effect : effectsToAdd)
                     if (effect.getEffect().isInstantenous())
-                        hasInstantaneousEffects.set(true);
-                });
-                if (!hasInstantaneousEffects.get()) {
+                        hasInstantaneousEffects = true;
+                if (!hasInstantaneousEffects) {
                     if (!this.level.isClientSide) {
-                        if (stack != null) {
-                            if (player != null) {
-                                PPCriteriaTriggers.ADD_EFFECT_TO_FIRE_RING.trigger((ServerPlayer) player);
+                        if (player != null) {
+                            PPCriteriaTriggers.ADD_EFFECT_TO_FIRE_RING.trigger((ServerPlayer) player);
+                            if (stack != null) {
                                 if (!player.getAbilities().instabuild) {
                                     stack.shrink(1);
                                     ItemStack result = ItemUtils.createFilledResult(stack, player, new ItemStack(Items.GLASS_BOTTLE));
@@ -78,6 +75,11 @@ public class FireRingBlockEntity extends CampfireBlockEntity {
                         }
                         effectsToAdd.forEach(effectInstance -> effects.add(new MobEffectInstance(effectInstance)));
                     } else {
+                        List<MobEffectInstance> effectsForParticles = new ArrayList<>();
+                        for (MobEffectInstance effect : effectsToAdd)
+                            if (effect.isVisible())
+                                effectsForParticles.add(effect);
+                        this.effectColor = PotionUtils.getColor(effectsForParticles);
                         this.hasEffects = true;
                     }
                     return true;
@@ -89,30 +91,13 @@ public class FireRingBlockEntity extends CampfireBlockEntity {
 
     public static void particleTick(Level level, BlockPos pos, BlockState state, FireRingBlockEntity blockEntity) {
         RandomSource random = level.random;
-     /*   if (blockEntity.potionColor != -1) {
-            double xComponent = (double) (blockEntity.potionColor >> 16 & 255) / 255.0;
-            double yComponent = (double) (blockEntity.potionColor >> 8 & 255) / 255.0;
-            double zComponent = (double) (blockEntity.potionColor >> 0 & 255) / 255.0;
+           if (blockEntity.effectColor != -1) {
+            double xComponent = (double) (blockEntity.effectColor >> 16 & 255) / 255.0;
+            double yComponent = (double) (blockEntity.effectColor >> 8  & 255) / 255.0;
+            double zComponent = (double) (blockEntity.effectColor & 255) / 255.0;
             level.addParticle(ParticleTypes.ENTITY_EFFECT, true, (double) pos.getX() + 0.5 + random.nextDouble() / 3.0 * (double) (random.nextBoolean() ? 1 : -1), (double) pos.getY() + random.nextDouble() + random.nextDouble(), (double) pos.getZ() + 0.5 + random.nextDouble() / 3.0 * (double) (random.nextBoolean() ? 1 : -1), xComponent, yComponent, zComponent);
-        }*/
-        int i;
-        if (random.nextFloat() < 0.11F) {
-            for (i = 0; i < random.nextInt(2) + 2; ++i) {
-                CampfireBlock.makeParticles(level, pos, state.getValue(CampfireBlock.SIGNAL_FIRE), false);
-            }
         }
-        i = state.getValue(CampfireBlock.FACING).get2DDataValue();
-        for (int j = 0; j < blockEntity.getItems().size(); ++j) {
-            if (!blockEntity.getItems().get(j).isEmpty() && random.nextFloat() < 0.2F) {
-                Direction direction = Direction.from2DDataValue(Math.floorMod(j + i, 4));
-                double x = (double) pos.getX() + 0.5 - (double) ((float) direction.getStepX() * 0.3125F) + (double) ((float) direction.getClockWise().getStepX() * 0.3125F);
-                double y = (double) pos.getY() + 0.378;
-                double z = (double) pos.getZ() + 0.5 - (double) ((float) direction.getStepZ() * 0.3125F) + (double) ((float) direction.getClockWise().getStepZ() * 0.3125F);
-
-                for (int k = 0; k < 4; ++k)
-                    level.addParticle(ParticleTypes.SMOKE, x, y, z, 0.0, 5.0E-4, 0.0);
-            }
-        }
+        CampfireBlockEntity.particleTick(level, pos, state, blockEntity);
     }
 
     public static void cookTick(Level level, BlockPos pos, BlockState state, FireRingBlockEntity blockEntity, int tempEffectTime) {
@@ -136,7 +121,7 @@ public class FireRingBlockEntity extends CampfireBlockEntity {
                 if (effectInstance.getDuration() <= 0)
                     toRemove.add(effectInstance);
             }
-            if (!toRemove.isEmpty()) {
+            if (!toRemove.isEmpty() || blockEntity.effectColor == -1) {
                 blockEntity.effects.removeAll(toRemove);
                 blockEntity.syncToClient();
             }
@@ -156,6 +141,11 @@ public class FireRingBlockEntity extends CampfireBlockEntity {
 
     public void syncToClient() {
         this.hasEffects = !this.effects.isEmpty();
+        List<MobEffectInstance> effectsForParticles = new ArrayList<>();
+        for (MobEffectInstance effect : this.effects)
+            if (effect.isVisible())
+                effectsForParticles.add(effect);
+        this.effectColor = this.effects.isEmpty() ? -1 : PotionUtils.getColor(effectsForParticles);
         if (this.level != null)
             this.level.sendBlockUpdated(this.getBlockPos(), this.getBlockState(), this.getBlockState(), Block.UPDATE_CLIENTS);
         this.setChanged();
@@ -181,13 +171,14 @@ public class FireRingBlockEntity extends CampfireBlockEntity {
         super.saveAdditional(tag);
         ListTag effectsTag = new ListTag();
         for (MobEffectInstance effectInstance : this.effects)
-            effectsTag.add(effectInstance.save(tag));
+            effectsTag.add(effectInstance.save(new CompoundTag()));
         tag.put("Effects", effectsTag);
     }
 
     @Override
     public CompoundTag getUpdateTag() {
         CompoundTag tag = super.getUpdateTag();
+        tag.putInt("EffectColor", this.effectColor);
         tag.putBoolean("HasEffects", this.hasEffects);
         return tag;
     }
@@ -195,6 +186,9 @@ public class FireRingBlockEntity extends CampfireBlockEntity {
     @Override
     public void handleUpdateTag(CompoundTag tag) {
         super.handleUpdateTag(tag);
+        if (tag.contains("EffectColor", Tag.TAG_INT)) {
+            this.effectColor = tag.getInt("EffectColor");
+        }
         if (tag.contains("HasEffects"))
             this.hasEffects = tag.getBoolean("HasEffects");
     }

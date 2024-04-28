@@ -30,6 +30,7 @@ public class PPBlocks {
     public static final RegistryObject<PiglinWallSkullBlock> PIGLIN_ALCHEMIST_HEAD_WALL = registerWallHead("piglin_alchemist_wall_head", PiglinSkullBlock.Types.PIGLIN_ALCHEMIST);
     public static final RegistryObject<PiglinSkullBlock> PIGLIN_TRAVELER_HEAD = registerHead("piglin_traveler_head", PiglinSkullBlock.Types.PIGLIN_TRAVELER);
     public static final RegistryObject<PiglinWallSkullBlock> PIGLIN_TRAVELER_HEAD_WALL =  registerWallHead("piglin_traveler_wall_head", PiglinSkullBlock.Types.PIGLIN_TRAVELER);
+
     public static final Set<RegistryObject<FireRingBlock>> FIRE_RINGS = new HashSet<>();
     public static final RegistryObject<FireRingBlock> STONE_FIRE_RING = registerFireRing("stone_fire_ring", false, BlockBehaviour.Properties.of().mapColor(MapColor.STONE).instrument(NoteBlockInstrument.BASEDRUM).requiresCorrectToolForDrops().strength(1.5F, 6.0F).sound(SoundType.STONE));
     public static final RegistryObject<FireRingBlock> STONE_SOUL_FIRE_RING = registerFireRing("stone_soul_fire_ring", true, BlockBehaviour.Properties.of().mapColor(MapColor.STONE).instrument(NoteBlockInstrument.BASEDRUM).requiresCorrectToolForDrops().strength(1.5F, 6.0F).sound(SoundType.STONE));
@@ -41,8 +42,9 @@ public class PPBlocks {
     public static final RegistryObject<FireRingBlock> END_STONE_SOUL_FIRE_RING = registerFireRing("end_stone_soul_fire_ring", true, BlockBehaviour.Properties.of().mapColor(MapColor.SAND).instrument(NoteBlockInstrument.BASEDRUM).requiresCorrectToolForDrops().strength(3.0F, 9.0F));
     public static final RegistryObject<FireRingBlock> BLACKSTONE_FIRE_RING = registerFireRing("blackstone_fire_ring", false, BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_BLACK).instrument(NoteBlockInstrument.BASEDRUM).requiresCorrectToolForDrops().strength(1.5F, 6.0F).sound(SoundType.STONE));
     public static final RegistryObject<FireRingBlock> BLACKSTONE_SOUL_FIRE_RING = registerFireRing("blackstone_soul_fire_ring", true, BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_BLACK).instrument(NoteBlockInstrument.BASEDRUM).requiresCorrectToolForDrops().strength(1.5F, 6.0F).sound(SoundType.STONE));
+
     private static RegistryObject<FireRingBlock> registerFireRing(String name,  boolean isSoulFire, BlockBehaviour.Properties properties) {
-        RegistryObject<FireRingBlock> registeredBlock = BLOCKS.register(name, () -> new FireRingBlock(!isSoulFire, isSoulFire ? 2 : 1, isSoulFire? 1200 : 600, properties.lightLevel(Blocks.litBlockEmission(isSoulFire ? 5 : 10)).noOcclusion().ignitedByLava()));
+        RegistryObject<FireRingBlock> registeredBlock = BLOCKS.register(name, () -> new FireRingBlock(!isSoulFire, isSoulFire ? 2 : 1, isSoulFire? 410 : 210, properties.lightLevel(Blocks.litBlockEmission(isSoulFire ? 5 : 10)).noOcclusion().ignitedByLava()));
         FIRE_RINGS.add(registeredBlock);
         return registeredBlock;
     }

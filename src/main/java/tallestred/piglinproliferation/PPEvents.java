@@ -64,6 +64,8 @@ import tallestred.piglinproliferation.networking.ZiglinCapablitySyncPacket;
 import java.util.List;
 import java.util.Map;
 
+import static tallestred.piglinproliferation.util.CodeUtilities.castOrNull;
+
 @SuppressWarnings("unused")
 @Mod.EventBusSubscriber(modid = PiglinProliferation.MODID)
 public class PPEvents {
@@ -111,13 +113,12 @@ public class PPEvents {
             int centreZ = (int) lingeringCloud.getZ();
             int radius = (int) lingeringCloud.getRadius();
             BlockPos.MutableBlockPos mutable = new BlockPos.MutableBlockPos(centreX, centreY, centreZ);
-            boolean found = false;
-            for (int x = centreX - radius; x < centreX + radius && !found; x++)
-                for (int z = centreZ - radius; z < centreZ + radius && !found; z++) {
+            for (int x = centreX - radius; x < centreX + radius; x++)
+                for (int z = centreZ - radius; z < centreZ + radius; z++) {
                     mutable.setX(x);
                     mutable.setZ(z);
                     event.getLevel().getBlockEntity(mutable, PPBlockEntities.FIRE_RING.get()).ifPresent(fireRing -> {
-                        fireRing.addEffects(null, null, null, lingeringCloud.getPotion().getEffects());
+                        fireRing.addEffects(castOrNull(lingeringCloud.getOwner(), Player.class), null, null, lingeringCloud.getPotion().getEffects());
                     });
                 }
         }
@@ -399,6 +400,6 @@ public class PPEvents {
     public static void onLevelTick(TickEvent.LevelTickEvent event) {
         if (event.phase == TickEvent.Phase.END)
             if (event.level instanceof ServerLevel level && level.getGameRules().getBoolean(GameRules.RULE_DOMOBSPAWNING) && level.dimension() == Level.NETHER)
-                TravelerSpawner.tick(level, level.getDataStorage().computeIfAbsent((data) -> TravelerSpawner.SpawnDelay.load(data), () -> new TravelerSpawner.SpawnDelay(), "traveler_spawn_delay"));
+                TravelerSpawner.tick(level, level.getDataStorage().computeIfAbsent(TravelerSpawner.SpawnDelay::load, TravelerSpawner.SpawnDelay::new, "traveler_spawn_delay"));
     }
 }
