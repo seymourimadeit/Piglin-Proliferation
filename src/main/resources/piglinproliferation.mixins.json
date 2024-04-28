@@ -4,15 +4,16 @@
   "compatibilityLevel": "JAVA_17",
   "refmap": "piglinproliferation.refmap.json",
   "mixins": [
+    "HugeFungusFeatureMixin",
     "LookControllerMixin",
     "MovementControllerMixin",
     "NoteBlockMixin",
-    "PiglinBruteBrainMixin",
-    "HugeFungusFeatureMixin"
+    "PiglinBruteBrainMixin"
   ],
   "client": [
-    "MouseHelperMixin",
     "HumanoidModelMixin",
+    "LivingEntityRendererInvoker",
+    "MouseHelperMixin",
     "PiglinModelMixin"
   ],
   "injectors": {
