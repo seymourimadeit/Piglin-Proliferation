@@ -137,7 +137,7 @@ public class PiglinTraveler extends Piglin {
         this.getBrain().tick((ServerLevel) this.level(), this);
         this.level().getProfiler().pop();
         PiglinTravelerAi.INSTANCE.updateBrainActivity(this);
-        this.alreadyLocatedObjects.replaceAll((key, value) -> value-1);
+        this.alreadyLocatedObjects.replaceAll((key, value) -> value - 1);
         this.alreadyLocatedObjects.entrySet().removeIf(e -> e.getValue() <= 0);
     }
 
@@ -229,6 +229,11 @@ public class PiglinTraveler extends Piglin {
 
     public void setKickCoolDown(int kickCoolDown) {
         this.entityData.set(KICK_COOLDOWN, kickCoolDown);
+    }
+
+    @Override
+    public Vec3 getVehicleAttachmentPoint(Entity entity) {
+        return new Vec3(0.0, 0.55 * (double) this.getScale(), 0.0);
     }
 
 }
