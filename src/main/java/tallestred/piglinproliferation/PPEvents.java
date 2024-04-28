@@ -35,12 +35,13 @@ import net.minecraft.world.phys.Vec3;
 import net.neoforged.bus.api.Event;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.event.TickEvent;
 import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
 import net.neoforged.neoforge.event.entity.living.*;
 import net.neoforged.neoforge.event.entity.player.CriticalHitEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.level.NoteBlockEvent;
+import net.neoforged.neoforge.event.tick.EntityTickEvent;
+import net.neoforged.neoforge.event.tick.LevelTickEvent;
 import net.neoforged.neoforge.network.PacketDistributor;
 import tallestred.piglinproliferation.capablities.PPDataAttachments;
 import tallestred.piglinproliferation.client.PPSounds;
@@ -119,52 +120,53 @@ public class PPEvents {
     }
 
     @SubscribeEvent
-    public static void onLivingTick(LivingEvent.LivingTickEvent event) {
-        LivingEntity entity = event.getEntity();
-        ItemStack bucklerItemStack = PPItems.checkEachHandForBuckler(entity);
-        boolean bucklerReadyToCharge = BucklerItem.isReady(bucklerItemStack);
-        int bucklerChargeTicks = BucklerItem.getChargeTicks(bucklerItemStack);
-        if (bucklerReadyToCharge) {
-            BucklerItem.setChargeTicks(bucklerItemStack, bucklerChargeTicks - 1);
-            if (bucklerChargeTicks > 0) {
-                if (entity.horizontalCollision && PPEnchantments.hasBucklerEnchantsOnHands(entity, PPEnchantments.TURNING.get())) {
-                    entity.setDeltaMovement(entity.getDeltaMovement().x, PPConfig.COMMON.turningBucklerLaunchStrength.get() * (EnchantmentHelper.getEnchantmentLevel(PPEnchantments.TURNING.get(), entity)), entity.getDeltaMovement().z);
+    public static void onLivingTick(EntityTickEvent.Pre event) {
+        if (event.getEntity() instanceof LivingEntity entity) {
+            ItemStack bucklerItemStack = PPItems.checkEachHandForBuckler(entity);
+            boolean bucklerReadyToCharge = BucklerItem.isReady(bucklerItemStack);
+            int bucklerChargeTicks = BucklerItem.getChargeTicks(bucklerItemStack);
+            if (bucklerReadyToCharge) {
+                BucklerItem.setChargeTicks(bucklerItemStack, bucklerChargeTicks - 1);
+                if (bucklerChargeTicks > 0) {
+                    if (entity.horizontalCollision && PPEnchantments.hasBucklerEnchantsOnHands(entity, PPEnchantments.TURNING.get())) {
+                        entity.setDeltaMovement(entity.getDeltaMovement().x, PPConfig.COMMON.turningBucklerLaunchStrength.get() * (EnchantmentHelper.getEnchantmentLevel(PPEnchantments.TURNING.get(), entity)), entity.getDeltaMovement().z);
+                    }
+                    BucklerItem.moveFowards(entity);
+                    BucklerItem.spawnRunningEffectsWhileCharging(entity);
+                    if (!entity.level().isClientSide()) BucklerItem.bucklerBash(entity);
                 }
-                BucklerItem.moveFowards(entity);
-                BucklerItem.spawnRunningEffectsWhileCharging(entity);
-                if (!entity.level().isClientSide()) BucklerItem.bucklerBash(entity);
             }
-        }
-        if (bucklerChargeTicks <= 0 && bucklerReadyToCharge || BucklerItem.CHARGE_SPEED_BOOST.hasModifier(entity)
-                && (!(bucklerItemStack.getItem() instanceof BucklerItem) || !bucklerReadyToCharge)) {
-            entity.setDeltaMovement(Vec3.ZERO);
-            BucklerItem.TURNING_SPEED_REDUCTION.removeModifier(entity);
-            BucklerItem.CHARGE_SPEED_BOOST.removeModifier(entity);
-            BucklerItem.INCREASED_KNOCKBACK_RESISTANCE.removeModifier(entity);
-            BucklerItem.setChargeTicks(bucklerItemStack, 0);
-            BucklerItem.setReady(bucklerItemStack, false);
-            entity.stopUsingItem();
-            if (entity instanceof Player player) {
-                for (int slot = 0; slot < player.getInventory().getContainerSize(); slot++) {
-                    if (player.getInventory().getItem(slot).getItem() instanceof BucklerItem) {
-                        BucklerItem.setChargeTicks(player.getInventory().getItem(slot), 0);
-                        BucklerItem.setReady(player.getInventory().getItem(slot), false);
+            if (bucklerChargeTicks <= 0 && bucklerReadyToCharge || BucklerItem.CHARGE_SPEED_BOOST.hasModifier(entity)
+                    && (!(bucklerItemStack.getItem() instanceof BucklerItem) || !bucklerReadyToCharge)) {
+                entity.setDeltaMovement(Vec3.ZERO);
+                BucklerItem.TURNING_SPEED_REDUCTION.removeModifier(entity);
+                BucklerItem.CHARGE_SPEED_BOOST.removeModifier(entity);
+                BucklerItem.INCREASED_KNOCKBACK_RESISTANCE.removeModifier(entity);
+                BucklerItem.setChargeTicks(bucklerItemStack, 0);
+                BucklerItem.setReady(bucklerItemStack, false);
+                entity.stopUsingItem();
+                if (entity instanceof Player player) {
+                    for (int slot = 0; slot < player.getInventory().getContainerSize(); slot++) {
+                        if (player.getInventory().getItem(slot).getItem() instanceof BucklerItem) {
+                            BucklerItem.setChargeTicks(player.getInventory().getItem(slot), 0);
+                            BucklerItem.setReady(player.getInventory().getItem(slot), false);
+                        }
                     }
                 }
             }
-        }
-        boolean criticalAfterCharge = entity.getData(PPDataAttachments.CRITICAL.get());
-        if (criticalAfterCharge) {
-            if (entity.swingTime > 0) {
-                entity.level().playSound(null, entity.getX(), entity.getY(), entity.getZ(), PPSounds.CRITICAL_DEACTIVATE.get(), entity.getSoundSource(), 1.0F, 0.8F + entity.getRandom().nextFloat() * 0.4F);
-                entity.setData(PPDataAttachments.CRITICAL.get(), false);
+            boolean criticalAfterCharge = entity.getData(PPDataAttachments.CRITICAL.get());
+            if (criticalAfterCharge) {
+                if (entity.swingTime > 0) {
+                    entity.level().playSound(null, entity.getX(), entity.getY(), entity.getZ(), PPSounds.CRITICAL_DEACTIVATE.get(), entity.getSoundSource(), 1.0F, 0.8F + entity.getRandom().nextFloat() * 0.4F);
+                    entity.setData(PPDataAttachments.CRITICAL.get(), false);
+                }
+                for (int i = 0; i < 2; ++i) {
+                    entity.level().addParticle(ParticleTypes.CRIT, entity.getRandomX(0.5D), entity.getRandomY(), entity.getRandomZ(0.5D), 0.0D, 0.0D, 0.0D);
+                }
             }
-            for (int i = 0; i < 2; ++i) {
-                entity.level().addParticle(ParticleTypes.CRIT, entity.getRandomX(0.5D), entity.getRandomY(), entity.getRandomZ(0.5D), 0.0D, 0.0D, 0.0D);
-            }
+            if (event.getEntity() instanceof ServerPlayer player)
+                PacketDistributor.sendToPlayer(player, new CriticalCapabilityPacket(player.getId(), criticalAfterCharge));
         }
-        if (event.getEntity() instanceof ServerPlayer player)
-            PacketDistributor.sendToPlayer(player, new CriticalCapabilityPacket(player.getId(), criticalAfterCharge));
     }
 
     @SubscribeEvent
@@ -378,9 +380,8 @@ public class PPEvents {
     }
 
     @SubscribeEvent
-    public static void onLevelTick(TickEvent.LevelTickEvent event) {
-        if (event.phase == TickEvent.Phase.END)
-            if (event.level instanceof ServerLevel level && level.getGameRules().getBoolean(GameRules.RULE_DOMOBSPAWNING) && level.dimension() == Level.NETHER)
-                TravelerSpawner.tick(level, level.getDataStorage().computeIfAbsent(TravelerSpawner.SpawnDelay.factory(), "traveler_spawn_delay"));
+    public static void onLevelTick(LevelTickEvent.Post event) {
+        if (event.getLevel() instanceof ServerLevel level && level.getGameRules().getBoolean(GameRules.RULE_DOMOBSPAWNING) && level.dimension() == Level.NETHER)
+            TravelerSpawner.tick(level, level.getDataStorage().computeIfAbsent(TravelerSpawner.SpawnDelay.factory(), "traveler_spawn_delay"));
     }
 }

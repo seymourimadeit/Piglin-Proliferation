@@ -20,15 +20,11 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Pose;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.fml.util.ObfuscationReflectionHelper;
 import org.jetbrains.annotations.NotNull;
 import tallestred.piglinproliferation.configuration.PPConfig;
-
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
+import tallestred.piglinproliferation.mixins.LivingEntityRendererInvoker;
 
 public class AfterImageParticle extends Particle {
-    public static final Method preRenderCallback = ObfuscationReflectionHelper.findMethod(LivingEntityRenderer.class, "scale", LivingEntity.class, PoseStack.class, float.class);
     private int life;
     private final LivingEntity entity;
 
@@ -92,11 +88,7 @@ public class AfterImageParticle extends Particle {
             }
             float f7 = (float) this.entity.tickCount + tick;
             stack.mulPose(Axis.YP.rotationDegrees(180.0F - f));
-            try {
-                preRenderCallback.invoke(renderer, this.entity, stack, tick);
-            } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
-                throw new RuntimeException("Piglin Proliferation has failed to invoke preRenderCallback via reflection.");
-            }
+            ((LivingEntityRendererInvoker) renderer).invokeScale(this.entity, stack, tick);
             stack.scale(-1.0F, -1.0F, 1.0F);
             float f8 = 0.0F;
             float f5 = 0.0F;
