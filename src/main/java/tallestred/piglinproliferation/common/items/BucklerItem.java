@@ -55,6 +55,7 @@ import static tallestred.piglinproliferation.util.CodeUtilities.ticksToSeconds;
 public class BucklerItem extends ShieldItem {
     public static final AttributeModifierHolder CHARGE_SPEED_BOOST = new AttributeModifierHolder(Attributes.MOVEMENT_SPEED, UUID.fromString("A2F995E8-B25A-4883-B9D0-93A676DC4045"), "Charge speed boost", 9, AttributeModifier.Operation.ADD_MULTIPLIED_BASE);
     public static final AttributeModifierHolder INCREASED_KNOCKBACK_RESISTANCE = new AttributeModifierHolder(Attributes.KNOCKBACK_RESISTANCE, UUID.fromString("93E74BB2-05A5-4AC0-8DF5-A55768208A95"), "Increased knockback resistance", 1, AttributeModifier.Operation.ADD_VALUE);
+    public static final AttributeModifierHolder CHARGE_JUMP_PREVENTION = new AttributeModifierHolder(Attributes.JUMP_STRENGTH, UUID.fromString("DAAAC1C6-2C31-4ABB-B1C5-39BF1F2985A2"), "Charge jump prevention", -1, AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL);
     public static final AttributeModifierHolder TURNING_SPEED_REDUCTION = new AttributeModifierHolder(PPAttributes.TURNING_SPEED, UUID.fromString("25329357-86FD-48DC-BD51-8705EA0CC36E"), "Turning speed reduction", -1, AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL);
     public static final RangedRandomAttributeModifierHolder ATTACK_DAMAGE = new RangedRandomAttributeModifierHolder(Attributes.ATTACK_DAMAGE, UUID.fromString("1DDF2C1B-0279-440F-A919-D07479E60684"), "Attack damage", 6, 8, AttributeModifier.Operation.ADD_VALUE);
     //This is stored as a modifier for easy localisation, even though it's not actually modifying anything
@@ -184,6 +185,7 @@ public class BucklerItem extends ShieldItem {
         BucklerItem.setReady(stack, true);
         BucklerItem.setChargeTicks(stack);
         CHARGE_SPEED_BOOST.get().resetTransientModifier(entity);
+        CHARGE_JUMP_PREVENTION.get().resetTransientModifier(entity);
         INCREASED_KNOCKBACK_RESISTANCE.get().resetTransientModifier(entity);
         TURNING_SPEED_REDUCTION.getWithSummand(turningReduction(stack.getEnchantmentLevel(PPEnchantments.TURNING.get()))).resetTransientModifier(entity);
         stack.hurtAndBreak(1, entity, EquipmentSlot.OFFHAND);
@@ -238,7 +240,7 @@ public class BucklerItem extends ShieldItem {
                 list.add(Component.literal("  ").append(Component.translatable("item.piglinproliferation.buckler.desc.launch").withStyle(ChatFormatting.BLUE)));
             if (turningLevel != 5)
                 list.add(Component.literal("  ").append(TURNING_SPEED_REDUCTION.getWithSummand(turningReduction(turningLevel)).translatable()));
-            list.add(Component.literal("  ").append(Component.translatable("item.piglinproliferation.buckler.desc.cannot_jump").withStyle(ChatFormatting.RED)));
+            list.add(Component.literal("  ").append(CHARGE_JUMP_PREVENTION.get().translatable()));
             list.add(Component.literal("  ").append(Component.translatable("item.piglinproliferation.buckler.desc.water").withStyle(ChatFormatting.RED)));
             list.add(Component.translatable("item.piglinproliferation.buckler.desc.on_shield_bash").withStyle(ChatFormatting.GRAY));
             if (isBang)

@@ -29,10 +29,9 @@ public class PPClientEvents {
     public static void onMovementKeyPressed(MovementInputUpdateEvent event) {
         Minecraft mc = Minecraft.getInstance();
         LocalPlayer player = mc.player;
-        if (player != null && BucklerItem.getChargeTicks(PPItems.checkEachHandForBuckler(player)) > 0) {
-            event.getInput().jumping = false;
+        if (player != null && BucklerItem.getChargeTicks(PPItems.checkEachHandForBuckler(player)) > 0)
             event.getInput().leftImpulse = 0;
-        }
+
     }
 
     @SubscribeEvent

@@ -141,6 +141,7 @@ public class PPEvents {
                 entity.setDeltaMovement(Vec3.ZERO);
                 BucklerItem.TURNING_SPEED_REDUCTION.removeModifier(entity);
                 BucklerItem.CHARGE_SPEED_BOOST.removeModifier(entity);
+                BucklerItem.CHARGE_JUMP_PREVENTION.removeModifier(entity);
                 BucklerItem.INCREASED_KNOCKBACK_RESISTANCE.removeModifier(entity);
                 BucklerItem.setChargeTicks(bucklerItemStack, 0);
                 BucklerItem.setReady(bucklerItemStack, false);
