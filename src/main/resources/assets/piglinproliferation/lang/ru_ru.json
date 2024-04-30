@@ -46,7 +46,6 @@
    "item.piglinproliferation.buckler.desc.while_charging": "Во время рывка:",
    "item.piglinproliferation.buckler.desc.shield_bash": "Shield Bash on столкновении с сущностью",
    "item.piglinproliferation.buckler.desc.launch": "Launch into the air on colliding with a block",
-   "item.piglinproliferation.buckler.desc.cannot_jump": "Нельзя прыгать",
    "item.piglinproliferation.buckler.desc.water": "Нельзя использовать под водой",
    "item.piglinproliferation.buckler.desc.on_shield_bash": "On Shield Bash:",
    "item.piglinproliferation.buckler.desc.explosion": "Создаёт взрыв при столкновении, наносящий урон существу и использующему",
