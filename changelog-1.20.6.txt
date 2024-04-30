@@ -1,0 +1,23 @@
+- Piglin Traveler
+    - Barter with him to get items that help you explore the nether, especially it's very own compass!
+    - Head block!
+    - Spawns in camps or just wandering around the nether
+- Fire rings!
+    - It may seem like a weaker variant of the campfire on the surface, but right clicking it with a potion imbues the area with
+    special effects for a significant duration!
+    - Comes in all stone variants (even end stone!)
+- Buckler changes
+    - Improved description system (now you have to shift to get big blocks of text!)
+    - Rework of Enchants
+        Turning now comes in separate levels, each level grants you further turning but minimizes buckler impact damage
+        Bang decreases your durability less than before
+- Improved various internal systems
+- Fixed bug where piglin heads did not drop themselves when broken
+- Fixed crash when piglin brute drops buckler
+- Added new language translations!
+    - Spanish (please someone proofread this my 2 years of high school spanish might look a bit poop)
+    - French
+    - German
+    - British English (now with a correct file name)
+- Zombified Piglins now attack you with ranged weapons, more reasons not to anger them!
+- Piglin Alchemist bartering loot tables are now completely replaced with a unique one!
