@@ -1,23 +1,43 @@
 - Piglin Traveler
-    - Barter with him to get items that help you explore the nether, especially it's very own compass!
-    - Head block!
-    - Spawns in camps or just wandering around the nether
-- Fire rings!
-    - It may seem like a weaker variant of the campfire on the surface, but right clicking it with a potion imbues the area with
-    special effects for a significant duration!
-    - Comes in all stone variants (even end stone!)
+    - A new piglin variant who can be found in camps or just wandering around the nether
+    - Traveler Camps
+        - A common new structure where the Piglin Traveler can be found, consisting of a Fire Ring and a slab for sitting down
+        - Spawns in all nether biomes except for basalt deltas (due to jankiness)
+        - Generates as a 'camp gathering' in the Crimson Forest instead, with 3 Piglin Travelers and a 'fallen log'
+    - Barter with the Traveler to get items that help you explore the nether, including their very own compass! 
+    - Traveler's Compass
+        - Points to a random biome or structure in the nether
+        - Shows its coordinates in the item description
+        - Can be duplicated by combining it with a normal compass in the crafting table
+        - NOTE: Travelers can't give you a duplicate compass for 20 minutes after you first got it; you'll always get new locations if you do all your bartering within that timeframe 
+    - Has a head block just like the other piglin variants
+- Fire Rings
+    - A cheaper variant of the campfire that takes twice as long to cook items and gives off half as much light
+    - Using a potion (splash or lingering too) on a Fire Ring applies all of the potion's effects to surrounding areas for as long as its duration (e.g. 8 minute Potion of Swiftness will last on a Fire Ring for 8 minutes)
+    - Potions can be added with a Dispenser
+    - Soul Fire Rings have half the range but double the temporary effect time (i.e. an entity leaving the range of a Soul Fire Ring will keep its effects for 20 seconds afterwards instead of 10)
+    - Comes in Stone, Deepslate, Blackstone, Netherrack and Endstone variants
+    - Crafted with 3 of a valid stone type and a piece of coal
+    - NOTE: Stone and Deepslate Fire Rings are crafted with their cobbled stone variants
 - Buckler changes
-    - Improved description system (now you have to shift to get big blocks of text!)
-    - Rework of Enchants
-        Turning now comes in separate levels, each level grants you further turning but minimizes buckler impact damage
-        Bang decreases your durability less than before
-- Improved various internal systems
-- Fixed bug where piglin heads did not drop themselves when broken
-- Fixed crash when piglin brute drops buckler
-- Added new language translations!
-    - Spanish (please someone proofread this my 2 years of high school spanish might look a bit poop)
+    - Doubled durability to 128
+    - Improved description
+        - Reworded to increase clarity
+        - In order to show the full description, you now have to hold down the sneak key while hovering over a Buckler
+    - Enchantment buffs
+        - Turning now has 5 levels; each level increases your turning speed but reduces the attack damage from hitting an entity with a Buckler
+        - Turning V gives you full turn control like before, but now 1-2 bash damage as well
+        - Bang decreases your durability much less than before (2-6 depending on bang level rather than 5-15)
+- Redesigned Piglin Alchemist loot table to be more related to brewing and alchemy
+- Zombified Piglins can now use any ranged weapons they're holding to attack you... even more reason not to anger them!
+- Parrots can now imitate Piglin Alchemists and Piglin Travelers
+- Added new language translations
     - French
     - German
-    - British English (now with a correct file name)
-- Zombified Piglins now attack you with ranged weapons, more reasons not to anger them!
-- Piglin Alchemist bartering loot tables are now completely replaced with a unique one!
+    - Spanish
+    - British English (just changes Traveler to Traveller)
+    - NOTE: Translation help is wanted, please contact us if you're willing!! In particular, Spanish needs proofreading as we couldn't verify it with a native speaker, and Russian, Ukrainian and Vietnamese are very incomplete
+- Bugfixes
+    - Piglin Head variants now drop themselves when broken
+    - Fixed crash when piglin brute drops a Buckler
+- Many internal code improvements
