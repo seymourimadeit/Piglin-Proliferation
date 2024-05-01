@@ -12,6 +12,7 @@ import net.minecraft.world.level.storage.loot.LootContext;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
 import net.minecraft.world.level.storage.loot.predicates.LootItemConditionType;
+import net.neoforged.neoforge.common.Tags;
 import tallestred.piglinproliferation.common.entities.PiglinTraveler;
 import tallestred.piglinproliferation.common.items.PPItems;
 import tallestred.piglinproliferation.common.tags.EitherTag;
@@ -34,6 +35,7 @@ public class CompassCanFindLocationCondition implements LootItemCondition {
         if (lootContext.getParam(LootContextParams.THIS_ENTITY) instanceof PiglinTraveler traveler) {
             ServerLevel level = lootContext.getLevel();
             List<Either<Holder<Biome>, Holder<Structure>>> objectsToSearch = PPTags.TRAVELERS_COMPASS_SEARCH.combinedValues(level.registryAccess());
+            objectsToSearch.removeIf(object -> object.left().isPresent() && object.left().get().is(Tags.Biomes.HIDDEN_FROM_LOCATOR_SELECTION)); //TODO a bit hacky, rewrite properly in 1.21
             Collections.shuffle(objectsToSearch);
             for (Either<Holder<Biome>, Holder<Structure>> searchObject : objectsToSearch) {
                 EitherTag.Location searchObjectLocation = EitherTag.elementLocation(searchObject);
