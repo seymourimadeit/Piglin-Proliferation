@@ -49,10 +49,7 @@ import tallestred.piglinproliferation.common.blocks.PiglinSkullBlock;
 import tallestred.piglinproliferation.common.enchantments.PPEnchantments;
 import tallestred.piglinproliferation.common.entities.PPEntityTypes;
 import tallestred.piglinproliferation.common.entities.PiglinTraveler;
-import tallestred.piglinproliferation.common.entities.ai.goals.DumbBowAttackGoal;
-import tallestred.piglinproliferation.common.entities.ai.goals.DumbCrossbowAttackGoal;
-import tallestred.piglinproliferation.common.entities.ai.goals.PiglinCallForHelpGoal;
-import tallestred.piglinproliferation.common.entities.ai.goals.PiglinSwimInLavaGoal;
+import tallestred.piglinproliferation.common.entities.ai.goals.*;
 import tallestred.piglinproliferation.common.entities.spawns.TravelerSpawner;
 import tallestred.piglinproliferation.common.items.BucklerItem;
 import tallestred.piglinproliferation.common.items.PPItems;
@@ -99,6 +96,9 @@ public class PPEvents {
             }
             ziglin.goalSelector.addGoal(2, new DumbBowAttackGoal<>(ziglin, 0.5D, 20, 15.0F));
             ziglin.goalSelector.addGoal(2, new DumbCrossbowAttackGoal<>(ziglin, 1.0D, 8.0F));
+        }
+        if (event.getEntity() instanceof PathfinderMob mob && PPConfig.COMMON.mobsThatCanAlsoUseBuckler.get().contains(mob.getEncodeId())) {
+            mob.goalSelector.addGoal(2, new UseBucklerGoal<>(mob));
         }
         if (event.getEntity() instanceof AbstractPiglin piglin) {
             piglin.goalSelector.addGoal(0, new PiglinCallForHelpGoal(piglin, (piglin1) -> piglin1.isOnFire() && !piglin1.hasEffect(MobEffects.FIRE_RESISTANCE), (alchemist -> alchemist.getItemShownOnOffhand() != null && PotionUtils.getPotion(alchemist.getItemShownOnOffhand()) == Potions.FIRE_RESISTANCE)));
