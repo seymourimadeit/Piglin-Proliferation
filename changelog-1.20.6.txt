@@ -41,3 +41,4 @@
     - Piglin Head variants now drop themselves when broken
     - Fixed crash when piglin brute drops a Buckler
 - Many internal code improvements
+- Port to NeoForge 1.20.6
