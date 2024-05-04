@@ -146,7 +146,7 @@ public class PPEvents {
             BucklerItem.setChargeTicks(bucklerItemStack, bucklerChargeTicks - 1);
             if (bucklerChargeTicks > 0) {
                 if (entity.horizontalCollision && PPEnchantments.hasBucklerEnchantsOnHands(entity, PPEnchantments.TURNING.get())) {
-                    entity.setDeltaMovement(entity.getDeltaMovement().x, PPConfig.COMMON.turningBucklerLaunchStrength.get() * (EnchantmentHelper.getEnchantmentLevel(PPEnchantments.TURNING.get(), entity)), entity.getDeltaMovement().z);
+                    entity.setDeltaMovement(entity.getDeltaMovement().x, PPConfig.COMMON.turningBucklerLaunchStrength.get() * (PPEnchantments.getBucklerEnchantsOnHands(PPEnchantments.TURNING.get(), entity)), entity.getDeltaMovement().z);
                 }
                 BucklerItem.moveFowards(entity);
                 BucklerItem.spawnRunningEffectsWhileCharging(entity);
