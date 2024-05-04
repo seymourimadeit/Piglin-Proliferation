@@ -1,6 +1,7 @@
 package tallestred.piglinproliferation.configuration;
 
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Lists;
 import net.neoforged.neoforge.common.ModConfigSpec;
 import org.apache.commons.lang3.tuple.Pair;
 
@@ -47,7 +48,7 @@ public class PPConfig {
         public final ModConfigSpec.IntValue maxBucklerChargeTime;
         public final ModConfigSpec.DoubleValue turningBucklerLaunchStrength;
         public final ModConfigSpec.ConfigValue<List<? extends String>> zombifiedPiglinTypeList;
-
+        public final ModConfigSpec.ConfigValue<List<? extends String>> mobsThatCanAlsoUseBuckler;
         public CommonConfig(ModConfigSpec.Builder builder) {
             builder.push("Vanilla Changes");
             healingArrowDamage = builder.define("Allow healing and Regeneration arrows to not do damage?", true);
@@ -65,6 +66,7 @@ public class PPConfig {
             zombifiedPiglinTypeList = builder.comment("List of variants a zombified piglin has a 50% of turning into when spawning.", "Keep in mind they will still spawn with golden swords, this will be changed in the future.").defineList("List of piglin variants to use", ImmutableList.of(), obj -> true);
             builder.pop();
             builder.push("Buckler");
+            mobsThatCanAlsoUseBuckler = builder.define("Mobs that can also use the buckler", Lists.newArrayList("guardvillagers:guard"));
             BangBlockDestruction = builder.define("Have the explosion spawned while using the Bang! enchant destroy blocks?", false);
             BruteBuckler = builder.define("Have brutes spawn with bucklers?", true);
             bucklerCooldown = builder.defineInRange("How long should the buckler's cooldown be in ticks?", 240, Integer.MIN_VALUE, Integer.MAX_VALUE);
