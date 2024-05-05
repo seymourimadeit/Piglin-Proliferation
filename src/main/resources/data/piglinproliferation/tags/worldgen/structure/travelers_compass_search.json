@@ -1,6 +1,10 @@
 {
   "values": [
     "minecraft:fortress",
+    {
+      "id": "betterfortresses:fortress",
+      "required": false
+    },
     "minecraft:bastion_remnant",
     "minecraft:ruined_portal_nether"
   ]

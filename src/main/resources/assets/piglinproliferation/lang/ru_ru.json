@@ -70,6 +70,7 @@
    "item.piglinproliferation.travelers_compass.desc.locked": "Привязан к: ",
    "item.piglinproliferation.travelers_compass.desc.structure.minecraft.bastion_remnant": "Бастион",
    "item.piglinproliferation.travelers_compass.desc.structure.minecraft.fortress": "Крепость Незера",
+   "item.piglinproliferation.travelers_compass.desc.structure.betterfortresses.fortress": "Крепость Незера",
    "item.piglinproliferation.travelers_compass.desc.structure.minecraft.ruined_portal_nether": "Разрушенный портал",
    "subtitles.entity.piglin_traveler.make_compass": "Piglin Traveler makes compass",
    "subtitles.entity.piglin_traveler.idle": "Piglin Traveler grunts",
@@ -85,9 +86,9 @@
    "subtitles.entity.critical_aura.activate": "Critical Aura activates",
    "subtitles.entity.critical_aura.apply": "Critical Aura applies",
    "subtitles.entity.critical_aura.deactivate": "Critical Aura deactivates",
-   "subtitles.entity.parrot.imitate.piglin_alchemist": "Parrot grunts",
-   "subtitles.entity.parrot.imitate.piglin_traveler": "Parrot grunts",
-   "subtitles.entity.parrot.imitate.zombified_piglin": "Parrot grunts",
+   "subtitles.entity.parrot.imitate.piglin_alchemist": "Попугай фыркает как пиглин",
+   "subtitles.entity.parrot.imitate.piglin_traveler": "Попугай фыркает как пиглин-алхимик",
+   "subtitles.entity.parrot.imitate.zombified_piglin": "Попугай фыркает как Piglin Traveler",
    "piglinproliferation.advancements.nether.obtain_travelers_compass.title": "Journey of a Thousand Blocks",
    "piglinproliferation.advancements.nether.obtain_travelers_compass.description": "Obtain a Traveler's Compass by bartering with a Piglin Traveler - it may help you find what you need..."
 }

@@ -70,6 +70,7 @@
   "item.piglinproliferation.travelers_compass.desc.locked": "Locked on to: ",
   "item.piglinproliferation.travelers_compass.desc.structure.minecraft.bastion_remnant": "Bastion Remnant",
   "item.piglinproliferation.travelers_compass.desc.structure.minecraft.fortress": "Nether Fortress",
+  "item.piglinproliferation.travelers_compass.desc.structure.betterfortresses.fortress": "Nether Fortress",
   "item.piglinproliferation.travelers_compass.desc.structure.minecraft.ruined_portal_nether": "Ruined Portal",
   "subtitles.entity.piglin_traveler.make_compass": "Piglin Traveler makes compass",
   "subtitles.entity.piglin_traveler.idle": "Piglin Traveler grunts",

@@ -20,6 +20,7 @@ import tallestred.piglinproliferation.common.items.component.PPComponents;
 import tallestred.piglinproliferation.common.items.component.TravelersCompassTracker;
 
 import java.util.List;
+import java.util.Optional;
 
 import static tallestred.piglinproliferation.util.CodeUtilities.snakeCaseToEnglish;
 
@@ -52,12 +53,12 @@ public class TravelersCompassItem extends CompassItem {
         return returnComponent;
     }
 
-    public BlockPos search(Either<Holder<Biome>, Holder<Structure>> searchObject, BlockPos sourcePos, ServerLevel level) {
+    public Optional<BlockPos> search(Either<Holder<Biome>, Holder<Structure>> searchObject, BlockPos sourcePos, ServerLevel level) {
         Pair<BlockPos, ?> output;
         if (searchObject.left().isPresent())
             output = level.findClosestBiome3d(holder -> holder.equals(searchObject.left().orElseThrow()), sourcePos, 64000, 32, 64);
         else output = level.getChunkSource().getGenerator().findNearestMapStructure(level, HolderSet.direct(searchObject.right().orElseThrow()), sourcePos, 50, false);
-        return output != null ? output.getFirst() : null;
+        return output != null ? Optional.of(output.getFirst()) : Optional.empty();
     }
 
     public boolean entityAtSearchObject(Either<Holder<Biome>, Holder<Structure>> searchObject, LivingEntity entity) {

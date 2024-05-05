@@ -39,6 +39,7 @@ import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
 import net.neoforged.neoforge.event.entity.living.*;
 import net.neoforged.neoforge.event.entity.player.CriticalHitEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
+import net.neoforged.neoforge.event.level.LevelEvent;
 import net.neoforged.neoforge.event.level.NoteBlockEvent;
 import net.neoforged.neoforge.event.tick.EntityTickEvent;
 import net.neoforged.neoforge.event.tick.LevelTickEvent;
@@ -54,6 +55,7 @@ import tallestred.piglinproliferation.common.entities.ai.goals.*;
 import tallestred.piglinproliferation.common.entities.spawns.TravelerSpawner;
 import tallestred.piglinproliferation.common.items.BucklerItem;
 import tallestred.piglinproliferation.common.items.PPItems;
+import tallestred.piglinproliferation.common.loot.CompassCanFindLocationCondition;
 import tallestred.piglinproliferation.configuration.PPConfig;
 import tallestred.piglinproliferation.networking.CriticalCapabilityPacket;
 import tallestred.piglinproliferation.networking.ZiglinCapabilitySyncPacket;
@@ -384,5 +386,10 @@ public class PPEvents {
     public static void onLevelTick(LevelTickEvent.Post event) {
         if (event.getLevel() instanceof ServerLevel level && level.getGameRules().getBoolean(GameRules.RULE_DOMOBSPAWNING) && level.dimension() == Level.NETHER)
             TravelerSpawner.tick(level, level.getDataStorage().computeIfAbsent(TravelerSpawner.SpawnDelay.factory(), "traveler_spawn_delay"));
+    }
+
+    @SubscribeEvent
+    public static void onLevelUnload(LevelEvent.Unload event) {
+        CompassCanFindLocationCondition.clearSearchCache();
     }
 }
