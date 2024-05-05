@@ -25,7 +25,7 @@ public class UseBucklerGoal<T extends PathfinderMob> extends Goal {
 
     @Override
     public boolean canUse() {
-        return (owner.level().getGameTime() - nextOkStartTime > (long) PPConfig.COMMON.bucklerCooldown.get())&& owner.getOffhandItem().getItem() instanceof BucklerItem && owner.getTarget() != null && owner.hasLineOfSight(owner.getTarget()) && owner.getTarget().distanceTo(owner) >= 4.0D
+        return (owner.level().getGameTime() - nextOkStartTime > (long) PPConfig.COMMON.bucklerCooldown.get()) && owner.getOffhandItem().getItem() instanceof BucklerItem && owner.getTarget() != null && owner.hasLineOfSight(owner.getTarget()) && owner.getTarget().distanceTo(owner) >= 4.0D
                 && !owner.isInWaterRainOrBubble();
     }
 
@@ -39,8 +39,6 @@ public class UseBucklerGoal<T extends PathfinderMob> extends Goal {
         LivingEntity livingEntity = owner.getTarget();
         if (livingEntity == null)
             return;
-        if (BucklerItem.getChargeTicks(PPItems.checkEachHandForBuckler(owner)) > 0 && PPEnchantments.getBucklerEnchantsOnHands(PPEnchantments.TURNING.get(), owner) > 0 || BucklerItem.getChargeTicks(PPItems.checkEachHandForBuckler(owner)) <= 0)
-            owner.lookAt(livingEntity, 30.0F, 30.0F);
         if (owner.distanceTo(livingEntity) >= 10.0D) {
             owner.getNavigation().moveTo(livingEntity, 1.0D);
         } else {
@@ -51,13 +49,17 @@ public class UseBucklerGoal<T extends PathfinderMob> extends Goal {
             strafeTicks--;
             if (strafeTicks == 0)
                 chargePhase = ChargePhases.CHARGE;
-        } else if (chargePhase == ChargePhases.CHARGE) {
-            if (!owner.isUsingItem()) {
-                owner.startUsingItem(InteractionHand.OFF_HAND);
-                chargePhase = ChargePhases.CHARGING;
+            if (BucklerItem.getChargeTicks(PPItems.checkEachHandForBuckler(owner)) > 0 && PPEnchantments.getBucklerEnchantsOnHands(PPEnchantments.TURNING.get(), owner) > 0 || BucklerItem.getChargeTicks(PPItems.checkEachHandForBuckler(owner)) <= 0) {
+                owner.lookAt(livingEntity, 30.0F, 30.0F);
             }
-        } else if (chargePhase == ChargePhases.CHARGING) {
+        } else if (chargePhase == ChargePhases.CHARGE) {
+            if (!owner.isUsingItem() && BucklerItem.getChargeTicks(PPItems.checkEachHandForBuckler(owner)) <= 0) {
+                owner.startUsingItem(InteractionHand.OFF_HAND);
+            }
             if (owner.getTicksUsingItem() >= owner.getUseItem().getUseDuration())
+                this.chargePhase = ChargePhases.CHARGING;
+        } else if (chargePhase == ChargePhases.CHARGING) {
+            if (BucklerItem.getChargeTicks(PPItems.checkEachHandForBuckler(owner)) <= 0)
                 chargePhase = ChargePhases.FINISH;
         }
     }
@@ -71,7 +73,8 @@ public class UseBucklerGoal<T extends PathfinderMob> extends Goal {
 
     @Override
     public void stop() {
-        owner.stopUsingItem();
+        if (owner.isUsingItem())
+            owner.stopUsingItem();
         owner.setAggressive(false);
         owner.setTarget(null);
         nextOkStartTime = owner.level().getGameTime();
