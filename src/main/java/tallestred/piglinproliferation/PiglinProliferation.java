@@ -69,7 +69,7 @@ import static tallestred.piglinproliferation.util.RegistryUtilities.addToCreativ
 public class PiglinProliferation {
     public static final String MODID = "piglinproliferation";
 
-    public PiglinProliferation(ModContainer container, IEventBus modEventBus, Dist dist) {
+    public PiglinProliferation(IEventBus modEventBus, Dist dist, ModContainer container) {
         modEventBus.addListener(this::setup);
         modEventBus.addListener(this::enqueueIMC);
         modEventBus.addListener(this::processIMC);
@@ -79,7 +79,7 @@ public class PiglinProliferation {
         modEventBus.addListener(this::addCreativeTabs);
         modEventBus.addListener(this::registerPackets);
         if (dist == Dist.CLIENT)
-            modEventBus.addListener(this::doClientStuff) ;
+            modEventBus.addListener(this::doClientStuff);
         NeoForge.EVENT_BUS.addListener(this::serverStart);
         PPSounds.SOUNDS.register(modEventBus);
         PPAttributes.ATTRIBUTES.register(modEventBus);
@@ -160,7 +160,8 @@ public class PiglinProliferation {
                         return new ItemStack(Items.GLASS_BOTTLE);
                     }
                 return oldBehavior.dispense(blockSource, stack);
-        }}));
+            }
+        }));
     }
 
     private void enqueueIMC(final InterModEnqueueEvent event) {
