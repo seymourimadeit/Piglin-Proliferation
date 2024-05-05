@@ -25,11 +25,12 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 public class CompassCanFindLocationCondition implements LootItemCondition {
+    private static final Set<Either<Holder<Biome>, Holder<Structure>>> FINDABLE_SEARCH_OBJECTS = new HashSet<>();
+
     @Override
     public LootItemConditionType getType() {
         return PPLoot.COMPASS_CAN_FIND_LOCATION.get();
     }
-    private static final Set<Either<Holder<Biome>, Holder<Structure>>> FINDABLE_SEARCH_OBJECTS = new HashSet<>();
 
     @Override
     public boolean test(LootContext lootContext) {
