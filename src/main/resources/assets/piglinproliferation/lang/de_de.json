@@ -71,6 +71,7 @@
   "item.piglinproliferation.travelers_compass.desc.locked": "Ziel: ",
   "item.piglinproliferation.travelers_compass.desc.structure.minecraft.bastion_remnant": "Bastionsruine",
   "item.piglinproliferation.travelers_compass.desc.structure.minecraft.fortress": "Netherfestung",
+  "item.piglinproliferation.travelers_compass.desc.structure.betterfortresses.fortress": "Netherfestung",
   "item.piglinproliferation.travelers_compass.desc.structure.minecraft.ruined_portal_nether": "Portalruine",
   "subtitles.entity.piglin_traveler.make_compass": "Piglin-Reisender erschafft Zirkel",
   "subtitles.entity.piglin_traveler.idle": "Piglin-Reisender grunzt",

@@ -71,6 +71,7 @@
   "item.piglinproliferation.travelers_compass.desc.locked": "Hacia: ",
   "item.piglinproliferation.travelers_compass.desc.structure.minecraft.bastion_remnant": "Bastión en Ruinas",
   "item.piglinproliferation.travelers_compass.desc.structure.minecraft.fortress": "Fortaleza del Nether",
+  "item.piglinproliferation.travelers_compass.desc.structure.betterfortresses.fortress": "Fortaleza del Nether",
   "item.piglinproliferation.travelers_compass.desc.structure.minecraft.ruined_portal_nether": "Portal en Ruinas",
   "subtitles.entity.piglin_traveler.make_compass": "Piglin nómada hace una brújula",
   "subtitles.entity.piglin_traveler.idle": "Piglin nómada bufa",

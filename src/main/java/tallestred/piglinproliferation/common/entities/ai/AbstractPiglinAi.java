@@ -137,7 +137,7 @@ public abstract class AbstractPiglinAi<P extends Piglin> extends PiglinAi {
     }
 
     protected Optional<? extends LivingEntity> nearestValidAttackTarget(Piglin piglin) {
-        return PiglinAi.findNearestValidAttackTarget(piglin);
+        return findNearestValidAttackTarget(piglin);
     }
 
     public static Optional<? extends LivingEntity> findNemesisTarget(Brain<? extends Piglin> brain) {

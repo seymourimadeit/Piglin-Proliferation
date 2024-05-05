@@ -71,6 +71,7 @@
    "item.piglinproliferation.travelers_compass.desc.locked": "Замкнено на: ",
    "item.piglinproliferation.travelers_compass.desc.structure.minecraft.bastion_remnant": "Бастіон",
    "item.piglinproliferation.travelers_compass.desc.structure.minecraft.fortress": "Незерська фортеця",
+   "item.piglinproliferation.travelers_compass.desc.structure.betterfortresses.fortress": "Незерська фортеця",
    "item.piglinproliferation.travelers_compass.desc.structure.minecraft.ruined_portal_nether": "Зруйнований портал",
    "subtitles.entity.piglin_traveler.make_compass": "Piglin Traveler makes compass",
    "subtitles.entity.piglin_traveler.idle": "Piglin Traveler grunts",

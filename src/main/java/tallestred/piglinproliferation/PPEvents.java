@@ -36,6 +36,7 @@ import net.minecraftforge.event.entity.EntityJoinLevelEvent;
 import net.minecraftforge.event.entity.living.*;
 import net.minecraftforge.event.entity.player.CriticalHitEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
+import net.minecraftforge.event.level.LevelEvent;
 import net.minecraftforge.event.level.NoteBlockEvent;
 import net.minecraftforge.eventbus.api.Event;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -56,6 +57,7 @@ import tallestred.piglinproliferation.common.entities.ai.goals.PiglinSwimInLavaG
 import tallestred.piglinproliferation.common.entities.spawns.TravelerSpawner;
 import tallestred.piglinproliferation.common.items.BucklerItem;
 import tallestred.piglinproliferation.common.items.PPItems;
+import tallestred.piglinproliferation.common.loot.CompassCanFindLocationCondition;
 import tallestred.piglinproliferation.configuration.PPConfig;
 import tallestred.piglinproliferation.networking.CriticalCapabilityPacket;
 import tallestred.piglinproliferation.networking.PPNetworking;
@@ -401,5 +403,10 @@ public class PPEvents {
         if (event.phase == TickEvent.Phase.END)
             if (event.level instanceof ServerLevel level && level.getGameRules().getBoolean(GameRules.RULE_DOMOBSPAWNING) && level.dimension() == Level.NETHER)
                 TravelerSpawner.tick(level, level.getDataStorage().computeIfAbsent(TravelerSpawner.SpawnDelay::load, TravelerSpawner.SpawnDelay::new, "traveler_spawn_delay"));
+    }
+
+    @SubscribeEvent
+    public static void onLevelUnload(LevelEvent.Unload event) {
+        CompassCanFindLocationCondition.clearSearchCache();
     }
 }
