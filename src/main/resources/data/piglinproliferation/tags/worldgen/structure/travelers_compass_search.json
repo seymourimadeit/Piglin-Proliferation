@@ -6,6 +6,66 @@
       "required": false
     },
     "minecraft:bastion_remnant",
-    "minecraft:ruined_portal_nether"
+    "minecraft:ruined_portal_nether",
+    {
+      "id": "hearths:crimson_tower",
+      "required": false
+    },
+    {
+      "id": "hearths:warped_tower",
+      "required": false
+    },
+    {
+      "id": "incendium:sanctum",
+      "required": false
+    },
+    {
+      "id": "incendium:ruined_lab",
+      "required": false
+    },
+    {
+      "id": "incendium:quartz_kitchen",
+      "required": false
+    },
+    {
+      "id": "incendium:pipeline",
+      "required": false
+    },
+    {
+      "id": "incendium:piglin_village",
+      "required": false
+    },
+    {
+      "id": "incendium:nether_reactor",
+      "required": false
+    },
+    {
+      "id": "incendium:infernal_altar",
+      "required": false
+    },
+    {
+      "id": "incendium:forbidden_castle",
+      "required": false
+    },
+    {
+      "id": "incendium:abandoned_tower",
+      "required": false
+    },
+    {
+      "id": "dungeons_plus:soul_prison",
+      "required": false
+    },
+    {
+      "id": "bygonenether:catacomb",
+      "required": false
+    },
+    {
+      "id": "bygonenether:citadel",
+      "required": false
+    },
+    {
+      "id": "bygonenether:piglin_manor",
+      "required": false
+    }
   ]
 }
