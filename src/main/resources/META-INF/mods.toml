@@ -20,7 +20,7 @@ logoFile="piglinproliferation.png" #optional
 authors="TallestRed (Developer), Edmord (Artist), flowerfugue (Developer)"
 credits="Vivi for Buckler art, flowerfugue's friends Leo and Paula for translation help" #optional
 description='''
-Piglins expanded in new ways!
+Diversifies Piglins by giving their variants unique features, and adds two new Piglin types to fill specific gameplay niches.
 '''
 [[dependencies.piglinproliferation]]
     modId="forge" #mandatory
