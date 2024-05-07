@@ -313,9 +313,14 @@ public class PPEvents {
                         event.setCanceled(true);
                         zombifiedPiglin.setItemSlot(EquipmentSlot.MAINHAND, new ItemStack(Items.BOW));
                         zombifiedPiglin.setData(PPDataAttachments.TRANSFORMATION_TRACKER.get(), "piglin_alchemist");
-                    } else if (random.nextFloat() < PPConfig.COMMON.crossbowChance.get().floatValue()) {
-                        event.setCanceled(true);
-                        zombifiedPiglin.setItemSlot(EquipmentSlot.MAINHAND, new ItemStack(Items.CROSSBOW));
+                    } else {
+                        if (random.nextFloat() < PPConfig.COMMON.zombifiedTravelerChance.get().floatValue()) {
+                            zombifiedPiglin.setData(PPDataAttachments.TRANSFORMATION_TRACKER.get(), "piglin_traveler");
+                        }
+                        if (random.nextFloat() < PPConfig.COMMON.crossbowChance.get().floatValue()) {
+                            event.setCanceled(true);
+                            zombifiedPiglin.setItemSlot(EquipmentSlot.MAINHAND, new ItemStack(Items.CROSSBOW));
+                        }
                     }
                 }
                 if (spawnType == MobSpawnType.JOCKEY) {
