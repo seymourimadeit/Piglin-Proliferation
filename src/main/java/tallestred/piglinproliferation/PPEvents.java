@@ -119,9 +119,16 @@ public class PPEvents {
                 for (int z = centreZ - radius; z < centreZ + radius; z++) {
                     mutable.setX(x);
                     mutable.setZ(z);
-                    event.getLevel().getBlockEntity(mutable, PPBlockEntities.FIRE_RING.get()).ifPresent(fireRing -> {
-                        fireRing.addEffects(castOrNull(lingeringCloud.getOwner(), Player.class), null, null, lingeringCloud.getPotion().getEffects());
-                    });
+                    if (!lingeringCloud.getPotion().getEffects().isEmpty()) {
+                        try {
+                            event.getLevel().getBlockEntity(mutable, PPBlockEntities.FIRE_RING.get()).ifPresent(fireRing -> {
+                                fireRing.addEffects(castOrNull(lingeringCloud.getOwner(), Player.class), null, null, lingeringCloud.getPotion().getEffects());
+                            });
+                        } catch (ArrayIndexOutOfBoundsException execption) {
+                            lingeringCloud.remove(Entity.RemovalReason.DISCARDED);
+                            // I hope this fixes this issue, if not I will have to investigate further and see exactly how to recreate it
+                        }
+                    }
                 }
         }
     }
@@ -403,6 +410,7 @@ public class PPEvents {
             event.getLevel().playSound(null, event.getPos(), skull.getType().getSoundEvent(), SoundSource.RECORDS);
         }
     }
+
     @SubscribeEvent
     public static void onLevelTick(TickEvent.LevelTickEvent event) {
         if (event.phase == TickEvent.Phase.END)
