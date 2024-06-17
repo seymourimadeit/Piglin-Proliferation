@@ -47,6 +47,6 @@ public class PPSounds {
     public static final DeferredHolder<SoundEvent, SoundEvent> PARROT_IMITATE_ZOMBIFIED_PIGLIN = createVariableRangeSound("entity.parrot.imitate.zombified_piglin");
 
     public static DeferredHolder<SoundEvent, SoundEvent> createVariableRangeSound(String path) {
-        return SOUNDS.register(path, () -> SoundEvent.createVariableRangeEvent(new ResourceLocation(PiglinProliferation.MODID, path)));
+        return SOUNDS.register(path, () -> SoundEvent.createVariableRangeEvent(ResourceLocation.fromNamespaceAndPath(PiglinProliferation.MODID, path)));
     }
 }

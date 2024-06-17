@@ -2,7 +2,7 @@ package tallestred.piglinproliferation.common.enchantments;
 
 import net.minecraft.world.item.enchantment.Enchantment;
 
-public class BangEnchantment extends Enchantment {
+/*public class BangEnchantment extends Enchantment {
     public BangEnchantment(EnchantmentDefinition definition) {
         super(definition);
     }
@@ -26,4 +26,4 @@ public class BangEnchantment extends Enchantment {
     public boolean checkCompatibility(Enchantment ench) {
         return !(ench instanceof TurningEnchantment) && super.checkCompatibility(ench);
     }
-}
+}*/
