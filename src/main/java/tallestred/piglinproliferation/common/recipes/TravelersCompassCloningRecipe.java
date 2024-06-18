@@ -5,6 +5,7 @@ import net.minecraft.world.inventory.CraftingContainer;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.CraftingBookCategory;
+import net.minecraft.world.item.crafting.CraftingInput;
 import net.minecraft.world.item.crafting.CustomRecipe;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.level.Level;
@@ -18,11 +19,11 @@ public class TravelersCompassCloningRecipe extends CustomRecipe {
     }
 
     @Override
-    public boolean matches(CraftingContainer container, Level level) {
+    public boolean matches(CraftingInput input, Level p_345375_) {
         ItemStack compassToCopy = ItemStack.EMPTY;
         boolean hasWriteableCompasses = false;
-
-        for(ItemStack itemStack : container.getItems()) {
+        for (int j = 0; j < input.size(); j++) {
+            ItemStack itemStack = input.getItem(j);
             if (!itemStack.isEmpty())
                 if (itemStack.is(PPItems.TRAVELERS_COMPASS.get())) {
                     if (!compassToCopy.isEmpty())
@@ -32,16 +33,16 @@ public class TravelersCompassCloningRecipe extends CustomRecipe {
                     hasWriteableCompasses = true;
                 else return false;
         }
-
         return !compassToCopy.isEmpty() && compassToCopy.has(PPComponents.TRAVELERS_COMPASS_TRACKER) && hasWriteableCompasses;
     }
 
     @Override
-    public ItemStack assemble(CraftingContainer container, HolderLookup.Provider provider) {
+    public ItemStack assemble(CraftingInput input, HolderLookup.Provider p_346030_) {
         ItemStack compassToCopy = ItemStack.EMPTY;
         int compassesToCreate = 1;
 
-        for(ItemStack itemStack : container.getItems()) {
+        for (int j = 0; j < input.size(); j++) {
+            ItemStack itemStack = input.getItem(j);
             if (!itemStack.isEmpty())
                 if (itemStack.is(PPItems.TRAVELERS_COMPASS.get())) {
                     if (!compassToCopy.isEmpty())

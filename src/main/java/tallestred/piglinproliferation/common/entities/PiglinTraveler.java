@@ -52,15 +52,15 @@ public class PiglinTraveler extends Piglin {
 
     @Override
     public boolean canReplaceCurrentItem(ItemStack pCandidate) {
-        EquipmentSlot equipmentslot = Mob.getEquipmentSlotForItem(pCandidate);
+        EquipmentSlot equipmentslot = this.getEquipmentSlotForItem(pCandidate);
         ItemStack itemstack = this.getItemBySlot(equipmentslot);
         return this.canReplaceCurrentItem(pCandidate, itemstack);
     }
 
     @Override
-    protected void dropCustomDeathLoot(DamageSource pSource, int pLooting, boolean pRecentlyHit) {
+    protected void dropCustomDeathLoot(ServerLevel level, DamageSource pSource, boolean pRecentlyHit) {
         PiglinSkullBlock.spawnSkullIfValidKill(pSource, this, e -> PPItems.PIGLIN_TRAVELER_HEAD_ITEM.get());
-        super.dropCustomDeathLoot(pSource, pLooting, pRecentlyHit);
+        super.dropCustomDeathLoot(level, pSource, pRecentlyHit);
     }
 
     @Override

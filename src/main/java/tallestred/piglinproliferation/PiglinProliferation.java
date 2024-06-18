@@ -44,7 +44,6 @@ import tallestred.piglinproliferation.client.PPSounds;
 import tallestred.piglinproliferation.common.advancement.PPCriteriaTriggers;
 import tallestred.piglinproliferation.common.attribute.PPAttributes;
 import tallestred.piglinproliferation.common.blockentities.FireRingBlockEntity;
-import tallestred.piglinproliferation.common.blocks.FireRingBlock;
 import tallestred.piglinproliferation.common.enchantments.PPEnchantments;
 import tallestred.piglinproliferation.common.entities.PiglinTraveler;
 import tallestred.piglinproliferation.common.items.BucklerItem;
@@ -90,7 +89,6 @@ public class PiglinProliferation {
         PPActivities.ACTIVITIES.register(modEventBus);
         PPBlocks.BLOCKS.register(modEventBus);
         PPBlockEntities.BLOCK_ENTITIES.register(modEventBus);
-        PPEnchantments.ENCHANTMENTS.register(modEventBus);
         PPWorldgen.STRUCTURE_TYPES.register(modEventBus);
         PPCriteriaTriggers.CRITERIA_TRIGGERS.register(modEventBus);
         PPLoot.GLM.register(modEventBus);
@@ -173,14 +171,14 @@ public class PiglinProliferation {
     @OnlyIn(Dist.CLIENT)
     private void doClientStuff(final FMLClientSetupEvent event) {
         event.enqueueWork(() -> {
-            ItemProperties.register(PPItems.BUCKLER.get(), new ResourceLocation("blocking"),
+            ItemProperties.register(PPItems.BUCKLER.get(), ResourceLocation.parse("blocking"),
                     (stack, clientWorld, livingEntity, useTime) -> {
                         boolean active = livingEntity != null && livingEntity.isUsingItem()
                                 && livingEntity.getUseItem() == stack
                                 || livingEntity != null && BucklerItem.isReady(stack);
                         return livingEntity != null && active ? 1.0F : 0.0F;
                     });
-            ItemProperties.register(PPItems.TRAVELERS_COMPASS.get(), new ResourceLocation("angle"), new CompassItemPropertyFunction((level, itemStack, player) -> {
+            ItemProperties.register(PPItems.TRAVELERS_COMPASS.get(), ResourceLocation.parse("angle"), new CompassItemPropertyFunction((level, itemStack, player) -> {
                 TravelersCompassTracker tracker = itemStack.get(PPComponents.TRAVELERS_COMPASS_TRACKER);
                 if (tracker != null)
                     return tracker.target();
@@ -193,7 +191,7 @@ public class PiglinProliferation {
         Registry<StructureTemplatePool> templatePoolRegistry = event.getServer().registryAccess().registry(Registries.TEMPLATE_POOL).orElseThrow();
         Registry<StructureProcessorList> processorListRegistry = event.getServer().registryAccess().registry(Registries.PROCESSOR_LIST).orElseThrow();
         PPWorldgen.addBuildingToPool(templatePoolRegistry, processorListRegistry,
-                new ResourceLocation("minecraft:bastion/mobs/piglin"),
+                ResourceLocation.parse("minecraft:bastion/mobs/piglin"),
                 "piglinproliferation:bastion/alchemist_piglin", PPConfig.COMMON.alchemistWeightInBastions.get());
     }
 

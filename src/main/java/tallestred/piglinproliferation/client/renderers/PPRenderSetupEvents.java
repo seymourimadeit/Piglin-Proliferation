@@ -32,28 +32,28 @@ import static tallestred.piglinproliferation.util.RegistryUtilities.addLayerToRe
 @EventBusSubscriber(modid = PiglinProliferation.MODID, bus = EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
 public class PPRenderSetupEvents {
     public static final ModelLayerLocation ZIGLIN_CLOTHING = new ModelLayerLocation(
-            new ResourceLocation(PiglinProliferation.MODID + "ziglin_clothing"), "ziglin_clothing");
+            ResourceLocation.parse(PiglinProliferation.MODID + "ziglin_clothing"), "ziglin_clothing");
     public static final ModelLayerLocation PIGLIN_SKULL = new ModelLayerLocation(
-            new ResourceLocation(PiglinProliferation.MODID + "piglin_skull"), "piglin_skull");
+            ResourceLocation.parse(PiglinProliferation.MODID + "piglin_skull"), "piglin_skull");
     public static final ModelLayerLocation PIGLIN_ALCHEMIST_SKULL = new ModelLayerLocation(
-            new ResourceLocation(PiglinProliferation.MODID + "piglin_alchemist_skull"), "piglin_alchemist_skull");
+            ResourceLocation.parse(PiglinProliferation.MODID + "piglin_alchemist_skull"), "piglin_alchemist_skull");
     public static final ModelLayerLocation PIGLIN_TRAVELER_SKULL = new ModelLayerLocation(
-            new ResourceLocation(PiglinProliferation.MODID + "piglin_traveler_skull"), "piglin_traveler_skull");
+            ResourceLocation.parse(PiglinProliferation.MODID + "piglin_traveler_skull"), "piglin_traveler_skull");
     public static final ModelLayerLocation PIGLIN_ALCHEMIST = new ModelLayerLocation(
-            new ResourceLocation(PiglinProliferation.MODID + "piglin_alchemist"), "piglin_alchemist");
+            ResourceLocation.parse(PiglinProliferation.MODID + "piglin_alchemist"), "piglin_alchemist");
     public static final ModelLayerLocation PIGLIN_TRAVELER = new ModelLayerLocation(
-            new ResourceLocation(PiglinProliferation.MODID + "piglin_traveler"), "piglin_traveler");
+            ResourceLocation.parse(PiglinProliferation.MODID + "piglin_traveler"), "piglin_traveler");
     public static final ModelLayerLocation PIGLIN_ALCHEMIST_BELT_SLOTS = new ModelLayerLocation(
-            new ResourceLocation(PiglinProliferation.MODID + "piglin_alchemist_belt"), "piglin_alchemist_belt");
-    public static final ModelLayerLocation BUCKLER = new ModelLayerLocation(new ResourceLocation(PiglinProliferation.MODID + "buckler"),
+            ResourceLocation.parse(PiglinProliferation.MODID + "piglin_alchemist_belt"), "piglin_alchemist_belt");
+    public static final ModelLayerLocation BUCKLER = new ModelLayerLocation(ResourceLocation.parse(PiglinProliferation.MODID + "buckler"),
             "buckler");
     public static final ModelLayerLocation TRAVELER_ARMOR_OUTER_LAYER = new ModelLayerLocation(
-            new ResourceLocation(PiglinProliferation.MODID + "traveler_outer_armor"), "traveler_outer_armor");
+            ResourceLocation.parse(PiglinProliferation.MODID + "traveler_outer_armor"), "traveler_outer_armor");
 
     public static final ModelLayerLocation ALCHEMIST_ARMOR_OUTER_LAYER = new ModelLayerLocation(
-            new ResourceLocation(PiglinProliferation.MODID + "alchemist_outer_armor"), "alchemist_outer_armor");
+            ResourceLocation.parse(PiglinProliferation.MODID + "alchemist_outer_armor"), "alchemist_outer_armor");
     @SuppressWarnings("deprecation") //It is necessary :(
-    public static final Material BUCKLER_TEXTURE = new Material(TextureAtlas.LOCATION_BLOCKS, new ResourceLocation(PiglinProliferation.MODID, "entity/buckler/golden_buckler"));
+    public static final Material BUCKLER_TEXTURE = new Material(TextureAtlas.LOCATION_BLOCKS, ResourceLocation.fromNamespaceAndPath(PiglinProliferation.MODID, "entity/buckler/golden_buckler"));
 
     @SubscribeEvent
     public static void layerDefinitions(EntityRenderersEvent.RegisterLayerDefinitions event) {
@@ -92,9 +92,9 @@ public class PPRenderSetupEvents {
 
     @SubscribeEvent
     public static void clientSetupEvent(FMLClientSetupEvent event) {
-        event.enqueueWork(() -> SkullBlockRenderer.SKIN_BY_TYPE.put(PiglinSkullBlock.Types.PIGLIN_BRUTE, new ResourceLocation("textures/entity/piglin/piglin_brute.png")));
-        event.enqueueWork(() -> SkullBlockRenderer.SKIN_BY_TYPE.put(PiglinSkullBlock.Types.ZOMBIFIED_PIGLIN, new ResourceLocation("textures/entity/piglin/zombified_piglin.png")));
-        event.enqueueWork(() -> SkullBlockRenderer.SKIN_BY_TYPE.put(PiglinSkullBlock.Types.PIGLIN_ALCHEMIST, new ResourceLocation(PiglinProliferation.MODID, "textures/entity/piglin/alchemist/alchemist.png")));
-        event.enqueueWork(() -> SkullBlockRenderer.SKIN_BY_TYPE.put(PiglinSkullBlock.Types.PIGLIN_TRAVELER, new ResourceLocation(PiglinProliferation.MODID, "textures/entity/piglin/traveler/traveler.png")));
+        event.enqueueWork(() -> SkullBlockRenderer.SKIN_BY_TYPE.put(PiglinSkullBlock.Types.PIGLIN_BRUTE, ResourceLocation.parse("textures/entity/piglin/piglin_brute.png")));
+        event.enqueueWork(() -> SkullBlockRenderer.SKIN_BY_TYPE.put(PiglinSkullBlock.Types.ZOMBIFIED_PIGLIN, ResourceLocation.parse("textures/entity/piglin/zombified_piglin.png")));
+        event.enqueueWork(() -> SkullBlockRenderer.SKIN_BY_TYPE.put(PiglinSkullBlock.Types.PIGLIN_ALCHEMIST, ResourceLocation.fromNamespaceAndPath(PiglinProliferation.MODID, "textures/entity/piglin/alchemist/alchemist.png")));
+        event.enqueueWork(() -> SkullBlockRenderer.SKIN_BY_TYPE.put(PiglinSkullBlock.Types.PIGLIN_TRAVELER, ResourceLocation.fromNamespaceAndPath(PiglinProliferation.MODID, "textures/entity/piglin/traveler/traveler.png")));
     }
 }

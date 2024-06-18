@@ -8,8 +8,6 @@ import net.minecraft.core.NonNullList;
 import net.minecraft.core.particles.ItemParticleOption;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.protocol.Packet;
-import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
@@ -36,8 +34,8 @@ import net.minecraft.world.item.*;
 import net.minecraft.world.item.alchemy.Potion;
 import net.minecraft.world.item.alchemy.PotionContents;
 import net.minecraft.world.item.alchemy.Potions;
+import net.minecraft.world.item.enchantment.EnchantmentEffectComponents;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
-import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.Blocks;
@@ -48,8 +46,8 @@ import org.jetbrains.annotations.NotNull;
 import tallestred.piglinproliferation.PPMemoryModules;
 import tallestred.piglinproliferation.client.PPSounds;
 import tallestred.piglinproliferation.common.blocks.PiglinSkullBlock;
-import tallestred.piglinproliferation.common.items.PPItems;
 import tallestred.piglinproliferation.common.entities.ai.PiglinAlchemistAi;
+import tallestred.piglinproliferation.common.items.PPItems;
 import tallestred.piglinproliferation.configuration.PPConfig;
 
 import javax.annotation.Nullable;
@@ -112,11 +110,6 @@ public class PiglinAlchemist extends Piglin {
                 }
             }
         }
-    }
-
-    @Override
-    public Packet<ClientGamePacketListener> getAddEntityPacket() {
-        return super.getAddEntityPacket();
     }
 
     @Override
@@ -199,10 +192,10 @@ public class PiglinAlchemist extends Piglin {
     }
 
     @Override
-    protected void dropCustomDeathLoot(DamageSource pSource, int pLooting, boolean pRecentlyHit) {
+    protected void dropCustomDeathLoot(ServerLevel level, DamageSource source, boolean recentlyHitIn) {
         for (ItemStack itemStack : this.beltInventory.values()) {
             if (!itemStack.isEmpty()) {
-                if (!EnchantmentHelper.hasVanishingCurse(itemStack) && this.getRandom().nextFloat() < PPConfig.COMMON.alchemistPotionChance.get()) {
+                if (!EnchantmentHelper.has(itemStack, EnchantmentEffectComponents.PREVENT_EQUIPMENT_DROP) && this.getRandom().nextFloat() < PPConfig.COMMON.alchemistPotionChance.get()) {
                     this.spawnAtLocation(itemStack);
                 } else {
                     if (itemStack.getItem() instanceof PotionItem) {
@@ -215,9 +208,9 @@ public class PiglinAlchemist extends Piglin {
                 }
             }
         }
-        PiglinSkullBlock.spawnSkullIfValidKill(pSource, this, e -> PPItems.PIGLIN_ALCHEMIST_HEAD_ITEM.get());
+        PiglinSkullBlock.spawnSkullIfValidKill(source, this, e -> PPItems.PIGLIN_ALCHEMIST_HEAD_ITEM.get());
         this.beltInventory.clear();
-        super.dropCustomDeathLoot(pSource, pLooting, pRecentlyHit);
+        super.dropCustomDeathLoot(level, source, recentlyHitIn);
     }
 
     public void throwPotion(ItemStack thrownPotion, float xRot, float yRot) {
@@ -266,18 +259,9 @@ public class PiglinAlchemist extends Piglin {
             }
             if (this.getItemShownOnOffhand().getItem() instanceof TippedArrowItem)
                 itemstack = this.getItemShownOnOffhand();
-            AbstractArrow abstractarrowentity = ProjectileUtil.getMobArrow(this, itemstack, distanceFactor);
+            AbstractArrow abstractarrowentity = ProjectileUtil.getMobArrow(this, itemstack, distanceFactor, this.getMainHandItem());
             if (this.getMainHandItem().getItem() instanceof net.minecraft.world.item.BowItem)
-                abstractarrowentity = ((net.minecraft.world.item.BowItem)this.getMainHandItem().getItem()).customArrow(abstractarrowentity, itemstack);
-            int powerLevel = itemstack.getEnchantmentLevel(Enchantments.POWER);
-            if (powerLevel > 0)
-                abstractarrowentity
-                        .setBaseDamage(abstractarrowentity.getBaseDamage() + (double) powerLevel * 0.5D + 0.5D);
-            int punchLevel = itemstack.getEnchantmentLevel(Enchantments.PUNCH);
-            if (punchLevel > 0)
-                abstractarrowentity.setKnockback(punchLevel);
-            if (itemstack.getEnchantmentLevel(Enchantments.FLAME) > 0)
-                abstractarrowentity.igniteForSeconds(100);
+                abstractarrowentity = ((net.minecraft.world.item.BowItem) this.getMainHandItem().getItem()).customArrow(abstractarrowentity, this.getMainHandItem());
             double d0 = target.getX() - this.getX();
             double d1 = target.getY(0.3333333333333333D) - abstractarrowentity.getY();
             double d2 = target.getZ() - this.getZ();
@@ -353,11 +337,11 @@ public class PiglinAlchemist extends Piglin {
 
         public void clear() {
             for (int i = 0; i < size(); i++)
-               entityData.set(BELT_INVENTORY_SLOTS[i], ItemStack.EMPTY);
+                entityData.set(BELT_INVENTORY_SLOTS[i], ItemStack.EMPTY);
         }
 
         public ItemStack get(int slot) {
-           return entityData.get(BELT_INVENTORY_SLOTS[slot]);
+            return entityData.get(BELT_INVENTORY_SLOTS[slot]);
         }
 
         public void set(int slot, ItemStack stack) {

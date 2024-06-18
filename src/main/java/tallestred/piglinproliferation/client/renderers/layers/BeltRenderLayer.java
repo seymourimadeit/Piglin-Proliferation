@@ -58,7 +58,7 @@ public class BeltRenderLayer<T extends PiglinAlchemist, M extends EntityModel<T>
                 pMatrixStack.popPose();
             }
         }
-        coloredCutoutModelCopyLayerRender(this.getParentModel(), layerModel, new ResourceLocation(PiglinProliferation.MODID, "textures/entity/piglin/alchemist/belt.png"), pMatrixStack, pBuffer, pPackedLight, alchemist, pLimbSwing, pLimbSwingAmount, pAgeInTicks, pNetHeadYaw, pHeadPitch, pPartialTicks, 1.0F, 1.0F, 1.0F);
+        coloredCutoutModelCopyLayerRender(this.getParentModel(), layerModel, ResourceLocation.fromNamespaceAndPath(PiglinProliferation.MODID, "textures/entity/piglin/alchemist/belt.png"), pMatrixStack, pBuffer, pPackedLight, alchemist, pLimbSwing, pLimbSwingAmount, pAgeInTicks, pNetHeadYaw, pHeadPitch, pPartialTicks, -1);
     }
 
     protected void renderBeltItems(LivingEntity entity, ItemStack stack, ItemDisplayContext transformType, PoseStack poseStack, MultiBufferSource source, float ageInTicks, int light, int inventorySlot) {

@@ -49,14 +49,14 @@ public class UseBucklerGoal<T extends PathfinderMob> extends Goal {
             strafeTicks--;
             if (strafeTicks == 0)
                 chargePhase = ChargePhases.CHARGE;
-            if (BucklerItem.getChargeTicks(PPItems.checkEachHandForBuckler(owner)) > 0 && PPEnchantments.getBucklerEnchantsOnHands(PPEnchantments.TURNING.get(), owner) > 0 || BucklerItem.getChargeTicks(PPItems.checkEachHandForBuckler(owner)) <= 0) {
+            if (BucklerItem.getChargeTicks(PPItems.checkEachHandForBuckler(owner)) > 0 && PPEnchantments.getBucklerEnchantsOnHands(PPEnchantments.TURNING, owner) > 0 || BucklerItem.getChargeTicks(PPItems.checkEachHandForBuckler(owner)) <= 0) {
                 owner.lookAt(livingEntity, 30.0F, 30.0F);
             }
         } else if (chargePhase == ChargePhases.CHARGE) {
             if (!owner.isUsingItem() && BucklerItem.getChargeTicks(PPItems.checkEachHandForBuckler(owner)) <= 0) {
                 owner.startUsingItem(InteractionHand.OFF_HAND);
             }
-            if (owner.getTicksUsingItem() >= owner.getUseItem().getUseDuration())
+            if (owner.getTicksUsingItem() >= owner.getUseItem().getUseDuration(owner))
                 this.chargePhase = ChargePhases.CHARGING;
         } else if (chargePhase == ChargePhases.CHARGING) {
             if (BucklerItem.getChargeTicks(PPItems.checkEachHandForBuckler(owner)) <= 0)

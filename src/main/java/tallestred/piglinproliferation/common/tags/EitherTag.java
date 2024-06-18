@@ -47,7 +47,7 @@ public class EitherTag<L, R> {
             Optional<ResourceKey<L>> optional = element.left().get().unwrapKey();
             if (optional.isPresent())
                 return new Location(optional.get().location(), true);
-        } else if(element.right().isPresent()) {
+        } else if (element.right().isPresent()) {
             Optional<ResourceKey<R>> optional = element.right().get().unwrapKey();
             if (optional.isPresent())
                 return new Location(optional.get().location(), false);
@@ -62,7 +62,7 @@ public class EitherTag<L, R> {
 
         public static Location deserialise(String serialisedElement) {
             String[] parts = serialisedElement.split("-");
-            return new Location(new ResourceLocation(parts[1]), "L".equals(parts[0]));
+            return new Location(ResourceLocation.parse(parts[1]), "L".equals(parts[0]));
         }
     }
 }

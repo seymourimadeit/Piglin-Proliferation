@@ -107,17 +107,7 @@ public class DumbBowAttackGoal<T extends Mob> extends Goal {
                     if (i >= 20) {
                         this.mob.stopUsingItem();
                         ItemStack itemstack = this.mob.getProjectile(this.mob.getItemInHand(ProjectileUtil.getWeaponHoldingHand(this.mob, item -> item instanceof BowItem)));
-                        AbstractArrow abstractarrowentity = ProjectileUtil.getMobArrow(this.mob, itemstack, BowItem.getPowerForTime(i));
-                        abstractarrowentity = ((net.minecraft.world.item.BowItem) this.mob.getMainHandItem().getItem()).customArrow(abstractarrowentity, itemstack);
-                        int powerLevel = itemstack.getEnchantmentLevel(Enchantments.POWER);
-                        if (powerLevel > 0)
-                            abstractarrowentity
-                                    .setBaseDamage(abstractarrowentity.getBaseDamage() + (double) powerLevel * 0.5D + 0.5D);
-                        int punchLevel = itemstack.getEnchantmentLevel(Enchantments.PUNCH);
-                        if (punchLevel > 0)
-                            abstractarrowentity.setKnockback(punchLevel);
-                        if (itemstack.getEnchantmentLevel(Enchantments.FLAME) > 0)
-                            abstractarrowentity.igniteForSeconds(100);
+                        AbstractArrow abstractarrowentity = ProjectileUtil.getMobArrow(this.mob, itemstack, BowItem.getPowerForTime(i), this.mob.getItemInHand(ProjectileUtil.getWeaponHoldingHand(this.mob, item -> item instanceof BowItem)));
                         double d0 = livingentity.getX() - this.mob.getX();
                         double d1 = livingentity.getY(0.3333333333333333D) - abstractarrowentity.getY();
                         double d2 = livingentity.getZ() - this.mob.getZ();

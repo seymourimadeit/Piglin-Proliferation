@@ -20,8 +20,8 @@ public class RangedRandomAttributeModifierHolder extends AbstractAttributeModifi
     public final AttributeModifier.Operation defaultOperation;
     protected final Instance defaultInstance;
 
-    public RangedRandomAttributeModifierHolder(Holder<Attribute> attribute, UUID uuid, String name, double defaultMinAmount, double defaultMaxAmount, AttributeModifier.Operation defaultOperation) {
-        super(attribute, uuid, name);
+    public RangedRandomAttributeModifierHolder(Holder<Attribute> attribute, String name, double defaultMinAmount, double defaultMaxAmount, AttributeModifier.Operation defaultOperation) {
+        super(attribute, name);
         this.defaultMinAmount = defaultMinAmount;
         this.defaultMaxAmount = defaultMaxAmount;
         this.defaultOperation = defaultOperation;
@@ -74,7 +74,7 @@ public class RangedRandomAttributeModifierHolder extends AbstractAttributeModifi
         }
 
         public AttributeModifier modifier(double amount) {
-            return new AttributeModifier(uuid, name, capToRange(amount, minAmount, maxAmount), operation);
+            return new AttributeModifier(resourceLocation, capToRange(amount, minAmount, maxAmount), operation);
         }
 
         public void addTransientModifier(LivingEntity entity) {
@@ -86,7 +86,7 @@ public class RangedRandomAttributeModifierHolder extends AbstractAttributeModifi
         }
 
         public MutableComponent translatable() {
-            return translatableInternal(maxAmount, operation, false,-1);
+            return translatableInternal(maxAmount, operation, false, -1);
         }
 
         public MutableComponent translatable(double baseAmount) {
@@ -99,7 +99,7 @@ public class RangedRandomAttributeModifierHolder extends AbstractAttributeModifi
             if (result.getContents() instanceof TranslatableContents contents) {
                 String newKey = contents.getKey().replace("modifier", "piglinproliferation.ranged_modifier");
                 Object[] oldArgs = contents.getArgs();
-                Object[] newArgs = new Object[contents.getArgs().length+1];
+                Object[] newArgs = new Object[contents.getArgs().length + 1];
                 newArgs[0] = ATTRIBUTE_MODIFIER_FORMAT.format(formattedAmount(minAmount, operation, displaysBase, baseValue));
                 System.arraycopy(oldArgs, 0, newArgs, 1, oldArgs.length);
                 result = Component.translatable(newKey, newArgs).withStyle(result.getStyle());
@@ -116,9 +116,9 @@ public class RangedRandomAttributeModifierHolder extends AbstractAttributeModifi
         }
 
         protected RandomGenerator random() {
-           if (random == null)
-               random = RandomGenerator.getDefault();
-           return random;
+            if (random == null)
+                random = RandomGenerator.getDefault();
+            return random;
         }
     }
 }

@@ -32,8 +32,7 @@ public class BucklerRenderer extends BlockEntityWithoutLevelRenderer {
             Material rendermaterial = PPRenderSetupEvents.BUCKLER_TEXTURE;
             VertexConsumer ivertexbuilder = rendermaterial.sprite().wrap(ItemRenderer.getFoilBufferDirect(buffer,
                     this.bucklerModel.renderType(rendermaterial.atlasLocation()), true, stack.hasFoil()));
-            this.bucklerModel.root.render(matrixStack, ivertexbuilder, combinedLight, combinedOverlay, 1.0F, 1.0F, 1.0F,
-                    1.0F);
+            this.bucklerModel.root.render(matrixStack, ivertexbuilder, combinedLight, combinedOverlay, -1);
             matrixStack.popPose();
         }
     }

@@ -117,7 +117,7 @@ public class DumbCrossbowAttackGoal<T extends Monster> extends Goal {
 
                 int i = this.mob.getTicksUsingItem();
                 ItemStack itemstack = this.mob.getUseItem();
-                if (i >= CrossbowItem.getChargeDuration(itemstack)) {
+                if (i >= CrossbowItem.getChargeDuration(itemstack, this.mob)) {
                     this.mob.releaseUsingItem();
                     this.crossbowState = CHARGED;
                     this.attackDelay = 20 + this.mob.getRandom().nextInt(20);

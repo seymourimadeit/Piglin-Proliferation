@@ -9,7 +9,7 @@ import net.neoforged.neoforge.network.handling.IPayloadContext;
 import tallestred.piglinproliferation.PiglinProliferation;
 
 public record CriticalCapabilityPacket(int entityId, boolean crit) implements CustomPacketPayload {
-    public static final Type<CriticalCapabilityPacket> TYPE = new Type<>(new ResourceLocation(PiglinProliferation.MODID, "crit_sync"));
+    public static final Type<CriticalCapabilityPacket> TYPE = new Type<>(ResourceLocation.fromNamespaceAndPath(PiglinProliferation.MODID, "crit_sync"));
     public static final StreamCodec<RegistryFriendlyByteBuf, CriticalCapabilityPacket> STREAM_CODEC = StreamCodec.composite(ByteBufCodecs.INT, CriticalCapabilityPacket::entityId, ByteBufCodecs.BOOL, CriticalCapabilityPacket::crit, CriticalCapabilityPacket::new);
 
     public static void handle(CriticalCapabilityPacket payload, IPayloadContext context) {

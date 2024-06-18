@@ -34,6 +34,6 @@ public class PPLoot {
     public static final DeferredHolder<LootItemFunctionType<?>, LootItemFunctionType<AddLocationToCompassFunction>> ADD_LOCATION_TO_COMPASS = LOOT_ITEM_FUNCTION_TYPES.register("add_location_to_compass", () ->  new LootItemFunctionType<>(AddLocationToCompassFunction.CODEC));
 
     private static ResourceKey<LootTable> lootTable(String name) {
-        return ResourceKey.create(Registries.LOOT_TABLE, new ResourceLocation(MODID, name));
+        return ResourceKey.create(Registries.LOOT_TABLE, ResourceLocation.fromNamespaceAndPath(MODID, name));
     }
 }

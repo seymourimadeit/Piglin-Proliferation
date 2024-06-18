@@ -40,7 +40,7 @@ public abstract class HumanoidModelMixin<T extends LivingEntity> extends Ageable
 
     public void bucklerAnimationsLeftArm(InteractionHand hand, T entityIn) {
         if (entityIn.getUsedItemHand() == hand && entityIn.getItemInHand(entityIn.getUsedItemHand()).getItem() instanceof BucklerItem) {
-            float useDuration = (float) entityIn.getItemInHand(entityIn.getUsedItemHand()).getUseDuration();
+            float useDuration = (float) entityIn.getItemInHand(entityIn.getUsedItemHand()).getUseDuration(entityIn);
             float useDurationClamped = Mth.clamp((float) entityIn.getTicksUsingItem(), 0.0F, useDuration);
             float result = useDurationClamped / useDuration;
             this.leftArm.yRot = Mth.lerp(result, leftArm.yRot, 1.1466812652970528F);
@@ -59,7 +59,7 @@ public abstract class HumanoidModelMixin<T extends LivingEntity> extends Ageable
 
     public void bucklerAnimationsRightArm(InteractionHand hand, T entityIn) {
         if (entityIn.getUsedItemHand() == hand && entityIn.getItemInHand(entityIn.getUsedItemHand()).getItem() instanceof BucklerItem) {
-            float useDuration = (float) entityIn.getItemInHand(entityIn.getUsedItemHand()).getUseDuration();
+            float useDuration = (float) entityIn.getItemInHand(entityIn.getUsedItemHand()).getUseDuration(entityIn);
             float useDurationClamped = Mth.clamp((float) entityIn.getTicksUsingItem(), 0.0F, useDuration);
             float result = useDurationClamped / useDuration;
             this.rightArm.yRot = Mth.lerp(result, rightArm.yRot, -1.1466812652970528F);

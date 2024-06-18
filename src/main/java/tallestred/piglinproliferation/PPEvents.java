@@ -26,6 +26,7 @@ import net.minecraft.world.entity.projectile.Arrow;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.alchemy.Potions;
+import net.minecraft.world.item.enchantment.EnchantmentEffectComponents;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.level.GameRules;
 import net.minecraft.world.level.Level;
@@ -132,8 +133,8 @@ public class PPEvents {
                 if (bucklerChargeTicks > 0) {
                     BucklerItem.moveFowards(entity);
                     BucklerItem.spawnRunningEffectsWhileCharging(entity);
-                    if (entity.horizontalCollision && PPEnchantments.hasBucklerEnchantsOnHands(entity, PPEnchantments.TURNING.get())) {
-                        entity.setDeltaMovement(entity.getDeltaMovement().x, PPConfig.COMMON.turningBucklerLaunchStrength.get() * (PPEnchantments.getBucklerEnchantsOnHands(PPEnchantments.TURNING.get(), entity)), entity.getDeltaMovement().z);
+                    if (entity.horizontalCollision && PPEnchantments.hasBucklerEnchantsOnHands(entity, PPEnchantments.TURNING)) {
+                        entity.setDeltaMovement(entity.getDeltaMovement().x, PPConfig.COMMON.turningBucklerLaunchStrength.get() * (PPEnchantments.getBucklerEnchantsOnHands(PPEnchantments.TURNING, entity)), entity.getDeltaMovement().z);
                     }
                     if (!entity.level().isClientSide()) BucklerItem.bucklerBash(entity);
                 }
@@ -251,8 +252,8 @@ public class PPEvents {
     public static void onCriticalHit(CriticalHitEvent event) {
         Player player = event.getEntity();
         if (player.getData(PPDataAttachments.CRITICAL.get())) {
-            event.setResult(Event.Result.ALLOW);
-            event.setDamageModifier(1.5F);
+            event.setCriticalHit(true);
+            event.setDamageMultiplier(1.5F);
             Entity entity = event.getEntity();
             entity.level().playSound(null, entity.getX(), entity.getY(), entity.getZ(), SoundEvents.PLAYER_ATTACK_CRIT, entity.getSoundSource(), 1.0F, 1.0F);
             entity.level().playSound(null, entity.getX(), entity.getY(), entity.getZ(), PPSounds.CRITICAL_APPLY.get(), entity.getSoundSource(), 1.0F, 0.8F + entity.level().getRandom().nextFloat() * 0.4F);
@@ -267,7 +268,7 @@ public class PPEvents {
     }
 
     @SubscribeEvent
-    public static void finalizeSpawn(MobSpawnEvent.FinalizeSpawn event) {
+    public static void finalizeSpawn(FinalizeSpawnEvent event) {
         MobSpawnType spawnType = event.getSpawnType();
         RandomSource random = event.getLevel().getRandom();
         if (event.getEntity() instanceof Strider strider && random.nextInt(60) == 0 && !strider.isBaby()) {
@@ -276,7 +277,7 @@ public class PPEvents {
             if (traveler != null) {
                 traveler.copyPosition(strider);
                 traveler.startRiding(strider);
-                strider.equipSaddle(null);
+                strider.equipSaddle(new ItemStack(Items.SADDLE), null);
                 traveler.setItemSlot(EquipmentSlot.MAINHAND, new ItemStack(Items.WARPED_FUNGUS_ON_A_STICK));
             }
         }
@@ -286,9 +287,9 @@ public class PPEvents {
             ItemStack itemstack = piglinBrute.getOffhandItem();
             if (itemstack.getItem() instanceof BucklerItem) {
                 if (random.nextInt(300) == 0)
-                    itemstack.enchant(PPEnchantments.TURNING.get(), 5);
+                    itemstack.enchant(PPEnchantments.getEnchant(PPEnchantments.TURNING, piglinBrute.registryAccess()), 5);
                 if (random.nextInt(500) == 0)
-                    itemstack.enchant(PPEnchantments.BANG.get(), 1);
+                    itemstack.enchant(PPEnchantments.getEnchant(PPEnchantments.BANG, piglinBrute.registryAccess()), 1);
                 piglinBrute.setItemSlot(EquipmentSlot.OFFHAND, itemstack);
             }
         }
@@ -366,7 +367,8 @@ public class PPEvents {
             ItemStack itemstack = brute.getOffhandItem();
             if (itemstack.getItem() instanceof BucklerItem) {
                 float f = 0.10F;
-                if (!itemstack.isEmpty() && !EnchantmentHelper.hasVanishingCurse(itemstack) && event.isRecentlyHit() && Math.max(brute.getRandom().nextFloat() - (float) event.getLootingLevel() * 0.01F, 0.0F) < f) {
+                f = EnchantmentHelper.processEquipmentDropChance((ServerLevel) brute.level(), brute, event.getSource(), f);
+                if (!itemstack.isEmpty() && !EnchantmentHelper.has(itemstack, EnchantmentEffectComponents.PREVENT_EQUIPMENT_DROP) && event.isRecentlyHit() && brute.getRandom().nextFloat() < f) {
                     if (itemstack.isDamageableItem()) {
                         int halvedMaxDurability = Math.abs(brute.getRandom().nextInt(Math.abs(itemstack.getMaxDamage() / 2)));
                         itemstack.setDamageValue(Math.abs(brute.getRandom().nextInt(halvedMaxDurability)));

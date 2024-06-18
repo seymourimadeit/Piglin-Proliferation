@@ -67,7 +67,7 @@ public class PiglinHeadEntityModel extends SkullModelBase {
     }
 
     @Override
-    public void renderToBuffer(PoseStack pPoseStack, VertexConsumer pBuffer, int pPackedLight, int pPackedOverlay, float pRed, float pGreen, float pBlue, float pAlpha) {
-        this.head.render(pPoseStack, pBuffer, pPackedLight, pPackedOverlay, pRed, pGreen, pBlue, pAlpha);
+    public void renderToBuffer(PoseStack matrixStackIn, VertexConsumer bufferIn, int packedLightIn, int packedOverlayIn, int alpha) {
+        this.head.render(matrixStackIn, bufferIn, packedLightIn, packedOverlayIn, alpha);
     }
 }

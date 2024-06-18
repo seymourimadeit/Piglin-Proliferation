@@ -28,7 +28,7 @@ import java.util.List;
 
 public class PPWorldgen {
     private static final ResourceKey<StructureProcessorList> EMPTY_PROCESSOR_LIST_KEY = ResourceKey.create(
-            Registries.PROCESSOR_LIST, new ResourceLocation("minecraft", "empty"));
+            Registries.PROCESSOR_LIST, ResourceLocation.fromNamespaceAndPath("minecraft", "empty"));
     public static DeferredRegister<StructureType<?>> STRUCTURE_TYPES = DeferredRegister.create(Registries.STRUCTURE_TYPE, PiglinProliferation.MODID);
     public static DeferredHolder<StructureType<?>, StructureType<CustomJigsawStructure>> CUSTOM_JIGSAW = STRUCTURE_TYPES.register("custom_jigsaw", () -> () -> CustomJigsawStructure.CODEC);
 

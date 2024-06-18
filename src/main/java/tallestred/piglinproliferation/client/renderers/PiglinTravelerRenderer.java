@@ -27,6 +27,6 @@ public class PiglinTravelerRenderer extends PiglinRenderer {
 
     @Override
     public ResourceLocation getTextureLocation(Mob pEntity) {
-        return new ResourceLocation(PiglinProliferation.MODID, "textures/entity/piglin/traveler/traveler.png");
+        return ResourceLocation.fromNamespaceAndPath(PiglinProliferation.MODID, "textures/entity/piglin/traveler/traveler.png");
     }
 }

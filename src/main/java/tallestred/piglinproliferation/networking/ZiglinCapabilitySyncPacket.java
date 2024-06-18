@@ -9,7 +9,7 @@ import net.neoforged.neoforge.network.handling.IPayloadContext;
 import tallestred.piglinproliferation.PiglinProliferation;
 
 public record ZiglinCapabilitySyncPacket(int entityId, String transformedFromId) implements CustomPacketPayload {
-    public static final Type<ZiglinCapabilitySyncPacket> TYPE = new Type<>(new ResourceLocation(PiglinProliferation.MODID, "transform_sync"));
+    public static final Type<ZiglinCapabilitySyncPacket> TYPE = new Type<>(ResourceLocation.fromNamespaceAndPath(PiglinProliferation.MODID, "transform_sync"));
     public static final StreamCodec<RegistryFriendlyByteBuf, ZiglinCapabilitySyncPacket> STREAM_CODEC = StreamCodec.composite(ByteBufCodecs.INT, ZiglinCapabilitySyncPacket::entityId, ByteBufCodecs.STRING_UTF8, ZiglinCapabilitySyncPacket::transformedFromId, ZiglinCapabilitySyncPacket::new);
 
     public static void handle(ZiglinCapabilitySyncPacket payload, IPayloadContext context) {

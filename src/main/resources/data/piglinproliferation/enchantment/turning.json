@@ -1,0 +1,21 @@
+{
+  "description": {
+    "translate": "enchantment.piglinproliferation.turning"
+  },
+  "supported_items": "#piglinproliferation:enchantable/buckler_enchantable",
+  "weight": 10,
+  "max_level": 5,
+  "anvil_cost": 1,
+  "min_cost": {
+    "base": 1,
+    "per_level_above_first": 10
+  },
+  "max_cost": {
+    "base": 15,
+    "per_level_above_first": 10
+  },
+  "slots": [
+    "hand"
+  ],
+  "exclusive_set": "#piglinproliferation:exclusive_set/buckler_enchants"
+}

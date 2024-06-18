@@ -59,7 +59,7 @@ public class PPClientEvents {
             boolean mainHand = event.getHand() == InteractionHand.MAIN_HAND;
             HumanoidArm handside = mainHand ? player.getMainArm() : player.getMainArm().getOpposite();
             boolean rightHanded = handside == HumanoidArm.RIGHT;
-            float f7 = (float) stack.getUseDuration() - ((float) player.getUseItemRemainingTicks() - partialTicks + 1.0F);
+            float f7 = (float) stack.getUseDuration(player) - ((float) player.getUseItemRemainingTicks() - partialTicks + 1.0F);
             float f11 = f7 / 10.0F;
             if (f11 > 1.0F) {
                 f11 = 1.0F;

@@ -4,11 +4,13 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.core.Holder;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
+import tallestred.piglinproliferation.PiglinProliferation;
 
 import java.util.UUID;
 
@@ -16,13 +18,13 @@ import static net.minecraft.world.item.component.ItemAttributeModifiers.ATTRIBUT
 
 public abstract class AbstractAttributeModifierHolder {
     public final Holder<Attribute> attribute;
-    public final UUID uuid;
+    public final ResourceLocation resourceLocation;
     public final String name;
 
-    public AbstractAttributeModifierHolder(Holder<Attribute> attribute, UUID uuid, String name) {
+    public AbstractAttributeModifierHolder(Holder<Attribute> attribute, String name) {
         this.attribute = attribute;
-        this.uuid = uuid;
         this.name = name;
+        this.resourceLocation = ResourceLocation.fromNamespaceAndPath(PiglinProliferation.MODID, name);
     }
 
     public abstract Instance get();
@@ -32,13 +34,13 @@ public abstract class AbstractAttributeModifierHolder {
     public abstract Instance getWithSummand(double summand);
 
     public boolean hasModifier(LivingEntity entity) {
-        return entity.getAttributes().hasModifier(attribute, uuid);
+        return entity.getAttributes().hasModifier(attribute, resourceLocation);
     }
 
     public void removeModifier(LivingEntity entity) {
         AttributeInstance instance = entity.getAttribute(attribute);
         if (instance != null)
-            instance.removeModifier(uuid);
+            instance.removeModifier(resourceLocation);
     }
 
     public abstract class Instance {

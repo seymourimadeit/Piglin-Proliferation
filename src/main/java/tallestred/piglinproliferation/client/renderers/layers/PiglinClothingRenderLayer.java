@@ -27,11 +27,11 @@ public class PiglinClothingRenderLayer<T extends ZombifiedPiglin, M extends Pigl
         if (!PPConfig.CLIENT.ziglinTextures.get())
             return;
         if (getClothingTexture(pLivingEntity) != null && !pLivingEntity.getData(PPDataAttachments.TRANSFORMATION_TRACKER).isEmpty())
-            coloredCutoutModelCopyLayerRender(this.getParentModel(), this.layerModel, getClothingTexture(pLivingEntity), pMatrixStack, pBuffer, pPackedLight, pLivingEntity, pLimbSwing, pLimbSwingAmount, pAgeInTicks, pNetHeadYaw, pHeadPitch, pPartialTicks, 1.0F, 1.0F, 1.0F);
+            coloredCutoutModelCopyLayerRender(this.getParentModel(), this.layerModel, getClothingTexture(pLivingEntity), pMatrixStack, pBuffer, pPackedLight, pLivingEntity, pLimbSwing, pLimbSwingAmount, pAgeInTicks, pNetHeadYaw, pHeadPitch, pPartialTicks, -1);
     }
 
     protected ResourceLocation getClothingTexture(T livingEntity) {
         String texture = "textures/entity/piglin/clothing_" + livingEntity.getData(PPDataAttachments.TRANSFORMATION_TRACKER) + ".png";
-        return ResourceLocation.isValidResourceLocation(texture) ? new ResourceLocation(PiglinProliferation.MODID, texture) : null;
+        return ResourceLocation.fromNamespaceAndPath(PiglinProliferation.MODID, texture);
     }
 }

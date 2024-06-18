@@ -2,9 +2,11 @@ package tallestred.piglinproliferation.common.attribute;
 
 import net.minecraft.core.Holder;
 import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
+import tallestred.piglinproliferation.PiglinProliferation;
 
 import java.util.UUID;
 
@@ -14,8 +16,8 @@ public class AttributeModifierHolder extends AbstractAttributeModifierHolder {
 
     protected final Instance defaultInstance;
 
-    public AttributeModifierHolder(Holder<Attribute> attribute, UUID uuid, String name, double defaultAmount, AttributeModifier.Operation defaultOperation) {
-        super(attribute, uuid, name);
+    public AttributeModifierHolder(Holder<Attribute> attribute, String name, double defaultAmount, AttributeModifier.Operation defaultOperation) {
+        super(attribute, name);
         this.defaultAmount = defaultAmount;
         this.defaultOperation = defaultOperation;
         this.defaultInstance = new Instance(defaultAmount, defaultOperation);
@@ -48,7 +50,7 @@ public class AttributeModifierHolder extends AbstractAttributeModifierHolder {
         public AttributeModifier modifier;
 
         protected Instance(double amount, AttributeModifier.Operation operation) {
-            this.modifier = new AttributeModifier(uuid, name, amount, operation);
+            this.modifier = new AttributeModifier(ResourceLocation.fromNamespaceAndPath(PiglinProliferation.MODID, name), amount, operation);
         }
 
         public void addTransientModifier(LivingEntity entity) {
@@ -60,7 +62,7 @@ public class AttributeModifierHolder extends AbstractAttributeModifierHolder {
         }
 
         public MutableComponent translatable() {
-            return translatableInternal(this.modifier.amount(), this.modifier.operation(), false,-1);
+            return translatableInternal(this.modifier.amount(), this.modifier.operation(), false, -1);
         }
 
         public MutableComponent translatable(double baseAmount) {

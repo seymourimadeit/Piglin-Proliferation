@@ -53,11 +53,11 @@ import static tallestred.piglinproliferation.util.CodeUtilities.doubleToString;
 import static tallestred.piglinproliferation.util.CodeUtilities.ticksToSeconds;
 
 public class BucklerItem extends ShieldItem {
-    public static final AttributeModifierHolder CHARGE_SPEED_BOOST = new AttributeModifierHolder(Attributes.MOVEMENT_SPEED, UUID.fromString("A2F995E8-B25A-4883-B9D0-93A676DC4045"), "Charge speed boost", 9, AttributeModifier.Operation.ADD_MULTIPLIED_BASE);
-    public static final AttributeModifierHolder INCREASED_KNOCKBACK_RESISTANCE = new AttributeModifierHolder(Attributes.KNOCKBACK_RESISTANCE, UUID.fromString("93E74BB2-05A5-4AC0-8DF5-A55768208A95"), "Increased knockback resistance", 1, AttributeModifier.Operation.ADD_VALUE);
-    public static final AttributeModifierHolder CHARGE_JUMP_PREVENTION = new AttributeModifierHolder(Attributes.JUMP_STRENGTH, UUID.fromString("DAAAC1C6-2C31-4ABB-B1C5-39BF1F2985A2"), "Charge jump prevention", -1, AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL);
-    public static final AttributeModifierHolder TURNING_SPEED_REDUCTION = new AttributeModifierHolder(PPAttributes.TURNING_SPEED, UUID.fromString("25329357-86FD-48DC-BD51-8705EA0CC36E"), "Turning speed reduction", -1, AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL);
-    public static final RangedRandomAttributeModifierHolder ATTACK_DAMAGE = new RangedRandomAttributeModifierHolder(Attributes.ATTACK_DAMAGE, UUID.fromString("1DDF2C1B-0279-440F-A919-D07479E60684"), "Attack damage", 6, 8, AttributeModifier.Operation.ADD_VALUE);
+    public static final AttributeModifierHolder CHARGE_SPEED_BOOST = new AttributeModifierHolder(Attributes.MOVEMENT_SPEED, "charge_speed_boost", 9, AttributeModifier.Operation.ADD_MULTIPLIED_BASE);
+    public static final AttributeModifierHolder INCREASED_KNOCKBACK_RESISTANCE = new AttributeModifierHolder(Attributes.KNOCKBACK_RESISTANCE, "increased_knockback_resistance", 1, AttributeModifier.Operation.ADD_VALUE);
+    public static final AttributeModifierHolder CHARGE_JUMP_PREVENTION = new AttributeModifierHolder(Attributes.JUMP_STRENGTH, "charge_jump_prevention", -1, AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL);
+    public static final AttributeModifierHolder TURNING_SPEED_REDUCTION = new AttributeModifierHolder(PPAttributes.TURNING_SPEED, "turning_speed_reduction", -1, AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL);
+    public static final RangedRandomAttributeModifierHolder ATTACK_DAMAGE = new RangedRandomAttributeModifierHolder(Attributes.ATTACK_DAMAGE, "attack_damage", 6, 8, AttributeModifier.Operation.ADD_VALUE);
     //This is stored as a modifier for easy localisation, even though it's not actually modifying anything
 
     public BucklerItem(Properties p_i48470_1_) {
@@ -92,7 +92,8 @@ public class BucklerItem extends ShieldItem {
     public static int startingChargeTicks(ItemStack stack) {
         int min = PPConfig.COMMON.minBucklerChargeTime.get();
         int max = PPConfig.COMMON.maxBucklerChargeTime.get();
-        return min + (((max - min) * stack.getEnchantmentLevel(PPEnchantments.TURNING.get()) / PPEnchantments.TURNING.get().getMaxLevel()));
+        assert Minecraft.getInstance().level != null;
+        return min + (((max - min) * stack.getEnchantmentLevel(PPEnchantments.getEnchant(PPEnchantments.TURNING, Minecraft.getInstance().level.registryAccess())) / 5));
     }
 
     public static int getChargeTicks(ItemStack stack) {
@@ -117,8 +118,8 @@ public class BucklerItem extends ShieldItem {
             LivingEntity entityHit = list.getFirst();
             entityHit.push(entity);
             if (entityHit.invulnerableTime <= 0) {
-                int bangLevel = PPEnchantments.getBucklerEnchantsOnHands(PPEnchantments.BANG.get(), entity);
-                int turningLevel = PPEnchantments.getBucklerEnchantsOnHands(PPEnchantments.TURNING.get(), entity);
+                int bangLevel = PPEnchantments.getBucklerEnchantsOnHands(PPEnchantments.BANG, entity);
+                int turningLevel = PPEnchantments.getBucklerEnchantsOnHands(PPEnchantments.TURNING, entity);
                 RangedRandomAttributeModifierHolder.Instance attackDamage = ATTACK_DAMAGE.getWithSummands(minDamageReduction(turningLevel), maxDamageReduction(turningLevel));
                 float damage = (float) attackDamage.randomIntAmount();
                 float knockbackStrength = 3.0F;
@@ -148,7 +149,7 @@ public class BucklerItem extends ShieldItem {
                     setChargeTicks(stack, 0);
                 }
                 entity.setLastHurtMob(entityHit);
-                if (entity instanceof Player player && !PPEnchantments.hasBucklerEnchantsOnHands(player, PPEnchantments.BANG.get(), PPEnchantments.TURNING.get())) {
+                if (entity instanceof Player player && !PPEnchantments.hasBucklerEnchantsOnHands(player, PPEnchantments.BANG, PPEnchantments.TURNING)) {
                     player.level().playSound(null, entity.getX(), entity.getY(), entity.getZ(), PPSounds.CRITICAL_ACTIVATE.get(), entity.getSoundSource(), 1.0F, 1.0F);
                     player.setData(PPDataAttachments.CRITICAL.get(), true);
                 }
@@ -187,7 +188,7 @@ public class BucklerItem extends ShieldItem {
         CHARGE_SPEED_BOOST.get().resetTransientModifier(entity);
         CHARGE_JUMP_PREVENTION.get().resetTransientModifier(entity);
         INCREASED_KNOCKBACK_RESISTANCE.get().resetTransientModifier(entity);
-        TURNING_SPEED_REDUCTION.getWithSummand(turningReduction(stack.getEnchantmentLevel(PPEnchantments.TURNING.get()))).resetTransientModifier(entity);
+        TURNING_SPEED_REDUCTION.getWithSummand(turningReduction(stack.getEnchantmentLevel(PPEnchantments.getEnchant(PPEnchantments.TURNING, entity.registryAccess())))).resetTransientModifier(entity);
         stack.hurtAndBreak(1, entity, EquipmentSlot.OFFHAND);
         if (entity instanceof Player)
             ((Player) entity).getCooldowns().addCooldown(this, PPConfig.COMMON.bucklerCooldown.get());
@@ -200,7 +201,7 @@ public class BucklerItem extends ShieldItem {
     }
 
     @Override
-    public int getUseDuration(ItemStack stack) {
+    public int getUseDuration(ItemStack pStack, LivingEntity entity) {
         return 10;
     }
 
@@ -224,8 +225,8 @@ public class BucklerItem extends ShieldItem {
     public List<Component> getDescription(ItemStack stack) {
         Minecraft minecraft = Minecraft.getInstance();
         boolean isDetailed = InputConstants.isKeyDown(minecraft.getWindow().getWindow(), minecraft.options.keyShift.getKey().getValue());
-        int turningLevel = stack.getEnchantmentLevel(PPEnchantments.TURNING.get());
-        boolean isBang = stack.getEnchantmentLevel(PPEnchantments.BANG.get()) > 0;
+        int turningLevel = stack.getEnchantmentLevel(PPEnchantments.getEnchant(PPEnchantments.TURNING, minecraft.player.registryAccess()));
+        boolean isBang = stack.getEnchantmentLevel(PPEnchantments.getEnchant(PPEnchantments.BANG, minecraft.player.registryAccess())) > 0;
         ArrayList<Component> list = new ArrayList<>();
         list.add(Component.translatable("item.piglinproliferation.buckler.desc.on_use").withStyle(ChatFormatting.GRAY));
         list.add(Component.literal(" ").append(Component.translatable("item.piglinproliferation.buckler.desc.charge_ability", doubleToString(ticksToSeconds(startingChargeTicks(stack)))).withStyle(ChatFormatting.DARK_GREEN)));

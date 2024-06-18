@@ -71,6 +71,6 @@ public class PiglinAlchemistRenderer extends PiglinRenderer {
 
     @Override
     public ResourceLocation getTextureLocation(Mob pEntity) {
-        return new ResourceLocation(PiglinProliferation.MODID, "textures/entity/piglin/alchemist/alchemist.png");
+        return ResourceLocation.fromNamespaceAndPath(PiglinProliferation.MODID, "textures/entity/piglin/alchemist/alchemist.png");
     }
 }
