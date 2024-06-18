@@ -33,7 +33,6 @@ public class PPConfig {
         public final ModConfigSpec.BooleanValue BangBlockDestruction;
         public final ModConfigSpec.IntValue alchemistWeightInBastions;
         public final ModConfigSpec.DoubleValue healingArrowChances;
-        public final ModConfigSpec.DoubleValue piglinVariantChances;
         public final ModConfigSpec.DoubleValue zombifiedPiglinDefaultChance;
         public final ModConfigSpec.DoubleValue zombifiedBruteChance;
         public final ModConfigSpec.DoubleValue zombifiedAlchemistChance;
@@ -48,7 +47,6 @@ public class PPConfig {
         public final ModConfigSpec.IntValue minBucklerChargeTime;
         public final ModConfigSpec.IntValue maxBucklerChargeTime;
         public final ModConfigSpec.DoubleValue turningBucklerLaunchStrength;
-        public final ModConfigSpec.ConfigValue<List<? extends String>> zombifiedPiglinTypeList;
         public final ModConfigSpec.ConfigValue<List<? extends String>> mobsThatCanAlsoUseBuckler;
         public CommonConfig(ModConfigSpec.Builder builder) {
             builder.push("Vanilla Changes");
@@ -64,8 +62,6 @@ public class PPConfig {
             zombifiedBruteChance = builder.defineInRange("Chance of zombified piglins spawning with brute clothing (including items)", 0.015F, 0.0F, 9000.0F);
             zombifiedAlchemistChance = builder.defineInRange("Chance of zombified piglins spawning with alchemist clothing (including items)", 0.10F, 0.0F, 9000.0F);
             zombifiedTravelerChance = builder.defineInRange("Chance of zombified piglins spawning with traveler clothing ", 0.10F, 0.0F, 9000.0F);
-            piglinVariantChances = builder.defineInRange("Chance of zombified piglin variants spawning from the list below", 0.50F, 0.0F, 9000.0F);
-            zombifiedPiglinTypeList = builder.comment("List of variants a zombified piglin has a 50% of turning into when spawning.", "Keep in mind they will still spawn with golden swords, this will be changed in the future.").defineList("List of piglin variants to use", ImmutableList.of(), obj -> true);
             builder.pop();
             builder.push("Buckler");
             mobsThatCanAlsoUseBuckler = builder.define("Mobs that can also use the buckler", Lists.newArrayList("guardvillagers:guard"));
