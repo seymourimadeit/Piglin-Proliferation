@@ -4,6 +4,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
 import net.minecraft.core.Registry;
 import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
@@ -11,6 +12,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.RandomSource;
+import net.minecraft.util.random.WeightedRandom;
 import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
@@ -33,7 +35,6 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.pathfinder.PathType;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.bus.api.Event;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
@@ -45,6 +46,7 @@ import net.neoforged.neoforge.event.level.NoteBlockEvent;
 import net.neoforged.neoforge.event.tick.EntityTickEvent;
 import net.neoforged.neoforge.event.tick.LevelTickEvent;
 import net.neoforged.neoforge.network.PacketDistributor;
+import net.neoforged.neoforge.registries.datamaps.DataMapsUpdatedEvent;
 import tallestred.piglinproliferation.capablities.PPDataAttachments;
 import tallestred.piglinproliferation.client.PPSounds;
 import tallestred.piglinproliferation.common.blockentities.PPBlockEntities;
@@ -52,6 +54,7 @@ import tallestred.piglinproliferation.common.blocks.PiglinSkullBlock;
 import tallestred.piglinproliferation.common.enchantments.PPEnchantments;
 import tallestred.piglinproliferation.common.entities.PPEntityTypes;
 import tallestred.piglinproliferation.common.entities.PiglinTraveler;
+import tallestred.piglinproliferation.common.entities.ZiglinVariantWeight;
 import tallestred.piglinproliferation.common.entities.ai.goals.*;
 import tallestred.piglinproliferation.common.entities.spawns.TravelerSpawner;
 import tallestred.piglinproliferation.common.items.BucklerItem;
@@ -69,6 +72,8 @@ import static tallestred.piglinproliferation.util.CodeUtilities.potionContents;
 @SuppressWarnings("unused")
 @EventBusSubscriber(modid = PiglinProliferation.MODID)
 public class PPEvents {
+    private static List<ZiglinVariantWeight> ziglinVariants = List.of();
+
     @SubscribeEvent
     public static void onJump(LivingEvent.LivingJumpEvent event) {
         if (BucklerItem.getChargeTicks(PPItems.checkEachHandForBuckler(event.getEntity())) > 0) {
@@ -105,9 +110,16 @@ public class PPEvents {
                 for (int z = centreZ - radius; z < centreZ + radius; z++) {
                     mutable.setX(x);
                     mutable.setZ(z);
-                    event.getLevel().getBlockEntity(mutable, PPBlockEntities.FIRE_RING.get()).ifPresent(fireRing -> {
-                        fireRing.addEffects(castOrNull(lingeringCloud.getOwner(), Player.class), null, null, lingeringCloud.potionContents.getAllEffects());
-                    });
+                    if (!lingeringCloud.potionContents.hasEffects()) {
+                        try {
+                            event.getLevel().getBlockEntity(mutable, PPBlockEntities.FIRE_RING.get()).ifPresent(fireRing -> {
+                                fireRing.addEffects(castOrNull(lingeringCloud.getOwner(), Player.class), null, null, lingeringCloud.potionContents.getAllEffects());
+                            });
+                        } catch (ArrayIndexOutOfBoundsException execption) {
+                            lingeringCloud.remove(Entity.RemovalReason.DISCARDED);
+                            // I hope this fixes this issue, if not I will have to investigate further and see exactly how to recreate it
+                        }
+                    }
                 }
         }
     }
@@ -117,7 +129,6 @@ public class PPEvents {
         if (event.getTarget() instanceof ZombifiedPiglin ziglin) {
             if (!event.getTarget().level().isClientSide) {
                 PacketDistributor.sendToPlayersTrackingEntity(ziglin, new ZiglinCapabilitySyncPacket(ziglin.getId(), ziglin.getData(PPDataAttachments.TRANSFORMATION_TRACKER.get())));
-
             }
         }
     }
@@ -296,13 +307,13 @@ public class PPEvents {
         if (event.getEntity().getType() == EntityType.ZOMBIFIED_PIGLIN) { // Some mods have entities that extend zombified piglins in order to make their own ziglins have custom textures
             ZombifiedPiglin zombifiedPiglin = (ZombifiedPiglin) event.getEntity();
             if (spawnType != MobSpawnType.CONVERSION) {
+                if (!ziglinVariants.isEmpty()) {
+                    EntityType<?> variantType = getRandomCustomVariant(random);
+                    ResourceLocation resourcelocation = BuiltInRegistries.ENTITY_TYPE.getKey(variantType);
+                    zombifiedPiglin.setData(PPDataAttachments.TRANSFORMATION_TRACKER.get(), resourcelocation.getPath());
+                }
                 if (random.nextFloat() < PPConfig.COMMON.zombifiedPiglinDefaultChance.get().floatValue())
                     zombifiedPiglin.setData(PPDataAttachments.TRANSFORMATION_TRACKER.get(), "piglin");
-                if (random.nextFloat() < PPConfig.COMMON.piglinVariantChances.get().floatValue()) {
-                    List<? extends String> piglinTypes = PPConfig.COMMON.zombifiedPiglinTypeList.get();
-                    if (!piglinTypes.isEmpty())
-                        zombifiedPiglin.setData(PPDataAttachments.TRANSFORMATION_TRACKER.get(), piglinTypes.get(random.nextInt(piglinTypes.size())));
-                }
                 float bruteChance = PPConfig.COMMON.zombifiedBruteChance.get().floatValue();
                 if (zombifiedPiglin.getData(PPDataAttachments.TRANSFORMATION_TRACKER.get()).equalsIgnoreCase("piglin")) {
                     if (random.nextFloat() < bruteChance) {
@@ -331,6 +342,19 @@ public class PPEvents {
                 }
             }
         }
+    }
+
+    public static EntityType<?> getRandomCustomVariant(RandomSource rand) {
+        ZiglinVariantWeight mob = WeightedRandom.getRandomItem(rand, ziglinVariants).orElseThrow();
+        return mob.type();
+    }
+
+    @SubscribeEvent
+    public static void onDataMapsUpdated(DataMapsUpdatedEvent event) {
+        event.ifRegistry(Registries.ENTITY_TYPE, registry -> ziglinVariants = registry.getDataMap(PiglinProliferation.ZOMBIFIED_PIGLIN_VARIANT_DATA_MAP).entrySet().stream().map((entry) -> {
+            EntityType<?> type = Objects.requireNonNull(registry.get(entry.getKey()), "Nonexistent entity " + entry.getKey() + " in modded ziglin variant datamap!");
+            return new ZiglinVariantWeight(type, entry.getValue().weight());
+        }).toList());
     }
 
     @SubscribeEvent

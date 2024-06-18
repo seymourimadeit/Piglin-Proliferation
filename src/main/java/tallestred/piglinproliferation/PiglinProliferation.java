@@ -39,6 +39,9 @@ import net.neoforged.neoforge.event.entity.SpawnPlacementRegisterEvent;
 import net.neoforged.neoforge.event.server.ServerAboutToStartEvent;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import net.neoforged.neoforge.network.registration.PayloadRegistrar;
+import net.neoforged.neoforge.registries.datamaps.DataMapType;
+import net.neoforged.neoforge.registries.datamaps.RegisterDataMapTypesEvent;
+import net.neoforged.neoforge.registries.datamaps.builtin.Compostable;
 import tallestred.piglinproliferation.capablities.PPDataAttachments;
 import tallestred.piglinproliferation.client.PPSounds;
 import tallestred.piglinproliferation.common.advancement.PPCriteriaTriggers;
@@ -46,6 +49,7 @@ import tallestred.piglinproliferation.common.attribute.PPAttributes;
 import tallestred.piglinproliferation.common.blockentities.FireRingBlockEntity;
 import tallestred.piglinproliferation.common.enchantments.PPEnchantments;
 import tallestred.piglinproliferation.common.entities.PiglinTraveler;
+import tallestred.piglinproliferation.common.entities.ZombifiedPiglinVariant;
 import tallestred.piglinproliferation.common.items.BucklerItem;
 import tallestred.piglinproliferation.common.items.PPItems;
 import tallestred.piglinproliferation.common.blockentities.PPBlockEntities;
@@ -67,6 +71,8 @@ import static tallestred.piglinproliferation.util.RegistryUtilities.addToCreativ
 @Mod(PiglinProliferation.MODID)
 public class PiglinProliferation {
     public static final String MODID = "piglinproliferation";
+    public static final DataMapType<EntityType<?>, ZombifiedPiglinVariant> ZOMBIFIED_PIGLIN_VARIANT_DATA_MAP = DataMapType.builder(
+            ResourceLocation.fromNamespaceAndPath(MODID, "zombified_piglin_variants"), Registries.ENTITY_TYPE, ZombifiedPiglinVariant.CODEC).synced(ZombifiedPiglinVariant.WEIGHT_CODEC, false).build();
 
     public PiglinProliferation(IEventBus modEventBus, Dist dist, ModContainer container) {
         modEventBus.addListener(this::setup);
@@ -77,6 +83,7 @@ public class PiglinProliferation {
         modEventBus.addListener(this::addSpawn);
         modEventBus.addListener(this::addCreativeTabs);
         modEventBus.addListener(this::registerPackets);
+        modEventBus.addListener(this::addDataMaps);
         if (dist == Dist.CLIENT)
             modEventBus.addListener(this::doClientStuff);
         NeoForge.EVENT_BUS.addListener(this::serverStart);
@@ -109,6 +116,10 @@ public class PiglinProliferation {
     private void addCustomAttributes(EntityAttributeModificationEvent event) {
         for (EntityType<? extends LivingEntity> type : event.getTypes())
             event.add(type, PPAttributes.TURNING_SPEED);
+    }
+
+    private void addDataMaps(RegisterDataMapTypesEvent event) {
+        event.register(ZOMBIFIED_PIGLIN_VARIANT_DATA_MAP);
     }
 
     private void addCreativeTabs(final BuildCreativeModeTabContentsEvent event) {
@@ -167,6 +178,7 @@ public class PiglinProliferation {
 
     private void processIMC(final InterModProcessEvent event) {
     }
+
 
     @OnlyIn(Dist.CLIENT)
     private void doClientStuff(final FMLClientSetupEvent event) {

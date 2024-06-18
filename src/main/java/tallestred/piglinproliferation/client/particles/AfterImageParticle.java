@@ -115,7 +115,6 @@ public class AfterImageParticle extends Particle {
             if (rendertype != null) {
                 VertexConsumer ivertexbuilder = multibuffersource$buffersource.getBuffer(rendertype);
                 int overlay = LivingEntityRenderer.getOverlayCoords(this.entity, 0.0F);
-                int color = FastColor.ARGB32.colorFromFloat(0.5F / Math.abs((float) life + 1), 1.0F, 1.0F, 1.0F);
                 model.renderToBuffer(stack, ivertexbuilder, getLightColor(tick), overlay, flag1 ? 654311423 : -1);
             }
             stack.popPose();
