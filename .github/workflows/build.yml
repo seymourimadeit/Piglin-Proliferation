@@ -1,8 +1,10 @@
 name: Build
 
-on: [workflow_dispatch]
+on: [ workflow_dispatch ]
 jobs:
   build:
+    permissions:
+      contents: write
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -35,6 +37,9 @@ jobs:
           java: 21
           name: ""
           changelog-file: changelog-1.21.*
+          retry-attempts: 2
+          retry-delay: 10000
+          fail-mode: fail
       - name: mc-publish
         uses: Kir-Antipov/mc-publish@v3.3.0
         with:
@@ -47,3 +52,6 @@ jobs:
           java: 21
           name: ""
           changelog-file: changelog-1.21.*
+          retry-attempts: 2
+          retry-delay: 10000
+          fail-mode: fail
