@@ -63,5 +63,10 @@ public class PiglinAlchemistModel<T extends PiglinAlchemist> extends PiglinModel
                 this.leftArm.xRot = -1.8F;
             }
         }
+        this.leftPants.copyFrom(this.leftLeg);
+        this.rightPants.copyFrom(this.rightLeg);
+        this.leftSleeve.copyFrom(this.leftArm);
+        this.rightSleeve.copyFrom(this.rightArm);
+        this.jacket.copyFrom(this.body);
     }
 }
