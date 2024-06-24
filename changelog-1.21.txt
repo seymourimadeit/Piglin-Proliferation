@@ -1,3 +1,1 @@
-- Fix crash when an alchemist fires an arrow
-- Fix alchemist armband being offset when throwing potion
-- Fix version checker being borked
+- Update to latest forge changes

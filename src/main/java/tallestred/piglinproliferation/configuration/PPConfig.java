@@ -52,7 +52,8 @@ public class PPConfig {
             builder.push("Vanilla Changes");
             healingArrowDamage = builder.define("Allow healing and Regeneration arrows to not do damage?", true);
             alchemistWeightInBastions = builder.comment("""
-                    Weight is calculated by dividing the current value by the sum of all weights combined.
+                    Weig
+                    ht is calculated by dividing the current value by the sum of all weights combined.
                     Use https://minecraft.fandom.com/wiki/Bastion_Remnant?so=search#cite_ref-piglin_group_1-39 as a guide.
                     The default weight for alchemists spawning is 4, giving them a 28% chance of spawning in bastions.
                     (Due to this, regular piglins have a spawn rate of 28% aswell, and brutes have a spawn rate of 7% spawn rate, changed values will have to account for this).

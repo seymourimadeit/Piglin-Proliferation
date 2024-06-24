@@ -213,13 +213,13 @@ public class PPEvents {
     }
 
     @SubscribeEvent
-    public static void hurtEntity(LivingHurtEvent event) {
-        if (event.getSource().getDirectEntity() instanceof Arrow arrow && PPConfig.COMMON.healingArrowDamage.get()) {
+    public static void hurtEntity(LivingDamageEvent.Pre event) {
+        if (event.getContainer().getSource().getDirectEntity() instanceof Arrow arrow && PPConfig.COMMON.healingArrowDamage.get()) {
             for (MobEffectInstance mobeffectinstance : arrow.getPotionContents().getAllEffects()) {
                 if ((mobeffectinstance.getEffect() == MobEffects.REGENERATION || mobeffectinstance.getEffect() == MobEffects.HEAL)) {
                     if ((event.getEntity() instanceof Mob && event.getEntity().isInvertedHealAndHarm()))
                         return;
-                    event.setAmount(0.0F);
+                    event.getContainer().setNewDamage(0.0F);
                     arrow.level().playSound(null, arrow.blockPosition(), PPSounds.REGEN_HEALING_ARROW_HIT.get(), SoundSource.NEUTRAL, 1.0F, 1.0F);
                     event.getEntity().setDeltaMovement(event.getEntity().getDeltaMovement().multiply(-1.0D, -1.0D, -1.0D));
                     event.getEntity().invulnerableTime = 0;
@@ -230,7 +230,7 @@ public class PPEvents {
     }
 
     @SubscribeEvent
-    public static void attackEntity(LivingAttackEvent event) {
+    public static void attackEntity(LivingIncomingDamageEvent event) {
         // Testing bygone nether compatibility led me to discover that alchemists healing piglin hunters leads to them attacking each other since the
         // horses they're riding on are considered undead, this should work as a quick fix for that, but further discussions with the mod creator is needed.
         if (event.getEntity() instanceof Mob mob) {
@@ -273,7 +273,7 @@ public class PPEvents {
     }
 
     @SubscribeEvent
-    public static void onShieldBlock(ShieldBlockEvent event) {
+    public static void onShieldBlock(LivingShieldBlockEvent event) {
         if (event.getEntity().getUseItem().getItem() instanceof BucklerItem)
             event.setCanceled(true);
     }
