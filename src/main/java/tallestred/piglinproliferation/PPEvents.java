@@ -272,7 +272,7 @@ public class PPEvents {
     public static void onCriticalHit(CriticalHitEvent event) {
         Player player = event.getEntity();
         CriticalAura criticalAura = PPCapablities.getGuaranteedCritical(player);
-        if (criticalAura.isCritical()) {
+        if (criticalAura != null && criticalAura.isCritical()) {
             event.setResult(Event.Result.ALLOW);
             event.setDamageModifier(1.5F);
             Entity entity = event.getEntity();

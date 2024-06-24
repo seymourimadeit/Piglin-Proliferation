@@ -15,7 +15,7 @@ modId="piglinproliferation" #mandatory
 version="${file.jarVersion}" #mandatory
  # A display name for the mod
 displayName="Piglin Proliferation" #mandatory
-updateJSONURL="https://raw.githubusercontent.com/seymourimadeit/Piglin-Proliferation/main/update.json" #optional
+updateJSONURL="https://api.modrinth.com/updates/piglin-proliferation/forge_updates.json" #optional
 logoFile="piglinproliferation.png" #optional
 authors="TallestRed (Developer), Edmord (Artist), flowerfugue (Developer)"
 credits="Vivi for Buckler art, flowerfugue's friends Leo and Paula for translation help" #optional

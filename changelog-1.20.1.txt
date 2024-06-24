@@ -1,2 +1,1 @@
-- Hopefully fixes random ArrayIndex execption crash
-- Update Ukrainian translations
+- Fix crash with better combat crit swing
