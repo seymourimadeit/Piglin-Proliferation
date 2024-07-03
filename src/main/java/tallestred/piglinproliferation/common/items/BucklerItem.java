@@ -31,8 +31,8 @@ import net.minecraft.world.level.block.RenderShape;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.client.extensions.common.IClientItemExtensions;
+import net.neoforged.neoforge.common.ItemAbilities;
 import net.neoforged.neoforge.common.Tags;
-import net.neoforged.neoforge.common.ToolActions;
 import tallestred.piglinproliferation.capablities.PPDataAttachments;
 import tallestred.piglinproliferation.client.PPSounds;
 import tallestred.piglinproliferation.client.particles.ParticleHelper;
@@ -46,7 +46,6 @@ import tallestred.piglinproliferation.configuration.PPConfig;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 import java.util.function.Consumer;
 
 import static tallestred.piglinproliferation.util.CodeUtilities.doubleToString;
@@ -89,19 +88,18 @@ public class BucklerItem extends ShieldItem {
         return stack.getOrDefault(PPComponents.BUCKLER_IS_READY, false);
     }
 
-    public static int startingChargeTicks(ItemStack stack) {
+    public static int startingChargeTicks(ItemStack stack, Level level) {
         int min = PPConfig.COMMON.minBucklerChargeTime.get();
         int max = PPConfig.COMMON.maxBucklerChargeTime.get();
-        assert Minecraft.getInstance().level != null;
-        return min + (((max - min) * stack.getEnchantmentLevel(PPEnchantments.getEnchant(PPEnchantments.TURNING, Minecraft.getInstance().level.registryAccess())) / 5));
+        return min + (((max - min) * stack.getEnchantmentLevel(PPEnchantments.getEnchant(PPEnchantments.TURNING, level.registryAccess())) / 5));
     }
 
     public static int getChargeTicks(ItemStack stack) {
         return stack.getOrDefault(PPComponents.BUCKLER_CHARGE_TICKS, 0);
     }
 
-    public static void setChargeTicks(ItemStack stack) {
-        setChargeTicks(stack, startingChargeTicks(stack));
+    public static void setChargeTicks(ItemStack stack, Level level) {
+        setChargeTicks(stack, startingChargeTicks(stack, level));
     }
 
     public static void setChargeTicks(ItemStack stack, int chargeTicks) {
@@ -138,7 +136,7 @@ public class BucklerItem extends ShieldItem {
                     }
                     if (!entity.isSilent())
                         entity.level().playSound(null, entity.getX(), entity.getY(), entity.getZ(), PPSounds.SHIELD_BASH.get(), entity.getSoundSource(), 0.5F, 0.8F + entity.getRandom().nextFloat() * 0.4F);
-                    if (entityHit instanceof Player && entityHit.getUseItem().canPerformAction(ToolActions.SHIELD_BLOCK))
+                    if (entityHit instanceof Player && entityHit.getUseItem().canPerformAction(ItemAbilities.SHIELD_BLOCK))
                         ((Player) entityHit).disableShield();
                 } else {
                     boolean isInMainHand = entity.getMainHandItem().getItem() instanceof BucklerItem;
@@ -184,7 +182,7 @@ public class BucklerItem extends ShieldItem {
     public ItemStack finishUsingItem(ItemStack stack, Level worldIn, LivingEntity entity) {
         ItemStack itemstack = super.finishUsingItem(stack, worldIn, entity);
         BucklerItem.setReady(stack, true);
-        BucklerItem.setChargeTicks(stack);
+        BucklerItem.setChargeTicks(stack, worldIn);
         CHARGE_SPEED_BOOST.get().resetTransientModifier(entity);
         CHARGE_JUMP_PREVENTION.get().resetTransientModifier(entity);
         INCREASED_KNOCKBACK_RESISTANCE.get().resetTransientModifier(entity);
@@ -229,7 +227,7 @@ public class BucklerItem extends ShieldItem {
         boolean isBang = stack.getEnchantmentLevel(PPEnchantments.getEnchant(PPEnchantments.BANG, minecraft.player.registryAccess())) > 0;
         ArrayList<Component> list = new ArrayList<>();
         list.add(Component.translatable("item.piglinproliferation.buckler.desc.on_use").withStyle(ChatFormatting.GRAY));
-        list.add(Component.literal(" ").append(Component.translatable("item.piglinproliferation.buckler.desc.charge_ability", doubleToString(ticksToSeconds(startingChargeTicks(stack)))).withStyle(ChatFormatting.DARK_GREEN)));
+        list.add(Component.literal(" ").append(Component.translatable("item.piglinproliferation.buckler.desc.charge_ability", doubleToString(ticksToSeconds(startingChargeTicks(stack, minecraft.player.level())))).withStyle(ChatFormatting.DARK_GREEN)));
         if (!isDetailed)
             list.add(Component.literal(" ").append(Component.translatable("item.piglinproliferation.buckler.desc.details", minecraft.options.keyShift.getTranslatedKeyMessage()).withStyle(ChatFormatting.GREEN)));
         else {

@@ -1,1 +1,2 @@
-- Update to latest forge changes
+- Port to newest neoforge changes
+- Fix crash with bucklers in servers
