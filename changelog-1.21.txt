@@ -1,2 +1,2 @@
-- Port to newest neoforge changes
-- Fix crash with bucklers in servers
+- Neoforge changes 2 electric boogalo
+- Enabled buckler launch by default
