@@ -9,17 +9,19 @@ import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.client.event.EntityRenderersEvent;
+import net.neoforged.neoforge.common.util.InsertableLinkedOpenCustomHashSet;
 import net.neoforged.neoforge.common.util.MutableHashedLinkedMap;
+import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
 
 import java.util.function.Function;
 
 public class RegistryUtilities {
-    public static void addToCreativeTabAfter(MutableHashedLinkedMap<ItemStack, CreativeModeTab.TabVisibility> creativeTab, Item after, Item... toAdd) {
+    public static void addToCreativeTabAfter(BuildCreativeModeTabContentsEvent event, Item after, Item... toAdd) {
         if (toAdd.length > 0) {
-            creativeTab.putAfter(new ItemStack(after), new ItemStack(toAdd[0]), CreativeModeTab.TabVisibility.PARENT_AND_SEARCH_TABS);
+            event.insertAfter(new ItemStack(after), new ItemStack(toAdd[0]), CreativeModeTab.TabVisibility.PARENT_AND_SEARCH_TABS);
             if (toAdd.length > 1)
                 for (int i = 1; i < toAdd.length; i++)
-                    creativeTab.putAfter(new ItemStack(toAdd[i - 1]), new ItemStack(toAdd[i]), CreativeModeTab.TabVisibility.PARENT_AND_SEARCH_TABS);
+                    event.insertAfter(new ItemStack(toAdd[i - 1]), new ItemStack(toAdd[i]), CreativeModeTab.TabVisibility.PARENT_AND_SEARCH_TABS);
         }
     }
 

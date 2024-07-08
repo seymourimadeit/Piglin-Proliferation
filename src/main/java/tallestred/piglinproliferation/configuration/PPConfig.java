@@ -69,10 +69,10 @@ public class PPConfig {
             BangBlockDestruction = builder.define("Have the explosion spawned while using the Bang! enchant destroy blocks?", false);
             BruteBuckler = builder.define("Have brutes spawn with bucklers?", true);
             bucklerCooldown = builder.defineInRange("How long should the buckler's cooldown be in ticks?", 240, Integer.MIN_VALUE, Integer.MAX_VALUE);
-            minBucklerChargeTime = builder.defineInRange("How long should the buckler's charge move be in ticks?", 15, Integer.MIN_VALUE, Integer.MAX_VALUE); // Thinking of removing this in 1.17.
+            minBucklerChargeTime = builder.defineInRange("How long should the buckler's charge move be in ticks?", 15, Integer.MIN_VALUE, Integer.MAX_VALUE);
             maxBucklerChargeTime = builder.defineInRange("How long should the buckler's charge move if you have the max level of turning enchant be in ticks?", 40, Integer.MIN_VALUE, Integer.MAX_VALUE);
             bucklerChance = builder.defineInRange("Chance of buckler appearing in bastion loot", 0.25F, 0.0F, 9999999.0F);
-            turningBucklerLaunchStrength = builder.comment("Experimental: Bucklers enchanted with Turning will allow the player to launch off of blocks they collide with. By default this is disabled, but if you want to test it out try 0.15").defineInRange("Launch strength ", 0.0D, 0.0D, 999999.0D);
+            turningBucklerLaunchStrength = builder.comment("Experimental: Bucklers enchanted with Turning will allow the player to launch off of blocks they collide with.").defineInRange("Launch strength ", 0.15D, 0.0D, 999999.0D);
             builder.pop();
             builder.push("Piglin Alchemist");
             alchemistPotionChance = builder.defineInRange("Chance of alchemist potions not getting broken when killed", 0.20F, 0.0F, 9000.0F);

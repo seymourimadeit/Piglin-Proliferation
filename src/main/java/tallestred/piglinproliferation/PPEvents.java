@@ -248,12 +248,12 @@ public class PPEvents {
     @SubscribeEvent
     public static void targetMob(LivingChangeTargetEvent event) {
         if (event.getEntity() instanceof AbstractPiglin) {
-            if (event.getOriginalTarget() instanceof AbstractPiglin) {
+            if (event.getOriginalAboutToBeSetTarget() instanceof AbstractPiglin) {
                 event.setCanceled(true);
             }
         }
         if (event.getEntity() instanceof ZombifiedPiglin) {
-            if (event.getOriginalTarget() instanceof ZombifiedPiglin) {
+            if (event.getOriginalAboutToBeSetTarget() instanceof ZombifiedPiglin) {
                 event.setCanceled(true);
             }
         }
