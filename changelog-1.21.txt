@@ -1,2 +1,2 @@
-- Neoforge changes 2 electric boogalo
-- Enabled buckler launch by default
+- Internal changes to how item properties are registered
+- Allowed users to define items for other modded ziglin variants in datamaps

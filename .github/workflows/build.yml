@@ -30,12 +30,12 @@ jobs:
         with:
           curseforge-id: 657831
           curseforge-token: ${{ secrets.CURSEFORGE_TOKEN }}
+          modrinth-id: iRE67WIn
+          modrinth-token: ${{ secrets.MODRINTH_TOKEN }}
           files-primary: build/libs/!(*-@(javadoc|sources)).jar
           version-type: release
           loaders: neoforge
           game-versions: 1.21
           java: 21
           name: ""
-          modrinth-id: iRE67WIn
-          modrinth-token: ${{ secrets.MODRINTH_TOKEN }}
           changelog-file: changelog-1.21.*

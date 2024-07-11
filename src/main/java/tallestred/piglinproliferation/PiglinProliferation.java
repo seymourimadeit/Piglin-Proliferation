@@ -84,8 +84,6 @@ public class PiglinProliferation {
         modEventBus.addListener(this::addCreativeTabs);
         modEventBus.addListener(this::registerPackets);
         modEventBus.addListener(this::addDataMaps);
-        if (dist == Dist.CLIENT)
-            modEventBus.addListener(this::doClientStuff);
         NeoForge.EVENT_BUS.addListener(this::serverStart);
         PPSounds.SOUNDS.register(modEventBus);
         PPAttributes.ATTRIBUTES.register(modEventBus);
@@ -147,6 +145,8 @@ public class PiglinProliferation {
             );
         } else if (CreativeModeTabs.COMBAT.equals(event.getTabKey())) {
             addToCreativeTabAfter(event, Items.SHIELD, PPItems.BUCKLER.get());
+        } else if (CreativeModeTabs.TOOLS_AND_UTILITIES.equals(event.getTabKey())) {
+            addToCreativeTabAfter(event, Items.RECOVERY_COMPASS, PPItems.TRAVELERS_COMPASS.get());
         }
     }
 
@@ -177,26 +177,6 @@ public class PiglinProliferation {
     }
 
     private void processIMC(final InterModProcessEvent event) {
-    }
-
-
-    @OnlyIn(Dist.CLIENT)
-    private void doClientStuff(final FMLClientSetupEvent event) {
-        event.enqueueWork(() -> {
-            ItemProperties.register(PPItems.BUCKLER.get(), ResourceLocation.parse("blocking"),
-                    (stack, clientWorld, livingEntity, useTime) -> {
-                        boolean active = livingEntity != null && livingEntity.isUsingItem()
-                                && livingEntity.getUseItem() == stack
-                                || livingEntity != null && BucklerItem.isReady(stack);
-                        return livingEntity != null && active ? 1.0F : 0.0F;
-                    });
-            ItemProperties.register(PPItems.TRAVELERS_COMPASS.get(), ResourceLocation.parse("angle"), new CompassItemPropertyFunction((level, itemStack, player) -> {
-                TravelersCompassTracker tracker = itemStack.get(PPComponents.TRAVELERS_COMPASS_TRACKER);
-                if (tracker != null)
-                    return tracker.target();
-                return null; //TODO not sure
-            }));
-        });
     }
 
     private void serverStart(final ServerAboutToStartEvent event) {

@@ -25,6 +25,7 @@ import net.minecraft.world.entity.monster.piglin.AbstractPiglin;
 import net.minecraft.world.entity.monster.piglin.PiglinBrute;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.Arrow;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.alchemy.Potions;
@@ -307,11 +308,6 @@ public class PPEvents {
         if (event.getEntity().getType() == EntityType.ZOMBIFIED_PIGLIN) { // Some mods have entities that extend zombified piglins in order to make their own ziglins have custom textures
             ZombifiedPiglin zombifiedPiglin = (ZombifiedPiglin) event.getEntity();
             if (spawnType != MobSpawnType.CONVERSION) {
-                if (!ziglinVariants.isEmpty()) {
-                    EntityType<?> variantType = getRandomCustomVariant(random);
-                    ResourceLocation resourcelocation = BuiltInRegistries.ENTITY_TYPE.getKey(variantType);
-                    zombifiedPiglin.setData(PPDataAttachments.TRANSFORMATION_TRACKER.get(), resourcelocation.getPath());
-                }
                 if (random.nextFloat() < PPConfig.COMMON.zombifiedPiglinDefaultChance.get().floatValue())
                     zombifiedPiglin.setData(PPDataAttachments.TRANSFORMATION_TRACKER.get(), "piglin");
                 float bruteChance = PPConfig.COMMON.zombifiedBruteChance.get().floatValue();
@@ -334,6 +330,13 @@ public class PPEvents {
                             zombifiedPiglin.setItemSlot(EquipmentSlot.MAINHAND, new ItemStack(Items.CROSSBOW));
                         }
                     }
+                    if (!ziglinVariants.isEmpty()) {
+                        EntityType<?> variantType = WeightedRandom.getRandomItem(random, ziglinVariants).orElseThrow().type();
+                        Item item = WeightedRandom.getRandomItem(random, ziglinVariants).orElseThrow().itemId();
+                        ResourceLocation resourcelocation = BuiltInRegistries.ENTITY_TYPE.getKey(variantType);
+                        zombifiedPiglin.setData(PPDataAttachments.TRANSFORMATION_TRACKER.get(), resourcelocation.getPath());
+                        zombifiedPiglin.setItemSlot(EquipmentSlot.MAINHAND, new ItemStack(item));
+                    }
                 }
                 if (spawnType == MobSpawnType.JOCKEY) {
                     event.setCanceled(true);
@@ -344,16 +347,11 @@ public class PPEvents {
         }
     }
 
-    public static EntityType<?> getRandomCustomVariant(RandomSource rand) {
-        ZiglinVariantWeight mob = WeightedRandom.getRandomItem(rand, ziglinVariants).orElseThrow();
-        return mob.type();
-    }
-
     @SubscribeEvent
     public static void onDataMapsUpdated(DataMapsUpdatedEvent event) {
         event.ifRegistry(Registries.ENTITY_TYPE, registry -> ziglinVariants = registry.getDataMap(PiglinProliferation.ZOMBIFIED_PIGLIN_VARIANT_DATA_MAP).entrySet().stream().map((entry) -> {
             EntityType<?> type = Objects.requireNonNull(registry.get(entry.getKey()), "Nonexistent entity " + entry.getKey() + " in modded ziglin variant datamap!");
-            return new ZiglinVariantWeight(type, entry.getValue().weight());
+            return new ZiglinVariantWeight(type, entry.getValue().weight(), entry.getValue().itemID());
         }).toList());
     }
 
