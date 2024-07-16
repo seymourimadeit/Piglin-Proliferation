@@ -1,2 +1,1 @@
-- Internal changes to how item properties are registered
-- Allowed users to define items for other modded ziglin variants in datamaps
+- Fix tags being borked
