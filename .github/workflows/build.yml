@@ -28,10 +28,10 @@ jobs:
       - name: mc-publish
         uses: Kir-Antipov/mc-publish@v3.3.0
         with:
-          curseforge-id: 657831
-          curseforge-token: ${{ secrets.CURSEFORGE_TOKEN }}
           modrinth-id: iRE67WIn
           modrinth-token: ${{ secrets.MODRINTH_TOKEN }}
+          curseforge-id: 657831
+          curseforge-token: ${{ secrets.CURSEFORGE_TOKEN }}
           files-primary: build/libs/!(*-@(javadoc|sources)).jar
           version-type: release
           loaders: neoforge

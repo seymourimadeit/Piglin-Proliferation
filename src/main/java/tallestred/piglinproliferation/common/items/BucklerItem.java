@@ -203,7 +203,7 @@ public class BucklerItem extends ShieldItem {
         return 10;
     }
 
-    @SuppressWarnings("deprecation") //In Minecraft, deprecated methods can be overridden but not called.
+
     @Override
     public int getEnchantmentValue() {
         return 1;
