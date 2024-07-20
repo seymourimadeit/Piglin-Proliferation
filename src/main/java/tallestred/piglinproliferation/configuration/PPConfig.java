@@ -48,6 +48,7 @@ public class PPConfig {
         public final ModConfigSpec.IntValue maxBucklerChargeTime;
         public final ModConfigSpec.DoubleValue turningBucklerLaunchStrength;
         public final ModConfigSpec.ConfigValue<List<? extends String>> mobsThatCanAlsoUseBuckler;
+
         public CommonConfig(ModConfigSpec.Builder builder) {
             builder.push("Vanilla Changes");
             healingArrowDamage = builder.define("Allow healing and Regeneration arrows to not do damage?", true);
@@ -65,7 +66,7 @@ public class PPConfig {
             zombifiedTravelerChance = builder.defineInRange("Chance of zombified piglins spawning with traveler clothing ", 0.10F, 0.0F, 9000.0F);
             builder.pop();
             builder.push("Buckler");
-            mobsThatCanAlsoUseBuckler = builder.define("Mobs that can also use the buckler", Lists.newArrayList("guardvillagers:guard"));
+            mobsThatCanAlsoUseBuckler = builder.defineListAllowEmpty("Mobs that can also use the buckler", ImmutableList.of("guardvillagers:guard"), () -> "guardvillagers:guard", o -> true);
             BangBlockDestruction = builder.define("Have the explosion spawned while using the Bang! enchant destroy blocks?", false);
             BruteBuckler = builder.define("Have brutes spawn with bucklers?", true);
             bucklerCooldown = builder.defineInRange("How long should the buckler's cooldown be in ticks?", 240, Integer.MIN_VALUE, Integer.MAX_VALUE);
@@ -92,6 +93,7 @@ public class PPConfig {
         public final ModConfigSpec.BooleanValue ziglinTextures;
         public final ModConfigSpec.BooleanValue RenderAfterImage;
         public final ModConfigSpec.BooleanValue RenderAfterImageLayers;
+
         public ClientConfig(ModConfigSpec.Builder builder) {
             builder.push("vanilla changes");
             ziglinTextures = builder.define("Allow Zombified Piglins to render consistent clothing?", true);

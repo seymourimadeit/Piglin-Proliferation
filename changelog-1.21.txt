@@ -1,1 +1,2 @@
 - Fix tags being borked
+- Config menu

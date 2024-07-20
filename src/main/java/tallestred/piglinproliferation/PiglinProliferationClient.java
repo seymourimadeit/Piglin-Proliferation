@@ -8,6 +8,8 @@ import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
+import net.neoforged.neoforge.client.gui.ConfigurationScreen;
+import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
 import tallestred.piglinproliferation.common.items.BucklerItem;
 import tallestred.piglinproliferation.common.items.PPItems;
 import tallestred.piglinproliferation.common.items.component.PPComponents;
@@ -17,6 +19,7 @@ import tallestred.piglinproliferation.common.items.component.TravelersCompassTra
 public class PiglinProliferationClient {
     public PiglinProliferationClient(IEventBus modEventBus, Dist dist, ModContainer container) {
         modEventBus.addListener(this::doClientStuff);
+        container.registerExtensionPoint(IConfigScreenFactory.class, ConfigurationScreen::new);
     }
 
     private void doClientStuff(final FMLClientSetupEvent event) {

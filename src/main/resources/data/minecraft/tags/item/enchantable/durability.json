@@ -1,5 +1,5 @@
 {
-  "replace": "none",
+  "replace": false,
   "values": [
    "piglinproliferation:buckler"
   ]
