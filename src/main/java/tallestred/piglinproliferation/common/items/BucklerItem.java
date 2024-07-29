@@ -69,8 +69,6 @@ public class BucklerItem extends ShieldItem {
 
     public static void moveFowards(LivingEntity entity) {
         if (entity.isAlive()) {
-            if (entity.horizontalCollision && PPEnchantments.hasBucklerEnchantsOnHands(entity, PPEnchantments.TURNING.get()))
-                entity.setDeltaMovement(entity.getDeltaMovement().x, 0.15F * (PPEnchantments.getBucklerEnchantsOnHands(PPEnchantments.TURNING.get(), entity)), entity.getDeltaMovement().z);
             Vec3 look = entity.getViewVector(1.0F);
             Vec3 motion = entity.getDeltaMovement();
             if (entity.level().isClientSide) {
