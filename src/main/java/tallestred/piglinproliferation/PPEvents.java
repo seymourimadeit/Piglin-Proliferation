@@ -147,16 +147,12 @@ public class PPEvents {
     @SubscribeEvent
     public static void onLivingTick(LivingEvent.LivingTickEvent event) {
         LivingEntity entity = event.getEntity();
-        int turningLevel = PPEnchantments.getBucklerEnchantsOnHands(PPEnchantments.TURNING.get(), entity);
         ItemStack bucklerItemStack = PPItems.checkEachHandForBuckler(entity);
         boolean bucklerReadyToCharge = BucklerItem.isReady(bucklerItemStack);
         int bucklerChargeTicks = BucklerItem.getChargeTicks(bucklerItemStack);
         if (bucklerReadyToCharge) {
             BucklerItem.setChargeTicks(bucklerItemStack, bucklerChargeTicks - 1);
             if (bucklerChargeTicks > 0) {
-                if (entity.horizontalCollision && PPEnchantments.hasBucklerEnchantsOnHands(entity, PPEnchantments.TURNING.get())) {
-                    entity.setDeltaMovement(entity.getDeltaMovement().x, PPConfig.COMMON.turningBucklerLaunchStrength.get() * (PPEnchantments.getBucklerEnchantsOnHands(PPEnchantments.TURNING.get(), entity)), entity.getDeltaMovement().z);
-                }
                 BucklerItem.moveFowards(entity);
                 BucklerItem.spawnRunningEffectsWhileCharging(entity);
                 if (!entity.level().isClientSide()) BucklerItem.bucklerBash(entity);
