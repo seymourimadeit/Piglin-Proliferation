@@ -1,1 +1,2 @@
-- Fix crash with better combat crit swing
+- Reduced lag with getBucklerEnchants method
+- Fixed issue with Piglin Alchemist armband
