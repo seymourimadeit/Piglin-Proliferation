@@ -1,4 +1,4 @@
-name: Build
+name: Modrinth
 
 on: [ workflow_dispatch ]
 jobs:
@@ -26,10 +26,11 @@ jobs:
       - name: mc-publish
         uses: Kir-Antipov/mc-publish@v3.3.0
         with:
-          curseforge-id: 657831
-          curseforge-token: ${{ secrets.CURSEFORGE_TOKEN }}
+          modrinth-id: iRE67WIn
+          modrinth-token: ${{ secrets.MODRINTH_TOKEN }}
           files-primary: build/libs/!(*-@(javadoc|sources)).jar
           version-type: release
+          version: 1.20.1-1.2.5
           loaders: |
             neoforge
             forge
