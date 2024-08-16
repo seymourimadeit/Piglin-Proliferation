@@ -31,7 +31,6 @@ public class PPClientEvents {
         LocalPlayer player = mc.player;
         if (player != null && BucklerItem.getChargeTicks(PPItems.checkEachHandForBuckler(player)) > 0)
             event.getInput().leftImpulse = 0;
-
     }
 
     @SubscribeEvent

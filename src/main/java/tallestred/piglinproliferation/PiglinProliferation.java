@@ -1,7 +1,5 @@
 package tallestred.piglinproliferation;
 
-import net.minecraft.client.renderer.item.CompassItemPropertyFunction;
-import net.minecraft.client.renderer.item.ItemProperties;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Registry;
 import net.minecraft.core.dispenser.BlockSource;
@@ -23,17 +21,14 @@ import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.level.levelgen.structure.pools.StructureTemplatePool;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureProcessorList;
 import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.config.ModConfig;
-import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.fml.event.lifecycle.InterModEnqueueEvent;
 import net.neoforged.fml.event.lifecycle.InterModProcessEvent;
 import net.neoforged.neoforge.common.NeoForge;
-import net.neoforged.neoforge.common.util.InsertableLinkedOpenCustomHashSet;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
 import net.neoforged.neoforge.event.entity.EntityAttributeCreationEvent;
 import net.neoforged.neoforge.event.entity.EntityAttributeModificationEvent;
@@ -54,10 +49,8 @@ import tallestred.piglinproliferation.common.entities.PPEntityTypes;
 import tallestred.piglinproliferation.common.entities.PiglinAlchemist;
 import tallestred.piglinproliferation.common.entities.PiglinTraveler;
 import tallestred.piglinproliferation.common.entities.ZombifiedPiglinVariant;
-import tallestred.piglinproliferation.common.items.BucklerItem;
 import tallestred.piglinproliferation.common.items.PPItems;
 import tallestred.piglinproliferation.common.items.component.PPComponents;
-import tallestred.piglinproliferation.common.items.component.TravelersCompassTracker;
 import tallestred.piglinproliferation.common.loot.PPLoot;
 import tallestred.piglinproliferation.common.recipes.PPRecipeSerializers;
 import tallestred.piglinproliferation.common.worldgen.PPWorldgen;
@@ -111,13 +104,13 @@ public class PiglinProliferation {
         event.put(PPEntityTypes.PIGLIN_ALCHEMIST.get(), PiglinAlchemist.createAttributes().build());
     }
 
-    private void addCustomAttributes(EntityAttributeModificationEvent event) {
+    private void addCustomAttributes(final EntityAttributeModificationEvent event) {
         for (EntityType<? extends LivingEntity> type : event.getTypes())
             event.add(type, PPAttributes.TURNING_SPEED);
     }
 
-    private void addDataMaps(RegisterDataMapTypesEvent event) {
-        event.register(ZOMBIFIED_PIGLIN_VARIANT_DATA_MAP);
+    private void addDataMaps(final RegisterDataMapTypesEvent event) {
+       event.register(ZOMBIFIED_PIGLIN_VARIANT_DATA_MAP);
     }
 
     private void addCreativeTabs(final BuildCreativeModeTabContentsEvent event) {

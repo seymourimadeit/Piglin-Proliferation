@@ -13,11 +13,13 @@ import net.neoforged.neoforge.registries.DeferredRegister;
 import net.neoforged.neoforge.registries.NeoForgeRegistries;
 import tallestred.piglinproliferation.PiglinProliferation;
 
+import java.util.function.Supplier;
+
 import static tallestred.piglinproliferation.PiglinProliferation.MODID;
 
 public class PPLoot {
     public static final DeferredRegister<MapCodec<? extends IGlobalLootModifier>> GLM = DeferredRegister.create(NeoForgeRegistries.Keys.GLOBAL_LOOT_MODIFIER_SERIALIZERS, MODID);
-    public static final DeferredHolder<MapCodec<? extends IGlobalLootModifier>, MapCodec<BastionLootModifier>> DUNGEON_LOOT = GLM.register("bastion_loot", BastionLootModifier.CODEC);
+    public static final Supplier<MapCodec<BastionLootModifier>> BASTION_LOOT = GLM.register("bastion_loot", BastionLootModifier.CODEC);
 
     public static final ResourceKey<LootTable> ALCHEMIST_BARTER = lootTable("gameplay/alchemist_bartering");
     public static final ResourceKey<LootTable> ALCHEMIST_BARTER_CHEAP = lootTable("gameplay/compat/alchemist_bartering_cheap");

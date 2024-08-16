@@ -7,7 +7,9 @@ import net.minecraft.client.model.geom.builders.CubeDeformation;
 import net.minecraft.client.model.geom.builders.CubeListBuilder;
 import net.minecraft.client.model.geom.builders.MeshDefinition;
 import net.minecraft.client.model.geom.builders.PartDefinition;
+import net.minecraft.util.Mth;
 import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.monster.piglin.PiglinArmPose;
 import net.minecraft.world.item.ArmorItem;
 import tallestred.piglinproliferation.common.entities.PiglinAlchemist;
 
@@ -17,6 +19,7 @@ public class PiglinAlchemistModel<T extends PiglinAlchemist> extends PiglinModel
     public final ModelPart bodyForLeggings;
     public final ModelPart bodyForChest;
     public final ModelPart belt;
+    public final ModelPart leftEar = this.head.getChild("left_ear");
 
     public PiglinAlchemistModel(ModelPart root) {
         super(root);
@@ -56,6 +59,11 @@ public class PiglinAlchemistModel<T extends PiglinAlchemist> extends PiglinModel
         this.bodyForLeggings.visible = pEntity.getItemBySlot(EquipmentSlot.LEGS).getItem() instanceof ArmorItem && !(pEntity.getItemBySlot(EquipmentSlot.CHEST).getItem() instanceof ArmorItem);
         this.bodyForChest.visible = pEntity.getItemBySlot(EquipmentSlot.CHEST).getItem() instanceof ArmorItem;
         this.belt.visible = !isWearingChestplateOrLeggings;
+        //PiglinArmPose piglinarmpose = pEntity.getArmPose();
+      //  if (piglinarmpose == PiglinArmPose.ADMIRING_ITEM) {
+        //    this.rightEar.zRot = 0.95F * (Mth.cos(pAgeInTicks) * 0.2F) + 0.6F;
+        //    this.leftEar.zRot = 0.95F * -(Mth.cos(pAgeInTicks) * 0.2F) - 0.6F;
+       // }
         if (pEntity.isGonnaThrowPotion()) {
             if (pEntity.isLeftHanded()) {
                 this.rightArm.xRot = -1.8F;
@@ -63,6 +71,7 @@ public class PiglinAlchemistModel<T extends PiglinAlchemist> extends PiglinModel
                 this.leftArm.xRot = -1.8F;
             }
         }
+
         this.leftPants.copyFrom(this.leftLeg);
         this.rightPants.copyFrom(this.rightLeg);
         this.leftSleeve.copyFrom(this.leftArm);
