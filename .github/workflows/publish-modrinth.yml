@@ -32,7 +32,7 @@ jobs:
           modrinth-token: ${{ secrets.MODRINTH_TOKEN }}
           files-primary: build/libs/!(*-@(javadoc|sources)).jar
           version-type: release
-          version: 2.0.6
+          version: 2.0.7
           loaders: neoforge
           game-versions: 1.21
           java: 21
