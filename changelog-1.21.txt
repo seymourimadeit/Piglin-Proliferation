@@ -1,1 +1,1 @@
-- Fixed global loot modifier misspelling causing crashes with MoonLight lib and Sinytra Connector
+- Fixed rare crash with buckler bashing on some devices
