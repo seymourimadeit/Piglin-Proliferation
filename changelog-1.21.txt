@@ -1,1 +1,3 @@
 - Fixed rare crash with buckler bashing on some devices
+- Update ru_ru localization files
+- Update zh_chn localization files
