@@ -26,6 +26,9 @@ jobs:
       - name: mc-publish
         uses: Kir-Antipov/mc-publish@v3.3.0
         with:
+          github-token: ${{ secrets.GIT_TOKEN }}
+          modrinth-id: iRE67WIn
+          modrinth-token: ${{ secrets.MODRINTH_TOKEN }}
           curseforge-id: 657831
           curseforge-token: ${{ secrets.CURSEFORGE_TOKEN }}
           files-primary: build/libs/!(*-@(javadoc|sources)).jar
@@ -34,6 +37,7 @@ jobs:
             neoforge
             forge
           game-versions: 1.20.1
+          version: 1.20.1-1.2.6
           java: 17
           name: ""
           changelog-file: changelog-1.20.1.*
