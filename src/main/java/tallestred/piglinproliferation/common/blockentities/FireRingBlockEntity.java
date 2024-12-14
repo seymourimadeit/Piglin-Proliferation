@@ -15,6 +15,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.RandomSource;
+import net.minecraft.world.Containers;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.LivingEntity;
@@ -22,11 +23,13 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.ItemUtils;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.crafting.SingleRecipeInput;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.entity.CampfireBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.phys.AABB;
 import tallestred.piglinproliferation.common.advancement.PPCriteriaTriggers;
 import tallestred.piglinproliferation.common.blocks.FireRingBlock;
@@ -98,8 +101,32 @@ public class FireRingBlockEntity extends CampfireBlockEntity {
     }
 
     public static void cookTick(Level level, BlockPos pos, BlockState state, FireRingBlockEntity blockEntity, int tempEffectTime) {
+        boolean flag = false;
         potionTick(level, pos, state, blockEntity, tempEffectTime);
-        CampfireBlockEntity.cookTick(level, pos, state, blockEntity);
+        for (int i = 0; i < blockEntity.getItems().size(); i++) {
+            ItemStack itemstack = blockEntity.getItems().get(i);
+            if (!itemstack.isEmpty()) {
+                flag = true;
+                blockEntity.cookingProgress[i]++;
+                if (blockEntity.cookingProgress[i] >= blockEntity.cookingTime[i]) {
+                    SingleRecipeInput singlerecipeinput = new SingleRecipeInput(itemstack);
+                    ItemStack itemstack1 = blockEntity.quickCheck
+                            .getRecipeFor(singlerecipeinput, level)
+                            .map(p_344662_ -> p_344662_.value().assemble(singlerecipeinput, level.registryAccess()))
+                            .orElse(itemstack);
+                    if (itemstack1.isItemEnabled(level.enabledFeatures())) {
+                        Containers.dropItemStack(level, pos.getX(), pos.getY(), pos.getZ(), itemstack1);
+                        blockEntity.getItems().set(i, ItemStack.EMPTY);
+                        level.sendBlockUpdated(pos, state, state, 3);
+                        level.gameEvent(GameEvent.BLOCK_CHANGE, pos, GameEvent.Context.of(state));
+                    }
+                }
+            }
+        }
+
+        if (flag) {
+            setChanged(level, pos, state);
+        }
     }
 
     public static void cooldownTick(Level level, BlockPos pos, BlockState state, FireRingBlockEntity blockEntity) {
