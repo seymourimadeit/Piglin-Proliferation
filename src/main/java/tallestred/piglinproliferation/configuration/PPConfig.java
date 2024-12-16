@@ -30,6 +30,7 @@ public class PPConfig {
     public static class CommonConfig {
         public final ModConfigSpec.BooleanValue healingArrowDamage;
         public final ModConfigSpec.BooleanValue BruteBuckler;
+        public final ModConfigSpec.BooleanValue criticalAura;
         public final ModConfigSpec.BooleanValue BangBlockDestruction;
         public final ModConfigSpec.IntValue alchemistWeightInBastions;
         public final ModConfigSpec.DoubleValue healingArrowChances;
@@ -66,6 +67,7 @@ public class PPConfig {
             zombifiedTravelerChance = builder.defineInRange("Chance of zombified piglins spawning with traveler clothing ", 0.10F, 0.0F, 9000.0F);
             builder.pop();
             builder.push("Buckler");
+            criticalAura = builder.define("Enable critical aura feature for buckler", true);
             mobsThatCanAlsoUseBuckler = builder.defineListAllowEmpty("Mobs that can also use the buckler", ImmutableList.of("guardvillagers:guard"), () -> "guardvillagers:guard", o -> true);
             BangBlockDestruction = builder.define("Have the explosion spawned while using the Bang! enchant destroy blocks?", false);
             BruteBuckler = builder.define("Have brutes spawn with bucklers?", true);
@@ -93,10 +95,16 @@ public class PPConfig {
         public final ModConfigSpec.BooleanValue ziglinTextures;
         public final ModConfigSpec.BooleanValue RenderAfterImage;
         public final ModConfigSpec.BooleanValue RenderAfterImageLayers;
+        public final ModConfigSpec.BooleanValue verboseBucklerDesc;
+        public final ModConfigSpec.BooleanValue bucklerDesc;
 
         public ClientConfig(ModConfigSpec.Builder builder) {
             builder.push("vanilla changes");
             ziglinTextures = builder.define("Allow Zombified Piglins to render consistent clothing?", true);
+            builder.pop();
+            builder.push("buckler description");
+            verboseBucklerDesc = builder.define("Enable expanded buckler description", true);
+            bucklerDesc = builder.define("Enable buckler description", true);
             builder.pop();
             builder.push("after image");
             RenderAfterImage = builder.define("Render an after image while an entity is charging with a buckler?", true);

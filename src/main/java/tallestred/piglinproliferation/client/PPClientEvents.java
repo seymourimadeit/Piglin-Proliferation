@@ -18,6 +18,7 @@ import tallestred.piglinproliferation.PiglinProliferation;
 import tallestred.piglinproliferation.common.attribute.PPAttributes;
 import tallestred.piglinproliferation.common.items.BucklerItem;
 import tallestred.piglinproliferation.common.items.PPItems;
+import tallestred.piglinproliferation.configuration.PPConfig;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -81,7 +82,8 @@ public class PPClientEvents {
             List<Component> toAdd = new ArrayList<>();
             toAdd.add(Component.empty());
             toAdd.addAll(PPItems.BUCKLER.get().getDescription(stack));
-            event.getToolTip().addAll(toAdd);
+            if (PPConfig.CLIENT.bucklerDesc.get())
+                event.getToolTip().addAll(toAdd);
         }
     }
 

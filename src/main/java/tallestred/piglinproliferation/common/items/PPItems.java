@@ -15,6 +15,7 @@ import tallestred.piglinproliferation.common.blocks.PPBlocks;
 import tallestred.piglinproliferation.common.blocks.PiglinSkullBlock;
 import tallestred.piglinproliferation.common.blocks.PiglinWallSkullBlock;
 import tallestred.piglinproliferation.common.entities.PPEntityTypes;
+import tallestred.piglinproliferation.common.items.component.PPComponents;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -22,7 +23,7 @@ import java.util.Map;
 public class PPItems {
     public static final DeferredRegister<Item> ITEMS = DeferredRegister.create(Registries.ITEM, PiglinProliferation.MODID);
 
-    public static final DeferredHolder<Item, BucklerItem> BUCKLER = ITEMS.register("buckler", () -> new BucklerItem((new Item.Properties()).durability(128)));
+    public static final DeferredHolder<Item, BucklerItem> BUCKLER = ITEMS.register("buckler", () -> new BucklerItem((new Item.Properties()).component(PPComponents.BUCKLER_IS_READY, false).component(PPComponents.BUCKLER_CHARGE_TICKS, 0).durability(128)));
     public static final DeferredHolder<Item, TravelersCompassItem> TRAVELERS_COMPASS = ITEMS.register("travelers_compass", () -> new TravelersCompassItem(new Item.Properties()));
 
     public static final DeferredHolder<Item, DeferredSpawnEggItem> PIGLIN_ALCHEMIST_SPAWN_EGG = ITEMS.register("piglin_alchemist_spawn_egg", () -> new DeferredSpawnEggItem(PPEntityTypes.PIGLIN_ALCHEMIST, 10944611, 16380836, (new Item.Properties())));

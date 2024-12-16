@@ -147,7 +147,7 @@ public class BucklerItem extends ShieldItem {
                     setChargeTicks(stack, 0);
                 }
                 entity.setLastHurtMob(entityHit);
-                if (entity instanceof Player player && !PPEnchantments.hasBucklerEnchantsOnHands(player, PPEnchantments.BANG, PPEnchantments.TURNING)) {
+                if (entity instanceof Player player && !PPEnchantments.hasBucklerEnchantsOnHands(player, PPEnchantments.BANG, PPEnchantments.TURNING) && PPConfig.COMMON.criticalAura.get()) {
                     player.level().playSound(null, entity.getX(), entity.getY(), entity.getZ(), PPSounds.CRITICAL_ACTIVATE.get(), entity.getSoundSource(), 1.0F, 1.0F);
                     player.setData(PPDataAttachments.CRITICAL.get(), true);
                 }
@@ -167,6 +167,7 @@ public class BucklerItem extends ShieldItem {
                 entity.level().addParticle(new BlockParticleOption(ParticleTypes.BLOCK, blockstate).setPos(blockpos), entity.getX() + (entity.getRandom().nextDouble() - 0.5D) * (double) entity.getDimensions(entity.getPose()).height(), entity.getY() + 0.1D, entity.getZ() + (entity.getRandom().nextDouble() - 0.5D) * (double) entity.getDimensions(entity.getPose()).width(), vec3.x * -4.0D, 1.5D, vec3.z * -4.0D);
             }
     }
+
     @Override
     public ItemStack finishUsingItem(ItemStack stack, Level worldIn, LivingEntity entity) {
         ItemStack itemstack = super.finishUsingItem(stack, worldIn, entity);
@@ -218,27 +219,29 @@ public class BucklerItem extends ShieldItem {
         ArrayList<Component> list = new ArrayList<>();
         list.add(Component.translatable("item.piglinproliferation.buckler.desc.on_use").withStyle(ChatFormatting.GRAY));
         list.add(Component.literal(" ").append(Component.translatable("item.piglinproliferation.buckler.desc.charge_ability", doubleToString(ticksToSeconds(startingChargeTicks(stack, minecraft.player.level())))).withStyle(ChatFormatting.DARK_GREEN)));
-        if (!isDetailed)
-            list.add(Component.literal(" ").append(Component.translatable("item.piglinproliferation.buckler.desc.details", minecraft.options.keyShift.getTranslatedKeyMessage()).withStyle(ChatFormatting.GREEN)));
-        else {
-            list.add(Component.literal(" ").append(Component.translatable("item.piglinproliferation.buckler.desc.while_charging").withStyle(ChatFormatting.GREEN)));
-            list.add(Component.literal("  ").append(CHARGE_SPEED_BOOST.get().translatable()));
-            list.add(Component.literal("  ").append(INCREASED_KNOCKBACK_RESISTANCE.get().translatable()));
-            list.add(Component.literal("  ").append(Component.translatable("item.piglinproliferation.buckler.desc.shield_bash").withStyle(ChatFormatting.BLUE)));
-            if (PPConfig.COMMON.turningBucklerLaunchStrength.get() > 0 && turningLevel > 0)
-                list.add(Component.literal("  ").append(Component.translatable("item.piglinproliferation.buckler.desc.launch").withStyle(ChatFormatting.BLUE)));
-            if (turningLevel != 5)
-                list.add(Component.literal("  ").append(TURNING_SPEED_REDUCTION.getWithSummand(turningReduction(turningLevel)).translatable()));
-            list.add(Component.literal("  ").append(CHARGE_JUMP_PREVENTION.get().translatable()));
-            list.add(Component.literal("  ").append(Component.translatable("item.piglinproliferation.buckler.desc.water").withStyle(ChatFormatting.RED)));
-            list.add(Component.translatable("item.piglinproliferation.buckler.desc.on_shield_bash").withStyle(ChatFormatting.GRAY));
-            if (isBang)
-                list.add(Component.literal(" ").append(Component.translatable("item.piglinproliferation.buckler.desc.explosion").withStyle(ChatFormatting.DARK_GREEN)));
+        if (PPConfig.CLIENT.verboseBucklerDesc.get()) {
+            if (!isDetailed)
+                list.add(Component.literal(" ").append(Component.translatable("item.piglinproliferation.buckler.desc.details", minecraft.options.keyShift.getTranslatedKeyMessage()).withStyle(ChatFormatting.GREEN)));
             else {
-                list.add(Component.literal(" ").append(ATTACK_DAMAGE.getWithSummands(minDamageReduction(turningLevel), maxDamageReduction(turningLevel)).translatable(0)));
-                if (turningLevel <= 0) {
-                    list.add(Component.literal(" ").append(Component.translatable("item.piglinproliferation.buckler.desc.critical_aura").withStyle(ChatFormatting.DARK_GREEN)));
-                    list.add(Component.literal(" ").append(Component.translatable("item.piglinproliferation.buckler.desc.critical_aura_expires").withStyle(ChatFormatting.RED)));
+                list.add(Component.literal(" ").append(Component.translatable("item.piglinproliferation.buckler.desc.while_charging").withStyle(ChatFormatting.GREEN)));
+                list.add(Component.literal("  ").append(CHARGE_SPEED_BOOST.get().translatable()));
+                list.add(Component.literal("  ").append(INCREASED_KNOCKBACK_RESISTANCE.get().translatable()));
+                list.add(Component.literal("  ").append(Component.translatable("item.piglinproliferation.buckler.desc.shield_bash").withStyle(ChatFormatting.BLUE)));
+                if (PPConfig.COMMON.turningBucklerLaunchStrength.get() > 0 && turningLevel > 0)
+                    list.add(Component.literal("  ").append(Component.translatable("item.piglinproliferation.buckler.desc.launch").withStyle(ChatFormatting.BLUE)));
+                if (turningLevel != 5)
+                    list.add(Component.literal("  ").append(TURNING_SPEED_REDUCTION.getWithSummand(turningReduction(turningLevel)).translatable()));
+                list.add(Component.literal("  ").append(CHARGE_JUMP_PREVENTION.get().translatable()));
+                list.add(Component.literal("  ").append(Component.translatable("item.piglinproliferation.buckler.desc.water").withStyle(ChatFormatting.RED)));
+                list.add(Component.translatable("item.piglinproliferation.buckler.desc.on_shield_bash").withStyle(ChatFormatting.GRAY));
+                if (isBang)
+                    list.add(Component.literal(" ").append(Component.translatable("item.piglinproliferation.buckler.desc.explosion").withStyle(ChatFormatting.DARK_GREEN)));
+                else {
+                    list.add(Component.literal(" ").append(ATTACK_DAMAGE.getWithSummands(minDamageReduction(turningLevel), maxDamageReduction(turningLevel)).translatable(0)));
+                    if (turningLevel <= 0 && PPConfig.COMMON.criticalAura.get()) {
+                        list.add(Component.literal(" ").append(Component.translatable("item.piglinproliferation.buckler.desc.critical_aura").withStyle(ChatFormatting.DARK_GREEN)));
+                        list.add(Component.literal(" ").append(Component.translatable("item.piglinproliferation.buckler.desc.critical_aura_expires").withStyle(ChatFormatting.RED)));
+                    }
                 }
             }
         }
