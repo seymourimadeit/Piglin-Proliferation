@@ -1,3 +1,5 @@
-- Fixed rare crash with buckler bashing on some devices
-- Update ru_ru localization files
-- Update zh_chn localization files
+- Added configs for buckler description and critical aura
+- Added configs for max ring duration and level (uncapped by default)
+- Fixed issue with fire rings not properly emitting if Lithium was installed
+- Made soul fire rings uncraftable
+- Fire ring fire is potion color
