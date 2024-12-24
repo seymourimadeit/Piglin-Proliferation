@@ -114,7 +114,7 @@ public class PPEvents {
                     if (!lingeringCloud.potionContents.hasEffects()) {
                         try {
                             event.getLevel().getBlockEntity(mutable, PPBlockEntities.FIRE_RING.get()).ifPresent(fireRing -> {
-                                fireRing.addEffects(castOrNull(lingeringCloud.getOwner(), Player.class), null, null, lingeringCloud.potionContents.getAllEffects());
+                                fireRing.addEffects(castOrNull(lingeringCloud.getOwner(), Player.class), null, null, lingeringCloud.potionContents);
                             });
                         } catch (ArrayIndexOutOfBoundsException execption) {
                             lingeringCloud.remove(Entity.RemovalReason.DISCARDED);

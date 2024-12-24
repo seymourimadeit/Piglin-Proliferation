@@ -1,20 +1,3 @@
 {
-  "type": "minecraft:crafting_shaped",
-  "category": "misc",
-  "key": {
 
-    "C": {
-      "tag": "minecraft:soul_fire_base_blocks"
-    },
-    "B": {
-      "item": "minecraft:netherrack"
-    }
-  },
-  "pattern": [
-    " C ",
-    "BBB"
-  ],
-  "result": {
-    "id": "piglinproliferation:netherrack_soul_fire_ring"
-  }
 }

@@ -1,10 +1,65 @@
 {
-  "parent": "piglinproliferation:block/template_fire_ring",
+  "credit": "Made with Blockbench",
+  "parent": "block/campfire",
+  "render_type": "minecraft:cutout",
+  "texture_size": [32, 32],
   "textures": {
-    "fire": "block/campfire_fire",
-    "up": "piglinproliferation:block/stone_fire_ring_lit",
-    "down": "piglinproliferation:block/stone_fire_ring_bottom",
-    "side": "piglinproliferation:block/stone_fire_ring_side",
-    "particle": "piglinproliferation:block/stone_fire_ring_side"
-  }
+    "2": "piglinproliferation:block/new_fire_ring/stone_fire_ring_side",
+    "3": "piglinproliferation:block/new_fire_ring/stone_fire_ring_bottom",
+    "4": "piglinproliferation:block/new_fire_ring/stone_fire_ring_lit",
+    "particle": "block/campfire_fire"
+  },
+  "elements": [
+    {
+      "from": [1, 0, 1],
+      "to": [15, 4, 15],
+      "faces": {
+        "up": {"uv": [15, 15, 1, 1], "texture": "#4"}
+      }
+    },
+    {
+      "from": [-0.31371, 1, 8],
+      "to": [15.68629, 17, 8],
+      "rotation": {"angle": -45, "axis": "y", "origin": [8, 0, 8]},
+      "shade": false,
+      "faces": {
+        "north": {"uv": [0, 0, 16, 16], "texture": "#fire", "tintindex": 1},
+        "east": {"uv": [0, 0, 0, 8], "texture": "#fire", "tintindex": 1},
+        "south": {"uv": [0, 0, 16, 16], "texture": "#fire", "tintindex": 1},
+        "west": {"uv": [0, 0, 0, 8], "texture": "#fire", "tintindex": 1},
+        "up": {"uv": [0, 0, 8, 0], "texture": "#fire", "tintindex": 1},
+        "down": {"uv": [0, 0, 8, 0], "texture": "#fire", "tintindex": 1}
+      }
+    },
+    {
+      "from": [-0.31371, 1, 8],
+      "to": [15.68629, 17, 8],
+      "rotation": {"angle": 45, "axis": "y", "origin": [8, 0, 8]},
+      "shade": false,
+      "faces": {
+        "north": {"uv": [0, 0, 16, 16], "texture": "#fire", "tintindex": 1},
+        "east": {"uv": [0, 0, 0, 8], "texture": "#fire", "tintindex": 1},
+        "south": {"uv": [0, 0, 16, 16], "texture": "#fire", "tintindex": 1},
+        "west": {"uv": [0, 0, 0, 8], "texture": "#fire", "tintindex": 1},
+        "up": {"uv": [0, 0, 8, 0], "texture": "#fire", "tintindex": 1},
+        "down": {"uv": [0, 0, 8, 0], "texture": "#fire", "tintindex": 1}
+      }
+    }
+  ],
+  "groups": [
+    {
+      "name": "group",
+      "origin": [8, 8, 8],
+      "color": 0,
+      "children": [
+        0,
+        {
+          "name": "fire",
+          "origin": [8, 8, 8],
+          "color": 0,
+          "children": [1, 2]
+        }
+      ]
+    }
+  ]
 }

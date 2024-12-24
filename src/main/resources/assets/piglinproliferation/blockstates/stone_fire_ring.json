@@ -1,10 +1,26 @@
 {
-  "variants": {
-    "lit=true": {
-      "model": "piglinproliferation:block/stone_fire_ring"
+  "multipart": [
+    {
+      "apply": {
+        "model": "piglinproliferation:block/stone_fire_ring_off"
+      }
     },
-    "lit=false": {
-      "model": "piglinproliferation:block/stone_fire_ring_off"
+    {
+      "when": {
+        "lit": "true"
+      },
+      "apply": {
+        "model": "piglinproliferation:block/stone_fire_ring"
+      }
+    },
+    {
+      "when": {
+        "brewing": "true",
+        "lit": "true"
+      },
+      "apply": {
+        "model": "piglinproliferation:block/brewed_stone_fire_ring"
+      }
     }
-  }
+  ]
 }

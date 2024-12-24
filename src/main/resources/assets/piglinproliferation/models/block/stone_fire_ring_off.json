@@ -1,9 +1,33 @@
 {
-  "parent": "piglinproliferation:block/template_fire_ring_off",
+  "credit": "Made with Blockbench",
+  "parent": "block/campfire",
+  "render_type": "minecraft:cutout",
+  "texture_size": [32, 32],
   "textures": {
-    "up": "piglinproliferation:block/stone_fire_ring",
-    "down": "piglinproliferation:block/stone_fire_ring_bottom",
-    "side": "piglinproliferation:block/stone_fire_ring_side",
-    "particle": "piglinproliferation:block/stone_fire_ring_side"
-  }
+    "2": "piglinproliferation:block/new_fire_ring/stone_fire_ring_side",
+    "3": "piglinproliferation:block/new_fire_ring/stone_fire_ring_bottom",
+    "4": "piglinproliferation:block/new_fire_ring/stone_fire_ring",
+    "particle": "block/campfire_fire"
+  },
+  "elements": [
+    {
+      "from": [1, 0, 1],
+      "to": [15, 4, 15],
+      "faces": {
+        "north": {"uv": [1, 12, 15, 16], "texture": "#2"},
+        "east": {"uv": [1, 12, 15, 16], "texture": "#2"},
+        "south": {"uv": [1, 12, 15, 16], "texture": "#2"},
+        "west": {"uv": [1, 12, 15, 16], "texture": "#2"},
+        "up": {"uv": [15, 15, 1, 1], "texture": "#4"},
+        "down": {"uv": [16, 0, 0, 16], "texture": "#3"}
+      }
+    }
+  ],
+  "groups": [
+    {
+      "name": "group",
+      "origin": [8, 8, 8],
+      "color": 0
+    }
+  ]
 }

@@ -7,7 +7,7 @@
       "tag": "minecraft:coals"
     },
     "B": {
-      "item": "minecraft:cobblestone"
+      "tag": "minecraft:stone_crafting_materials"
     }
   },
   "pattern": [

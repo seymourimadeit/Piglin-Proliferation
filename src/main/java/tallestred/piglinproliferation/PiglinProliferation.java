@@ -110,7 +110,7 @@ public class PiglinProliferation {
     }
 
     private void addDataMaps(final RegisterDataMapTypesEvent event) {
-       event.register(ZOMBIFIED_PIGLIN_VARIANT_DATA_MAP);
+        event.register(ZOMBIFIED_PIGLIN_VARIANT_DATA_MAP);
     }
 
     private void addCreativeTabs(final BuildCreativeModeTabContentsEvent event) {
@@ -156,7 +156,7 @@ public class PiglinProliferation {
                 ServerLevel level = blockSource.level();
                 BlockPos frontPos = blockSource.pos().relative(blockSource.state().getValue(DispenserBlock.FACING));
                 if (level.getBlockEntity(frontPos) instanceof FireRingBlockEntity fireRing)
-                    if (fireRing.addEffects(null, null, stack, potionContents(stack).getAllEffects())) {
+                    if (fireRing.addEffects(null, null, stack, potionContents(stack))) {
                         stack.shrink(1);
                         level.playSound(null, frontPos, SoundEvents.BOTTLE_EMPTY, SoundSource.BLOCKS, 1.0F, 1.0F);
                         return new ItemStack(Items.GLASS_BOTTLE);

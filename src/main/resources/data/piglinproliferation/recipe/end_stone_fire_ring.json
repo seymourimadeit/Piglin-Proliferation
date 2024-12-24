@@ -1,21 +1,3 @@
 {
-  "type": "minecraft:crafting_shaped",
-  "category": "misc",
-  "key": {
 
-    "C": {
-      "tag": "minecraft:coals"
-    },
-    "B": {
-      "item": "minecraft:end_stone"
-    }
-  },
-  "pattern": [
-    "   ",
-    " C ",
-    "BBB"
-  ],
-  "result": {
-    "id": "piglinproliferation:end_stone_fire_ring"
-  }
 }

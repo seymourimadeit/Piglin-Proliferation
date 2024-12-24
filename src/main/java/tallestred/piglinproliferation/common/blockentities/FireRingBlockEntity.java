@@ -1,5 +1,6 @@
 package tallestred.piglinproliferation.common.blockentities;
 
+import com.mojang.logging.LogUtils;
 import net.minecraft.Util;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
@@ -11,6 +12,7 @@ import net.minecraft.nbt.NbtOps;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.Connection;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
+import net.minecraft.resources.RegistryOps;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
@@ -23,6 +25,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.ItemUtils;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.alchemy.PotionContents;
 import net.minecraft.world.item.crafting.SingleRecipeInput;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
@@ -31,6 +34,7 @@ import net.minecraft.world.level.block.entity.CampfireBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.phys.AABB;
+import org.slf4j.Logger;
 import tallestred.piglinproliferation.common.advancement.PPCriteriaTriggers;
 import tallestred.piglinproliferation.common.blocks.FireRingBlock;
 
@@ -39,8 +43,11 @@ import java.util.*;
 
 public class FireRingBlockEntity extends CampfireBlockEntity {
     private final List<MobEffectInstance> effects = new ArrayList<>(); //Only on server
-    private boolean hasEffects = false; //Synced to client, substitute for effects.isEmpty()
+    public boolean hasEffects = false; //Synced to client, substitute for effects.isEmpty()
     private final List<ParticleOptions> particles = new ArrayList<>(); //Synced to client
+    public PotionContents potionContents = PotionContents.EMPTY; // Server-side
+    public int potionColor = 0xffffff; // Client-side
+    private static final Logger LOGGER = LogUtils.getLogger();
     private int unsafeLightLevel = -1;
 
     public FireRingBlockEntity(BlockPos pos, BlockState state) {
@@ -57,7 +64,8 @@ public class FireRingBlockEntity extends CampfireBlockEntity {
         return this.unsafeLightLevel;
     }
 
-    public boolean addEffects(@Nullable Player player, @Nullable InteractionHand hand, @Nullable ItemStack stack, Iterable<MobEffectInstance> effectsToAdd) {
+    public boolean addEffects(@Nullable Player player, @Nullable InteractionHand hand, @Nullable ItemStack stack, PotionContents contents) {
+        Iterable<MobEffectInstance> effectsToAdd = contents.getAllEffects();
         if (this.level != null && this.getBlockState().getValue(FireRingBlock.LIT)) {
             if (effectsToAdd.iterator().hasNext() && (this.level.isClientSide ? !this.hasEffects : this.effects.isEmpty())) {
                 boolean hasInstantaneousEffects = false;
@@ -78,13 +86,17 @@ public class FireRingBlockEntity extends CampfireBlockEntity {
                                 this.level.playSound(null, this.getBlockPos(), SoundEvents.BOTTLE_EMPTY, SoundSource.BLOCKS, 1.0F, 1.0F);
                             }
                         }
+                        this.potionContents = contents;
                         effectsToAdd.forEach(effectInstance -> effects.add(new MobEffectInstance(effectInstance)));
                     } else {
                         for (MobEffectInstance effect : effectsToAdd)
-                            if (effect.isVisible())
+                            if (effect.isVisible()) {
                                 particles.add(effect.getParticleOptions());
+                            }
                         this.hasEffects = true;
+                        this.potionColor = contents.getColor();
                     }
+                    level.setBlock(this.getBlockPos(), this.getBlockState().setValue(FireRingBlock.BREWING, Boolean.valueOf(true)), 2);
                     return true;
                 }
             }
@@ -103,7 +115,7 @@ public class FireRingBlockEntity extends CampfireBlockEntity {
     public static void cookTick(Level level, BlockPos pos, BlockState state, FireRingBlockEntity blockEntity, int tempEffectTime) {
         boolean flag = false;
         potionTick(level, pos, state, blockEntity, tempEffectTime);
-        for (int i = 0; i < blockEntity.getItems().size(); i++) {
+        for (int i = 0; i < blockEntity.getItems().size(); i++) { // This exists due to Lithium shenanigans...
             ItemStack itemstack = blockEntity.getItems().get(i);
             if (!itemstack.isEmpty()) {
                 flag = true;
@@ -166,9 +178,11 @@ public class FireRingBlockEntity extends CampfireBlockEntity {
     public void syncToClient() {
         this.hasEffects = !this.effects.isEmpty();
         particles.clear();
+        this.potionColor = potionContents.getColor();
         for (MobEffectInstance effect : effects)
             if (effect.isVisible())
                 particles.add(effect.getParticleOptions());
+        this.getBlockState().setValue(FireRingBlock.BREWING, this.hasEffects);
         if (this.level != null)
             this.level.sendBlockUpdated(this.getBlockPos(), this.getBlockState(), this.getBlockState(), Block.UPDATE_CLIENTS);
         this.setChanged();
@@ -187,6 +201,13 @@ public class FireRingBlockEntity extends CampfireBlockEntity {
         for (Tag effectTag : effectsTag)
             if (effectTag instanceof CompoundTag compoundTag)
                 this.effects.add(MobEffectInstance.load(compoundTag));
+        if (tag.contains("potion_contents")) {
+            RegistryOps<Tag> registryops = provider.createSerializationContext(NbtOps.INSTANCE);
+            PotionContents.CODEC
+                    .parse(registryops, tag.get("potion_contents"))
+                    .resultOrPartial(p_340707_ -> LOGGER.warn("Failed to parse area effect cloud potions: '{}'", p_340707_))
+                    .ifPresent(this::setPotionContents);
+        }
     }
 
     @Override
@@ -196,6 +217,11 @@ public class FireRingBlockEntity extends CampfireBlockEntity {
         for (MobEffectInstance effectInstance : this.effects)
             effectsTag.add(effectInstance.save());
         tag.put("Effects", effectsTag);
+        if (!this.potionContents.equals(PotionContents.EMPTY)) {
+            RegistryOps<Tag> registryops = provider.createSerializationContext(NbtOps.INSTANCE);
+            Tag potionTag = PotionContents.CODEC.encodeStart(registryops, this.potionContents).getOrThrow();
+            tag.put("potion_contents", potionTag);
+        }
     }
 
     @Override
@@ -205,6 +231,7 @@ public class FireRingBlockEntity extends CampfireBlockEntity {
         for (ParticleOptions options : particles)
             ParticleTypes.CODEC.encodeStart(NbtOps.INSTANCE, options).result().ifPresent(particlesTag::add);
         tag.put("Particles", particlesTag);
+        tag.putInt("Color", this.potionColor);
         tag.putBoolean("HasEffects", this.hasEffects);
         return tag;
     }
@@ -219,6 +246,12 @@ public class FireRingBlockEntity extends CampfireBlockEntity {
         }
         if (tag.contains("HasEffects"))
             this.hasEffects = tag.getBoolean("HasEffects");
+        if (tag.contains("Color"))
+            this.potionColor = tag.getInt("Color");
+    }
+
+    public void setPotionContents(PotionContents potionContents) {
+        this.potionContents = potionContents;
     }
 
     @Override
