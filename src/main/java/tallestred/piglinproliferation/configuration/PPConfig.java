@@ -29,10 +29,13 @@ public class PPConfig {
 
     public static class CommonConfig {
         public final ModConfigSpec.BooleanValue healingArrowDamage;
-        public final ModConfigSpec.BooleanValue BruteBuckler;
+        public final ModConfigSpec.DoubleValue BruteBuckler;
+        public final ModConfigSpec.DoubleValue bucklerChanceToDrop;
         public final ModConfigSpec.BooleanValue criticalAura;
         public final ModConfigSpec.BooleanValue BangBlockDestruction;
         public final ModConfigSpec.IntValue alchemistWeightInBastions;
+        public final ModConfigSpec.IntValue maxRingDuration;
+        public final ModConfigSpec.IntValue maxEffect;
         public final ModConfigSpec.DoubleValue healingArrowChances;
         public final ModConfigSpec.DoubleValue zombifiedPiglinDefaultChance;
         public final ModConfigSpec.DoubleValue zombifiedBruteChance;
@@ -70,7 +73,8 @@ public class PPConfig {
             criticalAura = builder.define("Enable critical aura feature for buckler", true);
             mobsThatCanAlsoUseBuckler = builder.defineListAllowEmpty("Mobs that can also use the buckler", ImmutableList.of("guardvillagers:guard"), () -> "guardvillagers:guard", o -> true);
             BangBlockDestruction = builder.define("Have the explosion spawned while using the Bang! enchant destroy blocks?", false);
-            BruteBuckler = builder.define("Have brutes spawn with bucklers?", true);
+            BruteBuckler = builder.defineInRange("Chance of brutes spawning with bucklers", 1.0F, -999999, 999999);
+            bucklerChanceToDrop = builder.defineInRange("Chance of brutes to drop buckler", 0.10F, -999999, 999999);
             bucklerCooldown = builder.defineInRange("How long should the buckler's cooldown be in ticks?", 240, Integer.MIN_VALUE, Integer.MAX_VALUE);
             minBucklerChargeTime = builder.defineInRange("How long should the buckler's charge move be in ticks?", 15, Integer.MIN_VALUE, Integer.MAX_VALUE);
             maxBucklerChargeTime = builder.defineInRange("How long should the buckler's charge move if you have the max level of turning enchant be in ticks?", 40, Integer.MIN_VALUE, Integer.MAX_VALUE);
@@ -87,6 +91,10 @@ public class PPConfig {
             builder.pop();
             builder.push("Piglin Traveler");
             crossbowChanceTraveler = builder.defineInRange("Chance of travelers equipping crossbows", 0.20F, 0.0F, 9000.0F);
+            builder.pop();
+            builder.push("Alchemical Fire Rings");
+            maxEffect = builder.defineInRange("Max effect level for Alchemical Fire Rings when effects are transferred (uncapped by default)", 999999, -999999, 999999);
+            maxRingDuration = builder.defineInRange("Max duration for Alchemical Fire Rings when effects are transferred (uncapped by default)", 999999, -999999, 999999);
             builder.pop();
         }
     }

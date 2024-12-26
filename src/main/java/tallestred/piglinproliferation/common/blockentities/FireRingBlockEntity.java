@@ -37,6 +37,7 @@ import net.minecraft.world.phys.AABB;
 import org.slf4j.Logger;
 import tallestred.piglinproliferation.common.advancement.PPCriteriaTriggers;
 import tallestred.piglinproliferation.common.blocks.FireRingBlock;
+import tallestred.piglinproliferation.configuration.PPConfig;
 
 import javax.annotation.Nullable;
 import java.util.*;
@@ -87,7 +88,12 @@ public class FireRingBlockEntity extends CampfireBlockEntity {
                             }
                         }
                         this.potionContents = contents;
-                        effectsToAdd.forEach(effectInstance -> effects.add(new MobEffectInstance(effectInstance)));
+                        for (MobEffectInstance mobEffectInstance : effectsToAdd) {
+                            int newDuration = mobEffectInstance.getDuration() >= PPConfig.COMMON.maxRingDuration.get() ? PPConfig.COMMON.maxRingDuration.get() : mobEffectInstance.getDuration();
+                            int newAmplifier = mobEffectInstance.getAmplifier() >= PPConfig.COMMON.maxEffect.get() ? PPConfig.COMMON.maxEffect.get() : mobEffectInstance.getAmplifier();
+                            MobEffectInstance modifiedEffect = new MobEffectInstance(mobEffectInstance.getEffect(), newDuration, newAmplifier);
+                            effects.add(modifiedEffect);
+                        }
                     } else {
                         for (MobEffectInstance effect : effectsToAdd)
                             if (effect.isVisible()) {
@@ -182,7 +188,7 @@ public class FireRingBlockEntity extends CampfireBlockEntity {
         for (MobEffectInstance effect : effects)
             if (effect.isVisible())
                 particles.add(effect.getParticleOptions());
-        this.getBlockState().setValue(FireRingBlock.BREWING, this.hasEffects);
+        level.setBlock(this.getBlockPos(), this.getBlockState().setValue(FireRingBlock.BREWING, Boolean.valueOf(this.hasEffects)), 2);
         if (this.level != null)
             this.level.sendBlockUpdated(this.getBlockPos(), this.getBlockState(), this.getBlockState(), Block.UPDATE_CLIENTS);
         this.setChanged();

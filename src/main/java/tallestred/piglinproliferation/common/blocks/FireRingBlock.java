@@ -91,6 +91,11 @@ public class FireRingBlock extends CampfireBlock {
         return super.updateShape(state, facing, facingState, level, currentPos, facingPos);
     }
 
+    @Override
+    public BlockState getStateForPlacement(BlockPlaceContext context) {
+        return super.getStateForPlacement(context).setValue(LIT, Boolean.valueOf(false));
+    }
+
     @Nullable
     @Override
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState state, BlockEntityType<T> blockEntityType) {

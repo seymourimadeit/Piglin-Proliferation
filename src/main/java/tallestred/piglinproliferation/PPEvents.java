@@ -294,15 +294,16 @@ public class PPEvents {
             }
         }
         if (event.getEntity() instanceof PiglinBrute piglinBrute) {
-            if (!PPConfig.COMMON.BruteBuckler.get()) return;
-            piglinBrute.setItemSlot(EquipmentSlot.OFFHAND, new ItemStack(PPItems.BUCKLER.get()));
-            ItemStack itemstack = piglinBrute.getOffhandItem();
-            if (itemstack.getItem() instanceof BucklerItem) {
-                if (random.nextInt(300) == 0)
-                    itemstack.enchant(PPEnchantments.getEnchant(PPEnchantments.TURNING, piglinBrute.registryAccess()), 5);
-                if (random.nextInt(500) == 0)
-                    itemstack.enchant(PPEnchantments.getEnchant(PPEnchantments.BANG, piglinBrute.registryAccess()), 1);
-                piglinBrute.setItemSlot(EquipmentSlot.OFFHAND, itemstack);
+            if (random.nextFloat() < PPConfig.COMMON.BruteBuckler.get().floatValue()) {
+                piglinBrute.setItemSlot(EquipmentSlot.OFFHAND, new ItemStack(PPItems.BUCKLER.get()));
+                ItemStack itemstack = piglinBrute.getOffhandItem();
+                if (itemstack.getItem() instanceof BucklerItem) {
+                    if (random.nextInt(300) == 0)
+                        itemstack.enchant(PPEnchantments.getEnchant(PPEnchantments.TURNING, piglinBrute.registryAccess()), 5);
+                    if (random.nextInt(500) == 0)
+                        itemstack.enchant(PPEnchantments.getEnchant(PPEnchantments.BANG, piglinBrute.registryAccess()), 1);
+                    piglinBrute.setItemSlot(EquipmentSlot.OFFHAND, itemstack);
+                }
             }
         }
         if (event.getEntity().getType() == EntityType.ZOMBIFIED_PIGLIN) { // Some mods have entities that extend zombified piglins in order to make their own ziglins have custom textures
@@ -388,7 +389,7 @@ public class PPEvents {
         if (event.getEntity() instanceof PiglinBrute brute) {
             ItemStack itemstack = brute.getOffhandItem();
             if (itemstack.getItem() instanceof BucklerItem) {
-                float f = 0.10F;
+                float f = PPConfig.COMMON.bucklerChanceToDrop.get().floatValue();
                 f = EnchantmentHelper.processEquipmentDropChance((ServerLevel) brute.level(), brute, event.getSource(), f);
                 if (!itemstack.isEmpty() && !EnchantmentHelper.has(itemstack, EnchantmentEffectComponents.PREVENT_EQUIPMENT_DROP) && event.isRecentlyHit() && brute.getRandom().nextFloat() < f) {
                     if (itemstack.isDamageableItem()) {

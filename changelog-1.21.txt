@@ -1,5 +1,6 @@
 - Added configs for buckler description and critical aura
 - Added configs for max ring duration and level (uncapped by default)
 - Fixed issue with fire rings not properly emitting if Lithium was installed
-- Made soul fire rings uncraftable
+- Truncated fire ring blocks to just one
 - Fire ring fire is potion color
+- Renamed fire ring to Alchemical Fire Pit

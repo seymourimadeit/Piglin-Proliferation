@@ -125,16 +125,7 @@ public class PiglinProliferation {
                     PPItems.ZOMBIFIED_PIGLIN_HEAD_ITEM.get()
             );
             addToCreativeTabAfter(event, Items.SOUL_CAMPFIRE,
-                    PPItems.STONE_FIRE_RING_ITEM.get(),
-                    PPItems.STONE_SOUL_FIRE_RING_ITEM.get(),
-                    PPItems.DEEPSLATE_FIRE_RING_ITEM.get(),
-                    PPItems.DEEPSLATE_SOUL_FIRE_RING_ITEM.get(),
-                    PPItems.NETHERRACK_FIRE_RING_ITEM.get(),
-                    PPItems.NETHERRACK_SOUL_FIRE_RING_ITEM.get(),
-                    PPItems.BLACKSTONE_FIRE_RING_ITEM.get(),
-                    PPItems.BLACKSTONE_SOUL_FIRE_RING_ITEM.get(),
-                    PPItems.END_STONE_FIRE_RING_ITEM.get(),
-                    PPItems.END_STONE_SOUL_FIRE_RING_ITEM.get()
+                    PPItems.STONE_FIRE_RING_ITEM.get()
             );
         } else if (CreativeModeTabs.COMBAT.equals(event.getTabKey())) {
             addToCreativeTabAfter(event, Items.SHIELD, PPItems.BUCKLER.get());
