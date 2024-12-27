@@ -15,12 +15,15 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 import net.neoforged.neoforge.client.event.EntityRenderersEvent;
+import net.neoforged.neoforge.client.event.RegisterParticleProvidersEvent;
 import net.neoforged.neoforge.common.util.Lazy;
 import tallestred.piglinproliferation.PiglinProliferation;
 import tallestred.piglinproliferation.client.models.BucklerModel;
 import tallestred.piglinproliferation.client.models.PiglinAlchemistModel;
 import tallestred.piglinproliferation.client.models.PiglinHeadEntityModel;
 import tallestred.piglinproliferation.client.models.PiglinTravelerModel;
+import tallestred.piglinproliferation.client.particles.ColoredSmokeParticle;
+import tallestred.piglinproliferation.client.particles.PPParticles;
 import tallestred.piglinproliferation.client.renderers.layers.PiglinClothingRenderLayer;
 import tallestred.piglinproliferation.common.blockentities.PPBlockEntities;
 import tallestred.piglinproliferation.common.blocks.PiglinSkullBlock;
@@ -96,5 +99,11 @@ public class PPRenderSetupEvents {
         event.enqueueWork(() -> SkullBlockRenderer.SKIN_BY_TYPE.put(PiglinSkullBlock.Types.ZOMBIFIED_PIGLIN, ResourceLocation.parse("textures/entity/piglin/zombified_piglin.png")));
         event.enqueueWork(() -> SkullBlockRenderer.SKIN_BY_TYPE.put(PiglinSkullBlock.Types.PIGLIN_ALCHEMIST, ResourceLocation.fromNamespaceAndPath(PiglinProliferation.MODID, "textures/entity/piglin/alchemist/alchemist.png")));
         event.enqueueWork(() -> SkullBlockRenderer.SKIN_BY_TYPE.put(PiglinSkullBlock.Types.PIGLIN_TRAVELER, ResourceLocation.fromNamespaceAndPath(PiglinProliferation.MODID, "textures/entity/piglin/traveler/traveler.png")));
+    }
+
+    @SubscribeEvent
+    public static void registerParticleProviders(RegisterParticleProvidersEvent event) {
+        event.registerSpriteSet(PPParticles.COLORED_SMOKE.get(), ColoredSmokeParticle.ColoredSmokeParticleProvider::new);
+        event.registerSpriteSet(PPParticles.SIGNAL_COLORED_SMOKE.get(), ColoredSmokeParticle.SignalColoredSmokeParticleProvider::new);
     }
 }

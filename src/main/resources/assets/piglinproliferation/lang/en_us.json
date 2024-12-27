@@ -128,5 +128,11 @@
   "piglinproliferation.configuration.vanilla changes": "Vanilla changes",
   "piglinproliferation.configuration.Render an after image while an entity is charging with a buckler?": ".Render an after image while an entity is charging with a buckler?",
   "piglinproliferation.configuration.Allow Zombified Piglins to render consistent clothing?": "Allow Zombified Piglins to render consistent clothing?",
-  "piglinproliferation.configuration.after image": "After Image from Buckler charging"
+  "piglinproliferation.configuration.after image": "After Image from Buckler charging",
+  "piglinproliferation.configuration.buckler description": "buckler description",
+  "piglinproliferation.configuration.Enable expanded buckler description": "Enable expanded buckler description",
+  "piglinproliferation.configuration.Enable buckler description": "Enable buckler description",
+  "piglinproliferation.configuration.Max duration for Alchemical Fire Pits when effects are transferred (uncapped by default)": "Max duration for Alchemical Fire Rings when effects are transferred (uncapped by default)",
+  "piglinproliferation.configuration.Max effect level for Alchemical Fire Pits when effects are transferred (uncapped by default)": "Max effect level for Alchemical Fire Rings when effects are transferred (uncapped by default)",
+  "piglinproliferation.configuration.Alchemical Fire Rings": "Alchemical Fire Pits"
 }

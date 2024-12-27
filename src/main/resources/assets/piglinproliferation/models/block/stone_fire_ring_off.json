@@ -7,7 +7,7 @@
     "2": "piglinproliferation:block/new_fire_ring/stone_fire_ring_side",
     "3": "piglinproliferation:block/new_fire_ring/stone_fire_ring_bottom",
     "4": "piglinproliferation:block/new_fire_ring/stone_fire_ring",
-    "particle": "block/campfire_fire"
+    "particle": "block/cobblestone"
   },
   "elements": [
     {

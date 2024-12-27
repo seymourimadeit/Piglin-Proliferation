@@ -40,6 +40,7 @@ import net.neoforged.neoforge.registries.datamaps.DataMapType;
 import net.neoforged.neoforge.registries.datamaps.RegisterDataMapTypesEvent;
 import tallestred.piglinproliferation.capablities.PPDataAttachments;
 import tallestred.piglinproliferation.client.PPSounds;
+import tallestred.piglinproliferation.client.particles.PPParticles;
 import tallestred.piglinproliferation.common.advancement.PPCriteriaTriggers;
 import tallestred.piglinproliferation.common.attribute.PPAttributes;
 import tallestred.piglinproliferation.common.blockentities.FireRingBlockEntity;
@@ -94,6 +95,7 @@ public class PiglinProliferation {
         PPLoot.LOOT_ITEM_CONDITION_TYPES.register(modEventBus);
         PPRecipeSerializers.RECIPE_SERIALIZERS.register(modEventBus);
         PPDataAttachments.ATTACHMENT_TYPES.register(modEventBus);
+        PPParticles.PARTICLES.register(modEventBus);
         container.registerConfig(ModConfig.Type.COMMON, PPConfig.COMMON_SPEC);
         container.registerConfig(ModConfig.Type.CLIENT, PPConfig.CLIENT_SPEC);
     }

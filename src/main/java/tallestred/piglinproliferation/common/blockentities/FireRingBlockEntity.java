@@ -4,8 +4,7 @@ import com.mojang.logging.LogUtils;
 import net.minecraft.Util;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
-import net.minecraft.core.particles.ParticleOptions;
-import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.core.particles.*;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.NbtOps;
@@ -16,6 +15,7 @@ import net.minecraft.resources.RegistryOps;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.util.FastColor;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.Containers;
 import net.minecraft.world.InteractionHand;
@@ -29,12 +29,14 @@ import net.minecraft.world.item.alchemy.PotionContents;
 import net.minecraft.world.item.crafting.SingleRecipeInput;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.CampfireBlock;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.entity.CampfireBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.phys.AABB;
 import org.slf4j.Logger;
+import tallestred.piglinproliferation.client.particles.PPParticles;
 import tallestred.piglinproliferation.common.advancement.PPCriteriaTriggers;
 import tallestred.piglinproliferation.common.blocks.FireRingBlock;
 import tallestred.piglinproliferation.configuration.PPConfig;
@@ -115,7 +117,17 @@ public class FireRingBlockEntity extends CampfireBlockEntity {
         if (!blockEntity.particles.isEmpty()) {
             level.addParticle(Util.getRandom(blockEntity.particles, random), (double) pos.getX() + 0.5 + random.nextDouble() / 3.0 * (double) (random.nextBoolean() ? 1 : -1), (double) pos.getY() + random.nextDouble() + random.nextDouble(), (double) pos.getZ() + 0.5 + random.nextDouble() / 3.0 * (double) (random.nextBoolean() ? 1 : -1), 1.0, 1.25, 1.0);
         }
-        CampfireBlockEntity.particleTick(level, pos, state, blockEntity);
+        if (!blockEntity.hasEffects) {
+            CampfireBlockEntity.particleTick(level, pos, state, blockEntity);
+        } else {
+            RandomSource randomsource = level.random;
+            if (randomsource.nextFloat() < 0.11F) {
+                for (int i = 0; i < randomsource.nextInt(2) + 2; i++) {
+                    ParticleType<ColorParticleOption> simpleparticletype = state.getValue(CampfireBlock.SIGNAL_FIRE) ? PPParticles.SIGNAL_COLORED_SMOKE.get() : PPParticles.COLORED_SMOKE.get();
+                    level.addAlwaysVisibleParticle(ColorParticleOption.create(simpleparticletype, blockEntity.potionColor), true, (double) pos.getX() + 0.5 + randomsource.nextDouble() / 3.0 * (double) (randomsource.nextBoolean() ? 1 : -1), (double) pos.getY() + randomsource.nextDouble() + randomsource.nextDouble(), (double) pos.getZ() + 0.5 + randomsource.nextDouble() / 3.0 * (double) (randomsource.nextBoolean() ? 1 : -1), 0.0, 0.07, 0.0);
+                }
+            }
+        }
     }
 
     public static void cookTick(Level level, BlockPos pos, BlockState state, FireRingBlockEntity blockEntity, int tempEffectTime) {
