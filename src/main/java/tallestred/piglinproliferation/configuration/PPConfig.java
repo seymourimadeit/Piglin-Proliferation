@@ -93,8 +93,8 @@ public class PPConfig {
             crossbowChanceTraveler = builder.defineInRange("Chance of travelers equipping crossbows", 0.20F, 0.0F, 9000.0F);
             builder.pop();
             builder.push("Alchemical Fire Rings");
-            maxEffect = builder.defineInRange("Max effect level for Alchemical Fire Rings when effects are transferred (uncapped by default)", 999999, -999999, 999999);
-            maxRingDuration = builder.defineInRange("Max duration for Alchemical Fire Rings when effects are transferred (uncapped by default)", 999999, -999999, 999999);
+            maxEffect = builder.defineInRange("Max effect level for Alchemical Fire Rings when effects are transferred (uncapped by default, set to 0 for a cap of 1)", 999999, -999999, 999999);
+            maxRingDuration = builder.defineInRange("Max duration for Alchemical Fire Rings when effects are transferred (uncapped by default, set to 0 for a cap of 1)", 999999, -999999, 999999);
             builder.pop();
         }
     }
