@@ -15,7 +15,6 @@ jobs:
       - uses: FantasticFiasco/action-update-license-year@v3
         with:
           token: ${{ secrets.GIT_TOKEN }}
-      - name: Merge pull request
         env:
           GITHUB_TOKEN: ${{ secrets.GIT_TOKEN }}
           run: |
