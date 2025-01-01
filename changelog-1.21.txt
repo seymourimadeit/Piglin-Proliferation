@@ -5,4 +5,5 @@
     - This means all other fire rings are uncraftable but will still exist in game via commands until the next version port (1.22)
     - Cobblestone Fire Rings will have a new model
 - Fire rings now have colored fire and smoke based off of the potion it's emitting
+- Modified critical aura particle effect
 - Renamed fire ring to Alchemical Fire Pit
