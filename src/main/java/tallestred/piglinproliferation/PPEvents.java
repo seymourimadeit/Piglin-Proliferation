@@ -3,6 +3,7 @@ package tallestred.piglinproliferation;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
 import net.minecraft.core.Registry;
+import net.minecraft.core.particles.BlockParticleOption;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
@@ -11,6 +12,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.util.random.WeightedRandom;
 import net.minecraft.world.damagesource.DamageTypes;
@@ -176,8 +178,8 @@ public class PPEvents {
                     entity.level().playSound(null, entity.getX(), entity.getY(), entity.getZ(), PPSounds.CRITICAL_DEACTIVATE.get(), entity.getSoundSource(), 1.0F, 0.8F + entity.getRandom().nextFloat() * 0.4F);
                     entity.setData(PPDataAttachments.CRITICAL.get(), false);
                 }
-                for (int i = 0; i < 2; ++i) {
-                    entity.level().addParticle(ParticleTypes.CRIT, entity.getRandomX(0.5D), entity.getRandomY(), entity.getRandomZ(0.5D), 0.0D, 0.0D, 0.0D);
+                if (!entity.level().isClientSide) {
+                    ((ServerLevel) entity.level()).sendParticles(ParticleTypes.CRIT, entity.getRandomX(2.0D), entity.getRandomY() + 1, entity.getRandomZ(2.0D), 1, 0.0, 0.0, 0.0, 0.15F);
                 }
             }
             if (event.getEntity() instanceof ServerPlayer player)
