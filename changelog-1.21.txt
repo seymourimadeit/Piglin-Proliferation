@@ -1,9 +1,2 @@
-- Added configs for buckler description and critical aura
-- Added configs for max ring duration and level (uncapped by default)
-- Fixed issue with fire rings not properly emitting if Lithium was installed
-- Truncated fire ring blocks to just one (id is cobblestone)
-    - This means all other fire rings are uncraftable but will still exist in game via commands until the next version port (1.22)
-    - Cobblestone Fire Rings will have a new model
-- Fire rings now have colored fire and smoke based off of the potion it's emitting
-- Modified critical aura particle effect
-- Renamed fire ring to Alchemical Fire Pit
+- [CHANGE] add ja_jp.json
+- [CHANGE] update ru_ru.json
