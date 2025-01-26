@@ -39,3 +39,5 @@ Piglins expanded in new ways!
     versionRange="${minecraft_version_range}"
     ordering="NONE"
     side="BOTH"
+[modproperties.${mod_id}]
+    catalogueItemIcon="piglinproliferation:piglin_alchemist_head"
