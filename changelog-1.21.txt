@@ -1,4 +1,3 @@
 - [CHANGE] add ja_jp.json
-- [CHANGE] update ru_ru.json- [CHANGE] fix #38
-
-fixes crash with catalogue
+- [CHANGE] update ru_ru.json
+- [CHANGE] fix #38, fixes crash with catalogue
