@@ -1,4 +1,3 @@
 CHANGELOG:
 - [CHANGE] fix #40 and made it so that left shift is the only way to open expanded buckler tooltip due to weird issues with mouse keys
 - [CHANGE] fix weird stone fire ring bottom texture
-- [CHANGE] please work this time
