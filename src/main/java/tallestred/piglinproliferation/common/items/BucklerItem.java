@@ -3,6 +3,7 @@ package tallestred.piglinproliferation.common.items;
 import com.mojang.blaze3d.platform.InputConstants;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.BlockParticleOption;
@@ -213,7 +214,7 @@ public class BucklerItem extends ShieldItem {
 
     public List<Component> getDescription(ItemStack stack) {
         Minecraft minecraft = Minecraft.getInstance();
-        boolean isDetailed = InputConstants.isKeyDown(minecraft.getWindow().getWindow(), minecraft.options.keyShift.getKey().getValue());
+        boolean isDetailed = Screen.hasShiftDown();
         int turningLevel = stack.getEnchantmentLevel(PPEnchantments.getEnchant(PPEnchantments.TURNING, minecraft.player.registryAccess()));
         boolean isBang = stack.getEnchantmentLevel(PPEnchantments.getEnchant(PPEnchantments.BANG, minecraft.player.registryAccess())) > 0;
         ArrayList<Component> list = new ArrayList<>();
@@ -221,7 +222,7 @@ public class BucklerItem extends ShieldItem {
         list.add(Component.literal(" ").append(Component.translatable("item.piglinproliferation.buckler.desc.charge_ability", doubleToString(ticksToSeconds(startingChargeTicks(stack, minecraft.player.level())))).withStyle(ChatFormatting.DARK_GREEN)));
         if (PPConfig.CLIENT.verboseBucklerDesc.get()) {
             if (!isDetailed)
-                list.add(Component.literal(" ").append(Component.translatable("item.piglinproliferation.buckler.desc.details", minecraft.options.keyShift.getTranslatedKeyMessage()).withStyle(ChatFormatting.GREEN)));
+                list.add(Component.literal(" ").append(Component.translatable("item.piglinproliferation.buckler.desc.details", minecraft.options.keyShift.getDefaultKey().getDisplayName()).withStyle(ChatFormatting.GREEN)));
             else {
                 list.add(Component.literal(" ").append(Component.translatable("item.piglinproliferation.buckler.desc.while_charging").withStyle(ChatFormatting.GREEN)));
                 list.add(Component.literal("  ").append(CHARGE_SPEED_BOOST.get().translatable()));

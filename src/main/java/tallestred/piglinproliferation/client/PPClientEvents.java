@@ -12,7 +12,10 @@ import net.minecraft.world.item.ItemStack;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.client.event.*;
+import net.neoforged.neoforge.client.event.CalculatePlayerTurnEvent;
+import net.neoforged.neoforge.client.event.ComputeFovModifierEvent;
+import net.neoforged.neoforge.client.event.MovementInputUpdateEvent;
+import net.neoforged.neoforge.client.event.RenderHandEvent;
 import net.neoforged.neoforge.event.entity.player.ItemTooltipEvent;
 import tallestred.piglinproliferation.PiglinProliferation;
 import tallestred.piglinproliferation.common.attribute.PPAttributes;
@@ -78,7 +81,8 @@ public class PPClientEvents {
     @SubscribeEvent
     public static void modifyItemTooltip(ItemTooltipEvent event) {
         ItemStack stack = event.getItemStack();
-        if (stack.getItem() == PPItems.BUCKLER.get()) {
+        Minecraft minecraft = Minecraft.getInstance();
+        if (stack.getItem() == PPItems.BUCKLER.get() && event.getEntity() != null && event.getEntity().isLocalPlayer()) {
             List<Component> toAdd = new ArrayList<>();
             toAdd.add(Component.empty());
             toAdd.addAll(PPItems.BUCKLER.get().getDescription(stack));
