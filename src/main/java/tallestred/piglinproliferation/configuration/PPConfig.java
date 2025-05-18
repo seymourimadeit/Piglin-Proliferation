@@ -52,6 +52,7 @@ public class PPConfig {
         public final ModConfigSpec.IntValue maxBucklerChargeTime;
         public final ModConfigSpec.DoubleValue turningBucklerLaunchStrength;
         public final ModConfigSpec.ConfigValue<List<? extends String>> mobsThatCanAlsoUseBuckler;
+        public final ModConfigSpec.ConfigValue<List<? extends String>> effectsThatShouldNotBeAppliedContinously;
 
         public CommonConfig(ModConfigSpec.Builder builder) {
             builder.push("Vanilla Changes");
@@ -93,6 +94,7 @@ public class PPConfig {
             crossbowChanceTraveler = builder.defineInRange("Chance of travelers equipping crossbows", 0.20F, 0.0F, 9000.0F);
             builder.pop();
             builder.push("Alchemical Fire Rings");
+            effectsThatShouldNotBeAppliedContinously = builder.defineListAllowEmpty("Effects that should only be applied once until the player does not have the effect any more; meant for effects like poison", ImmutableList.of("minecraft:poison", "minecraft:wither", "minecraft:regeneration"), () -> "", o -> true);
             maxEffect = builder.defineInRange("Max effect level for Alchemical Fire Rings when effects are transferred (uncapped by default, set to 0 for a cap of 1)", 999999, -999999, 999999);
             maxRingDuration = builder.defineInRange("Max duration for Alchemical Fire Rings when effects are transferred (uncapped by default, set to 0 for a cap of 1)", 999999, -999999, 999999);
             builder.pop();

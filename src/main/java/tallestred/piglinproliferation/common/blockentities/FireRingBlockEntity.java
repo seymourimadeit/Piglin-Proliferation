@@ -186,7 +186,10 @@ public class FireRingBlockEntity extends CampfireBlockEntity {
                 int z = pos.getZ();
                 for (LivingEntity entity : level.getEntitiesOfClass(LivingEntity.class, new AABB(x - radius, y - radius, z - radius, x + radius, y + radius, z + radius)))
                     blockEntity.effects.forEach(effect -> {
-                        entity.addEffect(new MobEffectInstance(effect.getEffect(), tempEffectTime, effect.getAmplifier(), true, effect.isVisible()));
+                        if (PPConfig.COMMON.effectsThatShouldNotBeAppliedContinously.get().contains(effect.getEffect().getRegisteredName()) && !entity.hasEffect(effect.getEffect()))
+                            entity.addEffect(new MobEffectInstance(effect.getEffect(), tempEffectTime, effect.getAmplifier(), true, effect.isVisible()));
+                        else if (!PPConfig.COMMON.effectsThatShouldNotBeAppliedContinously.get().contains(effect.getEffect().getRegisteredName()))
+                            entity.addEffect(new MobEffectInstance(effect.getEffect(), tempEffectTime, effect.getAmplifier(), true, effect.isVisible()));
                     });
             }
             blockEntity.setChanged();
