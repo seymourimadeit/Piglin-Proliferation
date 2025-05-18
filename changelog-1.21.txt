@@ -1,1 +1,2 @@
 CHANGELOG:- [CHANGE] - Changed 'in water' wording in buckler description to 'if wet' to prevent further confusion
+- [CHANGE] - fix #45 (effects like poison, wither, and regeneration not applying properly for alchemist fire rings)
