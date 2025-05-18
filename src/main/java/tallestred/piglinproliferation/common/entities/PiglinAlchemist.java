@@ -226,7 +226,7 @@ public class PiglinAlchemist extends Piglin {
 
     protected Brain.Provider<PiglinAlchemist> alchemistBrainProvider() {
         List<MemoryModuleType<?>> ALCHEMIST_MEMORY_TYPES = new ArrayList<>(Piglin.MEMORY_TYPES);
-        ALCHEMIST_MEMORY_TYPES.add(PPMemoryModules.POTION_THROW_TARGET.get()); // Fixes #4 and adds instant compat to mods who add new piglin memory types
+        ALCHEMIST_MEMORY_TYPES.add(PPMemoryModules.POTION_THROW_TARGET.get());
         return Brain.provider(ImmutableList.copyOf(ALCHEMIST_MEMORY_TYPES), SENSOR_TYPES);
     }
 

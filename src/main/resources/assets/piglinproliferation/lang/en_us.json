@@ -46,7 +46,7 @@
   "item.piglinproliferation.buckler.desc.while_charging": "While Charging:",
   "item.piglinproliferation.buckler.desc.shield_bash": "Shield Bash on colliding with an entity",
   "item.piglinproliferation.buckler.desc.launch": "Launch into the air on colliding with a block",
-  "item.piglinproliferation.buckler.desc.water": "Cannot charge in water",
+  "item.piglinproliferation.buckler.desc.water": "Cannot charge when wet",
   "item.piglinproliferation.buckler.desc.on_shield_bash": "On Shield Bash:",
   "item.piglinproliferation.buckler.desc.explosion": "Creates explosion",
   "item.piglinproliferation.buckler.desc.critical_aura": "Gain Critical Aura (next hit will be critical)",
