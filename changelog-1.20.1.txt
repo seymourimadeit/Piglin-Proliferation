@@ -1,2 +1,1 @@
-- Reduced lag with getBucklerEnchants method
-- Fixed issue with Piglin Alchemist armband
+- Fixed mod crashing with More Geodes Reforged
