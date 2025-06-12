@@ -102,7 +102,7 @@ public class PiglinTraveler extends Piglin {
 
 
     protected Brain.Provider<PiglinTraveler> travelerBrainProvider() {
-        List<MemoryModuleType<?>> TRAVELER_MEMORY_TYPES = new ArrayList<>(Piglin.MEMORY_TYPES);
+        List<MemoryModuleType<?>> TRAVELER_MEMORY_TYPES = new ArrayList<>(this.brainProvider().memoryTypes);
         return Brain.provider(ImmutableList.copyOf(TRAVELER_MEMORY_TYPES), SENSOR_TYPES);
     }
 

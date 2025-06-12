@@ -161,6 +161,8 @@ dependencies {
     annotationProcessor "org.spongepowered:mixin:0.8.5:processor"
     implementation fg.deobf("curse.maven:sapience-426097:4806500")
     implementation fg.deobf("curse.maven:guard-villagers-360203:5297214")
+    implementation fg.deobf("curse.maven:more-geodes-reforged-698475:5591834")
+    implementation fg.deobf("curse.maven:kotlin-for-forge-351264:5402061")
     //Uncomment to test compatibility with Yung's Nether Fortresses
     //implementation fg.deobf("maven.modrinth:Ua7DFN59:sE5QMX20") //Yung's API
     //implementation fg.deobf("maven.modrinth:Z2mXHnxP:2nUEz0zq") //Yung's Better Nether Fortresses
