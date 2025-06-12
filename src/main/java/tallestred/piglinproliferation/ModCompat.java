@@ -1,5 +1,7 @@
 package tallestred.piglinproliferation;
 
+import com.github.thedeathlycow.moregeodes.forge.entity.MoreGeodesMemoryModules;
+import com.github.thedeathlycow.moregeodes.forge.item.tag.MoreGeodesItemTags;
 import com.infamous.sapience.SapienceConfig;
 import com.infamous.sapience.util.GreedHelper;
 import com.infamous.sapience.util.PiglinReputationType;
@@ -12,14 +14,17 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.ai.memory.MemoryModuleType;
 import net.minecraft.world.entity.monster.piglin.AbstractPiglin;
 import net.minecraft.world.entity.monster.piglin.Piglin;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.storage.loot.BuiltInLootTables;
 import net.minecraft.world.level.storage.loot.LootParams;
 import net.minecraft.world.level.storage.loot.LootTable;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
+import net.minecraftforge.fml.ModList;
 import tallestred.piglinproliferation.common.entities.PiglinAlchemist;
 import tallestred.piglinproliferation.common.entities.PiglinTraveler;
 import tallestred.piglinproliferation.common.entities.ai.AbstractPiglinAi;
@@ -29,6 +34,7 @@ import tallestred.piglinproliferation.common.loot.PPLoot;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 import static com.infamous.sapience.util.PiglinTasksHelper.*;
 
@@ -43,6 +49,17 @@ public class ModCompat {
         ItemStack offHandItem = piglin.getItemInHand(InteractionHand.OFF_HAND);
         piglin.setItemInHand(InteractionHand.OFF_HAND, ItemStack.EMPTY);
         AbstractPiglinAi<Piglin> ai = getAiInstance(piglin);
+        if (ModList.get().isLoaded("geodes")) {
+            if (offHandItem.is(MoreGeodesItemTags.INSTANCE.getFOOLS_FOLD())) {
+                piglin.getBrain().setMemory(MoreGeodesMemoryModules.INSTANCE.getREMEMBERS_FOOLS_GOLD(), true);
+                offHandItem.setCount(0);
+                piglin.swing(InteractionHand.OFF_HAND);
+                Optional<Player> rememberedPlayer = piglin.getBrain().getMemory(MemoryModuleType.NEAREST_VISIBLE_PLAYER);
+                rememberedPlayer.ifPresent(player -> {
+                    piglin.getBrain().setMemory(MemoryModuleType.ATTACK_TARGET, player);
+                });
+            }
+        }
         if (piglin.isAdult()) {
             boolean barterItem = isBarterItem(offHandItem);
             if (doBarter && barterItem) {

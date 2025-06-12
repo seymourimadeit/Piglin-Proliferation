@@ -1,5 +1,7 @@
 package tallestred.piglinproliferation.common.entities.ai;
 
+import com.github.thedeathlycow.moregeodes.forge.entity.MoreGeodesMemoryModules;
+import com.github.thedeathlycow.moregeodes.forge.item.tag.MoreGeodesItemTags;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import com.mojang.datafixers.util.Pair;
@@ -24,6 +26,7 @@ import net.minecraft.world.level.storage.loot.LootParams;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.minecraft.world.phys.Vec3;
+import net.minecraftforge.fml.ModList;
 import tallestred.piglinproliferation.PPActivities;
 import tallestred.piglinproliferation.common.entities.ai.behaviors.SwimOnlyOutOfLava;
 
@@ -180,6 +183,18 @@ public abstract class AbstractPiglinAi<P extends Piglin> extends PiglinAi {
                 piglin.setItemSlot(EquipmentSlot.MAINHAND, stack);
                 piglin.setGuaranteedDrop(EquipmentSlot.MAINHAND);
                 piglin.setPersistenceRequired();
+            }
+        }
+        if (ModList.get().isLoaded("geodes")) {
+            if (stack.is(MoreGeodesItemTags.INSTANCE.getFOOLS_FOLD())) {
+                piglin.getBrain().setMemory(MoreGeodesMemoryModules.INSTANCE.getREMEMBERS_FOOLS_GOLD(), true);
+                stack.setCount(0);
+                piglin.swing(InteractionHand.OFF_HAND);
+                Optional<Player> rememberedPlayer = piglin.getBrain().getMemory(MemoryModuleType.NEAREST_VISIBLE_PLAYER);
+                rememberedPlayer.ifPresent(player -> {
+                    setAngerTarget(piglin, player);
+                    broadcastAngerTarget(piglin, player);
+                });
             }
         }
     }
