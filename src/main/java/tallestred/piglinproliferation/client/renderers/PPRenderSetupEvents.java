@@ -35,26 +35,26 @@ import static tallestred.piglinproliferation.util.RegistryUtilities.addLayerToRe
 @EventBusSubscriber(modid = PiglinProliferation.MODID, bus = EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
 public class PPRenderSetupEvents {
     public static final ModelLayerLocation ZIGLIN_CLOTHING = new ModelLayerLocation(
-            ResourceLocation.parse(PiglinProliferation.MODID + "ziglin_clothing"), "ziglin_clothing");
+            ResourceLocation.fromNamespaceAndPath(PiglinProliferation.MODID,"ziglin_clothing"), "ziglin_clothing");
     public static final ModelLayerLocation PIGLIN_SKULL = new ModelLayerLocation(
-            ResourceLocation.parse(PiglinProliferation.MODID + "piglin_skull"), "piglin_skull");
+            ResourceLocation.fromNamespaceAndPath(PiglinProliferation.MODID,"piglin_skull"), "piglin_skull");
     public static final ModelLayerLocation PIGLIN_ALCHEMIST_SKULL = new ModelLayerLocation(
-            ResourceLocation.parse(PiglinProliferation.MODID + "piglin_alchemist_skull"), "piglin_alchemist_skull");
+            ResourceLocation.fromNamespaceAndPath(PiglinProliferation.MODID,"piglin_alchemist_skull"), "piglin_alchemist_skull");
     public static final ModelLayerLocation PIGLIN_TRAVELER_SKULL = new ModelLayerLocation(
-            ResourceLocation.parse(PiglinProliferation.MODID + "piglin_traveler_skull"), "piglin_traveler_skull");
+            ResourceLocation.fromNamespaceAndPath(PiglinProliferation.MODID,"piglin_traveler_skull"), "piglin_traveler_skull");
     public static final ModelLayerLocation PIGLIN_ALCHEMIST = new ModelLayerLocation(
-            ResourceLocation.parse(PiglinProliferation.MODID + "piglin_alchemist"), "piglin_alchemist");
+            ResourceLocation.fromNamespaceAndPath(PiglinProliferation.MODID,"piglin_alchemist"), "piglin_alchemist");
     public static final ModelLayerLocation PIGLIN_TRAVELER = new ModelLayerLocation(
-            ResourceLocation.parse(PiglinProliferation.MODID + "piglin_traveler"), "piglin_traveler");
+            ResourceLocation.fromNamespaceAndPath(PiglinProliferation.MODID,"piglin_traveler"), "piglin_traveler");
     public static final ModelLayerLocation PIGLIN_ALCHEMIST_BELT_SLOTS = new ModelLayerLocation(
-            ResourceLocation.parse(PiglinProliferation.MODID + "piglin_alchemist_belt"), "piglin_alchemist_belt");
-    public static final ModelLayerLocation BUCKLER = new ModelLayerLocation(ResourceLocation.parse(PiglinProliferation.MODID + "buckler"),
+            ResourceLocation.fromNamespaceAndPath(PiglinProliferation.MODID,"piglin_alchemist_belt"), "piglin_alchemist_belt");
+    public static final ModelLayerLocation BUCKLER = new ModelLayerLocation(ResourceLocation.fromNamespaceAndPath(PiglinProliferation.MODID,"buckler"),
             "buckler");
     public static final ModelLayerLocation TRAVELER_ARMOR_OUTER_LAYER = new ModelLayerLocation(
-            ResourceLocation.parse(PiglinProliferation.MODID + "traveler_outer_armor"), "traveler_outer_armor");
+            ResourceLocation.fromNamespaceAndPath(PiglinProliferation.MODID,"traveler_outer_armor"), "traveler_outer_armor");
 
     public static final ModelLayerLocation ALCHEMIST_ARMOR_OUTER_LAYER = new ModelLayerLocation(
-            ResourceLocation.parse(PiglinProliferation.MODID + "alchemist_outer_armor"), "alchemist_outer_armor");
+            ResourceLocation.fromNamespaceAndPath(PiglinProliferation.MODID,"alchemist_outer_armor"), "alchemist_outer_armor");
     @SuppressWarnings("deprecation") //It is necessary :(
     public static final Material BUCKLER_TEXTURE = new Material(TextureAtlas.LOCATION_BLOCKS, ResourceLocation.fromNamespaceAndPath(PiglinProliferation.MODID, "entity/buckler/golden_buckler"));
 

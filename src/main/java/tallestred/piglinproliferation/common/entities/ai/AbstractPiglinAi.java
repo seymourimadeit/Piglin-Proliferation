@@ -26,6 +26,7 @@ import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.minecraft.world.phys.Vec3;
 import tallestred.piglinproliferation.PPActivities;
+import tallestred.piglinproliferation.common.entities.ai.behaviors.SafeCrossbowAttack;
 import tallestred.piglinproliferation.common.entities.ai.behaviors.SwimOnlyOutOfLava;
 
 import java.util.Collections;
@@ -127,7 +128,7 @@ public abstract class AbstractPiglinAi<P extends Piglin> extends PiglinAi {
                 BehaviorBuilder.triggerIf(PiglinAi::hasCrossbow, BackUpIfTooClose.create(5, 0.75F)),
                 SetWalkTargetFromAttackTargetIfTargetOutOfReach.create(1.0F),
                 MeleeAttack.create(20),
-                new CrossbowAttack<>(),
+                new SafeCrossbowAttack<>(),
                 RememberIfHoglinWasKilled.create(),
                 EraseMemoryIf.create(PiglinAi::isNearZombified, MemoryModuleType.ATTACK_TARGET)
         );
