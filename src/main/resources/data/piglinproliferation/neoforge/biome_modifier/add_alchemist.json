@@ -3,8 +3,8 @@
   "biomes": ["minecraft:nether_wastes", "minecraft:crimson_forest"],
   "spawners": {
     "type": "piglinproliferation:piglin_alchemist",
-    "maxCount": 6,
-    "minCount": 3,
+    "maxCount": 3,
+    "minCount": 1,
     "weight": 5
   }
 }

@@ -83,7 +83,7 @@ public class PPConfig {
             turningBucklerLaunchStrength = builder.comment("Experimental: Bucklers enchanted with Turning will allow the player to launch off of blocks they collide with.").defineInRange("Launch strength ", 0.15D, 0.0D, 999999.0D);
             builder.pop();
             builder.push("Piglin Alchemist");
-            alchemistPotionChance = builder.defineInRange("Chance of alchemist potions not getting broken when killed", 0.20F, 0.0F, 9000.0F);
+            alchemistPotionChance = builder.defineInRange("Chance of alchemist potions not getting broken when killed", 0.0050F, 0.0F, 9000.0F);
             builder.push("Healing Arrow Chances");
             healingArrowChances = builder.defineInRange("Chances of an alchemist getting healing arrows", 0.30F, 0.0F, 100.0F);
             healingArrowMinStackSize = builder.defineInRange("Minmium healing arrow stack size", 1, Integer.MIN_VALUE, Integer.MAX_VALUE);
