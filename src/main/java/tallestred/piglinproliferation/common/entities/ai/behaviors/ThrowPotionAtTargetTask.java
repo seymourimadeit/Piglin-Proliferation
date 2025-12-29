@@ -59,22 +59,28 @@ public class ThrowPotionAtTargetTask<E extends PiglinAlchemist> extends BaseThro
 
     @Override
     protected boolean canStillUse(ServerLevel level, E alchemist, long gameTime) {
-        Mob throwTarget = alchemist.getBrain().getMemory(PPMemoryModules.POTION_THROW_TARGET.get()).orElseGet(null);
-        for (MobEffectInstance mobeffectinstance : potionContents(itemToUse).getAllEffects()) {
-            return throwTarget != null && alchemist.hasLineOfSight(throwTarget) && this.nearbyPiglinPredicate.test(throwTarget) && !throwTarget.hasEffect(mobeffectinstance.getEffect()) && this.ticksUntilThrow > 0;
+        if (alchemist.getBrain().hasMemoryValue((PPMemoryModules.POTION_THROW_TARGET.get()))) {
+            Mob throwTarget = alchemist.getBrain().getMemory(PPMemoryModules.POTION_THROW_TARGET.get()).get();
+            for (MobEffectInstance mobeffectinstance : potionContents(itemToUse).getAllEffects()) {
+                return throwTarget != null && alchemist.hasLineOfSight(throwTarget) && this.nearbyPiglinPredicate.test(throwTarget) && !throwTarget.hasEffect(mobeffectinstance.getEffect()) && this.ticksUntilThrow > 0;
+            }
+            return throwTarget != null && alchemist.hasLineOfSight(throwTarget);
+        } else {
+            return false;
         }
-        return alchemist.hasLineOfSight(throwTarget);
     }
 
     @Override
     protected void start(ServerLevel level, E alchemist, long gameTime) {
-        super.start(level, alchemist, gameTime);
-        alchemist.getBrain().setActiveActivityIfPossible(PPActivities.THROW_POTION_ACTIVITY.get());
-        Mob throwTarget = alchemist.getBrain().getMemory(PPMemoryModules.POTION_THROW_TARGET.get()).orElseGet(null);
-        if (throwTarget == null)
-            return;
-        if (this.ticksUntilThrow <= 0)
-            this.ticksUntilThrow = 20;
+        if (alchemist.getBrain().hasMemoryValue((PPMemoryModules.POTION_THROW_TARGET.get()))) {
+            super.start(level, alchemist, gameTime);
+            alchemist.getBrain().setActiveActivityIfPossible(PPActivities.THROW_POTION_ACTIVITY.get());
+            Mob throwTarget = alchemist.getBrain().getMemory(PPMemoryModules.POTION_THROW_TARGET.get()).get();
+            if (throwTarget == null)
+                return;
+            if (this.ticksUntilThrow <= 0)
+                this.ticksUntilThrow = 20;
+        }
     }
 
     @Override

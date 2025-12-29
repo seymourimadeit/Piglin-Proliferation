@@ -16,7 +16,7 @@ import net.minecraft.world.item.CrossbowItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.ChargedProjectiles;
 
-// Used to fix #50 "When a piglin alchemist zombiefied, game crashes." by adding a null check to the target getter
+// Used to fix #50 "When a piglin alchemist zombified, game crashes." by adding a null check to the target getter
 public class SafeCrossbowAttack<E extends Mob & CrossbowAttackMob, T extends LivingEntity> extends Behavior<E> {
     private static final int TIMEOUT = 1200;
     private int attackDelay;
@@ -91,7 +91,7 @@ public class SafeCrossbowAttack<E extends Mob & CrossbowAttackMob, T extends Liv
     }
 
     private static LivingEntity getAttackTarget(LivingEntity shooter) {
-        return shooter.getBrain().getMemory(MemoryModuleType.ATTACK_TARGET).orElseGet(null);
+        return shooter.getBrain().hasMemoryValue(MemoryModuleType.ATTACK_TARGET) ? shooter.getBrain().getMemory(MemoryModuleType.ATTACK_TARGET).get() : null;
     }
 
     enum CrossbowState {
