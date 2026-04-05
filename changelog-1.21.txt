@@ -1,1 +1,2 @@
 
+- [CHANGE] fix #54 (buckler models not being properly stored in code)
