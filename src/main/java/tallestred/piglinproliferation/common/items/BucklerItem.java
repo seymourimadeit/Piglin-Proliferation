@@ -1,10 +1,8 @@
 package tallestred.piglinproliferation.common.items;
 
-import com.mojang.blaze3d.platform.InputConstants;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.BlockParticleOption;
 import net.minecraft.core.particles.ParticleTypes;
@@ -31,13 +29,11 @@ import net.minecraft.world.level.block.DispenserBlock;
 import net.minecraft.world.level.block.RenderShape;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.neoforge.client.extensions.common.IClientItemExtensions;
 import net.neoforged.neoforge.common.ItemAbilities;
 import net.neoforged.neoforge.common.Tags;
 import tallestred.piglinproliferation.capablities.PPDataAttachments;
 import tallestred.piglinproliferation.client.PPSounds;
 import tallestred.piglinproliferation.client.particles.ParticleHelper;
-import tallestred.piglinproliferation.client.renderers.BucklerRenderer;
 import tallestred.piglinproliferation.common.attribute.AttributeModifierHolder;
 import tallestred.piglinproliferation.common.attribute.PPAttributes;
 import tallestred.piglinproliferation.common.attribute.RangedRandomAttributeModifierHolder;
@@ -47,7 +43,6 @@ import tallestred.piglinproliferation.configuration.PPConfig;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Consumer;
 
 import static tallestred.piglinproliferation.util.CodeUtilities.doubleToString;
 import static tallestred.piglinproliferation.util.CodeUtilities.ticksToSeconds;

@@ -57,6 +57,7 @@ public class PPRenderSetupEvents {
             ResourceLocation.fromNamespaceAndPath(PiglinProliferation.MODID,"alchemist_outer_armor"), "alchemist_outer_armor");
     @SuppressWarnings("deprecation") //It is necessary :(
     public static final Material BUCKLER_TEXTURE = new Material(TextureAtlas.LOCATION_BLOCKS, ResourceLocation.fromNamespaceAndPath(PiglinProliferation.MODID, "entity/buckler/golden_buckler"));
+    public static BucklerModel BUCKLER_MODEL;
 
     @SubscribeEvent
     public static void layerDefinitions(EntityRenderersEvent.RegisterLayerDefinitions event) {
@@ -83,6 +84,7 @@ public class PPRenderSetupEvents {
     @SubscribeEvent
     public static void layer(EntityRenderersEvent.AddLayers event) {
         addLayerToRenderer(event, EntityType.ZOMBIFIED_PIGLIN, PiglinClothingRenderLayer::new);
+        BUCKLER_MODEL = new BucklerModel(event.getEntityModels().bakeLayer(BUCKLER));
     }
 
     @SubscribeEvent

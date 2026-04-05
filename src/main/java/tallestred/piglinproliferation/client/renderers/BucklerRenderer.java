@@ -19,7 +19,7 @@ public class BucklerRenderer extends BlockEntityWithoutLevelRenderer {
 
     public BucklerRenderer(BlockEntityRenderDispatcher berd, EntityModelSet set) {
         super(berd, set);
-        this.bucklerModel = new BucklerModel(set.bakeLayer(PPRenderSetupEvents.BUCKLER));
+        this.bucklerModel = PPRenderSetupEvents.BUCKLER_MODEL;
     }
 
     @Override
