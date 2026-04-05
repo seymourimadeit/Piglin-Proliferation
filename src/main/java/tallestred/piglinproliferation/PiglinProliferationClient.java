@@ -18,7 +18,6 @@ import net.neoforged.neoforge.client.gui.ConfigurationScreen;
 import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import tallestred.piglinproliferation.client.renderers.BucklerRenderer;
-import tallestred.piglinproliferation.common.blocks.FireRingBlock;
 import tallestred.piglinproliferation.common.blocks.FireRingBlockColor;
 import tallestred.piglinproliferation.common.blocks.PPBlocks;
 import tallestred.piglinproliferation.common.items.BucklerItem;
