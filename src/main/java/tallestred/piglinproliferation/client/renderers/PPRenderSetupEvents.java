@@ -23,8 +23,8 @@ import tallestred.piglinproliferation.client.models.PiglinHeadEntityModel;
 import tallestred.piglinproliferation.client.models.PiglinTravelerModel;
 import tallestred.piglinproliferation.client.renderers.layers.PiglinClothingRenderLayer;
 import tallestred.piglinproliferation.common.blockentities.PPBlockEntities;
-import tallestred.piglinproliferation.common.blocks.PiglinSkullBlock;
 import tallestred.piglinproliferation.common.entities.PPEntityTypes;
+import tallestred.piglinproliferation.common.blocks.PiglinSkullBlock;
 
 import static tallestred.piglinproliferation.util.RegistryUtilities.addLayerToRenderer;
 
