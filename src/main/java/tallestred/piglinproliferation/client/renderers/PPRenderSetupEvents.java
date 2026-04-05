@@ -53,6 +53,7 @@ public class PPRenderSetupEvents {
     public static final ModelLayerLocation ALCHEMIST_ARMOR_OUTER_LAYER = new ModelLayerLocation(
             new ResourceLocation(PiglinProliferation.MODID + "alchemist_outer_armor"), "alchemist_outer_armor");
     public static final Material BUCKLER_TEXTURE = new Material(TextureAtlas.LOCATION_BLOCKS, new ResourceLocation(PiglinProliferation.MODID, "entity/buckler/golden_buckler"));
+    public static BucklerModel BUCKLER_MODEL;
 
     @SubscribeEvent
     public static void layerDefinitions(EntityRenderersEvent.RegisterLayerDefinitions event) {
@@ -79,6 +80,7 @@ public class PPRenderSetupEvents {
     @SubscribeEvent
     public static void layer(EntityRenderersEvent.AddLayers event) {
         addLayerToRenderer(event, EntityType.ZOMBIFIED_PIGLIN, PiglinClothingRenderLayer::new);
+        BUCKLER_MODEL = new BucklerModel(event.getEntityModels().bakeLayer(BUCKLER));
     }
 
     @SubscribeEvent
