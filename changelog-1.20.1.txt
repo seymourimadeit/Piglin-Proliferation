@@ -1,1 +1,1 @@
-- Fixed mod crashing with More Geodes Reforged
+- [CHANGE] fix #54 (buckler models not being properly stored in code)
