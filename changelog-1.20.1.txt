@@ -1,1 +1,1 @@
-- [CHANGE] fix #54 (buckler models not being properly stored in code)
+fix #55 [Geckolib mobs crashing when showing afterimage]
