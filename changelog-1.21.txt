@@ -1,2 +1,1 @@
 
-- [CHANGE] fix #56 (visual glitch with buckler when using First Person Model mod)
