@@ -10,6 +10,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.api.distmarker.Dist;
+import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.CalculatePlayerTurnEvent;
@@ -51,13 +52,15 @@ public class PPClientEvents {
         }
     }
 
-    @SubscribeEvent
+    @SubscribeEvent(priority = EventPriority.LOWEST)
     public static void onRenderHand(RenderHandEvent event) {
         PoseStack mStack = event.getPoseStack();
         ItemStack stack = event.getItemStack();
         Minecraft mc = Minecraft.getInstance();
         LocalPlayer player = mc.player;
         float partialTicks = event.getPartialTick();
+        if (event.isCanceled())
+            return;
         if (stack.getItem() instanceof BucklerItem && player != null && (player.isUsingItem() && player.getUseItem() == stack || BucklerItem.getChargeTicks(stack) > 0 && BucklerItem.isReady(stack))) {
             boolean mainHand = event.getHand() == InteractionHand.MAIN_HAND;
             HumanoidArm handside = mainHand ? player.getMainArm() : player.getMainArm().getOpposite();
