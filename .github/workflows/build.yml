@@ -30,7 +30,6 @@ jobs:
       - name: mc-publish
         uses: Kir-Antipov/mc-publish@v3.3
         with:
-          environment: client | server
           version: ${{ steps.version.outputs.value }}
           github-token: ${{ secrets.GIT_TOKEN }}
           modrinth-id: iRE67WIn
