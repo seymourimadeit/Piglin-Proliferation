@@ -32,7 +32,6 @@ public class ThrowPotionAtSelfTask<E extends PiglinAlchemist> extends BaseThrowP
         super(stack, pCanUseSelector);
     }
 
-    //TODO this might have broken
     @Override
     protected boolean checkExtraStartConditions(ServerLevel level, E alchemist) {
         for (MobEffectInstance mobeffectinstance : potionContents(itemToUse).getAllEffects()) {
