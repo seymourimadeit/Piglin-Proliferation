@@ -1,1 +1,2 @@
 
+- [CHANGE] fix #57 (clear up non-gameplay related error messages in logs)
